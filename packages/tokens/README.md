@@ -20,10 +20,14 @@ Edit `theme.json`, run the build, commit the generated files. Names and behavior
 
 ## What the npm tarball holds
 
-The repo keeps the brand assets used by its packages and retained X-kit renders and fonts during cleanup. `npm pack` (the `files` field in `package.json`) leaves out the retained X-kit assets, ZIP archives, `templates/`, every `editable/` source, the TTF font sources (the WOFF2 files stay), and the large PNG renders of motifs and per-project logos, marks and icons. The SVGs, favicon set, apple-touch icon, android icons and social cards stay. Per-project brand families are in `assets/projects/<id>/` (cli, ide, harness; ejmlabs uses the root sets). A consumer who needs a retained file excluded from the tarball reads it from this repo.
+The repo keeps the brand assets used by its packages and retained X-kit renders and fonts during cleanup. The source baseline lists 282 retained imports in provenance: 280 files under `assets/`, plus `rust/ejm_tui.rs` and `rust/TUI.md`. This count describes the committed source, not the npm tarball.
+
+`npm pack` (the `files` field in `package.json`) leaves out the retained X-kit assets, ZIP archives, `templates/`, every `editable/` source, the TTF font sources (the WOFF2 files stay), and the large PNG renders of motifs and per-project logos, marks and icons. The SVGs, favicon set, apple-touch icon, android icons and social cards stay. Per-project brand families are in `assets/projects/<id>/` (cli, ide, harness; ejmlabs uses the root sets). A consumer who needs a retained file excluded from the tarball reads it from this repo, subject to its license.
 
 ## Asset maintenance and rights
 
-From the repository root, run `node scripts/assets.mjs --local` to verify retained assets against [their provenance](assets/PROVENANCE.md). The optional `--sync` import uses `EJM_DESIGN_KIT`, or the legacy `../ejmlabs/design-kit` directory. It skips retired kit handoff files, editable kit sources, and ZIP archives. Rendered X-kit assets and font copies remain hashed in provenance until removal and stay excluded from the tarball. That legacy source is not a build dependency.
+From the repository root, run `node scripts/assets.mjs --local` to verify retained files against [their provenance](assets/PROVENANCE.md). It checks local hashes and inventory without the old kit. The optional `--sync` import uses `EJM_DESIGN_KIT`, or the legacy `../ejmlabs/design-kit` directory. That legacy source is not a build dependency.
+
+The source baseline excludes retired kit handoff files, X-kit source trees, per-project `editable/` sources and ZIP archives. It still retains editable lockups and templates, rendered X-kit assets, and X-kit font copies. They stay hashed in provenance and excluded from the tarball. The generated provenance introduction uses a broader editable-source description; the table and the import filter in `scripts/assets.mjs` define the retained inventory. Do not remove table rows without removing their files and checking affected consumers.
 
 Brand materials retain their owner's rights. Manrope and IBM Plex Mono retain the SIL Open Font License notices in `assets/fonts/`. See the package [license](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md) before copying assets or fonts.
