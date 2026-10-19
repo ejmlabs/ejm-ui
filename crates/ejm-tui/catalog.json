@@ -1,0 +1,51 @@
+{
+  "Callout": [
+    "note",
+    "tip",
+    "warning"
+  ],
+  "KeyHints": [
+    "default"
+  ],
+  "Prompt": [
+    "idle",
+    "busy",
+    "error"
+  ],
+  "Row": [
+    "default",
+    "selected",
+    "disabled",
+    "focused"
+  ],
+  "Rule": [
+    "default"
+  ],
+  "Stat": [
+    "default",
+    "loading",
+    "error",
+    "empty"
+  ],
+  "StateBlock": [
+    "empty",
+    "loading",
+    "error"
+  ],
+  "Status": [
+    "ok",
+    "warn",
+    "error",
+    "info",
+    "pending"
+  ],
+  "Table": [
+    "default",
+    "empty",
+    "loading",
+    "error"
+  ],
+  "Text": [
+    "default"
+  ]
+}

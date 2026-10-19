@@ -1,0 +1,55 @@
+{
+  "product": "ide",
+  "name": "workspace-launch",
+  "kind": "screenshot",
+  "surface": "window",
+  "title": "ejm-ide",
+  "caption": "ejm-ide on launch: the project tree, orders.rs from the harbor sample with syntax colors, and Edi's chat pane before a model is connected.",
+  "captureMethod": "Screenshot of the running ejm-ide desktop app window, captured with macOS desktop control",
+  "how": "Launched the debug build of the desktop app with the harbor sample as the workspace, switched nothing, clicked nothing and typed nothing, then captured the window; the window shows its launch state with no model connected, so no chat turn, tool call or diff appears.",
+  "themes": ["dark"],
+  "theme": "dark",
+  "themeNote": "The app theme preference was System and the macOS appearance was dark. A light capture was not made: the only way to set the theme is the app's Preferences (stored in the webview's localStorage key ejm-ide.theme), with no documented environment variable, config file or flag.",
+  "productVersion": "ejm-ide 0.1.0",
+  "versionSources": ["package.json", "src-tauri/tauri.conf.json"],
+  "gitCommit": "bde96726270afe16777a3ae6461064367ce4d204",
+  "workingTreeChanges": 0,
+  "frontendSource": "Clean export of the ejm-ide commit above (git archive HEAD) served by its own Vite dev server on http://localhost:1420. Its @ejm/* packages resolved to the live sibling ejm-ui working tree (HEAD 111f535 plus uncommitted changes at the time), so the frontend is not purely the committed ejm-ide plus committed ejm-ui.",
+  "rustSource": "Clean export of the same commit, built with cargo build --offline --locked (rustc 1.99.1) against ejm-harness at the pinned revision 4a751c6a3f24d7d143140f79ff53517fb93e3531 (git archive of that revision). The ejm-ide Rust sources are identical between the earlier commit ca0d317 and this commit.",
+  "binary": {
+    "path": "target/debug/ejm-ide (a debug build from the clean export, in a scratch build directory outside the product repository)",
+    "modified": "2026-10-19T04:12:46Z",
+    "sha256": "f8cded512396c3bd8c31a2085d14665961720a689418e00525f3d0e0c8b20dbb",
+    "launchedAs": "a copy inside a minimal ejm-ide.app wrapper (CFBundleIdentifier dev.ejmlabs.ide, ad-hoc signed) so desktop control could target it; the binary itself is unchanged apart from the signature"
+  },
+  "os": "macOS 26.5.2 (25F84)",
+  "window": {
+    "width": 1440,
+    "height": 950,
+    "unit": "points",
+    "pixelWidth": 2880,
+    "pixelHeight": 1900,
+    "scale": 2,
+    "shadow": false
+  },
+  "size": { "width": 2880, "height": 1900 },
+  "scale": 2,
+  "captureDate": "2026-10-19T04:38:41Z",
+  "captureTool": "macOS screencapture -x -o -l <window id>, window only, run from the owner's terminal; the PNG is unedited",
+  "workspace": "a copy of examples/harbor from the same commit, opened through the documented EJM_IDE_WORKSPACE variable, with a one-commit throwaway git history (author Demo)",
+  "profile": "a fresh isolated HOME (no providers, chats or settings)",
+  "steps": [
+    "git archive HEAD of ejm-ide into a scratch folder; start its Vite dev server on port 1420",
+    "open -g -n --env HOME=<isolated home> --env EJM_IDE_WORKSPACE=<copy of examples/harbor> ejm-ide.app",
+    "screencapture -x -o -l <window id> workspace-launch.dark.png"
+  ],
+  "model": "none. No provider was connected, no model or fixture was used, and no chat turn ran.",
+  "results": {
+    "dark": {
+      "png": "workspace-launch.dark.png",
+      "pixelWidth": 2880,
+      "pixelHeight": 1900,
+      "sha256": "047de89050780c95b06bbd4b32ba6663789f20212c8b1e342d4db19d995a400d"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+/* Imported by @ejm/ssg itself. Under 0.5 KB. */
+#ejm-announcer {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* Pages take focus on navigation so screen readers start at the heading; the ring is for controls. */
+#main:focus,
+h1[tabindex='-1']:focus {
+  outline: none;
+}
+/* View Transitions: only the page area cross-fades, so the header stays put. Opacity and transform only. */
+html[data-ejm-vt] [data-ejm-route] {
+  view-transition-name: ejm-page;
+}
+::view-transition-old(ejm-page),
+::view-transition-new(ejm-page) {
+  animation-duration: 0.18s;
+}
+/* No View Transitions API: fade the new page in. Skipped on first load and under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports not (view-transition-name: none) {
+    html[data-ejm-nav] [data-ejm-route] {
+      animation: ejm-in 0.18s ease-out;
+    }
+  }
+}
+@keyframes ejm-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* <Static>: the wrapper adds no box of its own. */
+[data-ejm-static] { display: contents; }

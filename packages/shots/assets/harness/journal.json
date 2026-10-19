@@ -1,0 +1,76 @@
+{
+  "product": "harness",
+  "name": "journal",
+  "title": "ejm-harness",
+  "caption": "The event journal of one run, with the governor and harness status the engine reports.",
+  "command": "node journal.mjs",
+  "workingDirectory": "packages/shots/fixtures/harness",
+  "terminal": {
+    "cols": 100,
+    "rows": 30,
+    "rowsDrawn": "to the last line of text",
+    "font": "IBM Plex Mono 500, 15px",
+    "colorScheme": "@ejm/tokens generated/terminal/ejmlabs-<theme>"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "productVersion": "ejm-harness 0.1.0",
+  "gitCommit": "a96c9928a98045c79beff0ea832ff964fb2eac85",
+  "workingTreeChanges": 0,
+  "build": "Built from a clean `git archive` export of a96c9928a98045c79beff0ea832ff964fb2eac85. Release build of the ejm-harness-worker binary. sdk/typescript/dist and the Python SDK are the committed files.",
+  "binary": {
+    "path": "<clean-export>/target-harness/release/ejm-harness-worker",
+    "modified": "2026-10-19T04:40:00.966Z",
+    "sha256": "52fac1e957eaa18d996505f4c68d92bbc259467c905ea4a77768dd72874e55d6"
+  },
+  "captureDate": "2026-10-19T04:45:09.214Z",
+  "captureTool": {
+    "name": "@ejm/shots",
+    "version": "0.1.0",
+    "source": "scripts/capture-terminal.mjs"
+  },
+  "launch": "typed into /bin/sh with the prompt \"$ \" and ejm-harness-worker on PATH",
+  "how": "Ran a small script (fixtures/harness/journal.mjs) that drives the real ejm-harness TypeScript SDK and Rust worker with a replay file of scripted tool calls (no assistant text), then prints the durable event journal of the run and the governor and harness status the worker reports. The script only formats values the engine returned.",
+  "results": {
+    "dark": {
+      "png": "journal.dark.png",
+      "pixelWidth": 1880,
+      "pixelHeight": 920,
+      "environment": {
+        "EJM_HARNESS_DIR": "<clean-export>/ejm-harness",
+        "EJM_WORKSPACE": "/tmp/acme-api",
+        "EJM_RESPONSES": "../replay/read-then-write.json",
+        "EJM_STATE_DIR": "(a fresh private directory)"
+      },
+      "exitCode": null,
+      "rawBytes": 1043,
+      "rawSha256": "2c3a119577c077163f98781698f8359f9224b911883ecc85848a3ace135edc7f",
+      "verification": {
+        "transcriptMatch": "exact",
+        "renderedTextEqualsEmulator": true
+      },
+      "transcript": "$ node journal.mjs\nsession f8f1de7c  13 events in the journal\n\n  1    +0ms  run_started    Add request logging to the order service\n  2    +0ms  model_started  step 1\n  3    +0ms  usage          {\"input_tokens\":0,\"output_tokens\":0}\n  4    +1ms  tool_queued    read_file {\"path\":\"package.json\"}\n  5    +1ms  tool_started   read_file {\"path\":\"package.json\"}\n  6    +1ms  tool_finished  ok 1: { 2: \"name\": \"acme-api\", 3: \"version\": \"1.2.0\", …\n  7    +1ms  model_started  step 2\n  8    +2ms  usage          {\"input_tokens\":0,\"output_tokens\":0}\n  9    +2ms  tool_queued    write_file {\"content\":\"export const log = line => console.log(…\n 10    +2ms  tool_finished  error tool is not granted by this host\n 11    +2ms  model_started  step 3\n 12    +2ms  usage          {\"input_tokens\":0,\"output_tokens\":0}\n 13    +3ms  run_finished   completed, 3 steps\n\nrun completed\ngovernor  running 0  queued 0  heavy 0  reserved: cpu 0m  mem 0 B  output 0 B  procs 0\nharness   agents 0  model requests 0  waiting 0  tools running 0\n$"
+    },
+    "light": {
+      "png": "journal.light.png",
+      "pixelWidth": 1880,
+      "pixelHeight": 920,
+      "environment": {
+        "EJM_HARNESS_DIR": "<clean-export>/ejm-harness",
+        "EJM_WORKSPACE": "/tmp/acme-api",
+        "EJM_RESPONSES": "../replay/read-then-write.json",
+        "EJM_STATE_DIR": "(a fresh private directory)"
+      },
+      "exitCode": null,
+      "rawBytes": 1043,
+      "rawSha256": "598b32b936f89f42e330656d3df25c7832bfcf01ca7a1f2260f696e8e8fcb368",
+      "verification": {
+        "transcriptMatch": "exact",
+        "renderedTextEqualsEmulator": true
+      },
+      "transcript": "$ node journal.mjs\nsession 96b50587  13 events in the journal\n\n  1    +0ms  run_started    Add request logging to the order service\n  2    +0ms  model_started  step 1\n  3    +0ms  usage          {\"input_tokens\":0,\"output_tokens\":0}\n  4    +0ms  tool_queued    read_file {\"path\":\"package.json\"}\n  5    +1ms  tool_started   read_file {\"path\":\"package.json\"}\n  6    +1ms  tool_finished  ok 1: { 2: \"name\": \"acme-api\", 3: \"version\": \"1.2.0\", …\n  7    +1ms  model_started  step 2\n  8    +1ms  usage          {\"input_tokens\":0,\"output_tokens\":0}\n  9    +2ms  tool_queued    write_file {\"content\":\"export const log = line => console.log(…\n 10    +2ms  tool_finished  error tool is not granted by this host\n 11    +2ms  model_started  step 3\n 12    +2ms  usage          {\"input_tokens\":0,\"output_tokens\":0}\n 13    +3ms  run_finished   completed, 3 steps\n\nrun completed\ngovernor  running 0  queued 0  heavy 0  reserved: cpu 0m  mem 0 B  output 0 B  procs 0\nharness   agents 0  model requests 0  waiting 0  tools running 0\n$"
+    }
+  }
+}

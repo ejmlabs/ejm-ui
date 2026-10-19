@@ -1,0 +1,72 @@
+{
+  "product": "cli",
+  "name": "tui-write-granted",
+  "title": "ejm-cli",
+  "caption": "The same prompt with --allow-write: the header shows the grant and the file is written.",
+  "command": "<clean-export>/target-cli/release/ejm-cli --replay-file read-then-write-granted.json --allow-write --cwd /tmp/acme-api",
+  "workingDirectory": "packages/shots/fixtures/replay",
+  "terminal": {
+    "cols": 100,
+    "rows": 30,
+    "rowsDrawn": 30,
+    "font": "IBM Plex Mono 500, 15px",
+    "colorScheme": "@ejm/tokens generated/terminal/ejmlabs-<theme>"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "productVersion": "ejm-cli 0.1.0",
+  "gitCommit": "07a6e1ab6479bbee39ad345aa08200d42e5db1f4",
+  "workingTreeChanges": 0,
+  "build": "Built from a clean `git archive` export of 07a6e1ab6479bbee39ad345aa08200d42e5db1f4. Release build of the ejm-cli binary, with its `../ejm-harness` path dependencies resolved to a clean export of ejm-harness a96c9928a98045c79beff0ea832ff964fb2eac85.",
+  "binary": {
+    "path": "<clean-export>/target-cli/release/ejm-cli",
+    "modified": "2026-10-19T04:40:14.621Z",
+    "sha256": "2240ee093eb70911ff3dd47cc70d3f064ace3b00f7ee24b820cf15733446413f"
+  },
+  "captureDate": "2026-10-19T04:44:58.138Z",
+  "captureTool": {
+    "name": "@ejm/shots",
+    "version": "0.1.0",
+    "source": "scripts/capture-terminal.mjs"
+  },
+  "launch": "spawned directly in the pseudo-terminal",
+  "how": "Same session as tui-read-refused but started with --allow-write: the header shows the write grant and the real write_file tool creates src/log.mjs in the demo project.",
+  "results": {
+    "dark": {
+      "png": "tui-write-granted.dark.png",
+      "pixelWidth": 1880,
+      "pixelHeight": 1280,
+      "environment": {
+        "EJM_CLI_APPEARANCE": "dark",
+        "COLORFGBG": "15;0"
+      },
+      "exitCode": null,
+      "rawBytes": 4060,
+      "rawSha256": "d0c98e1dd136edd03007886efdbf265c5102960ee04c037e5db3ba0baa2ea6b5",
+      "verification": {
+        "transcriptMatch": "replayed",
+        "renderedTextEqualsEmulator": true
+      },
+      "transcript": " ejm-cli offline replay  ·  acme-api\n grants: read + write  ·  /private/tmp/acme-api  ·  53f826c0\n you\n Add request logging to the order service\n\n done · read_file\n {\"path\":\"package.json\"}\n 1: {\n 2:   \"name\": \"acme-api\",\n 3:   \"version\": \"1.2.0\",\n 4:   \"scripts\": { \"start\": \"node src/server.mjs\" }\n 5: }\n\n sha256: 80dfc07e6ce1e3587bed40765eb5547fed7e4d6080b5bab896ec4295e01231af | 5 lines\n\n done · write_file\n {\"content\":\"export const log = line => console.log(line);\\n\",\"path\":\"src/log.mjs\"}\n Wrote src/log.mjs (46 bytes)\n\n\n\n\n\n\n\n 0 agents · models 0+0q · tools 0+0q · completed · 3 steps · 0 in / 0 out tokens\n╭ message ─────────────────────────────────────────────────────────────────────────────────────────╮\n│ › Describe a task…                                                                               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯\n Enter send · Ctrl+C stop/quit · Alt+Enter new line · Ctrl+K steer · Ctrl+S sessions"
+    },
+    "light": {
+      "png": "tui-write-granted.light.png",
+      "pixelWidth": 1880,
+      "pixelHeight": 1280,
+      "environment": {
+        "EJM_CLI_APPEARANCE": "light",
+        "COLORFGBG": "0;15"
+      },
+      "exitCode": null,
+      "rawBytes": 4034,
+      "rawSha256": "71c319dc4fd296e81fb5666f042c3f7b54717af8f5cc6f438473f1caeae63279",
+      "verification": {
+        "transcriptMatch": "replayed",
+        "renderedTextEqualsEmulator": true
+      },
+      "transcript": " ejm-cli offline replay  ·  acme-api\n grants: read + write  ·  /private/tmp/acme-api  ·  0d2e2a56\n you\n Add request logging to the order service\n\n done · read_file\n {\"path\":\"package.json\"}\n 1: {\n 2:   \"name\": \"acme-api\",\n 3:   \"version\": \"1.2.0\",\n 4:   \"scripts\": { \"start\": \"node src/server.mjs\" }\n 5: }\n\n sha256: 80dfc07e6ce1e3587bed40765eb5547fed7e4d6080b5bab896ec4295e01231af | 5 lines\n\n done · write_file\n {\"content\":\"export const log = line => console.log(line);\\n\",\"path\":\"src/log.mjs\"}\n Wrote src/log.mjs (46 bytes)\n\n\n\n\n\n\n\n 0 agents · models 0+0q · tools 0+0q · completed · 3 steps · 0 in / 0 out tokens\n╭ message ─────────────────────────────────────────────────────────────────────────────────────────╮\n│ › Describe a task…                                                                               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯\n Enter send · Ctrl+C stop/quit · Alt+Enter new line · Ctrl+K steer · Ctrl+S sessions"
+    }
+  }
+}

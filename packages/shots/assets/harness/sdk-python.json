@@ -1,0 +1,70 @@
+{
+  "product": "harness",
+  "name": "sdk-python",
+  "title": "ejm-harness",
+  "caption": "The Python example from the README, running against the same worker.",
+  "command": "python3 examples/sdk_async.py",
+  "workingDirectory": "<clean-export>/ejm-harness",
+  "terminal": {
+    "cols": 80,
+    "rows": 24,
+    "rowsDrawn": "to the last line of text",
+    "font": "IBM Plex Mono 500, 15px",
+    "colorScheme": "@ejm/tokens generated/terminal/ejmlabs-<theme>"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "productVersion": "ejm-harness 0.1.0",
+  "gitCommit": "a96c9928a98045c79beff0ea832ff964fb2eac85",
+  "workingTreeChanges": 0,
+  "build": "Built from a clean `git archive` export of a96c9928a98045c79beff0ea832ff964fb2eac85. Release build of the ejm-harness-worker binary. sdk/typescript/dist and the Python SDK are the committed files.",
+  "binary": {
+    "path": "<clean-export>/target-harness/release/ejm-harness-worker",
+    "modified": "2026-10-19T04:40:00.966Z",
+    "sha256": "52fac1e957eaa18d996505f4c68d92bbc259467c905ea4a77768dd72874e55d6"
+  },
+  "captureDate": "2026-10-19T04:45:17.085Z",
+  "captureTool": {
+    "name": "@ejm/shots",
+    "version": "0.1.0",
+    "source": "scripts/capture-terminal.mjs"
+  },
+  "launch": "typed into /bin/sh with the prompt \"$ \" and ejm-harness-worker on PATH",
+  "how": "Typed the documented Python example, python3 examples/sdk_async.py, at a plain $ prompt from the clean ejm-harness export, with the in-tree Python SDK on PYTHONPATH; the SDK starts the real Rust worker with its echo provider.",
+  "results": {
+    "dark": {
+      "png": "sdk-python.dark.png",
+      "pixelWidth": 1520,
+      "pixelHeight": 240,
+      "environment": {
+        "PYTHONPATH": "<clean-export>/ejm-harness/sdk/python"
+      },
+      "exitCode": null,
+      "rawBytes": 84,
+      "rawSha256": "a8e07b6a8e06b799aab31766cf766c5684d8018cc0c56076f14f8cec37ba0a8a",
+      "verification": {
+        "transcriptMatch": "exact",
+        "renderedTextEqualsEmulator": true
+      },
+      "transcript": "$ python3 examples/sdk_async.py\nDemo: Hello from ejm-harness\ncompleted\n$"
+    },
+    "light": {
+      "png": "sdk-python.light.png",
+      "pixelWidth": 1520,
+      "pixelHeight": 240,
+      "environment": {
+        "PYTHONPATH": "<clean-export>/ejm-harness/sdk/python"
+      },
+      "exitCode": null,
+      "rawBytes": 84,
+      "rawSha256": "a8e07b6a8e06b799aab31766cf766c5684d8018cc0c56076f14f8cec37ba0a8a",
+      "verification": {
+        "transcriptMatch": "exact",
+        "renderedTextEqualsEmulator": true
+      },
+      "transcript": "$ python3 examples/sdk_async.py\nDemo: Hello from ejm-harness\ncompleted\n$"
+    }
+  }
+}

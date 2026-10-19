@@ -1,0 +1,72 @@
+{
+  "product": "cli",
+  "name": "tui-read-refused",
+  "title": "ejm-cli",
+  "caption": "A prompt sent in the TUI: the file read runs, and the write is refused because the session only has read access.",
+  "command": "<clean-export>/target-cli/release/ejm-cli --replay-file read-then-write.json --cwd /tmp/acme-api",
+  "workingDirectory": "packages/shots/fixtures/replay",
+  "terminal": {
+    "cols": 100,
+    "rows": 30,
+    "rowsDrawn": 30,
+    "font": "IBM Plex Mono 500, 15px",
+    "colorScheme": "@ejm/tokens generated/terminal/ejmlabs-<theme>"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "productVersion": "ejm-cli 0.1.0",
+  "gitCommit": "07a6e1ab6479bbee39ad345aa08200d42e5db1f4",
+  "workingTreeChanges": 0,
+  "build": "Built from a clean `git archive` export of 07a6e1ab6479bbee39ad345aa08200d42e5db1f4. Release build of the ejm-cli binary, with its `../ejm-harness` path dependencies resolved to a clean export of ejm-harness a96c9928a98045c79beff0ea832ff964fb2eac85.",
+  "binary": {
+    "path": "<clean-export>/target-cli/release/ejm-cli",
+    "modified": "2026-10-19T04:40:14.621Z",
+    "sha256": "2240ee093eb70911ff3dd47cc70d3f064ace3b00f7ee24b820cf15733446413f"
+  },
+  "captureDate": "2026-10-19T04:44:52.157Z",
+  "captureTool": {
+    "name": "@ejm/shots",
+    "version": "0.1.0",
+    "source": "scripts/capture-terminal.mjs"
+  },
+  "launch": "spawned directly in the pseudo-terminal",
+  "how": "Started the real ejm-cli TUI with a replay file of scripted tool calls (no assistant text) in a 100x30 terminal, typed one prompt and pressed Enter; the real read_file tool ran and the real binary refused write_file because the session only has read access.",
+  "results": {
+    "dark": {
+      "png": "tui-read-refused.dark.png",
+      "pixelWidth": 1880,
+      "pixelHeight": 1280,
+      "environment": {
+        "EJM_CLI_APPEARANCE": "dark",
+        "COLORFGBG": "15;0"
+      },
+      "exitCode": null,
+      "rawBytes": 4058,
+      "rawSha256": "ebc6229d85a46c9d9ebb8d31359c4711fc17d675ac249d9b9ab9dc596634cf82",
+      "verification": {
+        "transcriptMatch": "replayed",
+        "renderedTextEqualsEmulator": true
+      },
+      "transcript": " ejm-cli offline replay  ·  acme-api\n grants: read  ·  /private/tmp/acme-api  ·  ab88c52b\n you\n Add request logging to the order service\n\n done · read_file\n {\"path\":\"package.json\"}\n 1: {\n 2:   \"name\": \"acme-api\",\n 3:   \"version\": \"1.2.0\",\n 4:   \"scripts\": { \"start\": \"node src/server.mjs\" }\n 5: }\n\n sha256: 80dfc07e6ce1e3587bed40765eb5547fed7e4d6080b5bab896ec4295e01231af | 5 lines\n\n failed · write_file\n {\"content\":\"export const log = line => console.log(line);\\n\",\"path\":\"src/log.mjs\"}\n tool is not granted by this host\n\n\n\n\n\n\n\n 0 agents · models 0+0q · tools 0+0q · completed · 3 steps · 0 in / 0 out tokens\n╭ message ─────────────────────────────────────────────────────────────────────────────────────────╮\n│ › Describe a task…                                                                               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯\n Enter send · Ctrl+C stop/quit · Alt+Enter new line · Ctrl+K steer · Ctrl+S sessions"
+    },
+    "light": {
+      "png": "tui-read-refused.light.png",
+      "pixelWidth": 1880,
+      "pixelHeight": 1280,
+      "environment": {
+        "EJM_CLI_APPEARANCE": "light",
+        "COLORFGBG": "0;15"
+      },
+      "exitCode": null,
+      "rawBytes": 4032,
+      "rawSha256": "b60ced81364bd09f05448182fd1f13d1cf106e436fc98ce693ac4f6445c205c9",
+      "verification": {
+        "transcriptMatch": "replayed",
+        "renderedTextEqualsEmulator": true
+      },
+      "transcript": " ejm-cli offline replay  ·  acme-api\n grants: read  ·  /private/tmp/acme-api  ·  53c5dc9e\n you\n Add request logging to the order service\n\n done · read_file\n {\"path\":\"package.json\"}\n 1: {\n 2:   \"name\": \"acme-api\",\n 3:   \"version\": \"1.2.0\",\n 4:   \"scripts\": { \"start\": \"node src/server.mjs\" }\n 5: }\n\n sha256: 80dfc07e6ce1e3587bed40765eb5547fed7e4d6080b5bab896ec4295e01231af | 5 lines\n\n failed · write_file\n {\"content\":\"export const log = line => console.log(line);\\n\",\"path\":\"src/log.mjs\"}\n tool is not granted by this host\n\n\n\n\n\n\n\n 0 agents · models 0+0q · tools 0+0q · completed · 3 steps · 0 in / 0 out tokens\n╭ message ─────────────────────────────────────────────────────────────────────────────────────────╮\n│ › Describe a task…                                                                               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯\n Enter send · Ctrl+C stop/quit · Alt+Enter new line · Ctrl+K steer · Ctrl+S sessions"
+    }
+  }
+}

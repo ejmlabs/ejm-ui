@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>ejmlabs X kit</title>
+  <style>
+    @font-face{font-family:Manrope;src:url('fonts/Manrope-Variable.ttf') format('truetype');font-weight:200 800;font-display:swap}
+    :root{font-family:Manrope,sans-serif;color:#202721;background:#f6f5ef;accent-color:#29443b;scrollbar-color:#8a9a7b #e8ede3}
+    *{box-sizing:border-box}body{margin:0}::selection{background:#29443b;color:#f6f5ef}
+    main{max-width:1184px;margin:auto;padding:48px 32px 96px}header{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:64px}header img{width:190px;height:auto}
+    a{color:#29443b;text-underline-offset:5px;text-decoration-thickness:1px}a:hover{text-decoration-thickness:2px}a:focus-visible{outline:2px solid #29443b;outline-offset:5px}
+    h1{font-size:clamp(36px,5vw,64px);font-weight:600;letter-spacing:-.03em;line-height:1.1;margin:0 0 20px}h2{font-size:30px;font-weight:600;letter-spacing:-.02em;margin:0 0 14px}h3{font-size:18px;font-weight:600;margin:0 0 12px}p{max-width:65ch;line-height:1.7;margin:0 0 18px}.intro{margin-bottom:40px}.intro p{font-size:18px}
+    .opening{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(240px,1fr);gap:40px;align-items:start}.profile{border:1px solid #c4cfc0;overflow:hidden;border-radius:12px;background:#fff}.cover{display:block;width:100%;height:auto}.identity{position:relative;padding:72px 28px 30px}.avatar{position:absolute;width:120px;height:120px;left:24px;top:-60px;border-radius:50%;border:5px solid #fff}.identity h2{font-size:25px;margin:0}.handle{font-size:15px;color:#29443b;margin:2px 0 18px}.identity p:not(.handle){font-size:15px;line-height:1.65;margin-bottom:12px}.identity a{font-size:15px}.note{font-size:13px;line-height:1.6;color:#29443b;margin-top:12px}.actions{padding-top:4px}.actions a.download{display:block;padding:14px 18px;margin-bottom:12px;border:1px solid #29443b;border-radius:4px;font-size:15px;text-decoration:none;min-height:48px}.actions a.download:first-of-type{color:#f6f5ef;background:#29443b}.actions .detail{font-size:14px;margin-top:26px}.actions .detail p{margin-bottom:12px}
+    section{margin-top:80px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}figure{margin:0;min-width:0}figure>img{display:block;width:100%;height:auto;border-radius:4px}figcaption{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:13px;font-size:14px}.avatar-options{display:flex;gap:20px;align-items:center;margin-top:26px}.avatar-options img{display:block;width:84px;height:84px;border-radius:50%}.avatar-options p{font-size:14px;margin:0}.copy{display:grid;grid-template-columns:1fr 1fr;gap:40px}.copy p{font-size:17px}.copy .meta{font-size:13px;color:#29443b}.copy blockquote{margin:0;padding:0;line-height:1.7}
+    footer{border-top:1px solid #c4cfc0;margin-top:80px;padding-top:24px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:13px}footer p{margin:0}
+    @media(max-width:760px){main{padding:28px 20px 60px}header{margin-bottom:48px}header img{width:160px}header a{font-size:13px}.opening,.grid,.copy{grid-template-columns:1fr}.opening{gap:28px}.actions{padding-top:0}section{margin-top:60px}.identity{padding-left:20px;padding-right:20px}.avatar{left:16px;width:80px;height:80px;top:-40px}.identity{padding-top:56px}.copy{gap:24px}h2{font-size:26px}}
+  </style>
+</head>
+<body>
+<main>
+  <header><img src="source/logos/ejmlabs-primary.svg" alt="ejmlabs" width="2373" height="405"><a href="../ejmlabs-x-kit.zip" download>Download complete kit</a></header>
+  <div class="intro"><h1>ejmlabs on X</h1><p>The original identity, ready for a profile, a new experiment, or a useful thing worth sharing.</p></div>
+  <div class="opening">
+    <div>
+      <div class="profile">
+        <img class="cover" src="banners/sage-1500x500.png" alt="ejmlabs. Small experiments. Useful things. Ink logo on Sage with a soft symbol crop." width="1500" height="500">
+        <div class="identity">
+          <img class="avatar" src="avatars/sage-400.png" alt="ejmlabs symbol in Ink on Sage" width="400" height="400">
+          <h2>ejmlabs</h2><p class="handle">@ejmlabs</p>
+          <p>A one-person lab for small experiments, useful software, and open source tools.</p>
+          <a href="https://ejmlabs.com/">ejmlabs.com</a>
+        </div>
+      </div>
+      <p class="note">Profile mockup. Handle availability has not been checked.</p>
+    </div>
+    <aside class="actions" aria-label="Recommended uploads">
+      <h2>Start with Sage.</h2><p>The Sage pair keeps the profile consistent with the website. Forest is the alternate for dark contexts.</p>
+      <a class="download" href="UPLOAD-avatar.png" download>Download avatar · 400 × 400</a>
+      <a class="download" href="UPLOAD-header.png" download>Download header · 1500 × 500</a>
+      <div class="detail"><p><a href="UPLOAD-forest-avatar.png" download>Forest alternate avatar</a> · <a href="UPLOAD-forest-header.png" download>header</a></p><p><a href="profile-copy.md">Bio and pinned introduction drafts</a></p><p><a href="guides/banner-safe-area.png">Banner crop guide</a></p><p><a href="README.md">Upload and editing notes</a></p></div>
+    </aside>
+  </div>
+  <section aria-labelledby="variants"><h2 id="variants">Three ways to wear it.</h2><p>Sage leads; Forest is a rare accent. Use one pair for the profile. Keep the complete symbol in the avatar and let its larger form crop in the header.</p>
+    <div class="grid">
+      <figure><img src="banners/sage-1500x500.png" alt="Sage banner with Ink logo and a soft Paper symbol crop" width="1500" height="500" loading="lazy"><figcaption><span>Sage</span><span><a href="banners/sage-1500x500.png" download>PNG</a> · <a href="banners/sage-1500x500.svg" download>SVG</a></span></figcaption><div class="avatar-options"><img src="avatars/sage-400.png" alt="Sage avatar" width="400" height="400" loading="lazy"><p>Avatar: <a href="avatars/sage-400.png" download>400 px</a> · <a href="avatars/sage-1024.png" download>1024 px</a></p></div></figure>
+      <figure><img src="banners/forest-1500x500.png" alt="Forest banner with Paper logo and Sage motif" width="1500" height="500" loading="lazy"><figcaption><span>Forest, alternate</span><span><a href="banners/forest-1500x500.png" download>PNG</a> · <a href="banners/forest-1500x500.svg" download>SVG</a></span></figcaption><div class="avatar-options"><img src="avatars/forest-400.png" alt="Forest avatar" width="400" height="400" loading="lazy"><p>Avatar: <a href="avatars/forest-400.png" download>400 px</a> · <a href="avatars/forest-1024.png" download>1024 px</a></p></div></figure>
+      <figure><img src="banners/paper-1500x500.png" alt="Paper banner with original logo and Sage motif" width="1500" height="500" loading="lazy"><figcaption><span>Paper</span><span><a href="banners/paper-1500x500.png" download>PNG</a> · <a href="banners/paper-1500x500.svg" download>SVG</a></span></figcaption><div class="avatar-options"><img src="avatars/paper-400.png" alt="Paper avatar" width="400" height="400" loading="lazy"><p>Avatar: <a href="avatars/paper-400.png" download>400 px</a> · <a href="avatars/paper-1024.png" download>1024 px</a></p></div></figure>
+    </div>
+  </section>
+  <section aria-labelledby="posts"><h2 id="posts">A place to begin.</h2><p>A signature post and an editable project layout, both in 1600 × 900, in Sage first with the Paper and Forest versions as alternates. Replace the project placeholder before sharing.</p><div class="grid">
+    <figure><img src="posts/signature-sage-1600x900.png" alt="Small experiments. Useful things. Signature graphic on Sage." width="1600" height="900" loading="lazy"><figcaption><span>Signature, Sage</span><span><a href="posts/signature-sage-1600x900.png" download>PNG</a> · <a href="source/editable/signature-sage-1600x900.svg" download>Editable SVG</a></span></figcaption></figure>
+    <figure><img src="posts/project-template-sage-1600x900.png" alt="Project announcement layout on Sage with placeholder title and description" width="1600" height="900" loading="lazy"><figcaption><span>Project template, Sage</span><span><a href="posts/project-template-sage-1600x900.png" download>PNG</a> · <a href="source/editable/project-template-sage-1600x900.svg" download>Editable SVG</a></span></figcaption></figure>
+    <figure><img src="posts/signature-1600x900.png" alt="Small experiments. Useful things. Signature graphic on Paper." width="1600" height="900" loading="lazy"><figcaption><span>Signature, Paper</span><span><a href="posts/signature-1600x900.png" download>PNG</a> · <a href="source/editable/signature-1600x900.svg" download>Editable SVG</a></span></figcaption></figure>
+    <figure><img src="posts/project-template-1600x900.png" alt="Project announcement layout with placeholder title and description" width="1600" height="900" loading="lazy"><figcaption><span>Project template, Forest</span><span><a href="posts/project-template-1600x900.png" download>PNG</a> · <a href="source/editable/project-template-1600x900.svg" download>Editable SVG</a></span></figcaption></figure>
+  </div></section>
+  <section aria-labelledby="copy"><h2 id="copy">Words for the profile.</h2><div class="copy"><div><h3>Recommended bio</h3><blockquote><p>A one-person lab for small experiments, useful software, and open source tools.</p></blockquote><p class="meta">79 characters. Lab wording.</p></div><div><h3>Pinned introduction draft</h3><blockquote><p>Hi, this is ejmlabs: a one-person lab for small experiments, useful software, and open source tools. Follow along for ideas, process, and what gets built. Small experiments. Useful things.</p></blockquote><p class="meta">188 characters. Review before posting.</p></div></div></section>
+  <footer><p>Sage · Forest · Ink · Paper · Mist</p><a href="../ejmlabs-x-kit.zip" download>Download the complete X kit</a><p>Original artwork. Local fonts. Nothing published.</p></footer>
+</main>
+</body>
+</html>

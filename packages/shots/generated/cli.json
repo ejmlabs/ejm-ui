@@ -1,0 +1,610 @@
+{
+  "format": 1,
+  "pipeline": "avif-q55-e6-444;webp-smaller-of-lossless-and-q80;png-palette-q90",
+  "shots": {
+    "cli/run-hello": {
+      "meta": {
+        "product": "ejm-cli",
+        "kind": "screenshot",
+        "surface": "terminal",
+        "title": "ejm-cli",
+        "caption": "One turn without the TUI, printed to the terminal.",
+        "command": "ejm-cli --replay run \"Hello\"",
+        "version": "0.1.0",
+        "commit": "07a6e1ab6479bbee39ad345aa08200d42e5db1f4",
+        "date": "2026-10-19",
+        "how": "Typed the documented command ejm-cli --replay run \"Hello\" at a plain $ prompt in an 80x24 terminal and let it finish; the lines are the shell prompt, the typed command and the real output.",
+        "themes": [
+          "dark",
+          "light"
+        ],
+        "scale": 2
+      },
+      "themes": {
+        "dark": {
+          "source": {
+            "file": "cli/run-hello.dark.png",
+            "sha256": "544026b113513f4905669d49861c8dc7c044853113a978be9f99499a93f5aedd",
+            "width": 1520,
+            "height": 200,
+            "bytes": 10422
+          },
+          "width": 760,
+          "height": 100,
+          "widths": [
+            760,
+            1520
+          ],
+          "files": [
+            {
+              "file": "cli/run-hello.dark.760w.avif",
+              "format": "avif",
+              "width": 760,
+              "height": 100,
+              "bytes": 2018,
+              "sha256": "7c02c04b5632bb1dd82c1c477ae584de784b047f6f906572d7acb5e7b94ab9a3"
+            },
+            {
+              "file": "cli/run-hello.dark.760w.webp",
+              "format": "webp",
+              "width": 760,
+              "height": 100,
+              "bytes": 2258,
+              "sha256": "57f64e9bd2731a48722380b5f4aca68341ecc2b47446eb14b0fc1597f5040510"
+            },
+            {
+              "file": "cli/run-hello.dark.760w.png",
+              "format": "png",
+              "width": 760,
+              "height": 100,
+              "bytes": 2414,
+              "sha256": "bd6e3e316eae738cbf14e3737c5f35dd752709ec12e192a65fc76457da9e02ea"
+            },
+            {
+              "file": "cli/run-hello.dark.1520w.avif",
+              "format": "avif",
+              "width": 1520,
+              "height": 200,
+              "bytes": 3930,
+              "sha256": "4ee94dd7aefeb50676c2947bd047e6107e23ad23da9387453ae5644a911de58b"
+            },
+            {
+              "file": "cli/run-hello.dark.1520w.webp",
+              "format": "webp",
+              "width": 1520,
+              "height": 200,
+              "bytes": 2868,
+              "sha256": "0213b721990daf3ed0dbb23e73df8cb8efb1c8314d473f3ab8cc8fb6e7c61244"
+            },
+            {
+              "file": "cli/run-hello.dark.1520w.png",
+              "format": "png",
+              "width": 1520,
+              "height": 200,
+              "bytes": 3147,
+              "sha256": "99ed06cc835739a58458ba7f8e7fba7dfb72a48ed9ac6423236da7699cea14f7"
+            }
+          ]
+        },
+        "light": {
+          "source": {
+            "file": "cli/run-hello.light.png",
+            "sha256": "ffa0208e3a66ac51c9d03718fb3299feb2fce41cdd242ef4c293afea87e2ba8a",
+            "width": 1520,
+            "height": 200,
+            "bytes": 10324
+          },
+          "width": 760,
+          "height": 100,
+          "widths": [
+            760,
+            1520
+          ],
+          "files": [
+            {
+              "file": "cli/run-hello.light.760w.avif",
+              "format": "avif",
+              "width": 760,
+              "height": 100,
+              "bytes": 1945,
+              "sha256": "1d73b0dfbb27fc54579260cfdb0a5e3ff446fe75324edeb6529f6e6337566fc5"
+            },
+            {
+              "file": "cli/run-hello.light.760w.webp",
+              "format": "webp",
+              "width": 760,
+              "height": 100,
+              "bytes": 2252,
+              "sha256": "90b3d69ec64fb1c62db594003cd770bcf0f88c1b429918c504b435e5c940b605"
+            },
+            {
+              "file": "cli/run-hello.light.760w.png",
+              "format": "png",
+              "width": 760,
+              "height": 100,
+              "bytes": 2246,
+              "sha256": "114e7453af1df71a59cabb7590af61e8b3c2674c8b77bf2f41f1f189f089eae4"
+            },
+            {
+              "file": "cli/run-hello.light.1520w.avif",
+              "format": "avif",
+              "width": 1520,
+              "height": 200,
+              "bytes": 3913,
+              "sha256": "29c8063d529fd487d0986d8df94d8580ccfa861e544bb1d422d3ea2d8d83e8c4"
+            },
+            {
+              "file": "cli/run-hello.light.1520w.webp",
+              "format": "webp",
+              "width": 1520,
+              "height": 200,
+              "bytes": 2830,
+              "sha256": "74209e646282d3eabfdad34a4780838394296a1291b88d6c3ca7bbb38847bad5"
+            },
+            {
+              "file": "cli/run-hello.light.1520w.png",
+              "format": "png",
+              "width": 1520,
+              "height": 200,
+              "bytes": 3251,
+              "sha256": "5d46522053e190c1ec6f634945f6eefc479114358862a858269e45e4d334df68"
+            }
+          ]
+        }
+      }
+    },
+    "cli/tui-read-refused": {
+      "meta": {
+        "product": "ejm-cli",
+        "kind": "screenshot",
+        "surface": "terminal",
+        "title": "ejm-cli",
+        "caption": "A prompt sent in the TUI: the file read runs, and the write is refused because the session only has read access.",
+        "command": "<clean-export>/target-cli/release/ejm-cli --replay-file read-then-write.json --cwd /tmp/acme-api",
+        "version": "0.1.0",
+        "commit": "07a6e1ab6479bbee39ad345aa08200d42e5db1f4",
+        "date": "2026-10-19",
+        "how": "Started the real ejm-cli TUI with a replay file of scripted tool calls (no assistant text) in a 100x30 terminal, typed one prompt and pressed Enter; the real read_file tool ran and the real binary refused write_file because the session only has read access.",
+        "themes": [
+          "dark",
+          "light"
+        ],
+        "scale": 2
+      },
+      "themes": {
+        "dark": {
+          "source": {
+            "file": "cli/tui-read-refused.dark.png",
+            "sha256": "f1128efb43a98e8200082c974cdf8ec4f71242e576ca7c2541544e164a6d2961",
+            "width": 1880,
+            "height": 1280,
+            "bytes": 119811
+          },
+          "width": 940,
+          "height": 640,
+          "widths": [
+            940,
+            1880
+          ],
+          "files": [
+            {
+              "file": "cli/tui-read-refused.dark.940w.avif",
+              "format": "avif",
+              "width": 940,
+              "height": 640,
+              "bytes": 23180,
+              "sha256": "439d60e97089d74890a3eef298d98aeaa98eb7cc3879ea8ca8a79ecd6eb0bc95"
+            },
+            {
+              "file": "cli/tui-read-refused.dark.940w.webp",
+              "format": "webp",
+              "width": 940,
+              "height": 640,
+              "bytes": 29366,
+              "sha256": "710d65e0dde49141043cd6851b097824a7179a9c89372c8bba026f8a3a973ef1"
+            },
+            {
+              "file": "cli/tui-read-refused.dark.940w.png",
+              "format": "png",
+              "width": 940,
+              "height": 640,
+              "bytes": 30375,
+              "sha256": "af670132f8f1a2e0d61b68af3dc535e09bb7b5d9eed3d8fe9819cf94956d75a8"
+            },
+            {
+              "file": "cli/tui-read-refused.dark.1880w.avif",
+              "format": "avif",
+              "width": 1880,
+              "height": 1280,
+              "bytes": 41999,
+              "sha256": "dba2506140498fe81cb682a6c38e3f8664e0ce663a9d5f1473bec4605a1e60bd"
+            },
+            {
+              "file": "cli/tui-read-refused.dark.1880w.webp",
+              "format": "webp",
+              "width": 1880,
+              "height": 1280,
+              "bytes": 36290,
+              "sha256": "0862f58beca2819f11adf76b6eb2d70bb82d6a028c5a80b9fc434f480794fc42"
+            },
+            {
+              "file": "cli/tui-read-refused.dark.1880w.png",
+              "format": "png",
+              "width": 1880,
+              "height": 1280,
+              "bytes": 40676,
+              "sha256": "aa3fce04bd4a41ea2e3aff77bdd893ed878674159b7acc96cda67b840d50b1bf"
+            }
+          ]
+        },
+        "light": {
+          "source": {
+            "file": "cli/tui-read-refused.light.png",
+            "sha256": "6133af26de326a353ba111514fc2a53f7419b547c87945d64c9ca0d23404d181",
+            "width": 1880,
+            "height": 1280,
+            "bytes": 120045
+          },
+          "width": 940,
+          "height": 640,
+          "widths": [
+            940,
+            1880
+          ],
+          "files": [
+            {
+              "file": "cli/tui-read-refused.light.940w.avif",
+              "format": "avif",
+              "width": 940,
+              "height": 640,
+              "bytes": 23053,
+              "sha256": "cf7d8af3ac8721a65aea867d9587da79c7c7d3beea87f430e510613e8b737be8"
+            },
+            {
+              "file": "cli/tui-read-refused.light.940w.webp",
+              "format": "webp",
+              "width": 940,
+              "height": 640,
+              "bytes": 30574,
+              "sha256": "626e4d3ce49c6056298b47444927080fc62d554ef5c24a8b46a12568bf3bd494"
+            },
+            {
+              "file": "cli/tui-read-refused.light.940w.png",
+              "format": "png",
+              "width": 940,
+              "height": 640,
+              "bytes": 30544,
+              "sha256": "cf6bb76870054110d49e1f59641c2a6bea90284c242b8d095e378966a9c393f8"
+            },
+            {
+              "file": "cli/tui-read-refused.light.1880w.avif",
+              "format": "avif",
+              "width": 1880,
+              "height": 1280,
+              "bytes": 42064,
+              "sha256": "d523da56ed0deb22cdaf1ea880befe19086d80c6ac9ff6990c122cb0af066450"
+            },
+            {
+              "file": "cli/tui-read-refused.light.1880w.webp",
+              "format": "webp",
+              "width": 1880,
+              "height": 1280,
+              "bytes": 36282,
+              "sha256": "7e56e70da8683c0367a56cf7b0b8ceb9e29fa2abb12c797a1c15cccc0eab29ba"
+            },
+            {
+              "file": "cli/tui-read-refused.light.1880w.png",
+              "format": "png",
+              "width": 1880,
+              "height": 1280,
+              "bytes": 41383,
+              "sha256": "d6e022cbdbc7dbf1cbd3cf217ee62ab0ace63df055d20b4940a27996eef28217"
+            }
+          ]
+        }
+      }
+    },
+    "cli/tui-replay": {
+      "meta": {
+        "product": "ejm-cli",
+        "kind": "screenshot",
+        "surface": "terminal",
+        "title": "ejm-cli",
+        "caption": "The offline demo: type a prompt and the replay provider answers.",
+        "command": "<clean-export>/target-cli/release/ejm-cli --replay --cwd /tmp/acme-api",
+        "version": "0.1.0",
+        "commit": "07a6e1ab6479bbee39ad345aa08200d42e5db1f4",
+        "date": "2026-10-19",
+        "how": "Started the real ejm-cli TUI with the documented offline demo (--replay) in an 80x24 terminal, typed a prompt and pressed Enter; the replay provider echoes the prompt.",
+        "themes": [
+          "dark",
+          "light"
+        ],
+        "scale": 2
+      },
+      "themes": {
+        "dark": {
+          "source": {
+            "file": "cli/tui-replay.dark.png",
+            "sha256": "0a058da1d7833c02cbd9f557bf931d1e778cf759ac8b7e452f30452b3bb75cda",
+            "width": 1520,
+            "height": 1040,
+            "bytes": 63101
+          },
+          "width": 760,
+          "height": 520,
+          "widths": [
+            760,
+            1520
+          ],
+          "files": [
+            {
+              "file": "cli/tui-replay.dark.760w.avif",
+              "format": "avif",
+              "width": 760,
+              "height": 520,
+              "bytes": 10641,
+              "sha256": "9bbf751ea99ff9f882bb1cc5e61dace0c09dcbe60f3fc6fe2819dd0fd50ab54f"
+            },
+            {
+              "file": "cli/tui-replay.dark.760w.webp",
+              "format": "webp",
+              "width": 760,
+              "height": 520,
+              "bytes": 13436,
+              "sha256": "d45837ee18d8fc08a900b9f3db1c54b645711455c36016c80a1620d6eb9a636f"
+            },
+            {
+              "file": "cli/tui-replay.dark.760w.png",
+              "format": "png",
+              "width": 760,
+              "height": 520,
+              "bytes": 14496,
+              "sha256": "ceb0ce5921e6ffcff2c01c63e6a6ca87bdd8dfe02904717b15cbddd394ca0fd1"
+            },
+            {
+              "file": "cli/tui-replay.dark.1520w.avif",
+              "format": "avif",
+              "width": 1520,
+              "height": 1040,
+              "bytes": 17671,
+              "sha256": "1fdc5127e1ac7b1fd5e9049a05a6f8b038d1c80b495264ca1fb1bffe91486b1b"
+            },
+            {
+              "file": "cli/tui-replay.dark.1520w.webp",
+              "format": "webp",
+              "width": 1520,
+              "height": 1040,
+              "bytes": 19594,
+              "sha256": "9a4b695c9f749b24819da057313e16dadd7d72b5639e053241730b340ba89a03"
+            },
+            {
+              "file": "cli/tui-replay.dark.1520w.png",
+              "format": "png",
+              "width": 1520,
+              "height": 1040,
+              "bytes": 20239,
+              "sha256": "55c5ce0a8e17af41aceaa4b7a4c207e1db61767129b0589310e06ee73b35882a"
+            }
+          ]
+        },
+        "light": {
+          "source": {
+            "file": "cli/tui-replay.light.png",
+            "sha256": "e703cfafdeafbc35ae8e9cb6beabfb1899d6743bd164166c33eedfbd72ceea17",
+            "width": 1520,
+            "height": 1040,
+            "bytes": 63527
+          },
+          "width": 760,
+          "height": 520,
+          "widths": [
+            760,
+            1520
+          ],
+          "files": [
+            {
+              "file": "cli/tui-replay.light.760w.avif",
+              "format": "avif",
+              "width": 760,
+              "height": 520,
+              "bytes": 10530,
+              "sha256": "92d258b957b840bb36218800f791cc0f8bfc713c7890e5985de1bf2258eee895"
+            },
+            {
+              "file": "cli/tui-replay.light.760w.webp",
+              "format": "webp",
+              "width": 760,
+              "height": 520,
+              "bytes": 13828,
+              "sha256": "88f595278cfedcf217fb5a0eb3da1de6bd4ff23c1875b2e0719b1b4a072b8d9d"
+            },
+            {
+              "file": "cli/tui-replay.light.760w.png",
+              "format": "png",
+              "width": 760,
+              "height": 520,
+              "bytes": 14550,
+              "sha256": "30c7fcfdfb63a9e833a799dfc6336433c4f240cbbdc9d5b6678ae71809da2486"
+            },
+            {
+              "file": "cli/tui-replay.light.1520w.avif",
+              "format": "avif",
+              "width": 1520,
+              "height": 1040,
+              "bytes": 17781,
+              "sha256": "4b49beda09565c545317240672dd595110f7876dfb229b284cd101a7c83891cb"
+            },
+            {
+              "file": "cli/tui-replay.light.1520w.webp",
+              "format": "webp",
+              "width": 1520,
+              "height": 1040,
+              "bytes": 19960,
+              "sha256": "7d4a08f57eb2576a2b92032e5c8a509ff011ddb217bce76768cac500b66c9c76"
+            },
+            {
+              "file": "cli/tui-replay.light.1520w.png",
+              "format": "png",
+              "width": 1520,
+              "height": 1040,
+              "bytes": 20889,
+              "sha256": "13e6962e9579c425ab3f6f0621a0d9045f98ea6fec627b9083aaa0181d6136b5"
+            }
+          ]
+        }
+      }
+    },
+    "cli/tui-write-granted": {
+      "meta": {
+        "product": "ejm-cli",
+        "kind": "screenshot",
+        "surface": "terminal",
+        "title": "ejm-cli",
+        "caption": "The same prompt with --allow-write: the header shows the grant and the file is written.",
+        "command": "<clean-export>/target-cli/release/ejm-cli --replay-file read-then-write-granted.json --allow-write --cwd /tmp/acme-api",
+        "version": "0.1.0",
+        "commit": "07a6e1ab6479bbee39ad345aa08200d42e5db1f4",
+        "date": "2026-10-19",
+        "how": "Same session as tui-read-refused but started with --allow-write: the header shows the write grant and the real write_file tool creates src/log.mjs in the demo project.",
+        "themes": [
+          "dark",
+          "light"
+        ],
+        "scale": 2
+      },
+      "themes": {
+        "dark": {
+          "source": {
+            "file": "cli/tui-write-granted.dark.png",
+            "sha256": "1a2ba0f6f47b2d171371d3beda2d4d680469a67b5a3364bd98726c0a1cc0f362",
+            "width": 1880,
+            "height": 1280,
+            "bytes": 125527
+          },
+          "width": 940,
+          "height": 640,
+          "widths": [
+            940,
+            1880
+          ],
+          "files": [
+            {
+              "file": "cli/tui-write-granted.dark.940w.avif",
+              "format": "avif",
+              "width": 940,
+              "height": 640,
+              "bytes": 22621,
+              "sha256": "7465ccf9ee4d80e44a51509023cb2fa670242c5b2d97a075d22c8ca3ebfe8589"
+            },
+            {
+              "file": "cli/tui-write-granted.dark.940w.webp",
+              "format": "webp",
+              "width": 940,
+              "height": 640,
+              "bytes": 28154,
+              "sha256": "60dd64e3a44714b37c20355bf0dea201b55a1059bc07d4a0280838d9a3fd33b1"
+            },
+            {
+              "file": "cli/tui-write-granted.dark.940w.png",
+              "format": "png",
+              "width": 940,
+              "height": 640,
+              "bytes": 29929,
+              "sha256": "d99bbef3b2d61a345ebf6c607f1d74cc4c859f8037f4cb3ec0489759e534d981"
+            },
+            {
+              "file": "cli/tui-write-granted.dark.1880w.avif",
+              "format": "avif",
+              "width": 1880,
+              "height": 1280,
+              "bytes": 42603,
+              "sha256": "e9e5d5c6e17488fbb067139667cba2ec914593df70b059bc8f9f0fee837d9067"
+            },
+            {
+              "file": "cli/tui-write-granted.dark.1880w.webp",
+              "format": "webp",
+              "width": 1880,
+              "height": 1280,
+              "bytes": 35486,
+              "sha256": "d66a0923b3b3001304f4e7ce66ade72b8f44e6e482f3d46699a5c279d170e049"
+            },
+            {
+              "file": "cli/tui-write-granted.dark.1880w.png",
+              "format": "png",
+              "width": 1880,
+              "height": 1280,
+              "bytes": 42343,
+              "sha256": "fe4e6539d1442c73cb2e795693c4d6a8f6c15e3b0ac3b1ed43ea0a7e4977d1a7"
+            }
+          ]
+        },
+        "light": {
+          "source": {
+            "file": "cli/tui-write-granted.light.png",
+            "sha256": "0cf9a4b6298f1359f8d11c9dee07ba8cee975e412116ccf3c63e44b8b64dfb1c",
+            "width": 1880,
+            "height": 1280,
+            "bytes": 125512
+          },
+          "width": 940,
+          "height": 640,
+          "widths": [
+            940,
+            1880
+          ],
+          "files": [
+            {
+              "file": "cli/tui-write-granted.light.940w.avif",
+              "format": "avif",
+              "width": 940,
+              "height": 640,
+              "bytes": 22701,
+              "sha256": "c8b3adb047232a3d46a0d7e41fa0adc6e24a65521c0fefa20165c7c921cb5302"
+            },
+            {
+              "file": "cli/tui-write-granted.light.940w.webp",
+              "format": "webp",
+              "width": 940,
+              "height": 640,
+              "bytes": 29146,
+              "sha256": "8d58bbf252db4e15a66ca12dda48c97025bb18b7c562f60bee68a6589f34a901"
+            },
+            {
+              "file": "cli/tui-write-granted.light.940w.png",
+              "format": "png",
+              "width": 940,
+              "height": 640,
+              "bytes": 29540,
+              "sha256": "5806fc259b38388b7ec93ebb1516576003b3ac63880cea9ad16c275eca1b4238"
+            },
+            {
+              "file": "cli/tui-write-granted.light.1880w.avif",
+              "format": "avif",
+              "width": 1880,
+              "height": 1280,
+              "bytes": 42176,
+              "sha256": "d6c1913e40e80e21874840ce6214159132ca653c0041055b50af15c93105db8d"
+            },
+            {
+              "file": "cli/tui-write-granted.light.1880w.webp",
+              "format": "webp",
+              "width": 1880,
+              "height": 1280,
+              "bytes": 35476,
+              "sha256": "1761bbf83e9bf71459c504abc3fcc603252f167ce1bd2fdfe1d4f5d63aa079ed"
+            },
+            {
+              "file": "cli/tui-write-granted.light.1880w.png",
+              "format": "png",
+              "width": 1880,
+              "height": 1280,
+              "bytes": 42835,
+              "sha256": "6bb38cdb1790c18c6f0c8c70c43af6c997b312bb0213b7d1601edbceca5e9c6c"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

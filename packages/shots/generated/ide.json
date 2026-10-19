@@ -1,0 +1,91 @@
+{
+  "format": 1,
+  "pipeline": "avif-q55-e6-444;webp-smaller-of-lossless-and-q80;png-palette-q90",
+  "shots": {
+    "ide/workspace-launch": {
+      "meta": {
+        "product": "ejm-ide",
+        "kind": "screenshot",
+        "surface": "window",
+        "title": "ejm-ide",
+        "caption": "ejm-ide on launch: the project tree, orders.rs from the harbor sample with syntax colors, and Edi's chat pane before a model is connected.",
+        "command": "Screenshot of the running ejm-ide desktop app window, captured with macOS desktop control",
+        "version": "0.1.0",
+        "commit": "bde96726270afe16777a3ae6461064367ce4d204",
+        "date": "2026-10-19",
+        "how": "Launched the debug build of the desktop app with the harbor sample as the workspace, switched nothing, clicked nothing and typed nothing, then captured the window; the window shows its launch state with no model connected, so no chat turn, tool call or diff appears.",
+        "themes": [
+          "dark"
+        ],
+        "scale": 2
+      },
+      "themes": {
+        "dark": {
+          "source": {
+            "file": "ide/workspace-launch.dark.png",
+            "sha256": "047de89050780c95b06bbd4b32ba6663789f20212c8b1e342d4db19d995a400d",
+            "width": 2880,
+            "height": 1900,
+            "bytes": 459951
+          },
+          "width": 1440,
+          "height": 950,
+          "widths": [
+            1440,
+            2880
+          ],
+          "files": [
+            {
+              "file": "ide/workspace-launch.dark.1440w.avif",
+              "format": "avif",
+              "width": 1440,
+              "height": 950,
+              "bytes": 30127,
+              "sha256": "6d9adb5ef799323828895e02d553cdd9364bf33a632d5d29771465cc733c614b"
+            },
+            {
+              "file": "ide/workspace-launch.dark.1440w.webp",
+              "format": "webp",
+              "width": 1440,
+              "height": 950,
+              "bytes": 43786,
+              "sha256": "dec52736f4b040f86038fb7c44e1ea2424131431de46e3e664a330a2a8bcbc9d"
+            },
+            {
+              "file": "ide/workspace-launch.dark.1440w.png",
+              "format": "png",
+              "width": 1440,
+              "height": 950,
+              "bytes": 67136,
+              "sha256": "04d51654ffc52ce12f64abcb92ce1912dff6efd97b514bb0c6c9cbf37e83df74"
+            },
+            {
+              "file": "ide/workspace-launch.dark.2880w.avif",
+              "format": "avif",
+              "width": 2880,
+              "height": 1900,
+              "bytes": 57410,
+              "sha256": "e49f3c315b728d07a5130c46e61308ed59aca0e23a679a57e31fc4e01a636217"
+            },
+            {
+              "file": "ide/workspace-launch.dark.2880w.webp",
+              "format": "webp",
+              "width": 2880,
+              "height": 1900,
+              "bytes": 96392,
+              "sha256": "059a99fe4ba66c0c1ddb7c347f637fd9753b731836eff7871528477f1fe7f880"
+            },
+            {
+              "file": "ide/workspace-launch.dark.2880w.png",
+              "format": "png",
+              "width": 2880,
+              "height": 1900,
+              "bytes": 94796,
+              "sha256": "e01356566471fee0e8941e40b2bcc7f5659f29dac41bf55bd32676bc54c8186d"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,2 @@
+(function(w,d){var t,m;try{m=/[?&]theme=(light|dark)(&|$)/.exec(w.location.search);t=m?m[1]:/(^|\.)ejmlabs\.com$/.test(w.location.hostname)?((/(^|;\s*)ejm-theme=(light|dark)(;|$)/.exec(d.cookie)||[])[2]):w.localStorage.getItem('ejm-theme')}catch(e){}
+if(t!=='light'&&t!=='dark')t=w.matchMedia&&w.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';d.documentElement.dataset.theme=t})(window,document)

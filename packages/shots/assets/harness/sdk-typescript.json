@@ -1,0 +1,66 @@
+{
+  "product": "harness",
+  "name": "sdk-typescript",
+  "title": "ejm-harness",
+  "caption": "The TypeScript example from the README, running against the Rust worker.",
+  "command": "node examples/sdk_typescript.mjs",
+  "workingDirectory": "<clean-export>/ejm-harness",
+  "terminal": {
+    "cols": 80,
+    "rows": 24,
+    "rowsDrawn": "to the last line of text",
+    "font": "IBM Plex Mono 500, 15px",
+    "colorScheme": "@ejm/tokens generated/terminal/ejmlabs-<theme>"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "productVersion": "ejm-harness 0.1.0",
+  "gitCommit": "a96c9928a98045c79beff0ea832ff964fb2eac85",
+  "workingTreeChanges": 0,
+  "build": "Built from a clean `git archive` export of a96c9928a98045c79beff0ea832ff964fb2eac85. Release build of the ejm-harness-worker binary. sdk/typescript/dist and the Python SDK are the committed files.",
+  "binary": {
+    "path": "<clean-export>/target-harness/release/ejm-harness-worker",
+    "modified": "2026-10-19T04:40:00.966Z",
+    "sha256": "52fac1e957eaa18d996505f4c68d92bbc259467c905ea4a77768dd72874e55d6"
+  },
+  "captureDate": "2026-10-19T04:45:13.052Z",
+  "captureTool": {
+    "name": "@ejm/shots",
+    "version": "0.1.0",
+    "source": "scripts/capture-terminal.mjs"
+  },
+  "launch": "typed into /bin/sh with the prompt \"$ \" and ejm-harness-worker on PATH",
+  "how": "Typed the documented TypeScript example, node examples/sdk_typescript.mjs, at a plain $ prompt from the clean ejm-harness export; the SDK starts the real Rust worker with its default echo provider.",
+  "results": {
+    "dark": {
+      "png": "sdk-typescript.dark.png",
+      "pixelWidth": 1520,
+      "pixelHeight": 240,
+      "environment": {},
+      "exitCode": null,
+      "rawBytes": 87,
+      "rawSha256": "4de213374ee69b63dfadedb0cb7451de15cea3ff6ef37855bc0f4b14e3148f26",
+      "verification": {
+        "transcriptMatch": "exact",
+        "renderedTextEqualsEmulator": true
+      },
+      "transcript": "$ node examples/sdk_typescript.mjs\nDemo: Hello from ejm-harness\ncompleted\n$"
+    },
+    "light": {
+      "png": "sdk-typescript.light.png",
+      "pixelWidth": 1520,
+      "pixelHeight": 240,
+      "environment": {},
+      "exitCode": null,
+      "rawBytes": 87,
+      "rawSha256": "4de213374ee69b63dfadedb0cb7451de15cea3ff6ef37855bc0f4b14e3148f26",
+      "verification": {
+        "transcriptMatch": "exact",
+        "renderedTextEqualsEmulator": true
+      },
+      "transcript": "$ node examples/sdk_typescript.mjs\nDemo: Hello from ejm-harness\ncompleted\n$"
+    }
+  }
+}

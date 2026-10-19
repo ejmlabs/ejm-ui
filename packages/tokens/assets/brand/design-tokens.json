@@ -1,0 +1,174 @@
+{
+  "name": "ejmlabs",
+  "version": "1.0.0",
+  "source": {
+    "file": "reference/ejmlabs-brand-guide.pdf",
+    "pages": 6,
+    "edition": "October 2026, version 1.0"
+  },
+  "color": {
+    "sage": {
+      "value": "#8A9A7B",
+      "source": "PDF page 3"
+    },
+    "forest": {
+      "value": "#29443B",
+      "source": "PDF page 3"
+    },
+    "ink": {
+      "value": "#202721",
+      "source": "PDF page 3"
+    },
+    "paper": {
+      "value": "#F6F5EF",
+      "source": "PDF page 3"
+    },
+    "mist": {
+      "value": "#E8EDE3",
+      "source": "PDF page 3"
+    },
+    "white": {
+      "value": "#FFFFFF",
+      "source": "PDF page 3"
+    }
+  },
+  "font": {
+    "sans": {
+      "family": "Manrope",
+      "file": "fonts/Manrope-Variable.ttf",
+      "weightRange": [
+        200,
+        800
+      ],
+      "bodyWeight": 400,
+      "headingWeight": 600,
+      "source": "PDF page 4; full font from Google Fonts",
+      "webFile": "fonts/Manrope-Variable.woff2",
+      "fallback": {
+        "family": "Manrope Fallback",
+        "basedOn": [
+          "Arial",
+          "Arial Bold"
+        ],
+        "sizeAdjust": {
+          "400": "104.27%",
+          "600": "99.73%"
+        }
+      }
+    },
+    "mono": {
+      "family": "IBM Plex Mono",
+      "file": "fonts/IBMPlexMono-Medium.ttf",
+      "weight": 500,
+      "source": "PDF page 4",
+      "webFile": "fonts/IBMPlexMono-Medium.woff2",
+      "fallback": {
+        "family": "IBM Plex Mono Fallback",
+        "basedOn": [
+          "Courier New"
+        ],
+        "sizeAdjust": "99.98%"
+      }
+    }
+  },
+  "typography": {
+    "display": {
+      "size": 48,
+      "lineHeight": 54,
+      "family": "sans",
+      "weight": 600
+    },
+    "heading": {
+      "size": 32,
+      "lineHeight": 40,
+      "family": "sans",
+      "weight": 600
+    },
+    "body": {
+      "size": 16,
+      "lineHeight": 26,
+      "family": "sans",
+      "weight": 400
+    },
+    "caption": {
+      "size": 14,
+      "lineHeight": 20,
+      "family": "sans",
+      "weight": 400
+    },
+    "technical": {
+      "size": 12,
+      "lineHeight": 18,
+      "family": "mono",
+      "weight": 500
+    },
+    "source": "PDF page 4; all dimensions in CSS px"
+  },
+  "logo": {
+    "name": "ejmlabs",
+    "case": "lowercase",
+    "fullLogoParts": [
+      "symbol",
+      "wordmark"
+    ],
+    "fullLogoClearspace": "symbol height / 2 on every side",
+    "symbolClearspace": "symbol width / 4 on every side",
+    "fullLogoSmallSizeShown": 180,
+    "symbolSmallSizeShown": 24,
+    "browserIcon": 16,
+    "nativeBounds": [
+      -5.062853648124532e-08,
+      -8.959469755751015e-07,
+      2373.014489051414,
+      405.46747382342966
+    ],
+    "nativeSymbolBounds": [
+      -5.062853648124532e-08,
+      12.164022348587146,
+      417.5479035991088,
+      393.3034738198345
+    ],
+    "source": "PDF page 2; shown sizes are examples, not explicit hard minimums"
+  },
+  "spacing": {
+    "unit": "px",
+    "values": [
+      4,
+      8,
+      12,
+      16,
+      24,
+      32,
+      48,
+      64,
+      96,
+      128
+    ],
+    "source": "Web kit addition"
+  },
+  "radius": {
+    "small": 4,
+    "medium": 12,
+    "large": 24,
+    "pill": 999,
+    "unit": "px",
+    "source": "Web kit addition"
+  },
+  "motion": {
+    "ambientCycleMs": 32000,
+    "transitionMs": 180,
+    "easingAmbient": "linear",
+    "easingInterface": "cubic-bezier(0.2, 0.7, 0.3, 1)",
+    "reducedMotion": "Show a static composition",
+    "pauseWhenHidden": true,
+    "maximumCanvasPixelRatio": 2,
+    "source": "Web kit addition for calm mathematical motion"
+  },
+  "layout": {
+    "contentMaxWidth": 1200,
+    "gutterMobile": 24,
+    "gutterDesktop": 48,
+    "unit": "px",
+    "source": "Web kit addition"
+  }
+}

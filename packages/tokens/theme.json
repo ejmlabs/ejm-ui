@@ -1,0 +1,203 @@
+{
+  "name": "ejmlabs ui theme",
+  "version": "1.0.0",
+  "about": "One theme for every ejmlabs interface that is not a marketing page: desktop apps, terminal apps, editors and terminals. Edit this file, then run node scripts/build-ui.mjs. Every other file in ui/ is generated from it.",
+  "source": "Reconciled from the ejm-ide theme (theme.css and editor-theme.ts) and the ejm-cli terminal palettes (render.rs), on the ejmlabs palette: Sage 8A9A7B, Forest 29443B, Ink 202721, Paper F6F5EF, Mist E8EDE3. Status, syntax and hue colors are kit additions; the brand guide defines none.",
+  "themes": {
+    "dark": {
+      "neutral": ["131614", "171C18", "1C211D", "202721", "262C27", "2A322C", "313A33", "3B453D", "465349", "57665B", "6A7C6C", "849682", "A8B4A2", "C9CEC0", "E3E5DC", "F6F5EF"],
+      "roles": {
+        "ground": "131614",
+        "panel": "171C18",
+        "editor": "1C211D",
+        "raised": "262C27",
+        "overlay": "2A322C",
+        "hover": "3B453D",
+        "line": "313A33",
+        "line-strong": "465349",
+        "text": "E3E5DC",
+        "text-strong": "F6F5EF",
+        "text-muted": "A8B4A2",
+        "text-subtle": "849682",
+        "primary": "8A9A7B",
+        "on-primary": "202721",
+        "focus": "8A9A7B",
+        "accent": "B8C6AA",
+        "accent-strong": "DBE4D2",
+        "tint-1": "263A31",
+        "tint-2": "2F4A3E",
+        "tint-3": "355445",
+        "error": "EEA0A0",
+        "warning": "D7B87C",
+        "success": "93BA8B",
+        "special": "B7A6E8",
+        "info": "8CB5EB",
+        "control-border": "6A7C6C"
+      },
+      "hues": ["87AFF7", "BA9CE4", "80BAA6", "D7B67C", "D3959C", "8DBDC8"],
+      "syntax": {
+        "comment": "858B95",
+        "keyword": "CF8E6D",
+        "string": "9DBB80",
+        "number": "AAC2E8",
+        "type": "B7A6E8",
+        "type-parameter": "C1A8DA",
+        "function": "8CB5EB",
+        "macro": "B5B980",
+        "parameter": "C9B394",
+        "property": "B9A4CB",
+        "constant": "C5AB88",
+        "namespace": "A8B9C9",
+        "identifier": "D7DAE0",
+        "delimiter": "C5CAD4"
+      },
+      "ansi": {
+        "black": "262C27", "red": "EEA0A0", "green": "93BA8B", "yellow": "D7B87C",
+        "blue": "8CB5EB", "magenta": "B7A6E8", "cyan": "8DBDC8", "white": "C9CEC0",
+        "bright-black": "57665B", "bright-red": "F4B8B8", "bright-green": "AED0A6", "bright-yellow": "E6CF9F",
+        "bright-blue": "AECBF2", "bright-magenta": "CFC2F0", "bright-cyan": "ADDBE5", "bright-white": "F6F5EF"
+      }
+    },
+    "light": {
+      "neutral": ["FDFDFC", "FBFBF8", "FAF9F5", "F8F7F2", "F5F4EF", "F2F3EC", "ECEFE6", "E3EBDF", "DBE5D7", "CFD5CE", "A2B0A4", "67796C", "4D5B51", "38413A", "282F29", "202721"],
+      "roles": {
+        "ground": "FDFDFC",
+        "panel": "FBFBF8",
+        "editor": "FAF9F5",
+        "raised": "F5F4EF",
+        "overlay": "F2F3EC",
+        "hover": "E3EBDF",
+        "line": "ECEFE6",
+        "line-strong": "D3D9CE",
+        "text": "282F29",
+        "text-strong": "202721",
+        "text-muted": "4D5B51",
+        "text-subtle": "67796C",
+        "primary": "8A9A7B",
+        "on-primary": "202721",
+        "focus": "29443B",
+        "accent": "29443B",
+        "accent-strong": "1B2E27",
+        "tint-1": "E3EBDF",
+        "tint-2": "D3E0CF",
+        "tint-3": "C5D6C0",
+        "error": "A63A3A",
+        "warning": "8A5A12",
+        "success": "2F6B3A",
+        "special": "5B4A96",
+        "info": "2563A8",
+        "control-border": "7D877F"
+      },
+      "hues": ["2F5D8F", "6B4AA3", "2F7A60", "8A6516", "A24A58", "2C6F80"],
+      "syntax": {
+        "comment": "66706A",
+        "keyword": "9A4A22",
+        "string": "4F7A28",
+        "number": "2F5F9A",
+        "type": "6A4BB0",
+        "type-parameter": "7A4FA0",
+        "function": "2563A8",
+        "macro": "6F6F1D",
+        "parameter": "8A6A35",
+        "property": "7A5A9A",
+        "constant": "8C6A2E",
+        "namespace": "4A6A8A",
+        "identifier": "202721",
+        "delimiter": "4C574E"
+      },
+      "ansi": {
+        "black": "202721", "red": "A63A3A", "green": "2F6B3A", "yellow": "8A5A12",
+        "blue": "2563A8", "magenta": "6A4BB0", "cyan": "2C6F80", "white": "CFD5CE",
+        "bright-black": "67796C", "bright-red": "A63A3A", "bright-green": "2F6B3A", "bright-yellow": "8A5A12",
+        "bright-blue": "2563A8", "bright-magenta": "6A4BB0", "bright-cyan": "2C6F80", "bright-white": "FDFDFC"
+      }
+    }
+  },
+  "contrast": {
+    "note": "Minimum ratios the generator enforces. Text roles must reach 4.5:1 on every surface they appear on; subtle text and borders only need 3:1.",
+    "text": ["text", "text-strong", "text-muted", "accent", "error", "warning", "success", "special", "info"],
+    "controlBorder": { "role": "control-border", "min": 3, "surfaces": ["ground", "panel", "editor", "raised"] },
+    "surfaces": ["ground", "panel", "editor", "raised", "overlay"],
+    "syntaxMin": 4.5,
+    "subtleMin": 3,
+    "web": {
+      "note": "Gates for every web band (Paper, Mist, Sage, Ink) in both themes. text: fg, muted, link, status and on-colors on their grounds. large: link-large, for display type only. control: control borders against the ground and the field. focus: the focus ring. graphic: the six hues, as chart marks. line: hairlines only need to be visible, they do not carry meaning alone, so they are held to 1.4 and not 3.",
+      "text": 4.5,
+      "large": 3,
+      "control": 3,
+      "focus": 3,
+      "graphic": 3,
+      "line": 1.4,
+      "noHues": ["sage"]
+    }
+  },
+  "web": {
+    "note": "Web bands. Every band sets the same variables, so a component only ever reads ground, fg, muted, line and the rest. A value is brand.NAME, light.ROLE or dark.ROLE (a role of the ui theme above), light.hue1 to hue6, mix(A,B,N) for N percent of A over B, or a literal. A band with no dark entry is the same in both themes: Sage always stays Sage, Ink always stays Ink. Sage text is Ink only: Ink on Sage is the one pair that reaches 4.5:1, so muted text and links on Sage are Ink too, and Forest on Sage (3.5:1) is allowed for large type only (link-large).",
+    "keys": ["scheme", "ground", "fg", "muted", "line", "tone", "field", "link", "linkLarge", "control", "focus", "primary", "onPrimary", "primaryHover", "onPrimaryHover", "code", "onCode", "success", "warn", "danger", "onDanger", "info", "hues"],
+    "elevation": {
+      "note": "Three levels, used only by product windows, menus and overlays. {ink/10} is Ink at 10 percent, {black/40} black at 40 percent, {paper/6} Paper at 6 percent. The dark values are deeper and add a faint top edge of light so a window still separates from a dark ground.",
+      "light": {
+        "rest": "0 1px 2px {ink/10}, 0 8px 16px -8px {ink/18}",
+        "raised": "0 2px 4px {ink/8}, 0 12px 24px -8px {ink/18}, 0 24px 48px -24px {ink/24}",
+        "float": "0 4px 8px {ink/8}, 0 24px 48px -12px {ink/22}, 0 48px 96px -32px {ink/34}"
+      },
+      "dark": {
+        "rest": "inset 0 1px 0 {paper/6}, 0 1px 2px {black/40}, 0 8px 16px -8px {black/55}",
+        "raised": "inset 0 1px 0 {paper/8}, 0 2px 4px {black/35}, 0 12px 24px -8px {black/55}, 0 24px 48px -24px {black/65}",
+        "float": "inset 0 1px 0 {paper/10}, 0 4px 8px {black/35}, 0 24px 48px -12px {black/60}, 0 48px 96px -32px {black/70}"
+      }
+    },
+    "bands": {
+      "paper": {
+        "light": {
+          "scheme": "light", "ground": "brand.paper", "fg": "brand.ink", "muted": "mix(brand.ink,brand.paper,72)", "line": "mix(brand.ink,brand.paper,22)",
+          "tone": "brand.mist", "field": "brand.white", "link": "brand.forest", "linkLarge": "brand.forest", "control": "light.control-border", "focus": "brand.forest",
+          "primary": "brand.sage", "onPrimary": "brand.ink", "primaryHover": "brand.forest", "onPrimaryHover": "brand.paper",
+          "code": "brand.forest", "onCode": "brand.paper",
+          "success": "light.success", "warn": "light.warning", "danger": "light.error", "onDanger": "brand.paper", "info": "light.info", "hues": "light"
+        },
+        "dark": {
+          "scheme": "dark", "ground": "dark.ground", "fg": "dark.text", "muted": "dark.text-muted", "line": "dark.line-strong",
+          "tone": "dark.raised", "field": "dark.editor", "link": "dark.accent", "linkLarge": "dark.accent", "control": "dark.control-border", "focus": "dark.focus",
+          "primary": "brand.sage", "onPrimary": "brand.ink", "primaryHover": "mix(brand.sage,brand.paper,70)", "onPrimaryHover": "brand.ink",
+          "code": "dark.editor", "onCode": "dark.text",
+          "success": "dark.success", "warn": "dark.warning", "danger": "dark.error", "onDanger": "brand.ink", "info": "dark.info", "hues": "dark"
+        }
+      },
+      "mist": {
+        "light": {
+          "scheme": "light", "ground": "brand.mist", "fg": "brand.ink", "muted": "mix(brand.ink,brand.mist,72)", "line": "mix(brand.ink,brand.mist,22)",
+          "tone": "brand.paper", "field": "brand.white", "link": "brand.forest", "linkLarge": "brand.forest", "control": "light.control-border", "focus": "brand.forest",
+          "primary": "brand.sage", "onPrimary": "brand.ink", "primaryHover": "brand.forest", "onPrimaryHover": "brand.paper",
+          "code": "brand.forest", "onCode": "brand.paper",
+          "success": "light.success", "warn": "light.warning", "danger": "light.error", "onDanger": "brand.paper", "info": "light.info", "hues": "light"
+        },
+        "dark": {
+          "scheme": "dark", "ground": "dark.editor", "fg": "dark.text", "muted": "dark.text-muted", "line": "dark.line-strong",
+          "tone": "dark.overlay", "field": "dark.ground", "link": "dark.accent", "linkLarge": "dark.accent", "control": "dark.control-border", "focus": "dark.focus",
+          "primary": "brand.sage", "onPrimary": "brand.ink", "primaryHover": "mix(brand.sage,brand.paper,70)", "onPrimaryHover": "brand.ink",
+          "code": "dark.ground", "onCode": "dark.text",
+          "success": "dark.success", "warn": "dark.warning", "danger": "dark.error", "onDanger": "brand.ink", "info": "dark.info", "hues": "dark"
+        }
+      },
+      "sage": {
+        "light": {
+          "scheme": "light", "ground": "brand.sage", "fg": "brand.ink", "muted": "brand.ink", "line": "mix(brand.ink,brand.sage,32)",
+          "tone": "mix(brand.paper,brand.sage,18)", "field": "brand.paper", "link": "brand.ink", "linkLarge": "brand.forest", "control": "brand.ink", "focus": "brand.ink",
+          "primary": "brand.ink", "onPrimary": "brand.paper", "primaryHover": "brand.forest", "onPrimaryHover": "brand.paper",
+          "code": "brand.ink", "onCode": "brand.paper",
+          "success": "brand.ink", "warn": "brand.ink", "danger": "brand.ink", "onDanger": "brand.paper", "info": "brand.ink", "hues": "light"
+        }
+      },
+      "ink": {
+        "light": {
+          "scheme": "dark", "ground": "brand.ink", "fg": "brand.paper", "muted": "dark.text-muted", "line": "dark.line-strong",
+          "tone": "dark.raised", "field": "dark.ground", "link": "dark.accent", "linkLarge": "dark.accent", "control": "dark.control-border", "focus": "brand.sage",
+          "primary": "brand.sage", "onPrimary": "brand.ink", "primaryHover": "mix(brand.sage,brand.paper,70)", "onPrimaryHover": "brand.ink",
+          "code": "dark.ground", "onCode": "dark.text",
+          "success": "dark.success", "warn": "dark.warning", "danger": "dark.error", "onDanger": "brand.ink", "info": "dark.info", "hues": "dark"
+        }
+      }
+    }
+  }
+}

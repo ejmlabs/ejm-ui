@@ -1,0 +1,197 @@
+{
+ "limit": 3,
+ "commands": 2,
+ "stats": {
+  "running": 3,
+  "queued": 1,
+  "done": 0,
+  "commandsHeld": 0
+ },
+ "sessions": [
+  {
+   "id": 1,
+   "name": "session-a1",
+   "state": "recovering",
+   "plan": [
+    {
+     "kind": "model",
+     "label": "model request",
+     "ticks": 6
+    },
+    {
+     "kind": "command",
+     "label": "local command",
+     "ticks": 6
+    },
+    {
+     "kind": "model",
+     "label": "model request",
+     "ticks": 8
+    }
+   ],
+   "phase": 1,
+   "done": 5,
+   "total": 20,
+   "holds": false,
+   "waiting": false,
+   "uncertain": false,
+   "rec": 2,
+   "word": "recovering",
+   "pct": 55,
+   "what": "replaying the journal",
+   "badge": "recovering"
+  },
+  {
+   "id": 2,
+   "name": "session-a2",
+   "state": "recovering",
+   "plan": [
+    {
+     "kind": "model",
+     "label": "model request",
+     "ticks": 9
+    },
+    {
+     "kind": "command",
+     "label": "local command",
+     "ticks": 8
+    },
+    {
+     "kind": "model",
+     "label": "model request",
+     "ticks": 6
+    }
+   ],
+   "phase": 1,
+   "done": 0,
+   "total": 23,
+   "holds": false,
+   "waiting": false,
+   "uncertain": false,
+   "rec": 2,
+   "word": "recovering",
+   "pct": 39,
+   "what": "replaying the journal",
+   "badge": "recovering"
+  },
+  {
+   "id": 3,
+   "name": "session-a3",
+   "state": "recovering",
+   "plan": [
+    {
+     "kind": "model",
+     "label": "model request",
+     "ticks": 8
+    },
+    {
+     "kind": "command",
+     "label": "local command",
+     "ticks": 7
+    },
+    {
+     "kind": "model",
+     "label": "model request",
+     "ticks": 6
+    }
+   ],
+   "phase": 1,
+   "done": 3,
+   "total": 21,
+   "holds": false,
+   "waiting": false,
+   "uncertain": false,
+   "rec": 2,
+   "word": "recovering",
+   "pct": 52,
+   "what": "replaying the journal",
+   "badge": "recovering"
+  },
+  {
+   "id": 4,
+   "name": "session-a4",
+   "state": "queued",
+   "plan": [
+    {
+     "kind": "model",
+     "label": "model request",
+     "ticks": 9
+    },
+    {
+     "kind": "command",
+     "label": "local command",
+     "ticks": 7
+    },
+    {
+     "kind": "model",
+     "label": "model request",
+     "ticks": 4
+    }
+   ],
+   "phase": 0,
+   "done": 0,
+   "total": 20,
+   "holds": false,
+   "waiting": false,
+   "uncertain": false,
+   "rec": 0,
+   "word": "queued",
+   "pct": 0,
+   "what": "waiting for the governor",
+   "badge": "queued"
+  }
+ ],
+ "journal": [
+  {
+   "seq": 18,
+   "tick": 12,
+   "time": "+3.00s",
+   "event": "worker.crashed",
+   "detail": "3 running sessions interrupted",
+   "level": "error",
+   "session": null
+  },
+  {
+   "seq": 22,
+   "tick": 12,
+   "time": "+3.00s",
+   "event": "recovery.start",
+   "detail": "journal is read, nothing is erased",
+   "level": "warn",
+   "session": null
+  },
+  {
+   "seq": 23,
+   "tick": 12,
+   "time": "+3.00s",
+   "event": "recovery.replay",
+   "detail": "replayed 6 events for session-a1",
+   "level": "warn",
+   "session": "session-a1"
+  },
+  {
+   "seq": 24,
+   "tick": 12,
+   "time": "+3.00s",
+   "event": "recovery.replay",
+   "detail": "replayed 6 events for session-a2",
+   "level": "warn",
+   "session": "session-a2"
+  },
+  {
+   "seq": 25,
+   "tick": 12,
+   "time": "+3.00s",
+   "event": "recovery.replay",
+   "detail": "replayed 6 events for session-a3",
+   "level": "warn",
+   "session": "session-a3"
+  }
+ ],
+ "sample": {
+  "id": "rust",
+  "label": "Rust",
+  "caption": "Open a session and run one turn. Shortened from the ejm-harness README.",
+  "code": "use std::sync::Arc;\nuse ejm_harness::{Harness, HarnessConfig, ReplayProvider, SessionOptions};\n\n#[tokio::main]\nasync fn main() -> anyhow::Result<()> {\n    let harness = Harness::new(\n        HarnessConfig::default(),\n        Arc::new(ReplayProvider::echo()),\n        vec![],\n    )?;\n    let session = harness.create_session(SessionOptions {\n        cwd: std::env::current_dir()?,\n        title: \"First agent\".into(),\n    }).await?;\n    let mut run = harness.start(&session.id, \"Hello\".into()).await?;\n    println!(\"{}\", run.wait().await?.text);\n    harness.shutdown().await?;\n    Ok(())\n}\n"
+ }
+}

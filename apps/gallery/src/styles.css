@@ -1,0 +1,7 @@
+@import "@ejm/ui/styles.css";
+@import "@ejm/ui/styles-docs.css";
+@import "@ejm/ui/styles-app.css";
+/* The demos package scans its own folder; the gallery takes only the static views and the hero, which are in the page HTML.
+   The live islands add their own utilities through islands.css, loaded with the islands, so the CSS budget covers what a first paint needs. */
+@source "../../../packages/demos/src/views";
+@source "../../../packages/demos/src/hero";

@@ -1,0 +1,45 @@
+{
+  "name": "ejmlabs",
+  "version": "1.0.0",
+  "source": "Brand guide, October 2026, page 3",
+  "colors": {
+    "sage": "#8A9A7B",
+    "forest": "#29443B",
+    "ink": "#202721",
+    "paper": "#F6F5EF",
+    "mist": "#E8EDE3",
+    "white": "#FFFFFF"
+  },
+  "contrastPairs": [
+    {
+      "foreground": "ink",
+      "background": "paper",
+      "ratio": 13.9969,
+      "normalTextAA": true
+    },
+    {
+      "foreground": "paper",
+      "background": "forest",
+      "ratio": 9.6891,
+      "normalTextAA": true
+    },
+    {
+      "foreground": "ink",
+      "background": "sage",
+      "ratio": 5.0881,
+      "normalTextAA": true
+    },
+    {
+      "foreground": "forest",
+      "background": "mist",
+      "ratio": 8.8969,
+      "normalTextAA": true
+    },
+    {
+      "foreground": "sage",
+      "background": "paper",
+      "ratio": 2.7509,
+      "normalTextAA": false
+    }
+  ]
+}

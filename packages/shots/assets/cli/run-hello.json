@@ -1,0 +1,70 @@
+{
+  "product": "cli",
+  "name": "run-hello",
+  "title": "ejm-cli",
+  "caption": "One turn without the TUI, printed to the terminal.",
+  "command": "ejm-cli --replay run \"Hello\"",
+  "workingDirectory": "/tmp/acme-api",
+  "terminal": {
+    "cols": 80,
+    "rows": 24,
+    "rowsDrawn": "to the last line of text",
+    "font": "IBM Plex Mono 500, 15px",
+    "colorScheme": "@ejm/tokens generated/terminal/ejmlabs-<theme>"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "productVersion": "ejm-cli 0.1.0",
+  "gitCommit": "07a6e1ab6479bbee39ad345aa08200d42e5db1f4",
+  "workingTreeChanges": 0,
+  "build": "Built from a clean `git archive` export of 07a6e1ab6479bbee39ad345aa08200d42e5db1f4. Release build of the ejm-cli binary, with its `../ejm-harness` path dependencies resolved to a clean export of ejm-harness a96c9928a98045c79beff0ea832ff964fb2eac85.",
+  "binary": {
+    "path": "<clean-export>/target-cli/release/ejm-cli",
+    "modified": "2026-10-19T04:40:14.621Z",
+    "sha256": "2240ee093eb70911ff3dd47cc70d3f064ace3b00f7ee24b820cf15733446413f"
+  },
+  "captureDate": "2026-10-19T04:45:06.137Z",
+  "captureTool": {
+    "name": "@ejm/shots",
+    "version": "0.1.0",
+    "source": "scripts/capture-terminal.mjs"
+  },
+  "launch": "typed into /bin/sh with the prompt \"$ \" and ejm-cli on PATH",
+  "how": "Typed the documented command ejm-cli --replay run \"Hello\" at a plain $ prompt in an 80x24 terminal and let it finish; the lines are the shell prompt, the typed command and the real output.",
+  "results": {
+    "dark": {
+      "png": "run-hello.dark.png",
+      "pixelWidth": 1520,
+      "pixelHeight": 200,
+      "environment": {
+        "EJM_CLI_STATE_DIR": "(a fresh private directory)"
+      },
+      "exitCode": null,
+      "rawBytes": 55,
+      "rawSha256": "f2ee5af4e785552160648a838e8a91cf75c0be68a6db3e9de1f364259e455a38",
+      "verification": {
+        "transcriptMatch": "exact",
+        "renderedTextEqualsEmulator": true
+      },
+      "transcript": "$ ejm-cli --replay run \"Hello\"\nDemo: Hello\n$"
+    },
+    "light": {
+      "png": "run-hello.light.png",
+      "pixelWidth": 1520,
+      "pixelHeight": 200,
+      "environment": {
+        "EJM_CLI_STATE_DIR": "(a fresh private directory)"
+      },
+      "exitCode": null,
+      "rawBytes": 55,
+      "rawSha256": "f2ee5af4e785552160648a838e8a91cf75c0be68a6db3e9de1f364259e455a38",
+      "verification": {
+        "transcriptMatch": "exact",
+        "renderedTextEqualsEmulator": true
+      },
+      "transcript": "$ ejm-cli --replay run \"Hello\"\nDemo: Hello\n$"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+/* The utilities the live demo islands use. They load with the islands (routes/demos.tsx), not with the page, so the static views stay inside the CSS budget. */
+@import "@ejm/ui/styles.css" reference source(none);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@source not "../../../packages/ui/src";
+@source "../../../packages/demos/src/islands";

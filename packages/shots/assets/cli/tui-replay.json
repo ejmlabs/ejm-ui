@@ -1,0 +1,72 @@
+{
+  "product": "cli",
+  "name": "tui-replay",
+  "title": "ejm-cli",
+  "caption": "The offline demo: type a prompt and the replay provider answers.",
+  "command": "<clean-export>/target-cli/release/ejm-cli --replay --cwd /tmp/acme-api",
+  "workingDirectory": "/tmp/acme-api",
+  "terminal": {
+    "cols": 80,
+    "rows": 24,
+    "rowsDrawn": 24,
+    "font": "IBM Plex Mono 500, 15px",
+    "colorScheme": "@ejm/tokens generated/terminal/ejmlabs-<theme>"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "productVersion": "ejm-cli 0.1.0",
+  "gitCommit": "07a6e1ab6479bbee39ad345aa08200d42e5db1f4",
+  "workingTreeChanges": 0,
+  "build": "Built from a clean `git archive` export of 07a6e1ab6479bbee39ad345aa08200d42e5db1f4. Release build of the ejm-cli binary, with its `../ejm-harness` path dependencies resolved to a clean export of ejm-harness a96c9928a98045c79beff0ea832ff964fb2eac85.",
+  "binary": {
+    "path": "<clean-export>/target-cli/release/ejm-cli",
+    "modified": "2026-10-19T04:40:14.621Z",
+    "sha256": "2240ee093eb70911ff3dd47cc70d3f064ace3b00f7ee24b820cf15733446413f"
+  },
+  "captureDate": "2026-10-19T04:45:02.515Z",
+  "captureTool": {
+    "name": "@ejm/shots",
+    "version": "0.1.0",
+    "source": "scripts/capture-terminal.mjs"
+  },
+  "launch": "spawned directly in the pseudo-terminal",
+  "how": "Started the real ejm-cli TUI with the documented offline demo (--replay) in an 80x24 terminal, typed a prompt and pressed Enter; the replay provider echoes the prompt.",
+  "results": {
+    "dark": {
+      "png": "tui-replay.dark.png",
+      "pixelWidth": 1520,
+      "pixelHeight": 1040,
+      "environment": {
+        "EJM_CLI_APPEARANCE": "dark",
+        "COLORFGBG": "15;0"
+      },
+      "exitCode": null,
+      "rawBytes": 2787,
+      "rawSha256": "9421e5eeb2be091b14e4291d8d2c5772f0240e8a2584021f6970aa0154a36fbe",
+      "verification": {
+        "transcriptMatch": "replayed",
+        "renderedTextEqualsEmulator": true
+      },
+      "transcript": " ejm-cli offline replay  ·  acme-api\n grants: read  ·  /private/tmp/acme-api  ·  2c15ca2f\n you\n Hello, what can you do?\n\n ejm-cli\n Demo: Hello, what can you do?\n\n\n\n\n\n\n\n\n\n\n\n\n 0 agents · models 0+0q · tools 0+0q · completed · 1 steps · 0 in / 0 out tokens\n╭ message ─────────────────────────────────────────────────────────────────────╮\n│ › Describe a task…                                                           │\n╰──────────────────────────────────────────────────────────────────────────────╯\n Enter send · Ctrl+C stop/quit · Alt+Enter new line · Ctrl+K steer"
+    },
+    "light": {
+      "png": "tui-replay.light.png",
+      "pixelWidth": 1520,
+      "pixelHeight": 1040,
+      "environment": {
+        "EJM_CLI_APPEARANCE": "light",
+        "COLORFGBG": "0;15"
+      },
+      "exitCode": null,
+      "rawBytes": 2763,
+      "rawSha256": "9f5b5ef8e879e3158ac71e4a8119190535ffe9de914858ba5e4757281d36b025",
+      "verification": {
+        "transcriptMatch": "replayed",
+        "renderedTextEqualsEmulator": true
+      },
+      "transcript": " ejm-cli offline replay  ·  acme-api\n grants: read  ·  /private/tmp/acme-api  ·  cabf180d\n you\n Hello, what can you do?\n\n ejm-cli\n Demo: Hello, what can you do?\n\n\n\n\n\n\n\n\n\n\n\n\n 0 agents · models 0+0q · tools 0+0q · completed · 1 steps · 0 in / 0 out tokens\n╭ message ─────────────────────────────────────────────────────────────────────╮\n│ › Describe a task…                                                           │\n╰──────────────────────────────────────────────────────────────────────────────╯\n Enter send · Ctrl+C stop/quit · Alt+Enter new line · Ctrl+K steer"
+    }
+  }
+}

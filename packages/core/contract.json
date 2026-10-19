@@ -1,0 +1,476 @@
+{
+  "version": 1,
+  "about": "The component contract for cross-platform primitives. Web (packages/ui), Ink (packages/ink) and Rust (crates/ejm-tui) each implement the components they claim in `targets`, with every listed state. Each target publishes a catalog.json shaped { \"Component\": [\"state\", ...] } and scripts/parity.mjs compares it with this file.",
+  "principles": [
+    "Containerless: no boxes, frames, cards or tonal panels. Group with spacing and single hairline rules.",
+    "Every state reads under NO_COLOR and in a non-TTY: a state is named by a word, a glyph or both, never by color alone.",
+    "Only brand colors from the generated theme (packages/tokens/theme.json).",
+    "One plain sentence per empty, loading or error state, and at most one action."
+  ],
+  "targets": [
+    "web",
+    "ink",
+    "rust"
+  ],
+  "catalogs": {
+    "web": "packages/ui/src/catalog.json",
+    "ink": "packages/ink/catalog.json",
+    "rust": "crates/ejm-tui/catalog.json"
+  },
+  "glyphs": {
+    "about": "Terminal targets use `unicode` when the locale is UTF-8 and plain mode is off, otherwise `ascii`. Labels are always printed next to the glyph.",
+    "status": {
+      "ok": {
+        "unicode": "✓",
+        "ascii": "+",
+        "label": "ok"
+      },
+      "warn": {
+        "unicode": "!",
+        "ascii": "!",
+        "label": "warn"
+      },
+      "error": {
+        "unicode": "✗",
+        "ascii": "x",
+        "label": "error"
+      },
+      "info": {
+        "unicode": "i",
+        "ascii": "i",
+        "label": "info"
+      },
+      "pending": {
+        "unicode": "○",
+        "ascii": "o",
+        "label": "pending"
+      }
+    },
+    "callout": {
+      "note": {
+        "label": "Note"
+      },
+      "tip": {
+        "label": "Tip"
+      },
+      "warning": {
+        "label": "Warning"
+      }
+    },
+    "stateBlock": {
+      "empty": {
+        "unicode": "–",
+        "ascii": "-",
+        "label": "Empty"
+      },
+      "loading": {
+        "unicode": "…",
+        "ascii": "...",
+        "label": "Loading"
+      },
+      "error": {
+        "unicode": "✗",
+        "ascii": "x",
+        "label": "Error"
+      }
+    },
+    "rule": {
+      "unicode": "─",
+      "ascii": "-"
+    },
+    "ellipsis": {
+      "unicode": "…",
+      "ascii": "..."
+    },
+    "cursor": {
+      "unicode": "▌",
+      "ascii": "_"
+    },
+    "prompt": {
+      "unicode": "›",
+      "ascii": ">"
+    },
+    "selected": {
+      "unicode": "›",
+      "ascii": ">"
+    },
+    "spinner": {
+      "unicode": [
+        "⠋",
+        "⠙",
+        "⠹",
+        "⠸",
+        "⠼",
+        "⠴",
+        "⠦",
+        "⠧",
+        "⠇",
+        "⠏"
+      ],
+      "ascii": [
+        "|",
+        "/",
+        "-",
+        "\\"
+      ]
+    },
+    "focused": {
+      "unicode": "▸",
+      "ascii": "*"
+    },
+    "quote": {
+      "unicode": "▏",
+      "ascii": "|"
+    },
+    "separator": {
+      "unicode": "·",
+      "ascii": "-"
+    }
+  },
+  "components": {
+    "Text": {
+      "summary": "A run of text. The variant picks the emphasis: default, muted (dim), strong (bold) or code (monospace, dim).",
+      "props": [
+        {
+          "name": "variant",
+          "type": "'default' | 'muted' | 'strong' | 'code'",
+          "required": false,
+          "values": [
+            "default",
+            "muted",
+            "strong",
+            "code"
+          ]
+        },
+        {
+          "name": "children",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "states": [
+        "default"
+      ],
+      "targets": [
+        "web",
+        "ink",
+        "rust"
+      ]
+    },
+    "Rule": {
+      "summary": "A single hairline that separates groups. Never a box edge.",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": false
+        }
+      ],
+      "states": [
+        "default"
+      ],
+      "targets": [
+        "web",
+        "ink",
+        "rust"
+      ]
+    },
+    "Row": {
+      "summary": "One line of a list: a label, a value and optional meta. Default has no marker. Selected is marked by the selected glyph and strong text, focused by the focused glyph, disabled by the word (disabled) after the label.",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "meta",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "state",
+          "type": "RowState",
+          "required": false,
+          "values": [
+            "default",
+            "selected",
+            "disabled",
+            "focused"
+          ]
+        }
+      ],
+      "states": [
+        "default",
+        "selected",
+        "disabled",
+        "focused"
+      ],
+      "targets": [
+        "web",
+        "ink",
+        "rust"
+      ]
+    },
+    "Status": {
+      "summary": "A status with a glyph and a word together, so it reads without color. The state is the status level.",
+      "props": [
+        {
+          "name": "status",
+          "type": "StatusLevel",
+          "required": true,
+          "values": [
+            "ok",
+            "warn",
+            "error",
+            "info",
+            "pending"
+          ]
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false
+        }
+      ],
+      "states": [
+        "ok",
+        "warn",
+        "error",
+        "info",
+        "pending"
+      ],
+      "targets": [
+        "web",
+        "ink",
+        "rust"
+      ]
+    },
+    "Stat": {
+      "summary": "A figure with a label. Loading shows a placeholder word, error and empty show a plain sentence instead of the figure.",
+      "props": [
+        {
+          "name": "figure",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "state",
+          "type": "StatState",
+          "required": false,
+          "values": [
+            "default",
+            "loading",
+            "error",
+            "empty"
+          ]
+        }
+      ],
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "empty"
+      ],
+      "targets": [
+        "web",
+        "ink",
+        "rust"
+      ]
+    },
+    "Table": {
+      "summary": "Columns and rows with a header and a hairline under it. Numbers are right aligned in tabular figures. Long cells truncate with an ellipsis and never break the layout. Empty, loading and error keep the header and show one StateBlock under it.",
+      "props": [
+        {
+          "name": "columns",
+          "type": "{ key: string; label: string; align?: 'left' | 'right'; width?: number }[]",
+          "required": true
+        },
+        {
+          "name": "rows",
+          "type": "Record<string, string | number>[]",
+          "required": true
+        },
+        {
+          "name": "state",
+          "type": "TableState",
+          "required": false,
+          "values": [
+            "default",
+            "empty",
+            "loading",
+            "error"
+          ]
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": false
+        }
+      ],
+      "states": [
+        "default",
+        "empty",
+        "loading",
+        "error"
+      ],
+      "targets": [
+        "web",
+        "ink",
+        "rust"
+      ]
+    },
+    "Prompt": {
+      "summary": "An input line with a prompt glyph and a cursor. Busy shows a spinner or the word working and ignores input. Error shows a plain message under the line.",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "state",
+          "type": "PromptState",
+          "required": false,
+          "values": [
+            "idle",
+            "busy",
+            "error"
+          ]
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": false
+        }
+      ],
+      "states": [
+        "idle",
+        "busy",
+        "error"
+      ],
+      "targets": [
+        "web",
+        "ink",
+        "rust"
+      ]
+    },
+    "KeyHints": {
+      "summary": "A line of key and label pairs. Pairs that do not fit are dropped from the end, so list the most important first.",
+      "props": [
+        {
+          "name": "hints",
+          "type": "{ key: string; label: string }[]",
+          "required": true
+        }
+      ],
+      "states": [
+        "default"
+      ],
+      "targets": [
+        "web",
+        "ink",
+        "rust"
+      ]
+    },
+    "Callout": {
+      "summary": "A note, tip or warning set off by a left rule and a text label (Note, Tip, Warning). No box.",
+      "props": [
+        {
+          "name": "kind",
+          "type": "CalloutKind",
+          "required": true,
+          "values": [
+            "note",
+            "tip",
+            "warning"
+          ]
+        },
+        {
+          "name": "children",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "states": [
+        "note",
+        "tip",
+        "warning"
+      ],
+      "targets": [
+        "web",
+        "ink",
+        "rust"
+      ]
+    },
+    "StateBlock": {
+      "summary": "An empty, loading or error state: one plain sentence and at most one action. Never a bare zero or blank area.",
+      "props": [
+        {
+          "name": "kind",
+          "type": "StateBlockKind",
+          "required": true,
+          "values": [
+            "empty",
+            "loading",
+            "error"
+          ]
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "action",
+          "type": "{ key?: string; label: string }",
+          "required": false
+        }
+      ],
+      "states": [
+        "empty",
+        "loading",
+        "error"
+      ],
+      "targets": [
+        "web",
+        "ink",
+        "rust"
+      ]
+    }
+  },
+  "text": {
+    "about": "Default words. Targets use these when the caller gives no message, so every state is named in words on every platform.",
+    "row": {
+      "disabled": "(disabled)"
+    },
+    "stat": {
+      "loading": "Loading",
+      "error": "Failed",
+      "empty": "No data"
+    },
+    "table": {
+      "empty": "Nothing to show yet.",
+      "loading": "Loading the table.",
+      "error": "Could not load the table."
+    },
+    "prompt": {
+      "busy": "working"
+    }
+  }
+}

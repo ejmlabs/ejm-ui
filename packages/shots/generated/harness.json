@@ -1,0 +1,459 @@
+{
+  "format": 1,
+  "pipeline": "avif-q55-e6-444;webp-smaller-of-lossless-and-q80;png-palette-q90",
+  "shots": {
+    "harness/journal": {
+      "meta": {
+        "product": "ejm-harness",
+        "kind": "screenshot",
+        "surface": "terminal",
+        "title": "ejm-harness",
+        "caption": "The event journal of one run, with the governor and harness status the engine reports.",
+        "command": "node journal.mjs",
+        "version": "0.1.0",
+        "commit": "a96c9928a98045c79beff0ea832ff964fb2eac85",
+        "date": "2026-10-19",
+        "how": "Ran a small script (fixtures/harness/journal.mjs) that drives the real ejm-harness TypeScript SDK and Rust worker with a replay file of scripted tool calls (no assistant text), then prints the durable event journal of the run and the governor and harness status the worker reports. The script only formats values the engine returned.",
+        "themes": [
+          "dark",
+          "light"
+        ],
+        "scale": 2
+      },
+      "themes": {
+        "dark": {
+          "source": {
+            "file": "harness/journal.dark.png",
+            "sha256": "413d5d53fb90a311231cad9f96709b3637609b640430e232cbe738cf3d722481",
+            "width": 1880,
+            "height": 920,
+            "bytes": 143275
+          },
+          "width": 940,
+          "height": 460,
+          "widths": [
+            940,
+            1880
+          ],
+          "files": [
+            {
+              "file": "harness/journal.dark.940w.avif",
+              "format": "avif",
+              "width": 940,
+              "height": 460,
+              "bytes": 30091,
+              "sha256": "d401f92c13c3f2e2c4759ef9682487155299f96a8b3fc384348d6b4f6bc78e81"
+            },
+            {
+              "file": "harness/journal.dark.940w.webp",
+              "format": "webp",
+              "width": 940,
+              "height": 460,
+              "bytes": 24998,
+              "sha256": "2c9c127c19ae5ef0195b41abfa3ad8fbebae11357c4527b8a4c390f662062be3"
+            },
+            {
+              "file": "harness/journal.dark.940w.png",
+              "format": "png",
+              "width": 940,
+              "height": 460,
+              "bytes": 29940,
+              "sha256": "3551b29def9f6ec61dd30dd34d2f6e9daf154c999715dc82da5c24c16e2fa8c8"
+            },
+            {
+              "file": "harness/journal.dark.1880w.avif",
+              "format": "avif",
+              "width": 1880,
+              "height": 920,
+              "bytes": 48227,
+              "sha256": "47386c99eaddbf72e24495671a6043d2a2c15d5f404cee3cfc1f6d0a1ce24fc7"
+            },
+            {
+              "file": "harness/journal.dark.1880w.webp",
+              "format": "webp",
+              "width": 1880,
+              "height": 920,
+              "bytes": 23680,
+              "sha256": "e828e9fa67839ac18fa835a77d80fb55f4636bb59c15bef7404c7c4b3631e0e5"
+            },
+            {
+              "file": "harness/journal.dark.1880w.png",
+              "format": "png",
+              "width": 1880,
+              "height": 920,
+              "bytes": 50093,
+              "sha256": "7249291ce9863f9e7f6789d4f93a2a3856c5c82ef50f2a2bd95c2a93fd62ade7"
+            }
+          ]
+        },
+        "light": {
+          "source": {
+            "file": "harness/journal.light.png",
+            "sha256": "bcd813b62682656c620a348e2016b8f6e3207fcf17c6e9d39713577e14bb47ac",
+            "width": 1880,
+            "height": 920,
+            "bytes": 143001
+          },
+          "width": 940,
+          "height": 460,
+          "widths": [
+            940,
+            1880
+          ],
+          "files": [
+            {
+              "file": "harness/journal.light.940w.avif",
+              "format": "avif",
+              "width": 940,
+              "height": 460,
+              "bytes": 28905,
+              "sha256": "1badacf20db938977173e1c1b40df65ebfeb4d60307cda9cb2dbce1f532379f2"
+            },
+            {
+              "file": "harness/journal.light.940w.webp",
+              "format": "webp",
+              "width": 940,
+              "height": 460,
+              "bytes": 23876,
+              "sha256": "fffb4b0fab926f71ef4cf1fd49c569ff065f826496d176d9cc5edd0d611f9932"
+            },
+            {
+              "file": "harness/journal.light.940w.png",
+              "format": "png",
+              "width": 940,
+              "height": 460,
+              "bytes": 29238,
+              "sha256": "58351faae252c3881d6d65ccf9c091de0fe037290150b0fc7d37d6a4cae9bd5f"
+            },
+            {
+              "file": "harness/journal.light.1880w.avif",
+              "format": "avif",
+              "width": 1880,
+              "height": 920,
+              "bytes": 48739,
+              "sha256": "d8ed1f3643f498e36bb4f8706abe7315dd445b44dfc6f5937195f60bc986571c"
+            },
+            {
+              "file": "harness/journal.light.1880w.webp",
+              "format": "webp",
+              "width": 1880,
+              "height": 920,
+              "bytes": 24022,
+              "sha256": "54c6a93e5c0e80eb9bf45326ea6470f644d20e9042119db47451d9c90adff650"
+            },
+            {
+              "file": "harness/journal.light.1880w.png",
+              "format": "png",
+              "width": 1880,
+              "height": 920,
+              "bytes": 51054,
+              "sha256": "01eab1ddc9e66ca55632e541cf5c82d709a8e1ec446480dc6ee124153780fca8"
+            }
+          ]
+        }
+      }
+    },
+    "harness/sdk-python": {
+      "meta": {
+        "product": "ejm-harness",
+        "kind": "screenshot",
+        "surface": "terminal",
+        "title": "ejm-harness",
+        "caption": "The Python example from the README, running against the same worker.",
+        "command": "python3 examples/sdk_async.py",
+        "version": "0.1.0",
+        "commit": "a96c9928a98045c79beff0ea832ff964fb2eac85",
+        "date": "2026-10-19",
+        "how": "Typed the documented Python example, python3 examples/sdk_async.py, at a plain $ prompt from the clean ejm-harness export, with the in-tree Python SDK on PYTHONPATH; the SDK starts the real Rust worker with its echo provider.",
+        "themes": [
+          "dark",
+          "light"
+        ],
+        "scale": 2
+      },
+      "themes": {
+        "dark": {
+          "source": {
+            "file": "harness/sdk-python.dark.png",
+            "sha256": "2e01206141da148f876ee63ca8b6beb105122b18e8d7e7ac0ca1a7a4581538a5",
+            "width": 1520,
+            "height": 240,
+            "bytes": 17970
+          },
+          "width": 760,
+          "height": 120,
+          "widths": [
+            760,
+            1520
+          ],
+          "files": [
+            {
+              "file": "harness/sdk-python.dark.760w.avif",
+              "format": "avif",
+              "width": 760,
+              "height": 120,
+              "bytes": 2984,
+              "sha256": "79dce5a5133a11222e53e25509ced94fb8dedc28e9d761b328a9096aa19b3950"
+            },
+            {
+              "file": "harness/sdk-python.dark.760w.webp",
+              "format": "webp",
+              "width": 760,
+              "height": 120,
+              "bytes": 3956,
+              "sha256": "6ccb12f47dbb4403fec751d6d5e524bd25649b4ec32ce43e896ddebac2bcf34a"
+            },
+            {
+              "file": "harness/sdk-python.dark.760w.png",
+              "format": "png",
+              "width": 760,
+              "height": 120,
+              "bytes": 3950,
+              "sha256": "c5ec62405cf23eac6d77d3ae673e5c3c50845686d3cf6c83a8a4e2a2d20c6846"
+            },
+            {
+              "file": "harness/sdk-python.dark.1520w.avif",
+              "format": "avif",
+              "width": 1520,
+              "height": 240,
+              "bytes": 4990,
+              "sha256": "b03c8ca5b0a80c9f4026947f0ab5df6ffb741673231d0297fa8fa79bf8ef6eee"
+            },
+            {
+              "file": "harness/sdk-python.dark.1520w.webp",
+              "format": "webp",
+              "width": 1520,
+              "height": 240,
+              "bytes": 4792,
+              "sha256": "4cc40dc4943421e82574928a6241ff1df07987a6359da8639c110c5e743df9e9"
+            },
+            {
+              "file": "harness/sdk-python.dark.1520w.png",
+              "format": "png",
+              "width": 1520,
+              "height": 240,
+              "bytes": 5610,
+              "sha256": "c8fff1f0dd496f56a8101c2bc14c5037ccf683ee5eb78cc70e2084428275338f"
+            }
+          ]
+        },
+        "light": {
+          "source": {
+            "file": "harness/sdk-python.light.png",
+            "sha256": "26e88e3e7b39ade43e3341a78c723cd9fa923d28e6a7dc971acdd356fe63f513",
+            "width": 1520,
+            "height": 240,
+            "bytes": 17780
+          },
+          "width": 760,
+          "height": 120,
+          "widths": [
+            760,
+            1520
+          ],
+          "files": [
+            {
+              "file": "harness/sdk-python.light.760w.avif",
+              "format": "avif",
+              "width": 760,
+              "height": 120,
+              "bytes": 2881,
+              "sha256": "a7309ed5d691c169328d595a085a9708b19b4166f77d482b7573238b4de082e5"
+            },
+            {
+              "file": "harness/sdk-python.light.760w.webp",
+              "format": "webp",
+              "width": 760,
+              "height": 120,
+              "bytes": 3912,
+              "sha256": "4b91ba307a8c7370c65ded87a41abc37a9f3f500cb52019ea9971e5129fa1861"
+            },
+            {
+              "file": "harness/sdk-python.light.760w.png",
+              "format": "png",
+              "width": 760,
+              "height": 120,
+              "bytes": 3856,
+              "sha256": "85bc25f40710f0dc27112b2135feb2c11b3fb047d7a9e3cd3ee384dce8320bed"
+            },
+            {
+              "file": "harness/sdk-python.light.1520w.avif",
+              "format": "avif",
+              "width": 1520,
+              "height": 240,
+              "bytes": 6308,
+              "sha256": "c63df624f858b0f9f2779496616740fad13c3d4372f438700863f27c598fed96"
+            },
+            {
+              "file": "harness/sdk-python.light.1520w.webp",
+              "format": "webp",
+              "width": 1520,
+              "height": 240,
+              "bytes": 4754,
+              "sha256": "97b58992e288e5c3a269add1de6dc7bca7d41eca726ced4b35d2195ff3a71847"
+            },
+            {
+              "file": "harness/sdk-python.light.1520w.png",
+              "format": "png",
+              "width": 1520,
+              "height": 240,
+              "bytes": 5683,
+              "sha256": "ee023b2b13fb9025d3fe25cdd9dc6843f50bfbefd184e5c192e2b9306022440d"
+            }
+          ]
+        }
+      }
+    },
+    "harness/sdk-typescript": {
+      "meta": {
+        "product": "ejm-harness",
+        "kind": "screenshot",
+        "surface": "terminal",
+        "title": "ejm-harness",
+        "caption": "The TypeScript example from the README, running against the Rust worker.",
+        "command": "node examples/sdk_typescript.mjs",
+        "version": "0.1.0",
+        "commit": "a96c9928a98045c79beff0ea832ff964fb2eac85",
+        "date": "2026-10-19",
+        "how": "Typed the documented TypeScript example, node examples/sdk_typescript.mjs, at a plain $ prompt from the clean ejm-harness export; the SDK starts the real Rust worker with its default echo provider.",
+        "themes": [
+          "dark",
+          "light"
+        ],
+        "scale": 2
+      },
+      "themes": {
+        "dark": {
+          "source": {
+            "file": "harness/sdk-typescript.dark.png",
+            "sha256": "a5e69c536477dad062e511e5c61fe9445faa50a316ece60265a4c823b26d038a",
+            "width": 1520,
+            "height": 240,
+            "bytes": 18019
+          },
+          "width": 760,
+          "height": 120,
+          "widths": [
+            760,
+            1520
+          ],
+          "files": [
+            {
+              "file": "harness/sdk-typescript.dark.760w.avif",
+              "format": "avif",
+              "width": 760,
+              "height": 120,
+              "bytes": 2983,
+              "sha256": "4f41492771180ac3c20f0f4f2239e3e9f8dc7826f66d6d91c3626f844e6b5cb0"
+            },
+            {
+              "file": "harness/sdk-typescript.dark.760w.webp",
+              "format": "webp",
+              "width": 760,
+              "height": 120,
+              "bytes": 4136,
+              "sha256": "f56e58083b595d5a731ff0822eb30e49647e3f57d17b643017c880be958657f3"
+            },
+            {
+              "file": "harness/sdk-typescript.dark.760w.png",
+              "format": "png",
+              "width": 760,
+              "height": 120,
+              "bytes": 4050,
+              "sha256": "fe1d1b55ac14e77f5e0cf464739b3b3015c779e3d3c50a190932391b1ab0b5c9"
+            },
+            {
+              "file": "harness/sdk-typescript.dark.1520w.avif",
+              "format": "avif",
+              "width": 1520,
+              "height": 240,
+              "bytes": 5157,
+              "sha256": "74030f9a9554ed6531d1662116c490cc92b68903f769aff4e385e7cd803a4aec"
+            },
+            {
+              "file": "harness/sdk-typescript.dark.1520w.webp",
+              "format": "webp",
+              "width": 1520,
+              "height": 240,
+              "bytes": 4794,
+              "sha256": "8222acdd53e9625f7501a8a5bde5374b8cb2858ae37b39e9aca0fdb736d6ab97"
+            },
+            {
+              "file": "harness/sdk-typescript.dark.1520w.png",
+              "format": "png",
+              "width": 1520,
+              "height": 240,
+              "bytes": 5718,
+              "sha256": "e734c2e76796883e56a2339a59e8bf74385c59dbd899073e243e16f088a9ba53"
+            }
+          ]
+        },
+        "light": {
+          "source": {
+            "file": "harness/sdk-typescript.light.png",
+            "sha256": "1097b1abf48d3817462b35b6f96d375e7804316d990f388deb6a76b1c31ad674",
+            "width": 1520,
+            "height": 240,
+            "bytes": 17831
+          },
+          "width": 760,
+          "height": 120,
+          "widths": [
+            760,
+            1520
+          ],
+          "files": [
+            {
+              "file": "harness/sdk-typescript.light.760w.avif",
+              "format": "avif",
+              "width": 760,
+              "height": 120,
+              "bytes": 2929,
+              "sha256": "91c2add7cce3f502b59d16e0a97a105fd25162d2a2daaaa741d45e1efb049cbb"
+            },
+            {
+              "file": "harness/sdk-typescript.light.760w.webp",
+              "format": "webp",
+              "width": 760,
+              "height": 120,
+              "bytes": 4096,
+              "sha256": "005d2570cafdcf9e1121ecca10dd45d9dd245729e1b8a32166f57e858f843e99"
+            },
+            {
+              "file": "harness/sdk-typescript.light.760w.png",
+              "format": "png",
+              "width": 760,
+              "height": 120,
+              "bytes": 3908,
+              "sha256": "395803ad8720e0a0295748819c80905c01baca62b041408b3fe6e327ffcefc01"
+            },
+            {
+              "file": "harness/sdk-typescript.light.1520w.avif",
+              "format": "avif",
+              "width": 1520,
+              "height": 240,
+              "bytes": 6586,
+              "sha256": "d052871142439a310932f65a283b61b1339e7255cdc1bfa160905e15db3ee01b"
+            },
+            {
+              "file": "harness/sdk-typescript.light.1520w.webp",
+              "format": "webp",
+              "width": 1520,
+              "height": 240,
+              "bytes": 4770,
+              "sha256": "43000ae4a2863fa4b4b141b6e0600a6883f6651386e692fa823030799b443ca4"
+            },
+            {
+              "file": "harness/sdk-typescript.light.1520w.png",
+              "format": "png",
+              "width": 1520,
+              "height": 240,
+              "bytes": 5668,
+              "sha256": "d9251d0d099e8796b3d88480a25b6adf451edfdac8bd2760cbbb7a954ab6932e"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

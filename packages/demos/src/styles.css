@@ -1,0 +1,7 @@
+/* Tell Tailwind to scan the code of this package that renders markup, for the utilities the views, islands and hero use. Import it once
+   from a site stylesheet, after @ejm/ui/styles.css. The scenario data, the frames and the tests hold no classes and are left out. */
+@source "./views";
+@source "./islands";
+@source "./hero";
+@source not "./**/*.test.{ts,tsx}";
+@source not "./views/frames";

@@ -1,0 +1,75 @@
+{
+ "provider": "replay",
+ "cwd": "~/code/harbor",
+ "title": "Fix the flaky retry test",
+ "sessionId": "s_4f2a91",
+ "write": false,
+ "agents": 0,
+ "models": 0,
+ "tools": 0,
+ "blocks": [
+  {
+   "id": 1,
+   "kind": "you",
+   "title": "you",
+   "lines": [
+    {
+     "t": "Fix the flaky retry test",
+     "r": null
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "kind": "assistant",
+   "title": "",
+   "lines": [
+    {
+     "t": "-pub fn window_open(started: Instant, budget: Duration) -> bool {",
+     "r": "err"
+    },
+    {
+     "t": "-    let now = Instant::now();",
+     "r": "err"
+    },
+    {
+     "t": "+pub fn window_open(started: Instant, now: Instant, budget: Duration) -> bool {",
+     "r": "ok"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "kind": "tool",
+   "title": "patch_file src/retry.rs",
+   "lines": [
+    {
+     "t": "✗ blocked: write access is not granted",
+     "r": "err"
+    }
+   ]
+  }
+ ],
+ "hints": [
+  [
+   "Enter",
+   "send"
+  ],
+  [
+   "Ctrl+C",
+   "stop/quit"
+  ],
+  [
+   "Alt+Enter",
+   "new line"
+  ],
+  [
+   "Ctrl+S",
+   "sessions"
+  ],
+  [
+   "/help",
+   "commands"
+  ]
+ ]
+}

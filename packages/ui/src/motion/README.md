@@ -1,0 +1,25 @@
+# Motion
+
+Transform and opacity only. No animation library: CSS keyframes from `styles.css` and one `IntersectionObserver`. Under reduced motion, with scripts off, and in print, every element is in its final state.
+
+| Export | What it does |
+| --- | --- |
+| `Reveal` | `<Reveal as="section" from="up\|fade\|scale\|left" index={0..8} delay={ms}>`. Plays once when it scrolls into view. |
+| `useReveal({ watchdogMs })` | The hook behind `Reveal`. Put the returned ref on any element. |
+| `Stagger` | `<Stagger as="ul" effect="enter\|reveal\|fade">`. Gives each child element the effect class and `--ejm-i` by position. CSS only, for what is on screen at load. |
+| `staggerStyle(i, delayMs?)` | The `--ejm-i` and `--ejm-delay` style for one step. The index stops at 8, so a staged entrance is at most 8 x 60 + 640 = 1120ms. |
+| `useDrawOn()` | Ref for an inline `<svg class="art">`. Adds `draw-on` when it is first seen. |
+
+## The reveal contract (THEME.md)
+
+1. The server render and the first client render carry no `data-reveal`. With no JavaScript nothing is hidden.
+2. Before first paint (`useLayoutEffect`), an element whose top is below the fold gets `data-reveal="pending"`, which the CSS hides. Elements already on screen, or scrolled past, are left alone.
+3. When it enters the viewport the element gets `data-reveal="in"`, plays `ejm-reveal` once, and the observer disconnects.
+4. If the observer does not answer at all within `watchdogMs` (default 1000ms) the element is shown. Once the observer has answered, the watchdog stops, so the reveal still waits for the visitor to scroll. An element scrolled past without being seen (an anchor jump) is shown too.
+5. Reduced motion: the hook does nothing, and the CSS only hides `pending` when `prefers-reduced-motion: no-preference`.
+
+## Accessibility notes
+
+- Nothing that carries meaning is ever the only thing that moves. A reveal never changes reading order or focus order.
+- `Reveal` and `Stagger` add no ARIA and no extra elements beyond the tag you choose.
+- Keep `index` for siblings that appear together; do not stagger long lists past 8 steps.

@@ -1,0 +1,10 @@
+{
+  "Callout": ["note", "tip", "warning"],
+  "CodeBlock": ["default"],
+  "CodeTabs": ["default"],
+  "Contents": ["default"],
+  "DocsSidebar": ["default"],
+  "Pager": ["default"],
+  "ParamTable": ["default"],
+  "SidebarFilter": ["default"]
+}

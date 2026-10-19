@@ -1,0 +1,9 @@
+{
+  "ActivityList": ["default"],
+  "ChartArea": ["default"],
+  "ChartBar": ["default"],
+  "ChartFrame": ["default"],
+  "ChartLine": ["default"],
+  "Dashboard": ["default"],
+  "Legend": ["default"]
+}
