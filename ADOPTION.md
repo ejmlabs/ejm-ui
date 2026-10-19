@@ -1,6 +1,6 @@
 # Adopting ejm-ui
 
-How the ejmlabs.com site, the cli, ide and harness sites and the IDE app move onto ejm-ui. Every step here was run against `examples/starter`, and the install paths were run in a throwaway project outside this repo. Nothing here needs a remote, a registry or a deploy. Creating a remote, publishing a package and deploying each need the owner's approval.
+How the ejmlabs.com site, the cli, ide and harness sites and the IDE app move onto ejm-ui. Use `examples/starter` as the reference consumer and check each source revision before adopting it. Sibling links and local tarballs do not require registry publication. Creating a remote, publishing a package and deploying each need the owner's approval.
 
 ## What you depend on
 
@@ -88,13 +88,13 @@ for p in tokens core ui ssg site demos; do npm pack -w packages/$p --pack-destin
 
 In the consumer, use `"@ejm/core": "file:../tarballs/ejm-core-0.1.0.tgz"` and the same for the others (leave out `demos` if the site has no product demo), with the same React and tooling dependencies as above (no `dedupe` needed). To update, repack, delete `node_modules/@ejm` and `package-lock.json`, and install again (npm will not refresh a tarball of the same version otherwise). Commit the lockfile.
 
-Status of the tarball route: proven end to end with no local patches. `node scripts/pack-proof.mjs` packs the six packages, installs only the tarballs into a throwaway copy of `examples/starter` outside this repo (React, Vite, Tailwind and TypeScript come from the registry as the consumer's own dependencies), runs `ejm-ssg build`, `ejm-ssg budget`, `ejm-site-headers dist/_headers --check` and a typecheck, and diffs the HTML against the workspace build. **It needs network access to the npm registry, so it is not part of `npm run check`.** Run it after changing a `package.json`, a `files` or `exports` field, or one of the Vite plugins. Pass `--dir <folder>` to choose where the work happens (outside the repo; nothing in it is deleted).
+Use `node scripts/pack-proof.mjs` to check the tarball route end to end. It packs the six packages, installs only the tarballs into a throwaway copy of `examples/starter` outside this repo (React, Vite, Tailwind and TypeScript come from the registry as the consumer's own dependencies), runs `ejm-ssg build`, `ejm-ssg budget`, `ejm-site-headers dist/_headers --check` and a typecheck, and diffs the HTML against the workspace build. **It needs network access to the npm registry, so it is not part of `npm run check`.** Run it after changing a `package.json`, a `files` or `exports` field, or one of the Vite plugins. Pass `--dir <folder>` to choose where the work happens (outside the repo; nothing in it is deleted). Results apply to the source and environment checked.
 
 What the tarballs hold (the `files` field of each package):
 
 | Package | Tarball | Contents |
 | --- | --- | --- |
-| `@ejm/tokens` | about 1.7 MB | `theme.json`, `src`, `generated`, `rust`, and `assets` without the X kit and its zip, `templates/`, `editable/` sources, TTF font sources and the large PNG renders (motifs; per-project logos, marks and icons). The full set stays in this repo. |
+| `@ejm/tokens` | about 1.7 MB | `theme.json`, `src`, `generated`, `rust`, and `assets` without the retained X-kit assets, ZIP archives, `templates/`, `editable/` sources, TTF font sources and the large PNG renders (motifs; per-project logos, marks and icons). Additional retained source assets stay in this repo. |
 | `@ejm/core` | about 9 KB | `src` and `contract.json`, no tests. |
 | `@ejm/ui` | about 170 KB | `src` without tests, `public/theme-boot.js`, `THEME.md`, `COMPONENTS.md`. |
 | `@ejm/ssg` | about 15 KB | `bin`, `src` without tests and perf tests, README. No fixtures. |
@@ -169,14 +169,14 @@ For every site: delete the `sync-design-kit.sh` script and the copied `design-ki
 
 | Site | Registry id | Route list to build | Notes |
 | --- | --- | --- | --- |
-| ejmlabs.com | `ejmlabs` | `/` today; add the routes the home page links to | Rebuilt first, as the reference consumer. The ejmlabs site is a single page, so it is a `Hero` and `Band`s with no CSS of its own. |
+| ejmlabs.com | `ejmlabs` | `/`; include any routes the home page links to | Keep studio content in the studio repository and compose it with shared components. |
 | cli | `cli` | the pages in `ejm-cli/site/dist` today | Product windows and demos load with `load: () => import(...)`, from `@ejm/demos`. |
 | ide | `ide` | `/`, `/docs/`, `/docs/user-guide/`, `/docs/developer-guide/` | Docs use `DocsLayout`. Keep `public/` files (`editor.webp`, `license.txt`, `notices.txt`, `robots.txt`, `sitemap.xml`). The `/api/` and `/downloads/` dev proxy moves into `server.proxy` in `vite.config.ts`. `website/scripts/check-docs.mjs` stays. |
 | harness | `harness` | the pages in `ejm-harness/site/public` today | Same shape as cli. |
 
 Set `budget` in `defineSite` only to raise a limit for a measured reason (defaults: JS 95, CSS 14, fonts 70, HTML 30 KB gzip). The starter measures 86.8 JS, 11.9 CSS and 33.7 fonts (it was 89.6, 13.1 and 33.7 before the slimmer `cn` and the opt-in docs and app CSS): write pages from the shared components and do not add CSS. Product demos add 1.7 KB of CSS, the docs partial about 1 KB.
 
-Each site repo does this on a local branch and commits locally. Coordinate with the session working in that repo before changing it.
+Adopt and verify each consumer in its own repository.
 
 ## 5. The IDE app (not a prerendered site)
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Carry-over assets: copy them from the old design-kit into packages/tokens and prove the copies are byte-identical.
+// Import selected brand assets from the old design-kit and verify their provenance.
 //
 //   node scripts/assets.mjs            verify: every row of PROVENANCE.md matches its file here and, when the
 //                                      design-kit is present, its source there (exit 1 on any mismatch)
@@ -18,7 +18,8 @@ const tokens = join(repo, 'packages', 'tokens');
 const kit = process.env.EJM_DESIGN_KIT || join(repo, '..', 'ejmlabs', 'design-kit');
 const provenance = join(tokens, 'assets', 'PROVENANCE.md');
 
-// [source path in the design-kit, destination under packages/tokens]. Directories are copied whole.
+// [source path in the design-kit, destination under packages/tokens].
+// Retired kit handoff files, editable kit sources, and ZIP archives are excluded from imports.
 const MOVES = [
   ['logos', 'assets/logos'], ['favicon', 'assets/favicon'], ['icons', 'assets/icons'], ['motifs', 'assets/motifs'],
   ['social', 'assets/social'], ['lockups', 'assets/lockups'], ['templates', 'assets/templates'], ['fonts', 'assets/fonts'],
@@ -27,6 +28,9 @@ const MOVES = [
   // The regenerated per-project logo families (marks, logos, icons, favicons, social card). Their editable/ sources stay in the kit.
   ['projects/cli', 'assets/projects/cli'], ['projects/ide', 'assets/projects/ide'], ['projects/harness', 'assets/projects/harness'],
 ];
+const retiredKitFiles = new Set([
+  'social/x-kit/README.md', 'social/x-kit/index.html', 'social/x-kit/profile-copy.md',
+]);
 const skipped = rel => rel.split(/[\\/]/).includes('editable');
 
 const sha = path => createHash('sha256').update(readFileSync(path)).digest('hex');
@@ -43,8 +47,10 @@ function plan() {
     const src = join(kit, from);
     for (const file of statSync(src).isDirectory() ? walk(src) : [src]) {
       const rel = file === src ? '' : relative(src, file);
+      const source = posix(join(from, rel));
+      if (source.endsWith('.zip') || source.startsWith('social/x-kit/source/') || retiredKitFiles.has(source)) continue;
       if (from.startsWith('projects/') && skipped(rel)) continue;
-      rows.push({ local: posix(join(to, rel)), source: posix(join(from, rel)), file });
+      rows.push({ local: posix(join(to, rel)), source, file });
     }
   }
   return rows;
@@ -74,6 +80,7 @@ if (args.includes('--sync')) {
     'Everything below was copied unchanged from the old `design-kit/` (read only) by `node scripts/assets.mjs --sync`.',
     'Do not edit this table by hand. `node scripts/assets.mjs` re-hashes every file here and, when the design-kit is present, every source.',
     'Paths are relative to `packages/tokens/` here and to `design-kit/` at the source.',
+    'Retired kit handoff files, editable kit sources, and ZIP archives are excluded from imports.',
     '',
     '| File | Source | sha256 |',
     '| --- | --- | --- |',

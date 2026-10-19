@@ -1,6 +1,6 @@
 # ejm-ui
 
-The ejmlabs design system: tokens, a Tailwind theme, React components in the shadcn/ui style, hooks, layouts, views and a gallery site. Every ejmlabs site and app is built from it.
+The ejmlabs design system: tokens, a Tailwind theme, React components in the shadcn/ui style, hooks, layouts, views and a gallery site.
 
 ## Stack
 
@@ -50,10 +50,17 @@ npm ci --ignore-scripts
 
 CI must fetch an owner-approved repository at a full commit SHA and keep the
 whole committed tree, including required capture assets and package exports.
-Consumer `.github/ui-source.json` metadata selects that source through the
-shared workflow's trusted preparation job. A Git tree hash or an uncommitted
-working directory cannot serve as the dependency commit pin.
+A consumer can declare that source in `.github/ui-source.json` once its
+trusted preparation workflow supports the metadata. This repository does not
+install that workflow. A Git tree hash or an uncommitted working directory
+cannot serve as the dependency commit pin.
 
 Creating a hosted repository, pushing source, publishing npm packages and
 deploying the gallery each require the owner's approval. A source snapshot
 does not establish a successful install, build, native check or publication.
+
+## Licenses
+
+Software and documentation use the MIT license. Brand materials retain their
+owner's rights, and bundled fonts retain their SIL Open Font License notices.
+See [License](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md).

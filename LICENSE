@@ -1,3 +1,16 @@
+ejm-ui license scope
+
+The MIT license below applies to this repository's software and documentation.
+The ejmlabs name, logos, supplied brand artwork, design assets, templates, and
+visual identity retain their owners' rights. All rights in those materials are
+reserved except where a file or its accompanying notice gives a separate
+license. Public access does not grant a right to use the marks or redistribute
+the brand materials.
+
+Manrope and IBM Plex Mono retain the SIL Open Font License 1.1 and their
+original notices. See THIRD_PARTY_NOTICES.md and the notices in
+packages/tokens/assets/fonts/.
+
 MIT License
 
 Copyright (c) 2026 ejm-ui contributors
