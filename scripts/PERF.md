@@ -17,6 +17,13 @@ node scripts/perf.mjs <dist-dir | url...> [--routes /,/lazy/] [--ignore glob]...
 
 Exit code 0 is within budget, 1 is a breach (the message names route, metric and overage), 2 is a usage or Chrome error (including Chrome not installed).
 
+Chrome has up to 60 seconds to report its debugging port. Startup failure is
+not retried. Errors include the last 8 KiB of Chrome's stderr; an early exit
+also reports its code and signal. The temporary browser profile is removed on
+failure. Check this output and the selected `CHROME` binary when startup fails.
+The startup allowance does not change page measurement budgets or test process
+limits, and Chrome's sandbox stays enabled.
+
 ## What is measured
 
 Every load uses a fresh browser context (cold cache, cold connections), cache disabled, and waits 1.5 s after the load event so late paints and shifts count.

@@ -5,7 +5,8 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
-No changes recorded after the source baseline.
+- Allow up to 60 seconds for the performance check's Chrome startup and report
+  bounded browser error output. Page budgets and the browser sandbox are unchanged.
 
 ## [0.1.0] - 2026-10-19
 

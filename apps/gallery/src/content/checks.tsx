@@ -65,6 +65,10 @@ export const checks: DocPage = {
           children: <>Each prerendered route is measured on what it loads first. Sizes are gzip, except fonts, which are WOFF2. A breach exits non-zero and fails the build.</>,
         },
         {
+          type: 'p',
+          children: <>Use <code>node scripts/perf.mjs &lt;dist-dir&gt;</code> for browser measurements. Chrome startup has a separate 60-second limit with no retry. A startup error reports the last 8 KiB of browser stderr; page budgets and the browser sandbox remain unchanged.</>,
+        },
+        {
           type: 'params',
           caption: 'Performance budgets per route',
           labels: { name: 'Measure', type: 'Budget', description: 'Notes' },
