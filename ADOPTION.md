@@ -94,7 +94,7 @@ What the tarballs hold (the `files` field of each package):
 
 | Package | Tarball | Contents |
 | --- | --- | --- |
-| `@ejm/tokens` | about 1.7 MB | `theme.json`, `src`, `generated`, `rust`, and `assets` without the retained X-kit assets, ZIP archives, `templates/`, `editable/` sources, TTF font sources and the large PNG renders (motifs; per-project logos, marks and icons). Additional retained source assets stay in this repo. |
+| `@ejm/tokens` | about 1.7 MB | `theme.json`, `src`, `generated`, `rust`, and `assets` without ZIP archives, `templates/`, `editable/` sources, TTF font sources and the large PNG renders (motifs; per-project logos, marks and icons). Additional retained source assets stay in this repo. |
 | `@ejm/core` | about 9 KB | `src` and `contract.json`, no tests. |
 | `@ejm/ui` | about 170 KB | `src` without tests, `public/theme-boot.js`, `THEME.md`, `COMPONENTS.md`. |
 | `@ejm/ssg` | about 15 KB | `bin`, `src` without tests and perf tests, README. No fixtures. |

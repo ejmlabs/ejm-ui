@@ -7,6 +7,11 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 - Allow up to 60 seconds for the performance check's Chrome startup and report
   bounded browser error output. Page budgets and the browser sandbox are unchanged.
+- Remove the remaining 38 retired social profile kit renders and duplicate font
+  files from source. Active fonts and their original notices remain.
+- Keep 244 imported files in provenance and exclude retired social profile kits
+  from future legacy imports. Package export declarations and packaged runtime
+  files are unchanged.
 
 ## [0.1.0] - 2026-10-19
 
