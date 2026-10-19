@@ -17,10 +17,10 @@ tarball does not mean a release was published. Check
 source releases.
 
 The [shared standards](https://github.com/ejmlabs/.github) define human
-admission, review and source releases. Hosted enforcement requires reviewed
-workflow callers on main and verified repository settings. Source files
-alone do not establish that rollout or a successful hosted run. Gallery
-deployment and package registry publication need separate approval.
+admission, review and source releases. Follow
+[Contributing](CONTRIBUTING.md#human-admission-and-review) for the current
+review commands and required checks. Gallery deployment and package registry
+publication need separate approval.
 
 ## Requirements
 
@@ -58,15 +58,8 @@ trusted preparation workflow supports the metadata. UI does not need a
 self-reference or private harness token. A Git tree hash or an uncommitted
 working directory cannot serve as the dependency commit pin.
 
-Creating a hosted repository, pushing source, publishing npm packages and
-deploying the gallery each require the owner's approval. A source snapshot
-does not establish a successful install, build, native check or publication.
-
-For an initial workflow installation, keep Actions paused until the repository
-settings are verified. The static review snapshot records the retained shared
-implementation only. A fresh admitted PR after installation must prove that the
-caller executes all required gates; source checks do not establish hosted
-acceptance.
+A source snapshot does not prove a successful install, build, native check
+or hosted review.
 
 ## Development
 
