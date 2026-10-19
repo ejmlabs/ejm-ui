@@ -28,6 +28,9 @@ release, registry package or deployed gallery.
   use. Existing captures keep their recorded product revisions and evidence.
 - Add shared community guidance, maintainer ownership, issue and PR templates,
   and bounded dependency update configuration.
+- Pin the PR and draft-release callers to a retained, reviewed shared
+  implementation. Initial installation still needs a fresh admitted PR to
+  establish hosted acceptance.
 
 Checks and publication remain separate evidence. Follow the development guide
 for owner checks and each consumer's guide for compatibility checks. Native

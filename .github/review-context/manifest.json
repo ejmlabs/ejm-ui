@@ -1,11 +1,11 @@
 {
   "repository": "ejmlabs/.github",
   "initial_bootstrap": true,
-  "note": "UI has no installed old caller. This snapshot records only the proposed implementation; hosted execution must be verified after installation.",
+  "note": "UI has no installed old caller. This snapshot records only the retained shared implementation; hosted execution must be verified after installation.",
   "revisions": {
     "new": {
-      "commit": "30e7e93e5e7d504dbe2f4421e415a5717015c336",
-      "tree": "6742d19906b8f7f4e0cac75973e43b3fedfb2c24",
+      "commit": "fbe8264f0ab47a4bf9260355dc8129728c13f261",
+      "tree": "305c9c9be0bd80a36f33044eec9cdff639fb6c61",
       "files": [
         {
           "path": ".github/workflows/draft-release.yml",

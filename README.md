@@ -62,6 +62,12 @@ Creating a hosted repository, pushing source, publishing npm packages and
 deploying the gallery each require the owner's approval. A source snapshot
 does not establish a successful install, build, native check or publication.
 
+For an initial workflow installation, keep Actions paused until the repository
+settings are verified. The static review snapshot records the retained shared
+implementation only. A fresh admitted PR after installation must prove that the
+caller executes all required gates; source checks do not establish hosted
+acceptance.
+
 ## Development
 
 Read [AGENTS.md](AGENTS.md) before changing the owner or its public contracts.
