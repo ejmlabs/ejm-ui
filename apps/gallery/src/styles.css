@@ -5,3 +5,5 @@
    The live islands add their own utilities through islands.css, loaded with the islands, so the CSS budget covers what a first paint needs. */
 @source "../../../packages/demos/src/views";
 @source "../../../packages/demos/src/hero";
+/* Prop names and prose trigger the unused viewport container utility. Layouts use page and @container queries. */
+@source not inline("container");

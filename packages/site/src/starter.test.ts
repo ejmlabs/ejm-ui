@@ -1,5 +1,6 @@
 import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -7,6 +8,7 @@ import { csp, headersFile } from './headers.mjs';
 
 // A real build of examples/starter through the ejm-ssg CLI, then the files it wrote. DOMParser only parses: no script runs.
 const here = dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
 const starter = join(here, '..', '..', '..', 'examples', 'starter');
 const dist = join(starter, 'dist');
 const ssgBin = join(here, '..', '..', 'ssg', 'bin', 'ejm-ssg.mjs');
@@ -19,7 +21,10 @@ beforeAll(() => {
 }, 180_000);
 
 describe.each(ROUTES)('%s', file => {
-  const doc = page(file);
+  let doc: Document;
+  beforeAll(() => {
+    doc = page(file);
+  });
 
   it('has a skip link first, one h1, and one main', () => {
     const first = doc.body.querySelector('a')!;
@@ -72,6 +77,12 @@ describe('the starter build', () => {
     for (const f of ['_headers', 'theme-boot.js', 'favicon.svg', 'favicon.ico', 'apple-touch-icon.png', 'site.webmanifest', 'social-card.png']) expect(existsSync(join(dist, f)), f).toBe(true);
     expect(existsSync(join(dist, '.vite'))).toBe(false);
     expect(page('index.html').querySelector('meta[property="og:image"]')?.getAttribute('content')).toBe('https://ejmlabs.com/social-card.png');
+  });
+
+  it('distributes the original font notices with the built font assets', () => {
+    for (const name of ['Manrope-OFL.txt', 'IBMPlexMono-OFL.txt']) {
+      expect(readFileSync(join(dist, name))).toEqual(readFileSync(require.resolve(`@ejm/ui/fonts/${name}`)));
+    }
   });
 
   it('writes the shared _headers: valid, current, and no inline script allowed', () => {

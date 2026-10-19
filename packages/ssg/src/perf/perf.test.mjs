@@ -129,8 +129,10 @@ describe.skipIf(!chrome)('perf.mjs on the ssg fixture', () => {
   const perf = (...args) => spawnSync('node', [join(repo, 'scripts', 'perf.mjs'), dist, '--runs', '1', ...args], { encoding: 'utf8', timeout: 170_000 });
 
   beforeAll(() => {
-    for (const d of ['src', 'public']) cpSync(join(repo, 'packages', 'ssg', 'fixtures', 'basic', d), join(work, d), { recursive: true });
-    for (const f of ['index.html', 'vite.config.ts']) cpSync(join(repo, 'packages', 'ssg', 'fixtures', 'basic', f), join(work, f));
+    const fixture = join(repo, 'packages', 'ssg', 'fixtures', 'basic');
+    cpSync(join(fixture, 'src'), join(work, 'src'), { recursive: true });
+    if (existsSync(join(fixture, 'public'))) cpSync(join(fixture, 'public'), join(work, 'public'), { recursive: true });
+    for (const f of ['index.html', 'vite.config.ts']) cpSync(join(fixture, f), join(work, f));
     symlinkSync(join(repo, 'node_modules'), join(work, 'node_modules'));
     execFileSync('node', [join(repo, 'packages', 'ssg', 'bin', 'ejm-ssg.mjs'), 'build'], { cwd: work, stdio: 'pipe' });
   }, 180_000);

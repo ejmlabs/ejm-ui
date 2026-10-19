@@ -1,8 +1,12 @@
 import { existsSync, readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { createRequire } from 'node:module';
+import type { ViteDevServer } from 'vite';
+import { describe, expect, it, vi } from 'vitest';
 import { siteDefaults } from './head';
 import { PROJECT_LIST, PROJECTS, assetPaths, otherSites, sourceLinks } from './projects.mjs';
-import { headTags, sharedFiles } from './vite.mjs';
+import { ejmSite, headTags, sharedFiles } from './vite.mjs';
+
+const require = createRequire(import.meta.url);
 
 describe('project registry', () => {
   it('has four sites, each on its own https host with a trailing-slash url and a token', () => {
@@ -43,6 +47,25 @@ describe('project registry', () => {
 
   it('every shared file the plugin serves exists in @ejm/ui and @ejm/tokens', () => {
     for (const p of PROJECT_LIST) for (const [name, path] of Object.entries(sharedFiles(p))) expect(existsSync(path), `${p.id}: ${name}`).toBe(true);
+  });
+
+  it('serves the original font notices as plain text for every project in development', () => {
+    for (const project of PROJECT_LIST) {
+      const use = vi.fn();
+      const configure = ejmSite({ project }).configureServer;
+      if (typeof configure !== 'function') throw new Error('Missing development server hook');
+      configure.call({} as ThisParameterType<typeof configure>, { middlewares: { use } } as unknown as ViteDevServer);
+      const serve = use.mock.calls[0]![0];
+      for (const name of ['Manrope-OFL.txt', 'IBMPlexMono-OFL.txt']) {
+        const setHeader = vi.fn();
+        const end = vi.fn();
+        const next = vi.fn();
+        serve({ url: `/${name}?download=1` }, { setHeader, end }, next);
+        expect(setHeader).toHaveBeenCalledWith('Content-Type', 'text/plain; charset=utf-8');
+        expect(end).toHaveBeenCalledWith(readFileSync(require.resolve(`@ejm/ui/fonts/${name}`)));
+        expect(next).not.toHaveBeenCalled();
+      }
+    }
   });
 });
 

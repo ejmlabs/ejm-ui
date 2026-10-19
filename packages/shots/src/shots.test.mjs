@@ -6,9 +6,10 @@
 import * as fs from 'node:fs';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 import { captureShot, FIXTURES, withWorkspace } from './capture.mjs';
+import { UI_ROOT } from './meta.mjs';
 import * as renderer from './render.mjs';
 import * as session from './session.mjs';
 import { chromeAvailable, toHtml, withChrome } from './render.mjs';
@@ -115,7 +116,8 @@ describe('capture work directories', () => {
     for (const [index, theme] of ['dark', 'light'].entries()) {
       const workspace = workspaces[index];
       expect(existsSync(workspace)).toBe(false);
-      expect(meta.results[theme]).toMatchObject({ command: `sh --cwd ${workspace}`, workingDirectory: workspace });
+      expect(meta.results[theme].command).toBe(`sh --cwd ${workspace}`);
+      expect(resolve(UI_ROOT, meta.results[theme].workingDirectory)).toBe(workspace);
       expect(readFileSync(join(productDir, `fixture.${theme}.png`), 'utf8')).toBe('stubbed renderer output');
     }
     expect(JSON.parse(readFileSync(join(productDir, 'fixture.json'), 'utf8'))).toEqual(meta);

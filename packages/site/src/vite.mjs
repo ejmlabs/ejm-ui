@@ -1,6 +1,6 @@
 // The Vite plugin every ejmlabs site uses: `plugins: [react(), ejmSite({ project: 'ejmlabs' }), ejmSsg({ site: 'src/site.tsx' })]`.
 // It adds the shared head tags to index.html and writes the shared files into the build: theme-boot.js, the favicon set,
-// the manifest, the social card and `_headers`. In dev it serves the same files.
+// the manifest, the social card, the font notices and `_headers`. In dev it serves the same shared files.
 import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
@@ -20,6 +20,8 @@ export function sharedFiles(project) {
   const a = assetPaths(project, dir => existsSync(join(tokensAssets, dir)));
   return {
     'theme-boot.js': require.resolve('@ejm/ui/theme-boot.js'),
+    'Manrope-OFL.txt': require.resolve('@ejm/ui/fonts/Manrope-OFL.txt'),
+    'IBMPlexMono-OFL.txt': require.resolve('@ejm/ui/fonts/IBMPlexMono-OFL.txt'),
     ...Object.fromEntries(FAVICONS.map(f => [f, join(tokensAssets, a.favicon, f)])),
     'social-card.png': join(tokensAssets, a.socialCard),
   };
@@ -63,7 +65,7 @@ export function ejmSite({ project, headers = {} }) {
       server.middlewares.use((req, res, next) => {
         const file = files[(req.url ?? '').split('?')[0].replace(/^\/+/, '')];
         if (!file) return next();
-        res.setHeader('Content-Type', file.endsWith('.js') ? 'text/javascript' : file.endsWith('.svg') ? 'image/svg+xml' : file.endsWith('.png') ? 'image/png' : file.endsWith('.ico') ? 'image/x-icon' : 'application/manifest+json');
+        res.setHeader('Content-Type', file.endsWith('.js') ? 'text/javascript' : file.endsWith('.svg') ? 'image/svg+xml' : file.endsWith('.png') ? 'image/png' : file.endsWith('.ico') ? 'image/x-icon' : file.endsWith('.txt') ? 'text/plain; charset=utf-8' : 'application/manifest+json');
         res.end(readFileSync(file));
       });
     },
