@@ -32,7 +32,6 @@
     "!assets/**/editable",
     "!assets/**/*.ttf",
     "!assets/motifs/*.png",
-    "!assets/social/x-kit",
     "!assets/templates",
     "!assets/projects/*/logo-*.png",
     "!assets/projects/*/mark-*.png",
