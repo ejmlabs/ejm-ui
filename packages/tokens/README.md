@@ -26,4 +26,4 @@ The repo keeps the brand assets used by its packages and retained X-kit renders 
 
 From the repository root, run `node scripts/assets.mjs --local` to verify retained assets against [their provenance](assets/PROVENANCE.md). The optional `--sync` import uses `EJM_DESIGN_KIT`, or the legacy `../ejmlabs/design-kit` directory. It skips retired kit handoff files, editable kit sources, and ZIP archives. Rendered X-kit assets and font copies remain hashed in provenance until removal and stay excluded from the tarball. That legacy source is not a build dependency.
 
-Brand materials retain their owner's rights. Manrope and IBM Plex Mono retain the SIL Open Font License notices in `assets/fonts/`. See the root [license](../../LICENSE) and [third-party notices](../../THIRD_PARTY_NOTICES.md) before copying assets or fonts.
+Brand materials retain their owner's rights. Manrope and IBM Plex Mono retain the SIL Open Font License notices in `assets/fonts/`. See the package [license](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md) before copying assets or fonts.

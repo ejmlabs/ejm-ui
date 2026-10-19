@@ -52,7 +52,9 @@
     "!src/**/README.md",
     "public/theme-boot.js",
     "THEME.md",
-    "COMPONENTS.md"
+    "COMPONENTS.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "peerDependencies": {
     "react": "^19.0.0",
@@ -81,5 +83,11 @@
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/user-event": "^14.6.8",
     "vitest-axe": "^0.1.0"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ejmlabs/ejm-ui.git",
+    "directory": "packages/ui"
   }
 }

@@ -131,7 +131,7 @@ Notes that cost time when missed:
 - **Links.** Internal links use `Link` from `@ejm/ssg` (give it to `SiteLayout` as `linkComponent`). Other sites use `otherSites('cli')` from `@ejm/site/projects` in the nav or footer, which renders `ExternalLink`, or `<Row external>`: both set `rel="external"`.
 - **Header.** `Header` puts the nav and then the `ThemeToggle` last in the tools group, at the far right. Do not add anything after it.
 - **Heavy features are lazy.** A route with a demo or code highlighting uses `load: () => import('./pages/Demo')`, so the initial JavaScript stays under 95 KB.
-- **A product demo.** Add `@ejm/demos` and `@import "@ejm/demos/styles.css"`, and import the entry for the product you show, so you do not ship the views of the other two: `LazyCliDemo` from `@ejm/demos/islands/cli-lazy` (also `ide-lazy`, `harness-lazy`), or `ProductHeroStage` with `CliHeroWindow` from `@ejm/demos/hero`. `LazyDemo` and `ProductHero` take any product but carry all three views (about 5 KB gzip more). Details and measured sizes: `packages/demos/README.md`.
+- **A product demo.** Add `@ejm/demos` and `@import "@ejm/demos/styles.css"` (or its `@ejm/demos/ide.css` entry for the current IDE views), and import the entry for the product you show, so you do not ship the views of the other two: `LazyCliDemo` from `@ejm/demos/islands/cli-lazy` (also `ide-lazy`, `harness-lazy`), or `ProductHeroStage` with `CliHeroWindow` from `@ejm/demos/hero`. `LazyDemo` and `ProductHero` take any product but carry all three views (about 5 KB gzip more). Details and measured sizes: `packages/demos/README.md`.
 - **Prose that needs no script.** A docs page keeps its text in the HTML with `<Static>` from `@ejm/ssg` (see `packages/ssg/README.md`), which keeps the guide text out of the JavaScript budget.
 - **Static pages that are not routes** (copied brand assets) are measured as routes by the budget gate. Skip them with `ignore: ['brand/assets/**']` in `defineSite`, or `ejm-ssg budget --ignore <glob>` and `node scripts/perf.mjs <dist> --ignore <glob>`.
 
@@ -194,5 +194,23 @@ The IDE's marketing site (`ide/website`) is a normal site (section 4).
 
 - Linked (route A): nothing to copy. Pull `ejm-ui`, run `npm install` there if its dependencies changed, then rebuild the product. There is no sync script to run and no copy to keep.
 - Tarballs (route B): run the `npm pack` loop above, delete `node_modules/@ejm` and the lockfile in the product, install, rebuild, and commit the lockfile. Do it when `ejm-ui` changes something the product needs, not on a schedule.
-- Once a registry exists and the owner approves publishing, replace `file:` with a version range and update with `npm update @ejm/ui`. Until then versions stay `0.1.0` and the tarball name does not change, which is why the lockfile and `node_modules/@ejm` are cleared.
+- All packages currently declare `0.1.0` and remain private. Pin source by its full commit, and regenerate the consumer lockfile when that source changes. Standard source releases need the shared UI version validator and release workflow before a version tag can serve as a release reference. A future registry publication requires the owner's approval and a versioned package release.
 - After any update, the product's own check must pass: its budgets (`ejm-ssg budget`), its route list and the shared rules in section 4. Brand files come from `@ejm/tokens` only, so never edit a copy of them in a product repo.
+
+## Package notices and the IDE stylesheet entry
+
+Every owned npm package carries `LICENSE` and `THIRD_PARTY_NOTICES.md` in its
+package output. `@ejm/tokens` keeps its original OFL notices in `assets/fonts/`;
+`@ejm/ui` carries the same original notices beside its subsets in `src/fonts/`.
+Preserve these files when assembling source or tarball distributions. Software
+uses the MIT terms, brand materials retain their owners' rights, and fonts keep
+their own license.
+
+`@ejm/demos/ide.css` is a narrow compatibility entry owned by `ejm-ui`. Studio
+and IDE source consumers already name that public path. It imports the existing
+shared demo stylesheet for the current simulated IDE views. The upstream target
+is the same public path. Replace this forwarding file when an accepted UI
+change supplies a distinct IDE stylesheet together with its matching view
+markup and visual checks. Check package resolution, the target file, and the
+matching consumer build whenever that contract changes. This entry does not
+bring other local view or stylesheet changes into the source snapshot.

@@ -11,6 +11,7 @@ The simulated product screens for ejm-cli, ejm-ide and ejm-harness: scenario dat
 | `@ejm/demos/islands` | `LazyDemo product="..."`: the same for any product, but it imports all three views (about 5 KB gzip more than one). |
 | `@ejm/demos/islands/cli`, `/ide`, `/harness` | The interactive islands, default exports, for `React.lazy`. |
 | `@ejm/demos/styles.css` | `@source` lines so Tailwind scans the views, islands and hero (not the tests or the scenario data). Import it once from the site stylesheet, after `@ejm/ui/styles.css`. About 1.7 KB gzip of CSS. |
+| `@ejm/demos/ide.css` | A stable IDE entry that imports `styles.css` for the current simulated views. Use it after `@ejm/ui/styles.css`; an existing import of `styles.css` also remains valid. |
 
 ## Static views
 
@@ -93,3 +94,10 @@ Targets are 44px on coarse pointers, inputs are 16px there, and the layout react
 ## Tests
 
 Engines and scenarios: `src/*.test.ts`. Views, islands and hero: beside their files, with Testing Library, user-event, the manual clock and vitest-axe in both themes. jsdom has no `matchMedia` and cannot move a range input with a key, so `src/test-helpers.tsx` stubs the first and the harness test sends the change event directly.
+
+## Package rights
+
+This package includes its [license](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md).
+The software uses the MIT terms; supplied brand materials retain their owners'
+rights. Dependencies keep their own notices. The package remains private and
+can be consumed from an accepted source revision or an offline tarball.

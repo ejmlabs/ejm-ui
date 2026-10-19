@@ -21,7 +21,9 @@
     "bin",
     "src",
     "!src/**/*.test.*",
-    "README.md"
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "peerDependencies": {
     "@ejm/ssg": "0.1.0",
@@ -31,5 +33,11 @@
   "dependencies": {
     "@ejm/tokens": "0.1.0",
     "@ejm/ui": "0.1.0"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ejmlabs/ejm-ui.git",
+    "directory": "packages/site"
   }
 }

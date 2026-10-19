@@ -23,5 +23,11 @@
     "./cli": "./src/cli.ts",
     "./ide": "./src/ide.ts",
     "./harness": "./src/harness.ts"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ejmlabs/ejm-ui.git",
+    "directory": "packages/shots"
   }
 }

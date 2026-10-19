@@ -21,3 +21,11 @@ files used by the UI:
 Other dependencies retain their own licenses and notices. The root lockfile
 records selected npm versions; the terminal crate has its own Cargo lockfile.
 Preserve the applicable notices when redistributing dependencies or bundles.
+
+## Package distributions
+
+Each owned `packages/*` npm package includes a scoped `LICENSE` and
+`THIRD_PARTY_NOTICES.md`. The `@ejm/tokens` asset package and `@ejm/ui` font
+subsets include the original Manrope and IBM Plex Mono OFL notices. Keep the
+notices with the fonts and reserved brand materials when redistributing an
+allowed package or bundle.

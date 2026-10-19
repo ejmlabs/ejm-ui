@@ -21,5 +21,11 @@
     "@ejm/tokens": "^0.1.0",
     "chalk": "^6.0.1",
     "ink": "^8.0.0"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ejmlabs/ejm-ui.git",
+    "directory": "packages/ink"
   }
 }
