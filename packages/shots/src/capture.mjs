@@ -1,5 +1,5 @@
 // Captures one shot: runs the real program in a PTY, renders the final screen in both themes, writes PNG + JSON.
-import { cpSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -11,9 +11,6 @@ import { compareToTranscript, domMatches } from './verify.mjs';
 
 export const ASSETS = join(UI_ROOT, 'packages/shots/assets');
 export const FIXTURES = join(UI_ROOT, 'packages/shots/fixtures');
-const WORK = join(tmpdir(), 'ejm-shots-work');
-/** The demo project the agents work in. A fixed path, because the TUI header prints it. */
-export const WORKSPACE = '/tmp/acme-api';
 
 /**
  * @typedef {object} Shot
@@ -30,20 +27,19 @@ export const WORKSPACE = '/tmp/acme-api';
  */
 
 /** Fresh work directories for one session: state, an empty HOME, a bin dir with the product binaries on PATH. */
-function prepare(/** @type {Shot} */ shot, /** @type {'dark' | 'light'} */ theme) {
-  rmSync(WORK, { recursive: true, force: true });
-  rmSync(WORKSPACE, { recursive: true, force: true });
-  const state = join(WORK, 'state'), home = join(WORK, 'home'), bin = join(WORK, 'bin');
+function prepare(/** @type {keyof typeof PRODUCTS} */ product, /** @type {'dark' | 'light'} */ theme, /** @type {string} */ work) {
+  const state = join(work, 'state'), home = join(work, 'home'), bin = join(work, 'bin');
+  const workspace = join(work, 'acme-api');
   for (const d of [state, home, bin]) mkdirSync(d, { recursive: true, mode: 0o700 });
-  cpSync(join(FIXTURES, 'acme-api'), WORKSPACE, { recursive: true });
+  cpSync(join(FIXTURES, 'acme-api'), workspace, { recursive: true });
   for (const p of Object.values(PRODUCTS)) {
     const name = p.binary.split('/').pop() ?? '';
     try { symlinkSync(p.binary, join(bin, name)); } catch { /* binary list is static; duplicates are not expected */ }
   }
-  const p = PRODUCTS[shot.product];
+  const p = PRODUCTS[product];
   /** @type {Ctx} */
   const ctx = {
-    theme, dir: p.dir, bin: p.binary, workspace: WORKSPACE, state, home, fixtures: FIXTURES,
+    theme, dir: p.dir, bin: p.binary, workspace, state, home, fixtures: FIXTURES,
     env: {
       PATH: `${bin}:${process.env.PATH ?? ''}`, HOME: home, LANG: 'en_US.UTF-8', TERM: 'xterm-256color', COLORTERM: 'truecolor',
       PS1: '$ ', EJM_HARNESS_DIR: PRODUCTS.harness.dir, EJM_CLI_STATE_DIR: state, EJM_STATE_DIR: state,
@@ -52,6 +48,24 @@ function prepare(/** @type {Shot} */ shot, /** @type {'dark' | 'light'} */ theme
     },
   };
   return ctx;
+}
+
+/**
+ * Runs one session in its own temporary tree and removes only that tree, including on failure.
+ * @template T
+ * @param {keyof typeof PRODUCTS} product
+ * @param {'dark' | 'light'} theme
+ * @param {(ctx: Ctx) => Promise<T>} run
+ * @param {string} [parent] parent directory; defaults to the system temporary directory
+ * @returns {Promise<T>}
+ */
+export async function withWorkspace(product, theme, run, parent = tmpdir()) {
+  const work = mkdtempSync(join(parent, 'ejm-shots-work-'));
+  try {
+    return await run(prepare(product, theme, work));
+  } finally {
+    rmSync(work, { recursive: true, force: true });
+  }
 }
 
 /**
@@ -70,29 +84,31 @@ export async function captureShot(shot, opts = {}) {
   let launch = '';
   await withChrome(async render => {
     for (const theme of themes) {
-      const ctx = prepare(shot, theme);
-      const s = shot.session(ctx);
-      const { raw, screen, exitCode } = await runSession({ ...s, cols: shot.cols, rows: shot.rows });
-      const lines = screen.lines();
-      const rowsShown = shot.crop === 'content' ? Math.max(1, lines.length) : shot.rows;
-      const th = loadTheme(theme);
-      const { html, width, height } = toHtml(screen.grid(), th, { rows: rowsShown, cursor: screen.cursor() });
-      const { png, rowText } = await render(html, width, height);
-      const cmp = compareToTranscript(lines, raw, shot.cols, shot.rows);
-      const dom = domMatches(rowText, lines, rowsShown);
-      if (!cmp.ok) throw new Error(`${shot.product}/${shot.name} (${theme}): text on screen does not match the PTY transcript: ${cmp.detail}`);
-      if (!dom) throw new Error(`${shot.product}/${shot.name} (${theme}): the rendered text differs from the emulator rows`);
-      writeFileSync(join(outDir, `${shot.name}.${theme}.png`), png);
-      command = s.displayCommand;
-      cwd = s.cwd ? rel(s.cwd) : '';
-      launch = s.launch;
-      results[theme] = {
-        png: `${shot.name}.${theme}.png`, pixelWidth: width * 2, pixelHeight: height * 2,
-        environment: s.shotEnv,
-        exitCode, rawBytes: raw.length, rawSha256: createHash('sha256').update(raw).digest('hex'),
-        verification: { transcriptMatch: cmp.mode, renderedTextEqualsEmulator: dom },
-        transcript: lines.slice(0, rowsShown).join('\n'),
-      };
+      await withWorkspace(shot.product, theme, async ctx => {
+        const s = shot.session(ctx);
+        const { raw, screen, exitCode } = await runSession({ ...s, cols: shot.cols, rows: shot.rows });
+        const lines = screen.lines();
+        const rowsShown = shot.crop === 'content' ? Math.max(1, lines.length) : shot.rows;
+        const th = loadTheme(theme);
+        const { html, width, height } = toHtml(screen.grid(), th, { rows: rowsShown, cursor: screen.cursor() });
+        const { png, rowText } = await render(html, width, height);
+        const cmp = compareToTranscript(lines, raw, shot.cols, shot.rows);
+        const dom = domMatches(rowText, lines, rowsShown);
+        if (!cmp.ok) throw new Error(`${shot.product}/${shot.name} (${theme}): text on screen does not match the PTY transcript: ${cmp.detail}`);
+        if (!dom) throw new Error(`${shot.product}/${shot.name} (${theme}): the rendered text differs from the emulator rows`);
+        writeFileSync(join(outDir, `${shot.name}.${theme}.png`), png);
+        command = s.displayCommand;
+        cwd = s.cwd ? rel(s.cwd) : '';
+        launch = s.launch;
+        results[theme] = {
+          png: `${shot.name}.${theme}.png`, pixelWidth: width * 2, pixelHeight: height * 2,
+          command, workingDirectory: cwd,
+          environment: s.shotEnv,
+          exitCode, rawBytes: raw.length, rawSha256: createHash('sha256').update(raw).digest('hex'),
+          verification: { transcriptMatch: cmp.mode, renderedTextEqualsEmulator: dom },
+          transcript: lines.slice(0, rowsShown).join('\n'),
+        };
+      });
     }
   });
   // Other work may rebuild a product while it is being captured. A shot must show one binary, so stop if it changed.

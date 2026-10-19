@@ -13,11 +13,11 @@ How the ejmlabs.com site, the cli, ide and harness sites and the IDE app move on
 | `@ejm/site` | Project registry, analytics, shared head, theme boot and headers plugin (`ejm-site-headers`). Sites only. |
 | `@ejm/demos` | The simulated product screens (static views, lazy interactive demos, the product hero). Only a site that shows a product demo. |
 
-The packages ship TypeScript source for what the consumer's Vite bundles (components, hooks, the `@ejm/ssg` client and server render code). What Node itself loads, the `@ejm/ssg/vite` plugin, `ejm-ssg`, `@ejm/site/vite` and `ejm-site-headers`, is plain `.mjs` with `.d.mts` types, because Node refuses to strip types from TypeScript under `node_modules`. Use Node 22 or newer.
+The packages ship TypeScript source for what the consumer's Vite bundles (components, hooks, the `@ejm/ssg` client and server render code). What Node itself loads, the `@ejm/ssg/vite` plugin, `ejm-ssg`, `@ejm/site/vite` and `ejm-site-headers`, is plain `.mjs` with `.d.mts` types, because Node refuses to strip types from TypeScript under `node_modules`. Use Node 22.12 or later.
 
 ## 1. Get the packages before a registry exists
 
-Both routes need `npm install` run once inside `ejm-ui` first, because linked packages resolve their own dependencies from there.
+Before building or using linked packages, run `npm ci --ignore-scripts` inside `ejm-ui` to install its committed lockfile. Linked packages resolve their own dependencies from there. Keep dependency lifecycle scripts disabled for this setup. Linux terminal fixture tests and capture need a separate, explicit `node-pty` rebuild; see [Development](README.md#development). The site build does not need that native rebuild.
 
 ### A. Link from a sibling checkout (works today)
 
@@ -88,7 +88,7 @@ for p in tokens core ui ssg site demos; do npm pack -w packages/$p --pack-destin
 
 In the consumer, use `"@ejm/core": "file:../tarballs/ejm-core-0.1.0.tgz"` and the same for the others (leave out `demos` if the site has no product demo), with the same React and tooling dependencies as above (no `dedupe` needed). To update, repack, delete `node_modules/@ejm` and `package-lock.json`, and install again (npm will not refresh a tarball of the same version otherwise). Commit the lockfile.
 
-Use `node scripts/pack-proof.mjs` to check the tarball route end to end. It packs the six packages, installs only the tarballs into a throwaway copy of `examples/starter` outside this repo (React, Vite, Tailwind and TypeScript come from the registry as the consumer's own dependencies), runs `ejm-ssg build`, `ejm-ssg budget`, `ejm-site-headers dist/_headers --check` and a typecheck, and diffs the HTML against the workspace build. **It needs network access to the npm registry, so it is not part of `npm run check`.** Run it after changing a `package.json`, a `files` or `exports` field, or one of the Vite plugins. Pass `--dir <folder>` to choose where the work happens (outside the repo; nothing in it is deleted). Results apply to the source and environment checked.
+Use `node scripts/pack-proof.mjs` to check the tarball route end to end. It packs the six packages, installs only the tarballs into a throwaway copy of `examples/starter` outside this repo (React, Vite, Tailwind and TypeScript come from the registry as the consumer's own dependencies), runs `ejm-ssg build`, `ejm-ssg budget`, `ejm-site-headers dist/_headers --check` and a typecheck, and diffs the HTML against the workspace build. **It needs network access to the npm registry, so it is not part of `npm run check`.** Run it after changing a `package.json`, a `files` or `exports` field, or one of the Vite plugins. Without `--dir`, the script creates a new temporary folder. To choose a folder, pass `--dir <folder>` outside the repo and reserve it for this tool: the script recursively deletes and recreates its `workspace-dist`, `tarballs` and `consumer` subfolders. It leaves the output folder in place for inspection. Results apply to the source and environment checked.
 
 What the tarballs hold (the `files` field of each package):
 

@@ -2,15 +2,23 @@
 // What these tests protect: the PTY really has the requested size, colors survive the emulator, the rendered text equals
 // the emulator text, the transcript check can fail, and the metadata names what it must. They use a tiny shell script,
 // not the products, so they run anywhere. Tests that need Chrome skip when it is missing.
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+// Directory ownership tests use the real filesystem and stub the PTY and Chrome boundaries.
+import * as fs from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterAll, describe, expect, it } from 'vitest';
-import { captureShot, FIXTURES } from './capture.mjs';
+import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
+import { captureShot, FIXTURES, withWorkspace } from './capture.mjs';
+import * as renderer from './render.mjs';
+import * as session from './session.mjs';
 import { chromeAvailable, toHtml, withChrome } from './render.mjs';
 import { runSession } from './session.mjs';
+import { Screen } from './screen.mjs';
 import { loadTheme, palette256 } from './theme.mjs';
 import { compareToTranscript, domMatches, replayCursorStream } from './verify.mjs';
+
+// Keep real filesystem operations while allowing the capture test to reject unsafe deletion paths.
+vi.mock('node:fs', async importOriginal => ({ ...await importOriginal() }));
 
 const script = join(FIXTURES, 'colors.sh');
 const EXPECTED = [
@@ -22,6 +30,100 @@ const EXPECTED = [
 const chrome = chromeAvailable() ? it : it.skip;
 const tmp = mkdtempSync(join(tmpdir(), 'ejm-shots-test-'));
 afterAll(() => rmSync(tmp, { recursive: true, force: true }));
+
+describe('capture work directories', () => {
+  afterEach(() => { vi.restoreAllMocks(); vi.unstubAllEnvs(); });
+
+  it('preserves unrelated paths and isolates overlapping sessions', async () => {
+    const parent = mkdtempSync(join(tmp, 'ownership-'));
+    for (const name of ['acme-api', 'ejm-shots-work']) {
+      mkdirSync(join(parent, name));
+      writeFileSync(join(parent, name, 'keep.txt'), name);
+    }
+    let first = '', second = '';
+    const value = await withWorkspace('cli', 'dark', async dark => {
+      first = dark.home;
+      expect(statSync(dark.home).mode & 0o777).toBe(0o700);
+      const fixture = readFileSync(join(dark.workspace, 'src/server.mjs'), 'utf8');
+      expect(fixture).toBe(readFileSync(join(FIXTURES, 'acme-api/src/server.mjs'), 'utf8'));
+      writeFileSync(join(dark.workspace, 'src/server.mjs'), 'changed by the first session');
+      await withWorkspace('cli', 'light', async light => {
+        second = light.home;
+        expect(light.workspace).not.toBe(dark.workspace);
+        expect(readFileSync(join(light.workspace, 'src/server.mjs'), 'utf8')).toBe(fixture);
+        expect(readFileSync(join(dark.workspace, 'src/server.mjs'), 'utf8')).toBe('changed by the first session');
+      }, parent);
+      expect(existsSync(second)).toBe(false);
+      expect(existsSync(first)).toBe(true);
+      return 'captured';
+    }, parent);
+    expect(value).toBe('captured');
+    expect(existsSync(first)).toBe(false);
+    expect(readdirSync(parent).sort()).toEqual(['acme-api', 'ejm-shots-work']);
+    for (const name of ['acme-api', 'ejm-shots-work']) {
+      expect(readFileSync(join(parent, name, 'keep.txt'), 'utf8')).toBe(name);
+    }
+  });
+
+  it('removes its own tree when the session fails and preserves the failure', async () => {
+    const parent = mkdtempSync(join(tmp, 'failed-session-'));
+    writeFileSync(join(parent, 'keep.txt'), 'unrelated');
+    const failure = new Error('session failed');
+    let home = '';
+    await expect(withWorkspace('cli', 'dark', async ctx => {
+      home = ctx.home;
+      writeFileSync(join(ctx.workspace, 'partial.txt'), 'partial session output');
+      throw failure;
+    }, parent)).rejects.toBe(failure);
+    expect(existsSync(home)).toBe(false);
+    expect(readdirSync(parent)).toEqual(['keep.txt']);
+    expect(readFileSync(join(parent, 'keep.txt'), 'utf8')).toBe('unrelated');
+  });
+
+  it('keeps selected output files separate from cleaned scratch space and records each workspace', async () => {
+    const outDir = mkdtempSync(join(tmp, 'output-'));
+    const scratch = mkdtempSync(join(tmp, 'scratch-'));
+    vi.stubEnv('TMPDIR', scratch);
+    const remove = fs.rmSync;
+    vi.spyOn(fs, 'rmSync').mockImplementation((path, options) => {
+      // A regressed cleanup must fail before it can touch a real shared temporary path.
+      if (typeof path !== 'string' || !path.startsWith(scratch + '/')) throw new Error('cleanup escaped test scratch directory');
+      remove(path, options);
+    });
+    const productDir = join(outDir, 'cli');
+    mkdirSync(productDir);
+    for (const name of ['fixture.dark.png', 'fixture.light.png', 'fixture.json', 'keep.txt']) {
+      writeFileSync(join(productDir, name), 'previous output');
+    }
+    const workspaces = [];
+    const screen = new Screen(40, 6);
+    await screen.write('captured\r\n');
+    vi.spyOn(session, 'runSession').mockImplementation(async opts => {
+      workspaces.push(opts.cwd);
+      expect(existsSync(join(opts.cwd, 'src/server.mjs'))).toBe(true);
+      return { raw: 'captured\r\n', screen, exitCode: 0 };
+    });
+    vi.spyOn(renderer, 'withChrome').mockImplementation(async run => run(async () => ({
+      png: Buffer.from('stubbed renderer output'), rowText: ['captured'],
+    })));
+    const meta = await captureShot({
+      product: 'cli', name: 'fixture', cols: 40, rows: 6, title: 'fixture', caption: 'A fixture.',
+      how: 'Exercises filesystem ownership without starting a PTY or Chrome.',
+      session: c => ({ file: '/bin/sh', cwd: c.workspace, env: c.env, launch: 'fixture', displayCommand: `sh --cwd ${c.workspace}`, shotEnv: {} }),
+    }, { outDir, info: { version: 'fixture 1.0', gitCommit: 'a'.repeat(40), workingTreeChanges: 0, binary: { path: 'fixture', modified: '2026-01-01T00:00:00.000Z', sha256: '0'.repeat(64) } } });
+    expect(new Set(workspaces).size).toBe(2);
+    for (const [index, theme] of ['dark', 'light'].entries()) {
+      const workspace = workspaces[index];
+      expect(existsSync(workspace)).toBe(false);
+      expect(meta.results[theme]).toMatchObject({ command: `sh --cwd ${workspace}`, workingDirectory: workspace });
+      expect(readFileSync(join(productDir, `fixture.${theme}.png`), 'utf8')).toBe('stubbed renderer output');
+    }
+    expect(JSON.parse(readFileSync(join(productDir, 'fixture.json'), 'utf8'))).toEqual(meta);
+    expect(readFileSync(join(productDir, 'keep.txt'), 'utf8')).toBe('previous output');
+    expect(readdirSync(outDir)).toEqual(['cli']);
+    expect(readdirSync(scratch)).toEqual([]);
+  });
+});
 
 describe('pseudo-terminal session', () => {
   it('runs at the requested size and keeps colors and glyphs', async () => {

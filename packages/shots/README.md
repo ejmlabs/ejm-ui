@@ -12,6 +12,14 @@ Real product shots. Every line of text in these images was printed by the real `
 4. Draws the final screen from the emulator's cell grid as HTML in IBM Plex Mono with the product's own terminal colors (`packages/tokens/generated/terminal/ejmlabs-dark` and `-light`), and photographs it with headless Chrome at 2x. No window frame is drawn. The image is the terminal content with a 20 px margin on the terminal background. A shot with `crop: 'content'` stops at the last line of text.
 5. Writes `assets/<product>/<name>.<theme>.png` and `assets/<product>/<name>.json`.
 
+Each themed session gets a unique private directory under the system temporary directory. Its `acme-api` fixture, state, `HOME` and binary links all live there. The tool removes only that directory when the session ends or throws an error. It never clears a fixed `/tmp/acme-api` or `ejm-shots-work` path. Abrupt process termination can leave a directory behind; remove only the directory from that stopped invocation.
+
+New metadata keeps each theme's exact command and working directory in `results.<theme>.command` and `results.<theme>.workingDirectory`. The existing top-level fields describe the last captured theme for compatibility. The workspace paths are evidence of that completed session and are removed after it ends.
+
+The system temporary path can include a local username or a custom directory. Captures can show that path in both the image and JSON. Review new images and metadata for private paths before sharing them; the tool does not redact terminal text.
+
+The output directory is separate from scratch space. The default is `packages/shots/assets`; `--out <folder>` chooses another root. Use an output root you own. A capture creates the product subfolder as needed and replaces the selected shot's PNGs and JSON at those known names. It preserves other files and does not remove the output directory. A failed capture can leave some new images beside older metadata, so treat a nonzero exit as incomplete and rerun the same shot after fixing the cause.
+
 For light shots the program itself is told it runs in a light terminal (`EJM_CLI_APPEARANCE=light`, `COLORFGBG=0;15`), so ejm-cli draws its own light palette. The emulator then maps the colors through the light scheme.
 
 ## What is real and what is scripted
@@ -20,7 +28,7 @@ For light shots the program itself is told it runs in a light terminal (`EJM_CLI
 - Prompts are typed into the real TUI and shell by the capture script.
 - The "model" in the shots with tool calls is a replay file of scripted responses (`fixtures/replay/*.json`). That is the documented offline way to exercise tool calls (`ejm-cli --replay-file`, and the `replay` provider in the SDK). No hosted model was called. The replay file holds only tool calls and no assistant prose, so the only text on screen that we wrote is the tool arguments the TUI echoes (`{"path":"package.json"}` and the `write_file` arguments) and the typed prompt. The read, the refusal (`tool is not granted by this host`) and the write (`Wrote src/log.mjs (46 bytes)`) come from the real tools.
 - The `$ ` prompt is a plain `sh` prompt set by the script.
-- The demo project the agents work in is `fixtures/acme-api`, copied to `/tmp/acme-api` before every session. The path is fixed because the TUI prints it.
+- The demo project the agents work in is `fixtures/acme-api`, copied to the session's unique temporary directory. The TUI and metadata show that actual workspace path; it changes between captures.
 - `fixtures/harness/journal.mjs` is a small script of ours. It drives the real SDK and prints what the Rust worker returned: the event journal, the governor status and the harness status. It formats values and invents none.
 
 ## Verification
@@ -37,7 +45,7 @@ Each capture checks its own text and fails if a check fails. The result is in th
 
 A shot is only ever captured from a clean build of a product's last commit, never from a working tree with uncommitted changes (the commit would not identify the code that ran). The capture tool refuses a product directory with uncommitted changes.
 
-Prerequisites: Node 22 or later (node-pty 1.1.0 ships its macOS `spawn-helper` without the execute bit, so `src/session.mjs` restores it before the first spawn), Google Chrome (or `CHROME=/path/to/chrome`), the Rust toolchain the products pin (`cargo`, offline registry cache), and `python3` 3.11 or later for the Python shot. The sibling checkouts `../ejm-cli` and `../ejm-harness` are only read.
+Prerequisites: Node 22.12 or later, the [locked dependency setup](../../README.md#development), Google Chrome (or `CHROME=/path/to/chrome`), the Rust toolchain the products pin (`cargo`, offline registry cache), and `python3` 3.11 or later for the Python shot. On Linux, complete the explicit `node-pty` rebuild from that setup. On macOS, node-pty 1.1.0 ships its `spawn-helper` without the execute bit, so `src/session.mjs` restores it before the first spawn. The sibling checkouts `../ejm-cli` and `../ejm-harness` are only read.
 
 ```sh
 # 1. Export HEAD of both repos with `git archive` and build the release binaries from the exports.
@@ -74,7 +82,7 @@ The tool stops if a product binary changes while it is capturing, so one shot al
 
 ## Shots
 
-Sizes are columns x rows. PNGs are 2x. The JSON next to each image is the source of truth: product, exact command, working directory, terminal size, product version, git commit, number of uncommitted changes in the product tree (always 0), how it was built, binary path, modified time and sha256, capture date, tool version, `how`, and per theme the environment, sizes, verification and the plain-text transcript of the final screen.
+Sizes are columns x rows. PNGs are 2x. The table describes the retained captures, whose demo workspace was `/tmp/acme-api`. New captures use a unique temporary workspace and record its actual path. The JSON next to each image is the source of truth: product, exact command, working directory, terminal size, product version, git commit, number of uncommitted changes in the product tree (always 0), how it was built, binary path, modified time and sha256, capture date, tool version, `how`, and per theme the environment, sizes, verification and the plain-text transcript of the final screen.
 
 | Shot | Size | Command | What it shows |
 | --- | --- | --- | --- |
