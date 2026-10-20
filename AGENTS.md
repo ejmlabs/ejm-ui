@@ -33,3 +33,16 @@ Every test must protect meaningful behavior, a contract or a concrete regression
 ## Campground rule
 
 Leave the area you touch better than you found it, within the task's scope. Record larger follow-up work instead of starting an unrelated rewrite.
+
+## OpenSpec
+
+This repo has an `openspec/` directory. Feature and bugfix work follows that workflow: explore or clarify, propose, apply, update the plan when it changes, sync specs, then archive after verification. Do not implement a feature or bugfix directly from a plain request. The Codex workflow skills under `.agents/skills/` are the generated OpenSpec skills. Read the one that matches the step.
+
+| Task | Skill |
+| --- | --- |
+| Explore a feature or bugfix before planning | `openspec-explore` |
+| Propose a change and its plan | `openspec-propose` |
+| Revise an existing change plan | `openspec-update-change` |
+| Implement planned tasks | `openspec-apply-change` |
+| Sync completed requirements to the main specs | `openspec-sync-specs` |
+| Archive a verified, completed change | `openspec-archive-change` |
