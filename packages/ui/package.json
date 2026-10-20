@@ -11,6 +11,7 @@
     "./styles.css": "./src/styles.css",
     "./styles-docs.css": "./src/styles-docs.css",
     "./styles-app.css": "./src/styles-app.css",
+    "./styles-terminal.css": "./src/styles-terminal.css",
     "./theme-boot.js": "./public/theme-boot.js",
     "./font-preloads": "./src/font-preloads.ts",
     "./catalog.json": "./src/catalog.json",
@@ -36,8 +37,14 @@
     "./shell/*": "./src/shell/*.tsx",
     "./hooks": "./src/hooks/index.ts",
     "./hooks/*": "./src/hooks/*.ts",
+    "./components/TerminalWorkspace": "./src/terminal/TerminalWorkspace.tsx",
     "./components/*": "./src/components/*.tsx",
-    "./lib/utils": "./src/lib/utils.ts"
+    "./lib/utils": "./src/lib/utils.ts",
+    "./styles-static.css": "./src/styles-static.css",
+    "./components/NativeCheckbox": "./src/static/NativeCheckbox.tsx",
+    "./shell/Disclosure": "./src/static/Disclosure.tsx",
+    "./layout/ActionRows": "./src/static/ActionRows.tsx",
+    "./layout/DocumentContent": "./src/static/DocumentContent.tsx"
   },
   "scripts": {
     "check": "node scripts/check-art.mjs && node scripts/check-containerless.mjs && node scripts/check-components.mjs && node scripts/check-treeshake.mjs && node scripts/check-sources.mjs && node scripts/build-merge-config.mjs --check && node scripts/build-catalog.mjs --check"

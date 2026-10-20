@@ -1,6 +1,6 @@
 # Theme contract
 
-Everything a component, layout, view or site may rely on from `@ejm/ui/styles.css`. If a name is not in this file, it does not exist. Colors never appear as literals in components: they come from the semantic names below, which come from `packages/tokens/theme.json`.
+The public theme contract for `@ejm/ui/styles.css` and its opt-in entries. If a name is not in this file, it does not exist. Colors never appear as literals in components: they come from the semantic names below, which come from `packages/tokens/theme.json`.
 
 ## Use it
 
@@ -17,15 +17,28 @@ Everything a component, layout, view or site may rely on from `@ejm/ui/styles.cs
 </head>
 ```
 
-Serve `packages/ui/public/theme-boot.js` as `/theme-boot.js` (an external file, so `script-src 'self'` holds). Tailwind scans the app's own folder by itself, and `styles.css` adds `@source` lines for the parts of this package most sites use: `components`, `layout`, `shell`, `hooks` and `motion`. The docs and app components are opt-in, so a site that never renders them does not ship their CSS (about 1.8 KB gzip):
+Serve `packages/ui/public/theme-boot.js` as `/theme-boot.js` (an external file, so `script-src 'self'` holds). Tailwind scans the app's own folder by itself. `styles.css` also scans `components`, `layout`, `shell`, `hooks` and `motion`. Docs, app, static and terminal components use opt-in entries:
 
 ```css
 @import "@ejm/ui/styles.css";
 @import "@ejm/ui/styles-docs.css";   /* only if the site renders DocsLayout, DocsSidebar, CodeBlock, ParamTable, Callout, Pager, Contents */
 @import "@ejm/ui/styles-app.css";    /* only if it renders Dashboard, ChartLine, ChartBar, Legend, ActivityList */
+@import "@ejm/ui/styles-static.css"; /* only if it renders NativeCheckbox, Disclosure, ActionRows, DocumentContent */
+@import "@ejm/ui/styles-terminal.css"; /* only if it renders TerminalWorkspace and the Terminal* views */
 ```
 
-Import the partial for every folder whose components you render, or their classes are missing. `node packages/ui/scripts/check-sources.mjs` checks that each folder gets its classes from the right entry and that a default folder never imports from docs or app. A site that uses classes from a folder outside its own root needs its own `@source` line.
+Import every partial that the page needs after `styles.css`. Otherwise, its component classes are missing. `node packages/ui/scripts/check-sources.mjs` checks each folder's entry and keeps opt-in folders outside the default scan. A site that uses classes from a folder outside its own root needs its own `@source` line.
+
+The terminal module lives in `src/terminal` and keeps the public import
+`@ejm/ui/components/TerminalWorkspace`. Its structural utilities belong to
+`styles-terminal.css`; products should compose the public components rather
+than copy their markup or utility classes. `NativeCheckbox`, `Disclosure`,
+`ActionRows` and `DocumentContent` live in `src/static` and use
+`styles-static.css`. All keep root exports. `Disclosure`, `ActionRows` and
+`DocumentContent` keep their shell or layout deep aliases. `NativeCheckbox`
+uses `@ejm/ui/components/NativeCheckbox`. A page that
+uses both groups needs both partials. All entries share the same tokens, fonts
+and theme.
 
 The Tailwind default palette, radius, shadow and font namespaces are reset. `bg-red-500`, `rounded-xl`, `shadow-md`, `font-serif` and `drop-shadow-*` do not exist, so a color or shape outside the system fails to compile.
 
@@ -215,6 +228,24 @@ Under reduced motion, with scripts off, and in print, `pending` hides nothing. T
 - `link` (color, underline, 2px on hover) for classed anchors. Bare `<a>` elements with no class already get it.
 - `skip-link`: first focusable element on every page, `<a href="#main" class="skip-link">`. Visible on focus.
 - `duration-*`, `ease-*`, `shadow-*`, `rounded-*` as above. `sr-only` is Tailwind's own.
+
+### Shared component structure
+
+These public, implementation-owned utilities keep shared component output
+small. Prefer the components when composing a product; keep their markup and
+state hooks with `@ejm/ui`. The native and document utilities below belong to
+`styles-static.css`. Import that entry after `styles.css` for the static parts.
+
+- `native-check-label`, `native-check`: checkbox label target and native input
+  with the shared accent color. The platform supplies the checkmark.
+- `disclosure-summary`, `disclosure-content`, `disclosure-menu`: native
+  disclosure structure and bounded menu presentation. The platform supplies
+  the open/closed marker. Menus retain a border in forced colors.
+- `document-content`: shared reading width, heading and form rhythm, wrapped
+  preformatted text and status/error presentation.
+- `terminal-*`: the workspace, header, navigation, transcript, status and
+  composer structure in the opt-in `styles-terminal.css` entry. Import that
+  entry after `styles.css` when rendering the `Terminal*` components.
 
 ## Base styles
 

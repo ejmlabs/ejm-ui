@@ -78,6 +78,16 @@ writeFileSync(join(consumer, 'src', 'deep-imports.ts'), `// Written by scripts/p
 import { fontPreloads } from '@ejm/ui/font-preloads';
 import { Hero } from '@ejm/ui/layout/Hero';
 import { ProductWindow } from '@ejm/ui/layout/ProductWindow';
+import { NativeCheckbox } from '@ejm/ui/components/NativeCheckbox';
+import { Disclosure } from '@ejm/ui/shell/Disclosure';
+import { Header } from '@ejm/ui/shell/Header';
+import { AppShell } from '@ejm/ui/shell/AppShell';
+import { ActionRows, ActionRow } from '@ejm/ui/layout/ActionRows';
+import { DocumentContent } from '@ejm/ui/layout/DocumentContent';
+import {
+  TerminalWorkspace, TerminalHeader, TerminalLink, TerminalOutput, TerminalPairing, TerminalLog,
+  TerminalEntry, TerminalStatus, TerminalComposer, TerminalTextarea, TerminalSelect,
+} from '@ejm/ui/components/TerminalWorkspace';
 import { useInView } from '@ejm/ui/hooks/useInView';
 import { useReducedMotion } from '@ejm/ui/hooks/useReducedMotion';
 import { useTheme } from '@ejm/ui/hooks/useTheme';
@@ -88,10 +98,10 @@ import { checkBudget } from '@ejm/ssg/budget';
 import { PROJECTS } from '@ejm/site/projects';
 import { CliHeroWindow, ProductHeroStage } from '@ejm/demos/hero';
 import { LazyCliDemo } from '@ejm/demos/islands/cli-lazy';
-export const probe = [fontPreloads, Hero, ProductWindow, useInView, useReducedMotion, useTheme, tokenize, ripple, ejmSsg, checkBudget, PROJECTS, CliHeroWindow, ProductHeroStage, LazyCliDemo];
+export const probe = [fontPreloads, Hero, ProductWindow, NativeCheckbox, Disclosure, Header, AppShell, ActionRows, ActionRow, DocumentContent,
+  TerminalWorkspace, TerminalHeader, TerminalLink, TerminalOutput, TerminalPairing, TerminalLog, TerminalEntry, TerminalStatus, TerminalComposer, TerminalTextarea, TerminalSelect,
+  useInView, useReducedMotion, useTheme, tokenize, ripple, ejmSsg, checkBudget, PROJECTS, CliHeroWindow, ProductHeroStage, LazyCliDemo];
 `);
-// The opt-in CSS entries must resolve from an installed package and compile.
-writeFileSync(join(consumer, 'src', 'styles.css'), '@import "@ejm/ui/styles.css";\n@import "@ejm/ui/styles-docs.css";\n@import "@ejm/ui/styles-app.css";\n');
 run('npm', ['install', '--no-audit', '--no-fund'], consumer);
 
 // 4. The checks, all through the installed bins.
@@ -146,4 +156,23 @@ if (problems.length) {
   console.error(`\npack-proof FAILED\n  ${problems.join('\n  ')}\nkept: ${dir}`);
   process.exit(1);
 }
+// Compile optional CSS independently, preserving the starter's real route budget and output comparison.
+step('installed opt-in CSS exports');
+const cssProbe = join(consumer, 'css-entry-proof.mjs');
+writeFileSync(cssProbe, `
+import { compile } from '@tailwindcss/node';
+import { Scanner } from '@tailwindcss/oxide';
+import { writeFileSync } from 'node:fs';
+const css = ['styles.css', 'styles-docs.css', 'styles-app.css', 'styles-static.css', 'styles-terminal.css']
+  .map(name => '@import "@ejm/ui/' + name + '";').join('\\n');
+const compiler = await compile(css, { base: process.cwd(), onDependency() {} });
+const scanner = new Scanner({ sources: compiler.sources });
+const output = compiler.build(scanner.scan());
+for (const name of ['native-check-label', 'disclosure-menu', 'document-content', 'terminal-workspace']) {
+  if (!output.includes('.' + name)) throw new Error('Installed CSS is missing ' + name);
+}
+writeFileSync('css-entry-proof.css', output);
+console.log('Every installed CSS entry resolves and generates its components.');
+`);
+run('node', [cssProbe], consumer);
 console.log(`\npack-proof ok. Kept: ${dir}`);

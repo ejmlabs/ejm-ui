@@ -5,6 +5,18 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Add public `Terminal*` view components, `NativeCheckbox`, `Disclosure`,
+  `ActionRows`, `ActionRow` and `DocumentContent` for native pages and terminal
+  interfaces. Allow `Header` and `AppShell` to replace or suppress the theme
+  control. The views use the shared theme and platform form behavior; products
+  keep their own authentication, connection and command handling. Static
+  styles are opt-in through `@ejm/ui/styles-static.css`. Terminal styles use
+  `@ejm/ui/styles-terminal.css`. Both entries follow `@ejm/ui/styles.css`.
+  The terminal import stays `@ejm/ui/components/TerminalWorkspace`.
+  `NativeCheckbox` uses `@ejm/ui/components/NativeCheckbox`. The other static
+  parts keep their shell and layout deep paths. This source
+  change does not publish packages, deploy a consumer or establish browser
+  acceptance.
 - Add Relay's production brand assets through the existing public tokens asset
   export. A targeted legacy import preserves other assets and provenance while
   excluding Relay's editable sources and local review boards. This source
