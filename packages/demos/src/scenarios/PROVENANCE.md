@@ -18,3 +18,18 @@ The behavior was ported from `design-kit/web/demo.js` (sha256 `8d20f00a6d9a74886
 ## Edited after the copy
 
 `ide.json` was edited on 2026-10-18 to use the tool names ejm-ide documents in `docs/agent-tools.md` (`search_code` replaces `search`, and `list_files` is gone because ejm-ide has no such tool; the explain scenario searches for `pub fn` instead) and to drop the `Ctrl+K` and `Cmd+K` shortcut, which no ejm-ide document describes. The hash above is the edited file.
+
+
+## Product-owned recordings
+
+The added `LazyCliShowcase` and `LazyHarnessShowcase` entries contain playback
+machinery, not captured workflows. Their consumers supply the compact frames, a lazy timeline and the
+SHA-256 ID of the capture input manifest. The timeline must carry that same ID.
+Matching IDs catch stale pairings; they do not prove authenticity or execution.
+
+Keep the real product source, binary digest, command/replay inputs, observed
+output/status and generated-frame receipt with the product-owned recording.
+State which narration and timing are authored. A browser replay never executes
+the shown commands or calls a model. The package's tiny counter/frame test data
+is labelled test-only and claims no native output. No older local recording was
+imported into this change, and no new capture or publication is claimed here.

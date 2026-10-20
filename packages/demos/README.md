@@ -1,6 +1,6 @@
 # @ejm/demos
 
-The simulated product screens for ejm-cli, ejm-ide and ejm-harness: scenario data, headless engines, static views, lazy interactive islands and the product hero. Strict TypeScript, React 19. Every screen is a simulation that runs in the visitor's browser, follows a script and sends nothing anywhere.
+The simulated product screens for ejm-cli, ejm-ide and ejm-harness: scenario data, headless engines, static views, lazy interactive islands and the product hero. Strict TypeScript, React 19. The interactive screens are simulations that run in the visitor's browser, follow a script and send nothing anywhere. The separate recorded CLI and Harness entries replay data supplied by their products. They never start a provider or command.
 
 | Import | What it is |
 | --- | --- |
@@ -8,6 +8,7 @@ The simulated product screens for ejm-cli, ejm-ide and ejm-harness: scenario dat
 | `@ejm/demos/views` | `CliView`, `IdeView`, `HarnessView`: one frame of each product inside the layout `ProductWindow`. |
 | `@ejm/demos/hero` | `ProductHeroStage` with `CliHeroWindow`, `HarnessHeroWindow` and `IdeHeroWindow` (pay only for the windows you pass), and `ProductHero` (all three). |
 | `@ejm/demos/islands/cli-lazy`, `/ide-lazy`, `/harness-lazy` | `LazyCliDemo`, `LazyIdeDemo`, `LazyHarnessDemo`: static view first, island on approach or use. Ship only that product's view. Use these. |
+| `@ejm/demos/islands/cli-lazy`, `/harness-lazy` | Additive `LazyCliShowcase` and `LazyHarnessShowcase` entries for passive, product-owned recordings. Existing interactive exports stay available. |
 | `@ejm/demos/islands` | `LazyDemo product="..."`: the same for any product, but it imports all three views (about 5 KB gzip more than one). |
 | `@ejm/demos/islands/cli`, `/ide`, `/harness` | The interactive islands, default exports, for `React.lazy`. |
 | `@ejm/demos/styles.css` | `@source` lines so Tailwind scans the views, islands and hero (not the tests or the scenario data). Import it once from the site stylesheet, after `@ejm/ui/styles.css`. About 1.7 KB gzip of CSS. |
@@ -84,12 +85,88 @@ Targets are 44px on coarse pointers, inputs are 16px there, and the layout react
 
 ## Honesty rules
 
-1. Every window and island says it is simulated, and an island also states that nothing is sent anywhere. Neither can be hidden or shortened.
+1. Every simulated window and interactive island says it is simulated, and an island also states that nothing is sent anywhere. Neither can be hidden or shortened.
 2. No claim of real output, no benchmarks, no customers. Every number that is not a count of what is on screen is labelled as a sample value.
 3. Every command, flag, key and tool name shown appears in that product's README, or in a file named in `honesty-allow.json` with a reason. `node packages/demos/scripts/check-demos-honesty.mjs` checks this against `~/Desktop/ejm-cli`, `ejm-ide` and `ejm-harness` (or `--root DIR`) and fails on a name that is not documented, on an allow entry whose source does not contain the name, and on a stale entry. Never add an entry to make the gate pass: add it only when the name really is documented elsewhere.
 4. The ejm-ide tool names are the plain ones in `ejm-ide/docs/agent-tools.md`: `search_code`, `read_file`, `write_file`. There is no documented palette shortcut, so the palette opens from a Commands button.
 5. Where a demo needs a control the product lacks, the control says so: Grant write stands in for `--allow-write`, Accept and Reject exist to show both outcomes.
 6. No network, no storage, no cookies and no analytics. `src/islands/no-network.test.ts` fails when a view, island or the hero uses a network, storage or cookie API, and the cli island test spies on `fetch`.
+
+## Recorded CLI entry
+
+`LazyCliShowcase` is a separate named export from `@ejm/demos/islands/cli-lazy`.
+It preserves the existing `LazyCliDemo` simulation and takes no editable prompt,
+grant control or product command. Use it only with a verified recording. This
+package ships no reference CLI recording or claimed command output.
+
+The product owns its data, narration and capture receipt. Declare one stable
+`CliRecordingSource` outside the React component. It supplies `id`,
+`initialFrame`, `finalFrame` and `load`. The ID is the 64-character lowercase
+SHA-256 of the product's capture input manifest. `load` must only dynamically
+import that product's bundled recording. Its `{ id, beats }` result must use the
+same ID. Each beat has an `at` timestamp in milliseconds and an `update` with
+optional `status` fields (`title`, `agents`, `models`, `tools`) and changed transcript `blocks`. Existing block
+IDs are replaced in place; new IDs append.
+
+```tsx
+import { LazyCliShowcase, type CliRecordingSource } from '@ejm/demos/islands/cli-lazy';
+import frames from './recordings/cli-frames';
+
+// Generate these typed product modules from the reviewed capture. Do not copy sample output.
+const source: CliRecordingSource = {
+  id: frames.id,
+  initialFrame: frames.initialFrame,
+  finalFrame: frames.finalFrame,
+  load: () => import('./recordings/cli-recording').then(module => module.default),
+};
+
+<LazyCliShowcase source={source} />
+```
+
+The generated timeline module must satisfy `CliRecording`; its frame module must
+satisfy the frame fields in `CliRecordingSource`. This preserves literal block
+kinds and roles without treating raw JSON as a checked TypeScript module.
+
+The initial HTML and no-JS view show the compact final frame without importing
+the full timeline. On approach, the same lazy loader loads the passive island.
+Playback exposes only Pause/Resume and Restart. It suspends offscreen and when
+the page is hidden, stops its pending work on unmount, and shows the final frame
+without importing the timeline or starting playback timers under reduced motion. The fixed read/write/shell grants
+come from the source. They cannot be changed by the visitor.
+
+A source identity mismatch, failed playback bound or rejected loader keeps the
+static final frame and shows a generic status message. The identity check catches
+stale source/data pairings. It does not authenticate JavaScript served by an
+operator or validate the truth of a recording. Review the real input/output
+hashes, product source and binary, and generated final frame through the product's
+capture and release gates. Label authored narration and timing separately from
+observed tool output. Never claim real execution from an unverified payload.
+
+A timeline has 1 to 256 beats, nondecreasing finite timestamps from zero through
+120,000 ms, at most 256 distinct transcript blocks and 512 lines per block. CLI
+recording JSON is limited to 262,144 UTF-16 code units. These are playback bounds,
+not a bundle allowance. The existing 14 KiB gzip initial-load and 40 KiB gzip
+island budgets still apply; the size gate also checks the caller's lazy-data
+boundary. Real product data needs its own normal site and budget checks.
+
+`LazyHarnessShowcase` has the same source, options, lazy loading, motion and
+cleanup contract. Import it and `HarnessRecordingSource` from
+`@ejm/demos/islands/harness-lazy`. Its source supplies `HarnessFrame` snapshots;
+each `HarnessRecordedUpdate` replaces the supplied fields of a snapshot. Replace
+`stats` as a whole, and supply complete replacement `sessions` and `journal`
+arrays when those fields change. A beat allows at most 256 sessions and 512
+journal entries, within the same 262,144 UTF-16 code-unit serialized-data and
+finite-time bounds.
+The static `HarnessScreen` keeps its sample-value labels. A capture must state
+which displayed values were observed and which labels, progress or samples were
+authored. Visitors cannot add sessions, alter capacity or crash a worker here.
+
+The generic adapter in `src/recordings/playback.ts` and the shared
+`RecordedIsland` loader reuse the current cancellable runtime and lifecycle.
+Neither entry includes a product recording. Each product owns its actual
+session counts, observed capacity, transcript, narration and capture receipt.
+No recording or execution is claimed by the package's test fixtures. The
+simulation honesty rules above still apply to existing interactive entries.
 
 ## Tests
 

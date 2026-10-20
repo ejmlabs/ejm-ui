@@ -10,7 +10,7 @@ export type ViewProps = Pick<ProductWindowProps, 'elevation' | 'labelSide' | 'la
 export function CliScreen({ frame, plain = false, compact = false }: { frame: CliFrame; plain?: boolean; compact?: boolean }) {
   return (
     <div className="flex h-full min-h-0 flex-col leading-[1.45]">
-      <CliHeader provider={frame.provider} title={frame.title} write={frame.write} cwd={frame.cwd} sessionId={frame.sessionId} plain={plain} />
+      <CliHeader provider={frame.provider} title={frame.title} write={frame.write} shell={frame.shell} cwd={frame.cwd} sessionId={frame.sessionId} plain={plain} />
       {/* justify-end keeps the newest lines in view when the window is shorter than the transcript, like a terminal that has scrolled. */}
       <div className={cx('flex min-h-0 flex-1 flex-col overflow-hidden pt-[0.7em]', compact ? 'justify-start @md:[-webkit-mask-image:linear-gradient(to_bottom,#000_calc(100%-2.2em),transparent)] @md:[mask-image:linear-gradient(to_bottom,#000_calc(100%-2.2em),transparent)]' : 'justify-end')}>
         {frame.blocks.map((b) => (
