@@ -1,4 +1,4 @@
-import { lazy, useMemo } from 'react';
+import { lazy } from 'react';
 import type { CliShowcaseProps } from './cli-showcase';
 import { CliScreen } from '../views/CliView';
 import { RecordedView } from '../views/RecordedView';
@@ -17,6 +17,5 @@ export type { CliRecording, CliRecordingSource, CliRecordedUpdate } from '../cli
 
 /** A product-owned recorded transcript. The full recording is imported only after the lazy island is wanted. */
 export function LazyCliShowcase({ source, options, ...lazyOptions }: LazyIslandOptions & CliShowcaseProps) {
-  const Island = useMemo(() => function RecordedCli() { return <Showcase source={source} options={options} />; }, [source, options]);
-  return <LazyIsland island={Island} fallback={<RecordedView name="ejm-cli"><CliScreen frame={source.finalFrame} /></RecordedView>} loadLabel={false} {...lazyOptions} />;
+  return <LazyIsland island={<Showcase source={source} options={options} />} fallback={<RecordedView name="ejm-cli"><CliScreen frame={source.finalFrame} /></RecordedView>} loadLabel={false} {...lazyOptions} />;
 }

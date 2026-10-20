@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { renderToString } from 'react-dom/server';
 import { hydrateRoot, type Root } from 'react-dom/client';
 import { REDUCED_MOTION_QUERY } from '@ejm/ui/hooks/useReducedMotion';
-import { StrictMode } from 'react';
+import { StrictMode, useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { CliRecording, CliRecordingSource } from '../cli-playback';
 import { createManualClock } from '../core';
@@ -53,6 +53,39 @@ describe('recorded CLI source', () => {
     unmount();
     expect(clock.pending).toBe(0);
     expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('keeps paused progress and the loaded source when its parent rerenders with equivalent options', async () => {
+    const clock = createManualClock();
+    const user = userEvent.setup();
+    const progressing: CliRecording = { id, beats: [
+      { at: 0, update: { blocks: [block('first test frame')] } },
+      { at: 100, update: { blocks: [block('middle test frame')] } },
+      { at: 200, update: { blocks: [block('final test frame')] } },
+    ] };
+    const load = vi.fn(async () => progressing);
+    const stable: CliRecordingSource = { ...source, load };
+    function Parent() {
+      const [revision, setRevision] = useState(0);
+      return <><button onClick={() => setRevision(revision + 1)}>Update parent {revision}</button><LazyCliShowcase source={stable} options={{ clock, speed: 1 }} eager /></>;
+    }
+    const { unmount } = renderIn('light', <Parent />);
+    await screen.findByText('first test frame');
+    act(() => clock.advance(100));
+    expect(screen.getByText('middle test frame')).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Pause ejm-cli playback' }));
+    await user.click(screen.getByRole('button', { name: 'Update parent 0' }));
+    expect(screen.getByRole('button', { name: 'Update parent 1' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Resume ejm-cli playback' })).toBeVisible();
+    expect(screen.getByText('middle test frame')).toBeVisible();
+    expect(load).toHaveBeenCalledTimes(1);
+    act(() => clock.advance(200));
+    expect(screen.getByText('middle test frame')).toBeVisible();
+    expect(screen.queryByText('final test frame')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Resume ejm-cli playback' }));
+    expect(screen.getByText('final test frame')).toBeVisible();
+    unmount();
+    expect(clock.pending).toBe(0);
   });
 
   it('hydrates reduced motion without loading data and disposes playback when the preference changes', async () => {

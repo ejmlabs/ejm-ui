@@ -127,6 +127,11 @@ The generated timeline module must satisfy `CliRecording`; its frame module must
 satisfy the frame fields in `CliRecordingSource`. This preserves literal block
 kinds and roles without treating raw JSON as a checked TypeScript module.
 
+With a stable source, parent rerenders preserve the loaded recording, playback
+progress and pause state, including when `options` is a new equivalent object.
+Clock and speed options initialize the player; remount it to change them.
+Changing the source starts that source's playback from the beginning.
+
 The initial HTML and no-JS view show the compact final frame without importing
 the full timeline. On approach, the same lazy loader loads the passive island.
 Playback exposes only Pause/Resume and Restart. It suspends offscreen and when

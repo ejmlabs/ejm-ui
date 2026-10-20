@@ -1,5 +1,5 @@
 import { useInView } from '@ejm/ui/hooks/useInView';
-import { Suspense, useEffect, useState, type ComponentType, type ReactNode } from 'react';
+import { isValidElement, Suspense, useEffect, useState, type ComponentType, type ReactElement, type ReactNode } from 'react';
 import { Btn } from './btn';
 
 export interface LazyIslandOptions {
@@ -10,8 +10,8 @@ export interface LazyIslandOptions {
 }
 
 export interface LazyIslandProps extends LazyIslandOptions {
-  /** The interactive demo, as a `React.lazy` component, so it is its own chunk. */
-  island: ComponentType;
+  /** A `React.lazy` component, or its element when the island takes props. */
+  island: ComponentType | ReactElement;
   /** The static view of the same screen: what the server renders and what shows without scripts. */
   fallback: ReactNode;
   /** Hide or name the loading action for passive entries. Interactive entries keep the current default. */
@@ -36,7 +36,7 @@ export function LazyIsland({ island: Island, fallback, rootMargin = '600px', eag
     <div ref={ref} onPointerEnter={() => setWanted(true)} onFocusCapture={() => setWanted(true)} onKeyDownCapture={() => setWanted(true)}>
       {wanted ? (
         <Suspense fallback={fallback}>
-          <Island />
+          {isValidElement(Island) ? Island : <Island />}
         </Suspense>
       ) : (
         <>

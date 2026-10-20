@@ -5,6 +5,15 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Wait for screenshot Chrome to close before removing its temporary profile,
+  with bounded shutdown and removal retries. Preserve rendering failures when
+  cleanup succeeds and retain both errors when cleanup also fails.
+- Preserve paused playback, progress and the loaded recording when a parent
+  rerenders either recorded showcase with equivalent options. `LazyIsland`
+  accepts a React element with props as well as an existing component type.
+- Exclude the gallery's unused CSS `filter` utility. Layouts and CSS budgets
+  are unchanged.
+
 - Add `LazyCliShowcase` and `LazyHarnessShowcase` with explicit product-owned
   recording data, passive playback controls and lazy timelines. Keep existing
   interactive exports unchanged. The adapters reuse the shared clock, lifecycle

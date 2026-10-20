@@ -1,4 +1,4 @@
-import { lazy, useMemo } from 'react';
+import { lazy } from 'react';
 import type { HarnessShowcaseProps } from './harness-showcase';
 import { HarnessScreen, HarnessView } from '../views/HarnessView';
 import { RecordedView } from '../views/RecordedView';
@@ -16,6 +16,5 @@ export type { HarnessRecording, HarnessRecordingSource, HarnessRecordedUpdate } 
 
 /** A recorded read-only snapshot. The product's timeline loads only when the island is wanted. */
 export function LazyHarnessShowcase({ source, options, ...lazyOptions }: LazyIslandOptions & HarnessShowcaseProps) {
-  const Island = useMemo(() => function RecordedHarness() { return <Showcase source={source} options={options} />; }, [source, options]);
-  return <LazyIsland island={Island} fallback={<RecordedView name="ejm-harness"><HarnessScreen frame={source.finalFrame} /></RecordedView>} loadLabel={false} {...lazyOptions} />;
+  return <LazyIsland island={<Showcase source={source} options={options} />} fallback={<RecordedView name="ejm-harness"><HarnessScreen frame={source.finalFrame} /></RecordedView>} loadLabel={false} {...lazyOptions} />;
 }
