@@ -5,6 +5,7 @@
   "Select": ["default", "focus", "invalid", "disabled"],
   "Switch": ["off", "on", "focus", "disabled"],
   "Checkbox": ["unchecked", "checked", "indeterminate", "focus", "disabled"],
+  "NativeCheckbox": ["unchecked", "checked", "focus", "invalid", "disabled"],
   "Badge": ["default", "strong", "success", "warn", "danger", "info"],
   "Separator": ["default"],
   "Tooltip": ["closed", "open"],
@@ -15,5 +16,16 @@
   "Table": ["default", "empty", "loading", "error"],
   "KeyHints": ["default"],
   "Prompt": ["idle", "busy", "error"],
-  "StateBlock": ["empty", "loading", "error"]
+  "StateBlock": ["empty", "loading", "error"],
+  "TerminalWorkspace": ["pairing", "session"],
+  "TerminalHeader": ["default"],
+  "TerminalLink": ["default"],
+  "TerminalOutput": ["default"],
+  "TerminalPairing": ["visible", "hidden"],
+  "TerminalLog": ["default"],
+  "TerminalEntry": ["prompt", "assistant", "output", "error"],
+  "TerminalStatus": ["default"],
+  "TerminalComposer": ["default"],
+  "TerminalTextarea": ["default", "focus", "invalid", "disabled"],
+  "TerminalSelect": ["default", "focus", "invalid", "disabled"]
 }

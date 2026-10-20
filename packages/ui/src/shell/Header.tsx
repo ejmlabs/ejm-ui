@@ -15,6 +15,8 @@ export interface HeaderProps {
   nav?: readonly NavItem[];
   /** Matches the band the page opens with. Default: the page ground. */
   band?: Band;
+  /** Replaces the last theme control. Omit to use ThemeToggle; pass null to show none. */
+  themeControl?: ReactNode;
   linkComponent?: LinkComponent;
   className?: string;
 }
@@ -24,11 +26,11 @@ const itemClass =
 
 /**
  * The site header, sticky on the page ground with no box or rule. Logo at the left; at the right the nav, then the
- * ThemeToggle, always last. The nav is one landmark. Below 768px its list folds into a native <details> menu, so it works without scripts and
+ * theme control, always last. The nav is one landmark. Below 768px its list folds into a native <details> menu, so it works without scripts and
  * takes no space when closed (the open menu is an overlay, so nothing moves). It sets the sticky offset
  * through --ejm-header-h and keeps clear of the notch with safe-area insets.
  */
-export function Header({ logo, homeLabel = 'Home', homeHref = '/', nav = [], band, linkComponent, className }: HeaderProps) {
+export function Header({ logo, homeLabel = 'Home', homeHref = '/', nav = [], band, themeControl, linkComponent, className }: HeaderProps) {
   const ambient = useLinkComponent();
   const Link = linkComponent ?? ambient;
   const menu = useRef<HTMLDetailsElement>(null);
@@ -108,7 +110,7 @@ export function Header({ logo, homeLabel = 'Home', homeHref = '/', nav = [], ban
               </details>
             </nav>
           )}
-          <ThemeToggle />
+          {themeControl === undefined ? <ThemeToggle /> : themeControl}
         </div>
       </div>
     </header>

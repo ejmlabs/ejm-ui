@@ -1,4 +1,10 @@
 {
+  "ActionRow": [
+    "default"
+  ],
+  "ActionRows": [
+    "default"
+  ],
   "ActivityList": [
     "default"
   ],
@@ -66,10 +72,17 @@
     "closed",
     "open"
   ],
+  "Disclosure": [
+    "closed",
+    "open"
+  ],
   "DocsLayout": [
     "default"
   ],
   "DocsSidebar": [
+    "default"
+  ],
+  "DocumentContent": [
     "default"
   ],
   "ExternalLink": [
@@ -109,6 +122,13 @@
     "closed",
     "open",
     "highlighted",
+    "disabled"
+  ],
+  "NativeCheckbox": [
+    "unchecked",
+    "checked",
+    "focus",
+    "invalid",
     "disabled"
   ],
   "Page": [
@@ -198,6 +218,50 @@
     "default",
     "selected",
     "focus"
+  ],
+  "TerminalComposer": [
+    "default"
+  ],
+  "TerminalEntry": [
+    "prompt",
+    "assistant",
+    "output",
+    "error"
+  ],
+  "TerminalHeader": [
+    "default"
+  ],
+  "TerminalLink": [
+    "default"
+  ],
+  "TerminalLog": [
+    "default"
+  ],
+  "TerminalOutput": [
+    "default"
+  ],
+  "TerminalPairing": [
+    "visible",
+    "hidden"
+  ],
+  "TerminalSelect": [
+    "default",
+    "focus",
+    "invalid",
+    "disabled"
+  ],
+  "TerminalStatus": [
+    "default"
+  ],
+  "TerminalTextarea": [
+    "default",
+    "focus",
+    "invalid",
+    "disabled"
+  ],
+  "TerminalWorkspace": [
+    "pairing",
+    "session"
   ],
   "Text": [
     "default"

@@ -9,6 +9,8 @@ The containerless language as components. Group with display type, space, hairli
 | `SectionHead` | `kicker` ("01 / Projects"); `title`; `children` (supporting copy); `as` h1, h2 or h3; `size` display or title; `id` | The opening of a section: mono kicker, a huge balanced heading, copy beside it from 48rem of its own width and below it when narrower. | Keep heading levels in order. Give the heading an `id` and point `aria-labelledby` at it. |
 | `Rows` | `size` heading or title; `aria-label` | A hairline list that replaces cards. Rows go in columns from 42rem of the list's own width. The list reaches 1rem past the column so the tone and hairlines meet the gutter and text stays on the column edge. Use it inside `Page` or give the parent a gutter. | A `ul`. Give it a label. |
 | `Row` | `title`; `description`; `meta` (mono); `href`; `external`; `download` (true or a file name); `state` default, selected, disabled or focused | One row. With `href` the whole row is the link through its title, so the link name is the title alone. Hover shifts the tone (an opacity layer) and slides the arrow (transform). `external` adds `rel="external"`, the diagonal arrow and "opens another site" for screen readers (so the link name is then "title, opens another site"). `download` passes through to the anchor. | `selected` sets `aria-current` and shows the selected glyph. `focused` shows the focused glyph and a ring (real focus uses `:focus-visible`). `disabled` renders no link and adds the contract word "(disabled)". Row targets are at least 44px on coarse pointers. |
+| `ActionRows` and `ActionRow` | Native list and list-item attributes; row `title`, optional `description`, `meta`, `actions`, `children` | Compact records with separate buttons, links or forms. Long text and action groups wrap independently. | A real `ul` and `li`. Name the list and give each action a name that identifies its record. The row is never a stretched link. |
+| `DocumentContent` | Native div attributes | Reading width, document headings, form rhythm, wrapped `pre` text and status/error presentation. | Compose semantic headings, sections, labels and shared controls. It adds no landmark or validation behavior. |
 | `Facts` and `Fact` | `Fact label`, children | Mono labels, hairlines, values. Stacks below 28rem of its own width, so it never clips in a narrow column. | A `dl`. |
 | `Stat` | `figure`; `label`; `state` default, loading, error or empty; `message` | A large figure with a mono label and a hairline above. No box. Loading, error and empty replace the figure with the contract word or your message. | Loading is a polite status. Error uses `Status`, so it has a glyph and a word. |
 | `Text` | `variant` default, muted, strong or code; `as` | A run of text with a variant. | On Sage, muted is already Ink: use size and weight for hierarchy. |
@@ -27,6 +29,15 @@ The containerless language as components. Group with display type, space, hairli
 - Do not put a `Row` list inside a bordered or filled box. If you want a box, you want a band.
 - Use `Stat` for numbers that matter and `Facts` for specifications. Do not use either as a card grid.
 - Product windows are objects, not groups: never wrap ordinary content in one.
+- Use `ActionRows` for records with separate actions. Its `title` is visible
+  content, not the native tooltip attribute. Put a real shared `Button` or a
+  form in `actions`; do not copy a button class list into generated HTML.
+- Use `DocumentContent` for native account, policy and setup pages instead of
+  a separate typography system. It and `ActionRows` live in `src/static`.
+  Import `@ejm/ui/styles-static.css` after `@ejm/ui/styles.css`. Use the root
+  exports or public aliases `@ejm/ui/layout/DocumentContent` and
+  `@ejm/ui/layout/ActionRows`. The `@ejm/ui/layout` barrel does not export these
+  static parts.
 
 ## Product shots
 

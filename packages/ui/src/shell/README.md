@@ -5,14 +5,15 @@ Header, footer, layouts and the external link. No cards: the header, the nav and
 | Export | Purpose |
 | --- | --- |
 | `SiteLayout` | Skip link, `Header`, `<main id="main" tabIndex={-1}>`, `Footer`. The footer sits at the bottom of short pages. |
-| `Header` | Sticky, on the page ground (an opaque `band`, so text never sits on page content while scrolling; `band` sets a matching ground when the page opens on Mist, Sage or Ink), no box or rule. Logo link at the left. Nav, then `ThemeToggle` last at the far right. Below 768px the nav is one native `<details>` Menu. |
+| `Header` | Sticky, on the page ground (an opaque `band`, so text never sits on page content while scrolling; `band` sets a matching ground when the page opens on Mist, Sage or Ink), no box or rule. Logo link at the left. Nav, then the theme control last at the far right. Below 768px the nav is one native `<details>` Menu. |
 | `Footer` | Ink band with link columns, a `privacy` slot, a `legal` line, and a safe-area bottom inset. |
 | `ThemeToggle` | Sun and moon, 44px, named for its action. Uses `useTheme`. |
 | `ExternalLink` | `rel="external noopener"`, an arrow, and ", opens another site" for screen readers. |
 | `SkipLink` | `<a href="#main" class="skip-link">`. Included by `SiteLayout` and `AppShell`. |
 | `DocsLayout` | Grid for a docs page: `sidebar`, `contents` and the article in a 68ch column. Put it inside `SiteLayout`. |
-| `AppShell` | Top bar (`actions`, then `ThemeToggle`), side `nav` and content, for applications. A whole page frame with its own skip link and `main`. |
+| `AppShell` | Top bar (`actions`, then the theme control), side `nav` and content, for applications. A whole page frame with its own skip link and `main`. |
 | `Collapse` | The shared disclosure behind the sidebars: one `<details>`, labelled on narrow screens, always visible from a breakpoint. |
+| `Disclosure` (root or deep import) | Native `<details>` with a `label`, always collapsible at every width. Default `presentation="section"` uses hairlines in normal flow; `presentation="menu"` opens a bounded, scrollable overlay. |
 | `LinkProvider`, `useLinkComponent`, `LinkComponent`, `NavItem` | Router-agnostic links. |
 
 ## Links without a router
@@ -25,6 +26,31 @@ const RouterLink: LinkComponent = ({ href, ...rest }) => <Link to={href} {...res
 ```
 
 External items (`external: true`) always render as a plain `ExternalLink`.
+
+## Theme control slot
+
+`Header` and `AppShell` accept `themeControl?: ReactNode`. Omit it or pass
+`undefined` to keep `ThemeToggle`. Pass `null` to suppress the control. A native
+page can supply a shared `Button` and attach its handler from an external
+consumer script. The default toggle still needs hydration to change the theme.
+
+## Disclosures at every width
+
+Import `Disclosure` from `@ejm/ui/shell/Disclosure` or `@ejm/ui`. It accepts
+standard details attributes and `label`, `presentation`, `density`,
+`summaryClassName` and `contentClassName`. A menu defaults to compact density;
+a section defaults to comfortable. Both keep the coarse-pointer target.
+
+The implementation lives in `src/static/Disclosure.tsx`. Import
+`@ejm/ui/styles-static.css` after `@ejm/ui/styles.css`. The shell deep path is
+a public alias; the `@ejm/ui/shell` barrel does not export this static part.
+
+Keep links and controls in the disclosed content, outside its summary. Native
+opening and closing work before hydration, with the platform's open/closed
+marker. Menu presentation does not add
+arrow-key navigation, Escape, focus return or collision handling; use `Menu`
+for that interaction contract. `Collapse` keeps its existing breakpoint
+behavior. None of these APIs connects a product session or changes an account.
 
 ## Narrow screens, with no script
 

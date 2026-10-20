@@ -61,6 +61,16 @@ working directory cannot serve as the dependency commit pin.
 A source snapshot does not prove a successful install, build, native check
 or hosted review.
 
+Native pages can prerender shared controls and layout parts from `@ejm/ui`.
+Import `@ejm/ui/styles.css` first. Add `@ejm/ui/styles-static.css` for
+`NativeCheckbox`, `Disclosure`, `ActionRows` and `DocumentContent`. Add
+`@ejm/ui/styles-terminal.css` for the `Terminal*` views. A page that uses both
+groups needs both partials. Products retain their authentication, transport,
+validation and command logic. Read
+[Native static pages](packages/ui/COMPONENTS.md#native-static-pages) for form
+behavior, public deep imports and safe transcript templates. These source APIs
+do not establish a deployed consumer or a published package.
+
 ## Development
 
 Read [AGENTS.md](AGENTS.md) before changing the owner or its public contracts.
