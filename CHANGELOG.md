@@ -5,6 +5,10 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Add Relay's production brand assets through the existing public tokens asset
+  export. A targeted legacy import preserves other assets and provenance while
+  excluding Relay's editable sources and local review boards. This source
+  change does not publish a package or deploy a consumer.
 - Keep optimizer integration fixtures small and isolate destructive staleness
   checks. Bound real encoding setup and tests without changing encoder settings
   or the normal test timeout.

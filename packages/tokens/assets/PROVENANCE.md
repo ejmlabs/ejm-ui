@@ -251,6 +251,34 @@ Retired social profile kits and ZIP archives are excluded from imports.
 | `assets/projects/harness/site.webmanifest` | `projects/harness/site.webmanifest` | `c89b51f6b89f3c92eec7de23ca4cff0014ab1735ccc4a76aa6c41f7894228258` |
 | `assets/projects/harness/social-card.png` | `projects/harness/social-card.png` | `423714a99a3e675107b95129581a625b8c5ec451b8b866a6a9ddc60e6448db6e` |
 | `assets/projects/harness/social-card.svg` | `projects/harness/social-card.svg` | `3265165a7fb051744ddd085edd535230f817f71911851fbf40ce1e89cabc23ed` |
+| `assets/projects/relay/android-chrome-192.png` | `projects/relay/android-chrome-192.png` | `da830422a1b7a053e3328d9978311842a048a53b1afde4a91070f52223c16d02` |
+| `assets/projects/relay/android-chrome-512.png` | `projects/relay/android-chrome-512.png` | `7f3a17443141d601400eea219e6ab9f158ef0c731b298d82e5ca8ddc1a916694` |
+| `assets/projects/relay/apple-touch-icon.png` | `projects/relay/apple-touch-icon.png` | `aa059a56bebac2c90cb834deb4447e54dc088ef70e0bc48a07ea1a3de6b9b42b` |
+| `assets/projects/relay/favicon-16.png` | `projects/relay/favicon-16.png` | `9807bc4eb5c3e007a3676c723ded96bc97bd07b5f0b1cf2e4a53178e7799c5bb` |
+| `assets/projects/relay/favicon-24.png` | `projects/relay/favicon-24.png` | `f4059fd1dc4f79dbb973e40468f0d874d1d0b69dc769aba8878648389b166583` |
+| `assets/projects/relay/favicon-32.png` | `projects/relay/favicon-32.png` | `29f5506113354addc9562918c2d5aadc8760d88ca3522a015d72c17ec6f6545a` |
+| `assets/projects/relay/favicon-48.png` | `projects/relay/favicon-48.png` | `45ccba9737e7748a61f9beb78dd3dcd3fb05b6523088786f3dc969acd17f95ca` |
+| `assets/projects/relay/favicon.ico` | `projects/relay/favicon.ico` | `5758721525f31f0a918d79e82faa2ab4bcb33d4ee5166b17bdbd8ff362fd0cb7` |
+| `assets/projects/relay/favicon.svg` | `projects/relay/favicon.svg` | `c9b0418af054d027f4137b9b87d2b9ce17ec54fbd4bff3817eedd205cb960404` |
+| `assets/projects/relay/icon-forest.png` | `projects/relay/icon-forest.png` | `1120d7a0b2011590236b94d7d98225c5107851adc941d58fe0a3cf2962e1b2f1` |
+| `assets/projects/relay/icon-forest.svg` | `projects/relay/icon-forest.svg` | `ea9401718d9a35d680808fdb107755f61cf965fcbb13ac82327afaf22f2d4bd0` |
+| `assets/projects/relay/icon-sage.png` | `projects/relay/icon-sage.png` | `4e7466ad9966faa5dffe8c232b5d6247b9ca4b94af65a4fe92ecbea06e41d0d2` |
+| `assets/projects/relay/icon-sage.svg` | `projects/relay/icon-sage.svg` | `58b9106624f09e9cb8192cdf954232d8646b01d46f8172cede300bc885c0bcb9` |
+| `assets/projects/relay/logo-ink.png` | `projects/relay/logo-ink.png` | `dbb7bc6cbf264565f4b4c333ae809cfa90f38cbcd7437f0433f5ee5bc82cfbd3` |
+| `assets/projects/relay/logo-ink.svg` | `projects/relay/logo-ink.svg` | `932d0c3f41f94fc184aea7ef26fece195caa3b442e9ba23e8e1533283947b0fd` |
+| `assets/projects/relay/logo-paper.png` | `projects/relay/logo-paper.png` | `f5c7b9dc016b6c34dfd3b8e29d474542ccc23799583f6e676b317bf99fdcc5e1` |
+| `assets/projects/relay/logo-paper.svg` | `projects/relay/logo-paper.svg` | `5139b6d369232dfeec1386dcc55895f4766d82591d65a2aff168453fde3728c7` |
+| `assets/projects/relay/logo-primary.png` | `projects/relay/logo-primary.png` | `ea66bc96692c62410485130c64c6f3c97d2c98b886b55de4b3eace3f870355b0` |
+| `assets/projects/relay/logo-primary.svg` | `projects/relay/logo-primary.svg` | `6fe579ff9eba010318c29e7ade82e435c2ac5c35a00c1ead44e188dea986bb34` |
+| `assets/projects/relay/mark-ink.png` | `projects/relay/mark-ink.png` | `77abded528459558a922dd2e2777a150a3f12af9996a6aa618229b86b3621a46` |
+| `assets/projects/relay/mark-ink.svg` | `projects/relay/mark-ink.svg` | `07426f957f0d16589c1aee71f1e05953bff872ef1559ac1cd120698fe65aa2ae` |
+| `assets/projects/relay/mark-paper.png` | `projects/relay/mark-paper.png` | `660e6077de22a7183fe63b204b72abd1cf61d775f4a638e26cc56686212e0e13` |
+| `assets/projects/relay/mark-paper.svg` | `projects/relay/mark-paper.svg` | `cb37b90e8c65d6211378490cb37f80861dfea7384c75611abccc070ae54ee642` |
+| `assets/projects/relay/mark-sage.png` | `projects/relay/mark-sage.png` | `81296670d137698ed566fc86d30926aa75f3e890a272baa110cc9eabcca988b7` |
+| `assets/projects/relay/mark-sage.svg` | `projects/relay/mark-sage.svg` | `2df1b9f68797082dc2db8561918af777f914f39dc0978f19e60cf16550d3e366` |
+| `assets/projects/relay/site.webmanifest` | `projects/relay/site.webmanifest` | `203f9b472b4a276ff9c17c1d912cb038192901ef2e52d3728cbe5fa085054b02` |
+| `assets/projects/relay/social-card.png` | `projects/relay/social-card.png` | `be66979956965f9e88a158e849a2fe1d8616e1cce6c19507a87c821d49e47208` |
+| `assets/projects/relay/social-card.svg` | `projects/relay/social-card.svg` | `df80ed0c5b98bb91861a41dd9d0b74032f6e92ed6b4c30b627cb56247039a959` |
 
 ## Moved and then edited
 

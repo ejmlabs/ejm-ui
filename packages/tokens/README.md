@@ -20,14 +20,45 @@ Edit `theme.json`, run the build, commit the generated files. Names and behavior
 
 ## What the npm tarball holds
 
-The repo keeps the brand assets used by its packages. Provenance lists 244 retained imports: 242 files under `assets/`, plus `rust/ejm_tui.rs` and `rust/TUI.md`. This count describes the committed source, not the npm tarball.
+The repo keeps the brand assets used by its packages. Provenance lists each retained import under `assets/`, plus `rust/ejm_tui.rs` and `rust/TUI.md`. This inventory describes the committed source, not the npm tarball.
 
-`npm pack` (the `files` field in `package.json`) leaves out ZIP archives, `templates/`, every `editable/` source, the TTF font sources (the WOFF2 files stay), and the large PNG renders of motifs and per-project logos, marks and icons. The SVGs, favicon set, apple-touch icon, android icons and social cards stay. Per-project brand families are in `assets/projects/<id>/` (cli, ide, harness; ejmlabs uses the root sets). A consumer who needs a retained file excluded from the tarball reads it from this repo, subject to its license.
+`npm pack` (the `files` field in `package.json`) leaves out ZIP archives, `templates/`, every `editable/` source, the TTF font sources (the WOFF2 files stay), and the large PNG renders of motifs and per-project logos, marks and icons. The SVGs, favicon set, apple-touch icon, android icons and social cards stay. Per-project brand families are in `assets/projects/<id>/` (cli, ide, harness, relay; ejmlabs uses the root sets). A consumer who needs a retained file excluded from the tarball reads it from this repo, subject to its license.
 
 ## Asset maintenance and rights
 
 From the repository root, run `node scripts/assets.mjs --local` to verify retained files against [their provenance](assets/PROVENANCE.md). It checks local hashes and inventory without the old kit. The optional `--sync` import uses `EJM_DESIGN_KIT`, or the legacy `../ejmlabs/design-kit` directory. That legacy source is not a build dependency.
 
 Legacy imports exclude retired social profile kits, per-project `editable/` sources and ZIP archives. The repo keeps editable lockups and templates, listed in provenance and excluded from the tarball. The table and the import filter in `scripts/assets.mjs` define the retained inventory. Do not remove table rows without removing their files and checking affected consumers.
+
+### Relay assets
+
+Relay's 28 production assets are available through the existing
+`@ejm/tokens/assets/projects/relay/*` export. They include marks, outlined logos,
+square icons, browser icons, a manifest and social cards. The retained kit owns
+the artwork source and local review materials. Its `editable/` sources,
+`README.md`, `index.html` and `review.svg`/`review.png` are not imported here.
+
+To refresh only Relay from a reviewed kit, run from this repository root:
+
+```sh
+EJM_DESIGN_KIT=/path/to/ejmlabs/design-kit node scripts/assets.mjs --sync --project relay
+node scripts/assets.mjs --local
+```
+
+This targeted import updates only Relay files and their provenance rows. It
+preserves all other rows and the complete moved-and-edited source record. It
+fails before copying files if a required Relay source is missing. A plain
+`--sync` still refreshes the full retained import set. Run the normal repository
+gate before release. Importing artwork does not deploy a consumer or publish a
+package.
+
+Public consumer examples:
+
+```js
+import.meta.resolve('@ejm/tokens/assets/projects/relay/mark-ink.svg');
+import.meta.resolve('@ejm/tokens/assets/projects/relay/favicon.svg');
+```
+
+### Rights
 
 Brand materials retain their owner's rights. Manrope and IBM Plex Mono retain the SIL Open Font License notices in `assets/fonts/`. See the package [license](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md) before copying assets or fonts.
