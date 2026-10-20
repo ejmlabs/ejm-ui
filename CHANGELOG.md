@@ -5,6 +5,9 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Keep optimizer integration fixtures small and isolate destructive staleness
+  checks. Bound real encoding setup and tests without changing encoder settings
+  or the normal test timeout.
 - Wait for screenshot Chrome to close before removing its temporary profile,
   with bounded shutdown and removal retries. Preserve rendering failures when
   cleanup succeeds and retain both errors when cleanup also fails.
