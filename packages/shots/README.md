@@ -14,6 +14,14 @@ Real product shots. Every line of text in these images was printed by the real `
 
 Each themed session gets a unique private directory under the system temporary directory. Its `acme-api` fixture, state, `HOME` and binary links all live there. The tool removes only that directory when the session ends or throws an error. It never clears a fixed `/tmp/acme-api` or `ejm-shots-work` path. Abrupt process termination can leave a directory behind; remove only the directory from that stopped invocation.
 
+The renderer kills its own Chrome process and waits up to five seconds for its
+`close` event before removing that browser's temporary profile. Node's removal
+retries transient filesystem errors at most three times, with 100 ms increasing
+delays. If closure cannot be confirmed, the profile stays in place and the capture
+fails. A rendering or startup error remains the original error when cleanup
+succeeds; if cleanup also fails, an `AggregateError` retains both failures. This
+does not establish a published capture or release.
+
 New metadata keeps each theme's exact command in `results.<theme>.command` and its recorded working directory in `results.<theme>.workingDirectory`. Directory metadata uses `<clean-export>/` for clean product exports and paths relative to the `ejm-ui` root for its sibling tree; other paths remain absolute. The existing top-level fields describe the last captured theme for compatibility. The workspace paths are evidence of that completed session and are removed after it ends.
 
 The system temporary path can include a local username or a custom directory. Captures can show that path in both the image and JSON. Review new images and metadata for private paths before sharing them; the tool does not redact terminal text.

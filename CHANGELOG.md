@@ -5,6 +5,24 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Keep optimizer integration fixtures small and isolate destructive staleness
+  checks. Bound real encoding setup and tests without changing encoder settings
+  or the normal test timeout.
+- Wait for screenshot Chrome to close before removing its temporary profile,
+  with bounded shutdown and removal retries. Preserve rendering failures when
+  cleanup succeeds and retain both errors when cleanup also fails.
+- Preserve paused playback, progress and the loaded recording when a parent
+  rerenders either recorded showcase with equivalent options. `LazyIsland`
+  accepts a React element with props as well as an existing component type.
+- Exclude the gallery's unused CSS `filter` utility. Layouts and CSS budgets
+  are unchanged.
+
+- Add `LazyCliShowcase` and `LazyHarnessShowcase` with explicit product-owned
+  recording data, passive playback controls and lazy timelines. Keep existing
+  interactive exports unchanged. The adapters reuse the shared clock, lifecycle
+  and product views; no reference capture,
+  package dependency, published release or deployed consumer is implied.
+
 - Allow up to 60 seconds for the performance check's Chrome startup and report
   bounded browser error output. Page budgets and the browser sandbox are unchanged.
 - Remove the remaining 38 retired social profile kit renders and duplicate font
