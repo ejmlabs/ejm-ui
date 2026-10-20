@@ -149,8 +149,8 @@ claiming that the live site contains an update.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) and the
 [Code of Conduct](CODE_OF_CONDUCT.md). A human maintainer must admit each
-current PR commit before checks or two serial `gpt-6.1-sol` medium reviews
-run. Approval is a separate decision; explicit maintainer self approval is
+current PR commit before checks or two serial automated review steps at medium
+effort run. Approval is a separate decision; explicit maintainer self approval is
 allowed. New commits need fresh decisions. The guide defines revocation,
 retry rules and all five required statuses.
 
