@@ -29,6 +29,8 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
   capture receipts. Load native IDE colors through an opt-in generated neutral
   scale. Keep all interactive and
   caller-owned recording APIs.
+  Reuse the loaded player for bundled data and omit unused private terminal
+  modes, retaining recorded output and the public plain-mode contract.
   Update the gallery's component example, design guides and deployment recipe
   for `ui.ejmlabs.com`; this source change does not publish the site.
 

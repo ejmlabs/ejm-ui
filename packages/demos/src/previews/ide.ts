@@ -34,7 +34,7 @@ const beats = input.beats.flatMap(entry => {
   }
   return result;
 });
-const recording: Recording<Update> = { id: '093840636c87fa0d98a1580ab55a87812de222d7f95eaa84ac3b7cbbc030917c', beats };
+export const recording: Recording<Update> = { id: '093840636c87fa0d98a1580ab55a87812de222d7f95eaa84ac3b7cbbc030917c', beats };
 const finalFrame: Surface = { frame: ideFrame, running: false, flash: null, folders: { src: true, web: true } };
 beats.push({ at: beats.at(-1)!.at + 1500, update: { final: finalFrame } });
 export const source: RecordingSource<Surface, Update> = {

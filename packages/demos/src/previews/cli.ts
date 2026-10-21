@@ -8,7 +8,7 @@ import { cliFrame } from './frames/cli';
 interface Update { status?: Partial<CliFrame>; blocks?: readonly CliBlock[]; final?: CliFrame }
 const beats = data.beats.map(({ at, ...update }) => ({ at, update: update as Update }));
 beats.push({ at: beats.at(-1)!.at + 1500, update: { final: cliFrame } });
-const recording: Recording<Update> = { id: '35364d0b1b9dc10bed75d3e1925ef2a8a9cfebbde1d5f4924e893fe12bd3e0d8', beats };
+export const recording: Recording<Update> = { id: '35364d0b1b9dc10bed75d3e1925ef2a8a9cfebbde1d5f4924e893fe12bd3e0d8', beats };
 export const source: RecordingSource<CliFrame, Update> = {
   id: recording.id,
   initialFrame: { ...cliFrame, blocks: [] },

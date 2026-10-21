@@ -18,7 +18,7 @@ export interface ShowcaseProps {
 export function Showcase({ name, children, playback = 'idle', paused = false, host, onPause, onRestart }: ShowcaseProps) {
   const action = paused ? 'Resume' : 'Pause';
   return <div ref={host} data-showcase={name} data-playback={playback} role="group" aria-label={`${name} playback`} className="ejm-showcase @container min-w-0">
-    {name === 'ejm-ide' && <p className="ejm-ide-scroll-hint text-sm text-fg">Swipe or scroll sideways to see the full workspace, including the editor and assistant.</p>}
+    {name === 'ejm-ide' && <p className="ejm-ide-scroll-hint text-sm text-fg">Scroll sideways to see the editor and assistant.</p>}
     <div data-showcase-viewport className="pointer-events-none relative aspect-[4/5] min-w-0 overflow-hidden sm:aspect-[16/10]">
       {children}
     </div>

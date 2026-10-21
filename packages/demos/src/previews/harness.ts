@@ -12,7 +12,7 @@ const beats = data.output.map((line, index) => {
   return beat;
 });
 beats.push({ at, update: { final: harnessFrame } });
-const recording: Recording<Update> = { id: '9985083493447566a434b1f40ed22271889c06bf48e202c646d68fc813679433', beats };
+export const recording: Recording<Update> = { id: '9985083493447566a434b1f40ed22271889c06bf48e202c646d68fc813679433', beats };
 export const source: RecordingSource<HarnessFrame, Update> = {
   id: recording.id,
   initialFrame: { command: data.command, output: [] },

@@ -207,14 +207,19 @@ sit outside the passive product surface and use the canonical medium control
 recipe. Product inputs are disabled. The native IDE workspace keeps its desktop
 geometry in a labelled horizontal scrollport on narrow pages.
 
-The shared `RecordedIsland`, `createRecordedPlayback` and injected clock own
-validation, pause, page/viewport visibility, restart and disposal. The adapters
+Bundled modules validate their data at the existing lazy module boundary and
+reuse the shared loaded player, without a second asynchronous data loader.
+The source-required `RecordedIsland` keeps its caller-owned loading contract.
+The shared player, `createRecordedPlayback` and injected clock own validation,
+pause, page/viewport visibility, restart and disposal. The adapters
 apply immutable product updates; they add no worker, network client, storage or
 second timer engine. Each timeline retains the existing 256-beat, 120-second
 and 262,144 UTF-16-code-unit bounds. IDE text updates group two original 20ms
 chunks into one update, at most 25 updates per second, without dropping text or
 changing the end time. Completed playback returns to the same useful excerpt
 as the no-script view. Full workflow data remains in the recording.
+The bundled CLI uses the recorded Unicode glyphs and colors. Public interactive
+views retain their plain and ASCII modes.
 
 A rejected module or recording keeps the server excerpt and announces that
 playback is unavailable. Reload retries the module. The 14 KiB initial-load and
