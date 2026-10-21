@@ -22,7 +22,7 @@ beforeEach(() => {
   vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true, addEventListener() {}, removeEventListener() {} })));
   Object.defineProperty(navigator, 'clipboard', { value: { writeText: vi.fn().mockResolvedValue(undefined) }, configurable: true });
 });
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
 it('keeps filtering, contents and copy live outside a prose boundary', async () => {
   const Boundary = ({ render: draw }: { render?: () => ReactNode }) => <div data-testid="prose">{draw?.()}</div>;
@@ -52,6 +52,17 @@ it('renders readable server HTML and keeps route paths and pager order intact', 
   expect(html).toContain('npm');
   expect(html).not.toContain('Copy Run tests code');
   expect(() => docNavigation(nav, '/missing/')).toThrow(/Unknown docs page/);
+});
+
+it('renders plain code inside a static boundary without a highlighting callback', () => {
+  vi.stubEnv('SSR', true);
+  vi.stubEnv('DEV', false);
+  const Boundary = ({ render: draw }: { render?: () => ReactNode }) => <div data-ejm-static="">{draw?.()}</div>;
+  const html = renderToString(<DocsPage page={client} {...docNavigation(nav, '/docs/build/')} staticBoundary={Boundary} renderProse={prose} />);
+  const output = document.createElement('div');
+  output.innerHTML = html;
+  const code = output.querySelector('[data-ejm-static] pre code');
+  expect(code?.textContent).toBe('npm test');
 });
 
 it('keeps the surrounding router adapter for sidebar, pager, and prose links', () => {

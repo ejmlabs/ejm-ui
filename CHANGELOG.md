@@ -5,6 +5,11 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Keep reused route stylesheets in cascade order, include the gallery's static
+  product-window styles, and use the public site CSS profile in the packed starter.
+- Keep plain code in prerendered documentation when a static boundary has no
+  highlighting callback, and retain product-view CSS on the gallery product route.
+
 - Add mandatory public site design checks, a native HTML profile, compiled docs,
   structured branding and fixed site/application composition. Keep published
   terminal/static components and legacy non-site shell props. Add the hidden

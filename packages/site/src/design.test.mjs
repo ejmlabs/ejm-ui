@@ -42,7 +42,7 @@ describe('site design ownership in real Vite builds', () => {
       const example = '<div className="local" style={{color:"red"}} />';
       // <style>.local { color: red }</style>
       export default function Page() { return <Content className="contents"><p>{example}</p><DocsPage {...Docs.docNavigation([], '/')} /></Content>; }
-    `, '@import "@ejm/ui/styles-site.css";\n@import \'@ejm/demos/ide.css\';\n/* prose is not a class source */\n@source not "../content";');
+    `, '@import "@ejm/ui/styles-site.css" source(none);\n@import \'@ejm/demos/ide.css\';\n/* prose is not a class source */\n@source not "../content";');
     await expect(build(options(root))).resolves.toBeDefined();
   });
 
@@ -56,6 +56,7 @@ describe('site design ownership in real Vite builds', () => {
     ['animation', '@keyframes local { from { opacity: 0; } to { opacity: 1; } }'],
     ['apply', '@apply text-title;'],
     ['content injection', '@source inline("text-title");'],
+    ['import scan override', '@import "@ejm/ui/styles-site.css" source("../");'],
   ])('rejects %s in an unused authored stylesheet', async (_name, css) => {
     const root = await fixture(main, css);
     await expect(build(options(root))).rejects.toThrow(/src\/styles\.css:1:1.*Consumer CSS/);

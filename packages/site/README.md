@@ -59,8 +59,10 @@ publish any site by itself.
 The source check accepts:
 
 - Public CSS exports from `@ejm/ui`, `@ejm/tokens` and `@ejm/demos`, such as
-  `@import "@ejm/ui/styles-site.css";`. Consumer CSS files contain only these
-  imports and comments. The exact `@source not "../content";` declaration may
+  `@import "@ejm/ui/styles-site.css" source(none);`. The optional `source(none)`
+  keeps unrelated installed package files out of the scan while retaining each
+  public profile's explicit component sources. Consumer CSS files contain only
+  these imports and comments. The exact `@source not "../content";` declaration may
   exclude authored guide text from the content scan.
 - Named JSX content, route and state props through shared contracts. Keep
   heading semantics with `as` and choose a shared `SectionHead` purpose.

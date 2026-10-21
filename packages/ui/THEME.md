@@ -6,7 +6,7 @@ The public theme contract for `@ejm/ui/styles.css` and its opt-in entries. If a 
 
 ```css
 /* a site's entry stylesheet */
-@import "@ejm/ui/styles-site.css";
+@import "@ejm/ui/styles-site.css" source(none);
 ```
 
 ```html
@@ -17,7 +17,7 @@ The public theme contract for `@ejm/ui/styles.css` and its opt-in entries. If a 
 </head>
 ```
 
-Serve `packages/ui/public/theme-boot.js` as `/theme-boot.js` (an external file, so `script-src 'self'` holds). Tailwind scans the app's own folder by itself. `styles.css` also scans `components`, `layout`, `shell`, `hooks` and `motion`. Docs, app, static and terminal components use opt-in entries:
+Serve `packages/ui/public/theme-boot.js` as `/theme-boot.js` (an external file, so `script-src 'self'` holds). Each profile scans its own shared components. `styles.css` scans `components`, `layout`, `shell`, `hooks` and `motion`. Docs, app, static and terminal components use opt-in entries:
 
 ```css
 @import "@ejm/ui/styles.css";
@@ -27,9 +27,14 @@ Serve `packages/ui/public/theme-boot.js` as `/theme-boot.js` (an external file, 
 @import "@ejm/ui/styles-terminal.css"; /* only if it renders TerminalWorkspace and the Terminal* views */
 ```
 
-Import the partial for every folder whose components you render, or their classes are missing. `node packages/ui/scripts/check-sources.mjs` checks that each folder gets its classes from the right entry and that a default folder never imports from docs or app. A consumer may scan its own folders outside the project root. Shared package source coverage belongs to the package, through its public stylesheet exports; do not scan or exclude private package files.
+Import the partial for every folder whose components you render, or their classes are missing. `node packages/ui/scripts/check-sources.mjs` checks that each folder gets its classes from the right entry and that a default folder never imports from docs or app. Applications may scan their own source folders. Sites use the stricter shared design guard. Shared package source coverage belongs to the package, through its public stylesheet exports; do not scan or exclude private package files.
 
 `styles-site.css` is the smaller public profile for marketing and project sites. It includes shared site layout, branding, shell, Button, hooks and motion. Add the same docs or app partials when needed. `styles.css` remains the full default profile for component galleries and apps. Both import one internal base with identical tokens, fonts, type, motion and global rules. `base.css` is private. Product demo source coverage comes from the public `@ejm/demos/*.css` profiles.
+
+Use `source(none)` on the entry import. This retains the profile's explicit
+component sources and avoids scanning unrelated installed package files. Sites
+compose public components and do not add utility classes or source directives.
+The starter and installed-package proof use this setup.
 
 ## Native HTML profile
 

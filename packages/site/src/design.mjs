@@ -55,7 +55,7 @@ function cssIssues(file, source, report) {
   for (const node of root.nodes) {
     if (node.type === 'comment') continue;
     if (node.type === 'atrule' && !node.nodes) {
-      const quoted = /^(['"])([^'"]+)\1$/.exec(node.params);
+      const quoted = /^(['"])([^'"]+)\1(?:\s+source\(none\))?$/.exec(node.params);
       if (node.name === 'import' && quoted && cssImport(quoted[2])) continue;
       if (node.name === 'source' && /^not\s+(['"])\.\.\/content\1$/.test(node.params)) continue;
     }

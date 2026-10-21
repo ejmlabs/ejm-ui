@@ -161,7 +161,7 @@ CodeBlock, CodeTabs, Callout, ParamTable, Pager, SidebarFilter, Contents. Add a 
 | ParamTable | docs/ParamTable.tsx | native `<table>` | Mono names and tabular numerals, scrolling inside its own region. |
 | Pager | docs/Pager.tsx | native `<nav>` and links | Previous and next links that name the adjacent pages. |
 | DocHead | docs/model.tsx | native header | Page title and lead from the content model. |
-| DocsPage | docs/DocsPage.tsx | live docs shell | Sidebar, contents, reading surface, code controls and pager around optional static prose. |
+| DocsPage | docs/DocsPage.tsx | live docs shell | Sidebar, contents, reading surface, code controls and pager around optional static prose. Code renders as plain source when no server highlighting callback is supplied, including inside a static boundary. |
 | Prose | docs/Prose.tsx | reading surface | Shared body type and inline-code rules for docs content. |
 | DocTable | docs/DocTable.tsx | native table | Captioned, locally scrolling table that preserves every column. |
 | DocProse | docs/DocProse.tsx | compiled prose | Renders a serialized prose run with the shared docs parts. |

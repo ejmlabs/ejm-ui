@@ -4,4 +4,4 @@
 @source "./island.tsx";
 @source "./tokens.tsx";
 @source "./windows.tsx";
-@source "./routes/{home,components,layout,application-layout,product,tokens,hooks,shell,not-found}.tsx";
+@source "./routes/{home,components,layout,application-layout,tokens,hooks,shell,not-found}.tsx";

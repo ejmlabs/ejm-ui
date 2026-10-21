@@ -105,7 +105,7 @@ import docsStyles from './styles-docs.css?url';
 
 The stylesheet is in the prerendered HTML and counts toward the route's CSS
 budget. Navigation keeps the painted sheet until all replacements load, reuses
-matching links, and ignores an older navigation's completion. A failed replacement
+matching links in the destination's declared order, and ignores an older navigation's completion. A failed replacement
 leaves the prior sheet in place. Each complete Tailwind sheet must preserve its
 responsive utility order; appending a partial sheet can override earlier rules.
 

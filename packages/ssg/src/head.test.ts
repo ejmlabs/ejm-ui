@@ -59,3 +59,21 @@ it('does not carry an old media constraint into a route that omits it', async ()
   expect(printed.isConnected).toBe(false);
   expect(next.isConnected).toBe(true);
 });
+
+it('keeps destination cascade order when adding a sheet before a reused one', async () => {
+  applyHead(head('/override.css'));
+  const override = sheet('/override.css');
+  Object.defineProperty(override, 'sheet', { value: new CSSStyleSheet() });
+  await loaded('/override.css');
+
+  applyHead({ title: 'Destination', tags: [
+    { tag: 'link', attrs: { rel: 'stylesheet', href: '/base.css' } },
+    { tag: 'link', attrs: { rel: 'stylesheet', href: '/override.css' } },
+  ] });
+  expect([...document.head.querySelectorAll('link[rel="stylesheet"]')].map(el => el.getAttribute('href')))
+    .toEqual(['/base.css', '/override.css']);
+  await loaded('/base.css');
+  expect(sheet('/override.css')).toBe(override);
+  expect([...document.head.querySelectorAll('link[rel="stylesheet"]')].map(el => el.getAttribute('href')))
+    .toEqual(['/base.css', '/override.css']);
+});

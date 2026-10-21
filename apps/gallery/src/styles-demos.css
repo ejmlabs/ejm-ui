@@ -2,5 +2,6 @@
 @source "./frame.tsx";
 @source "./island.tsx";
 @source "./routes/demos.tsx";
+@source "../../../packages/ui/src/layout/ProductWindow.tsx";
 @source "../../../packages/demos/src/views";
 @source "../../../packages/demos/src/hero";

@@ -87,7 +87,8 @@ export function applyHead(h: ResolvedHead) {
         // Keep the current sheet if its replacement cannot load.
       }));
     }
-    if (!existing) document.head.append(el);
+    // Moving a reused link also preserves the destination's stylesheet cascade.
+    document.head.append(el);
   }
   // Keep the current paint until every replacement sheet is ready. A newer
   // navigation owns its own set, so an older completion cannot remove its CSS.
