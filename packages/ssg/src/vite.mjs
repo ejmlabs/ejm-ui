@@ -25,6 +25,7 @@ const outFile = (route, notFound) =>
 export function ejmSsg(options) {
   /** @type {import('vite').ResolvedConfig} */
   let config;
+  let written = false;
   return {
     name: 'ejm-ssg',
     apply: 'build',
@@ -38,8 +39,15 @@ export function ejmSsg(options) {
     configResolved(c) {
       config = c;
     },
+    buildStart() {
+      written = false;
+    },
+    writeBundle() {
+      written = true;
+    },
     async closeBundle() {
-      if (config.build.ssr) return;
+      // closeBundle also runs after failed builds. Preserve the original diagnostic.
+      if (config.build.ssr || !written) return;
       const root = config.root;
       const dist = resolve(root, config.build.outDir);
       const work = join(root, '.ejm-ssg');

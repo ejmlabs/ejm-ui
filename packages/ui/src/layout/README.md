@@ -81,6 +81,49 @@ product choices. Control `density` is separate from page layout and keeps its
 existing touch targets. Caller `className` values can override the shared
 spacing through `cn`, for example `gap-4 py-4 sm:py-6` on Page.
 
+## Fixed application recipes
+
+Import `@ejm/ui/layout/Application` when a product should supply content and
+behavior while the kit owns every visual choice. These recipes accept native
+semantic attributes, refs and handlers. Their props exclude `className`,
+`style` and raw markup. Existing lower-level layout APIs remain compatible.
+
+| Export | Contract |
+| --- | --- |
+| `AppFlow`, `AppGroup`, `AppActions` | Content separated by 32px, related content separated by 16px, and wrapping action groups separated by 12px. The optional `as` selects a semantic element. |
+| `AppHeading`, `AppPre` | Heading levels h2 to h4 with shared heading type, and wrapped monospace records. |
+| `AppField`, `AppFieldset`, `AppForm` | Native fields at 8px gaps, fieldsets at 16px gaps and forms at 24px gaps with a fixed reading width. Labels, legends, validation, disabled state and submission remain native. |
+| `AppSection` | A section with a fixed reading width and 32px content gaps. |
+| `GameWorkspace` | A `board` slot followed by details children, with optional `after` content. It uses one column on phones and board/details columns from 64rem. The host owns keyboard game navigation. |
+| `PlayerStrip`, `BoardPlaceholder` | Player and clock alignment, and a square loading region. |
+| `MovePairs`, `MoveHistory` | Accepted move pairs or selectable SAN moves within a bounded scroll region. `MoveHistory` takes `items`, `selectedId` and `onSelect`; it scrolls only its own list. |
+
+Use `SectionHead purpose="application"` for the complete application opening.
+It selects title type and stacked body copy. `purpose="page"` selects display
+type; `purpose="section"` selects title type with the existing split layout.
+Heading level stays independent. Omitting purpose preserves the previous
+display/split default, and existing explicit size/layout overrides still work.
+Sites that opt into `enforceDesignKit` use purpose instead of visual overrides.
+
+```tsx
+import { AppActions, AppField, AppForm } from '@ejm/ui/layout/Application';
+
+<Page variant="application">
+  <SectionHead purpose="application" as="h1" title="Your account" />
+  <AppForm onSubmit={save}>
+    <AppField>
+      <label htmlFor="player">Username</label>
+      <Input id="player" name="player" required />
+    </AppField>
+    <AppActions><Button type="submit">Save</Button></AppActions>
+  </AppForm>
+</Page>
+```
+
+All recipes use the default `@ejm/ui/styles.css` entry. They add no rule engine,
+observer or product transport. Check the complete product composition in a
+browser; shared component tests do not establish a product release.
+
 ## Static prose
 
 Import `Prose` from `@ejm/ui/layout/Prose` for a help or policy page whose

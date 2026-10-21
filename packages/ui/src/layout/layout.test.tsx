@@ -8,6 +8,19 @@ import { expectAccessible, renderIn, themes } from '../components/test-setup';
 import { Band, Facts, Fact, Hero, Page, ProductStage, ProductWindow, Row, Rows, Rule, SectionHead, Stat, Status, Text } from './index';
 
 describe('application layout', () => {
+  it('selects an application heading recipe without losing semantics or existing caller overrides', () => {
+    const { rerender } = render(<SectionHead purpose="application" as="h1" id="account-title" title="Account"><p>Recovery options.</p></SectionHead>);
+    const title = screen.getByRole('heading', { level: 1, name: 'Account' });
+    expect(title).toHaveAttribute('id', 'account-title');
+    expect(title).toHaveClass('text-title');
+    expect(title.parentElement).toHaveClass('grid', 'gap-field');
+    expect(screen.getByText('Recovery options.').parentElement).toHaveClass('text-body');
+    rerender(<SectionHead purpose="application" layout="split" size="display" as="h1" title="Account" />);
+    expect(screen.getByRole('heading', { level: 1, name: 'Account' })).toHaveClass('text-display', '@3xl:col-span-7');
+    rerender(<SectionHead purpose="section" as="h2" title="History" />);
+    expect(screen.getByRole('heading', { level: 2, name: 'History' })).toHaveClass('text-title', '@3xl:col-span-7');
+  });
+
   it('keeps the default column bare and lets application callers override spacing', () => {
     const { container, rerender } = render(<Page aria-label="Games"><p>History</p></Page>);
     const page = container.firstElementChild!;

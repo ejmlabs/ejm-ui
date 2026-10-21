@@ -7,6 +7,8 @@ export interface SectionHeadProps {
   title: ReactNode;
   /** Supporting copy. The split layout places it beside the heading at wide container widths. */
   children?: ReactNode;
+  /** Select a shared heading recipe while keeping the heading level independent. Existing callers keep their defaults. */
+  purpose?: 'page' | 'section' | 'application';
   /** Stacked keeps body-sized copy below the heading with the shared field gap. Split preserves the marketing layout. */
   layout?: 'split' | 'stacked';
   /** The heading element. Keep levels in order on the page. */
@@ -18,10 +20,10 @@ export interface SectionHeadProps {
 }
 
 /** A section opening: kicker, a balanced heading and supporting copy. */
-export function SectionHead({ kicker, title, children, layout = 'split', as: H = 'h2', size = 'display', id, className }: SectionHeadProps) {
+export function SectionHead({ kicker, title, children, purpose, layout = purpose === 'application' ? 'stacked' : 'split', as: H = 'h2', size = purpose === 'section' || purpose === 'application' ? 'title' : 'display', id, className }: SectionHeadProps) {
   const stacked = layout === 'stacked';
   const heading = <H id={id} className={cn(size === 'display' ? 'text-display' : 'text-title', !stacked && '@3xl:col-span-7')}>{title}</H>;
-  const copy = children && <div className={cn('max-w-measure', stacked ? 'text-body' : 'text-lead @3xl:col-span-4 @3xl:col-start-9 @3xl:self-end')}>{children}</div>;
+  const copy = children && <div className={cn('max-w-measure', purpose === 'application' && 'grid gap-6', stacked ? 'text-body' : 'text-lead @3xl:col-span-4 @3xl:col-start-9 @3xl:self-end')}>{children}</div>;
   return (
     <header className={cn('@container', stacked && 'grid gap-field', className)}>
       {kicker && <p className="text-meta text-muted">{kicker}</p>}

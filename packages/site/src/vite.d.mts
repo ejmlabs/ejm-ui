@@ -6,6 +6,8 @@ export interface EjmSiteOptions {
   project: ProjectId | Project;
   /** Options for `_headers`, or `false` to leave the file to the site. */
   headers?: HeadersOptions | false;
+  /** Reject authored visual overrides and require public shared composition. Defaults to false for existing consumers. */
+  enforceDesignKit?: boolean;
 }
 /** Files the plugin serves and writes at the site root: published name to absolute path. */
 export function sharedFiles(project: Project): Record<string, string>;

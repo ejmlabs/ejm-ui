@@ -80,7 +80,11 @@ export const components: DocPage = {
           rows: [
             { name: 'Band', description: 'A full-bleed section with a ground: paper, mist, sage or ink.' },
             { name: 'Page', description: 'A content column. variant=application adds 32px phone / 48px desktop vertical padding and 24px content gaps; the default stays bare.' },
-            { name: 'SectionHead', description: 'A kicker, heading and supporting copy. layout=stacked uses 8px gaps and body copy while preserving independent heading level and size.' },
+            { name: 'SectionHead', description: 'A kicker, heading and supporting copy. purpose=application uses a stacked title with 8px gaps; purpose=section uses a split title. The default keeps the existing split display heading.' },
+            { name: 'AppFlow, AppGroup, AppActions', description: 'Fixed application composition with 32px, 16px and 12px gaps. Accept content, semantics, handlers and refs without appearance overrides.' },
+            { name: 'AppField, AppFieldset, AppForm', description: 'Native field, fieldset and form semantics with fixed 8px, 16px and 24px gaps and a shared form reading width.' },
+            { name: 'AppSection, AppHeading, AppPre', description: 'A fixed reading column, application subheading and wrapped preformatted content.' },
+            { name: 'GameWorkspace, PlayerStrip, BoardPlaceholder, MovePairs, MoveHistory', description: 'Responsive board and move composition. The consumer supplies accepted positions, clocks, moves and commands.' },
             { name: 'Prose', description: 'Reading width and semantic prose typography without the docs highlighter.' },
             { name: 'Rows, Row', description: 'A hairline list that replaces cards. A row has a title, text, mono meta and an arrow.' },
             { name: 'ActionRows, ActionRow', description: 'Compact records with wrapping text and separate shared buttons, links or forms.' },
@@ -98,22 +102,24 @@ export const components: DocPage = {
       id: 'application-spacing',
       title: 'Application pages and forms',
       blocks: [
-        { type: 'p', children: <>Use <code>Page variant="application"</code> with <code>SectionHead layout="stacked"</code> for account, history and play pages. Native form groups use <code>grid gap-field</code> between label, control and help text, and <code>grid gap-content</code> between groups. These derive from the existing spacing scale at 8px and 24px. Caller classes can override them through <code>cn</code>. Omit empty conditional groups because they still create a gap. Keep product widths, data rules and validation in the consumer.</> },
+        { type: 'p', children: <>Use <code>Page variant="application"</code> with <code>SectionHead purpose="application"</code> for account, history and play pages. <code>AppField</code> keeps label, control and help text 8px apart. <code>AppForm</code> separates groups by 24px and supplies their reading width. These recipes accept native semantics, handlers and refs; the shared owner fixes appearance. Keep data rules and validation in the consumer. Omit empty conditional groups because they still create a gap.</> },
         { type: 'code', lang: 'tsx', code: `import { Button, Input, Page, SectionHead, Text } from '@ejm/ui';
+import { AppActions, AppField, AppForm } from '@ejm/ui/layout/Application';
 
 <Page variant="application">
-  <SectionHead as="h1" size="title" layout="stacked" title="Your account">
+  <SectionHead purpose="application" as="h1" title="Your account">
     <p>Manage your public name.</p>
   </SectionHead>
-  <form className="grid max-w-measure gap-content">
-    <div className="grid gap-field">
+  <AppForm onSubmit={save}>
+    <AppField>
       <label htmlFor="name">Username</label>
       <Input id="name" name="username" required aria-describedby="name-help" />
       <Text as="p" id="name-help" variant="muted">Shown to other players.</Text>
-    </div>
-    <div><Button type="submit">Save</Button></div>
-  </form>
+    </AppField>
+    <AppActions><Button type="submit">Save</Button></AppActions>
+  </AppForm>
 </Page>` },
+        { type: 'p', children: <>Sites can set <code>ejmSite({'{ project, enforceDesignKit: true }'})</code> to check their source during development and builds. This optional guard rejects local styles, visual overrides and unsupported raw presentation markup. It defaults off, so existing sites keep their current <code>className</code>, <code>layout</code> and <code>size</code> APIs. New recipes and <code>purpose</code> are additive public contracts. Read the <a className="link" href="https://github.com/ejmlabs/ejm-ui/tree/main/packages/site#optional-design-ownership-check" rel="external noopener">site package guide</a> before enabling the guard.</> },
         { type: 'p', children: <>The <a className="link" href="/application-layout/">application-layout fixture</a> shows populated, loading, empty and error tables in both densities. Loading and populated rows use the same cell padding. The browser check measures rendered spacing, inline link flow, touch targets and overflow. It does not prove every consumer composition.</> },
         { type: 'code', lang: 'sh', code: 'npm run build -w @ejm/gallery\nnode scripts/check-application-layout.mjs --out /tmp/ejm-application-layout' },
       ],

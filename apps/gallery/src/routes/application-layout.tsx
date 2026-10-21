@@ -1,5 +1,6 @@
 import { Link } from '@ejm/ssg';
 import { Button, Input, Page, SectionHead, Table, Text } from '@ejm/ui';
+import { AppActions, AppField, AppForm } from '@ejm/ui/layout/Application';
 import { useState } from 'react';
 
 const columns = [{ key: 'player', label: 'Player' }, { key: 'games', label: 'Games' }, { key: 'points', label: 'Points' }];
@@ -12,7 +13,7 @@ export default function ApplicationLayoutPage() {
   const [saved, setSaved] = useState('The preview has no saved values.');
   return (
     <Page variant="application" data-application-layout>
-      <SectionHead layout="stacked" as="h1" size="title" id="application-title" title="Application layout">
+      <SectionHead purpose="application" as="h1" id="application-title" title="Application layout">
         <Text as="p" data-layout-description>
           A compact page with related fields, readable links and clear table states. These are simulated examples; the form saves only in this page preview.
         </Text>
@@ -23,26 +24,26 @@ export default function ApplicationLayoutPage() {
         <Text as="p">
           Read the <Link href="/docs/components/" className="link" data-layout-inline>component guide</Link> for field and action contracts. Links within a sentence keep the same text flow.
         </Text>
-        <form className="grid max-w-measure gap-content" data-layout-form onSubmit={event => {
+        <AppForm data-layout-form onSubmit={event => {
           event.preventDefault();
           const values = new FormData(event.currentTarget);
           setSaved(`Saved for this preview: ${String(values.get('name'))}.`);
         }}>
-          <div className="grid gap-field" data-layout-field>
-            <label htmlFor="application-name" className="text-meta text-muted">Display name</label>
+          <AppField data-layout-field>
+            <label htmlFor="application-name">Display name</label>
             <Input id="application-name" name="name" defaultValue="Alex" required aria-describedby="application-name-help" />
             <Text as="p" id="application-name-help" className="text-sm text-muted">Use a name other players can recognise.</Text>
-          </div>
-          <div className="grid gap-field" data-layout-field>
-            <label htmlFor="application-email" className="text-meta text-muted">Recovery email, optional</label>
+          </AppField>
+          <AppField data-layout-field>
+            <label htmlFor="application-email">Recovery email, optional</label>
             <Input id="application-email" name="email" type="email" aria-describedby="application-email-help" />
             <Text as="p" id="application-email-help" className="text-sm text-muted">This example sends no email and stores no account.</Text>
-          </div>
-          <div className="grid justify-items-start gap-field">
+          </AppField>
+          <AppActions>
             <Button type="submit" data-layout-action>Save preview</Button>
             <Text as="p" role="status" className="text-sm text-muted">{saved}</Text>
-          </div>
-        </form>
+          </AppActions>
+        </AppForm>
       </section>
 
       {densities.map(density => (

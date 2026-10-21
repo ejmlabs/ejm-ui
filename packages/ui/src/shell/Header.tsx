@@ -5,10 +5,13 @@ import { cn } from '../lib/utils';
 import { ExternalLink } from './ExternalLink';
 import { useLinkComponent, type LinkComponent, type NavItem } from './link';
 import { ThemeToggle } from './ThemeToggle';
+import { Brand, type SiteIdentity } from './Brand';
 
 export interface HeaderProps {
   /** The mark or wordmark. It sits inside the home link. */
-  logo: ReactNode;
+  logo?: ReactNode;
+  /** Content-only shared branding. Supply identity or the existing logo slot. */
+  identity?: SiteIdentity;
   /** The accessible name of the home link. */
   homeLabel?: string;
   homeHref?: string;
@@ -30,7 +33,7 @@ const itemClass =
  * takes no space when closed (the open menu is an overlay, so nothing moves). It sets the sticky offset
  * through --ejm-header-h and keeps clear of the notch with safe-area insets.
  */
-export function Header({ logo, homeLabel = 'Home', homeHref = '/', nav = [], band, themeControl, linkComponent, className }: HeaderProps) {
+export function Header({ logo, identity, homeLabel = 'Home', homeHref = '/', nav = [], band, themeControl, linkComponent, className }: HeaderProps) {
   const ambient = useLinkComponent();
   const Link = linkComponent ?? ambient;
   const menu = useRef<HTMLDetailsElement>(null);
@@ -74,7 +77,7 @@ export function Header({ logo, homeLabel = 'Home', homeHref = '/', nav = [], ban
     >
       <div className="page-inset flex h-(--ejm-header-h) items-center justify-between gap-4">
         <Link href={homeHref} aria-label={homeLabel} className="touch-target -ms-2 inline-flex items-center rounded-control px-2 py-2 text-fg">
-          {logo}
+          {logo ?? (identity && (identity.artwork ? <Brand {...identity.artwork} name={identity.name} /> : <span className="text-heading tracking-tight">{identity.name}</span>))}
         </Link>
 
         <div className="flex items-center gap-1">

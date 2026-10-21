@@ -74,6 +74,21 @@ describe('ThemeToggle', () => {
 });
 
 describe('Header', () => {
+  it('renders identity artwork inside its named home link while retaining the legacy logo slot', () => {
+    const { rerender } = render(<Header identity={{ name: 'Chess', artwork: { src: '/mark.svg', darkSrc: '/mark-dark.svg', width: 64, height: 64 } }} homeLabel="Chess home" themeControl={null} />);
+    const home = screen.getByRole('link', { name: 'Chess home' });
+    expect(home).toHaveTextContent('Chess');
+    const images = home.querySelectorAll('img');
+    expect([...images].map(image => image.getAttribute('src'))).toEqual(['/mark.svg', '/mark-dark.svg']);
+    for (const image of images) {
+      expect(image).toHaveAttribute('alt', '');
+      expect(image).toHaveAttribute('width', '64');
+      expect(image).toHaveAttribute('height', '64');
+    }
+    rerender(<Header logo={<span>Existing product</span>} homeLabel="Product home" themeControl={null} />);
+    expect(screen.getByRole('link', { name: 'Product home' })).toHaveTextContent('Existing product');
+  });
+
   it('puts the toggle last, marks the current page, and links external items as external', () => {
     render(<Header {...header} />);
     const banner = screen.getByRole('banner');

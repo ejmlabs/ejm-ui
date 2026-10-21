@@ -74,3 +74,24 @@ Brand files: ejmlabs uses the root sets of `@ejm/tokens/assets` (`favicon/`, `lo
 The plugin also distributes the original font notices from the public `@ejm/ui/fonts/Manrope-OFL.txt` and `@ejm/ui/fonts/IBMPlexMono-OFL.txt` exports. Every build includes their exact bytes at `/Manrope-OFL.txt` and `/IBMPlexMono-OFL.txt`, alongside the bundled font assets. Development serves the same paths as `text/plain; charset=utf-8`. Their stable names stay outside `/assets/*` and keep the default revalidation policy described above. Keep both notices with any deployed site that distributes these fonts.
 
 Icon and manifest head URLs carry one content revision for the complete favicon family. The manifest uses that same revision for its local icon references. Development and builds serve the same manifest bytes. Original root paths and font notices stay available. `headTags(base, version?)` keeps unversioned URLs when called without a revision.
+
+## Optional design ownership check
+
+Set `ejmSite({ project, enforceDesignKit: true })` for a site that must compose
+only public shared visuals. The option defaults to false, so existing sites
+retain their current build behavior and public size/layout APIs.
+
+The opt-in check parses every authored script and stylesheet under `src`,
+including unused files. Vite supplies the script parser and PostCSS supplies
+the CSS parser. It rejects local CSS rules, private or remote style imports,
+inline styles, visual classes, raw markup, style elements, stylesheet links
+and opaque JSX spreads. Public CSS imports remain allowed. The public Static
+`className="contents"` wrapper and documented docs navigation helper remain
+structural exceptions. Example strings and comments are data, not source.
+
+Opted-in sites use `SectionHead purpose` and fixed application recipes instead
+of presentation props such as size/layout. Add a missing pattern in ejm-ui and
+consume its public export. The check runs during both builds and development,
+reports the source location and blocks new unused CSS until it is corrected.
+It is a source ownership check, not a sandbox or a browser layout proof. Shared
+library gallery examples remain free to demonstrate lower-level APIs.

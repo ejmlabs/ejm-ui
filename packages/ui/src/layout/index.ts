@@ -12,3 +12,4 @@ export * from './Stat';
 export * from './Status';
 export * from './Text';
 export * from './Prose';
+export * from './Application';

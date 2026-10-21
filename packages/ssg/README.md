@@ -60,6 +60,10 @@ export default defineSite({
 
 Scripts (they take no flags: use `vite` or `vite build` directly for those, the plugin does the work either way): `ejm-ssg build` (a Vite build; the plugin prerenders and then checks the budget, so a breach fails the build), `ejm-ssg dev` (Vite dev server, client render only), `ejm-ssg budget [dist]`.
 
+Prerendering starts only after the client build writes its output. If an earlier
+plugin rejects source or the build fails, the original diagnostic remains
+visible instead of being masked by a missing-manifest error.
+
 ## API
 
 ```ts

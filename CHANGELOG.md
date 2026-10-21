@@ -5,6 +5,7 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Add fixed application form, content, action and game-workspace recipes plus an additive SectionHead purpose option. Add opt-in `ejmSite({ enforceDesignKit: true })` source checks while preserving existing consumer builds by default.
 - Add shared application Page and stacked SectionHead options, field/content gap aliases, and matching loading-table padding. Existing layout defaults stay unchanged.
 - Add rich web table cells, captions, row headers and stable row keys, plus native RadioGroup, a form Disclosure leaf and lightweight Prose.
 - Add an optional lazy Chessboard adapter and GameClock. The host owns rules, accepted moves, legal hints and clocks. Keep the separate board-artwork license.

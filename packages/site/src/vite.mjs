@@ -7,6 +7,7 @@ import { dirname, join } from 'node:path';
 import { headersFile } from './headers.mjs';
 import { FAVICONS, versionedFavicons } from './favicon.mjs';
 import { PROJECTS, assetPaths } from './projects.mjs';
+import { siteDesignGuard } from './design.mjs';
 
 const require = createRequire(import.meta.url);
 const tokensAssets = join(dirname(require.resolve('@ejm/tokens/theme.json')), 'assets');
@@ -43,10 +44,11 @@ export function headTags(base = '/', version) {
 }
 
 /**
- * @param {{ project: import('./projects.d.mts').ProjectId | import('./projects.d.mts').Project, headers?: import('./headers.d.mts').HeadersOptions | false }} options
+ * @param {{ project: import('./projects.d.mts').ProjectId | import('./projects.d.mts').Project, headers?: import('./headers.d.mts').HeadersOptions | false, enforceDesignKit?: boolean }} options
  *   `headers: false` skips `_headers` (a site that writes its own); an object is passed to `headersFile`.
+ *   `enforceDesignKit: true` checks authored source for public shared composition. Existing consumers default to false.
  */
-export function ejmSite({ project, headers = {} }) {
+export function ejmSite({ project, headers = {}, enforceDesignKit = false }) {
   const p = typeof project === 'string' ? PROJECTS[project] : project;
   if (!p) throw new Error(`ejm-site: unknown project ${String(project)}`);
   const files = sharedFiles(p);
@@ -54,17 +56,58 @@ export function ejmSite({ project, headers = {} }) {
   const favicon = versionedFavicons(raw);
   let ssr = false;
   let base = '/';
+  let design;
+  let designError;
   return {
     name: 'ejm-site',
     configResolved(c) {
       ssr = !!c.build.ssr;
       base = c.base;
+      if (enforceDesignKit) design = siteDesignGuard(c.root ?? process.cwd());
+    },
+    buildStart() {
+      for (const file of design?.validate().files ?? []) this.addWatchFile(file);
+    },
+    transform(_source, file) {
+      if (design?.owns(file)) {
+        design.invalidate(file);
+        design.validate();
+      }
     },
     transformIndexHtml: {
       order: 'post',
       handler: html => (html.includes(MARKER) ? html.replace(MARKER, () => `${headTags(base, favicon.version).join('\n    ')}\n    ${MARKER}`) : html),
     },
     configureServer(server) {
+      if (design) {
+        design.validate();
+        const validateDesign = () => {
+          try {
+            design.validate();
+            designError = undefined;
+          } catch (error) {
+            designError = error;
+            server.ws.send({ type: 'error', err: { message: error.message, stack: error.stack ?? '' } });
+          }
+        };
+        const checkDesign = (_event, file) => {
+          if (!design.owns(file)) return;
+          design.invalidate(file);
+          validateDesign();
+        };
+        server.watcher?.on('all', checkDesign);
+        server.watcher?.on('ready', validateDesign);
+        server.httpServer?.once('close', () => {
+          server.watcher?.off('all', checkDesign);
+          server.watcher?.off('ready', validateDesign);
+        });
+        server.middlewares.use((_req, res, next) => {
+          if (!designError) return next();
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+          res.end(designError.message);
+        });
+      }
       server.middlewares.use((req, res, next) => {
         const file = files[(req.url ?? '').split('?')[0].replace(/^\/+/, '')];
         if (!file) return next();
