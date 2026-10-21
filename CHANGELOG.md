@@ -5,6 +5,16 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Add mandatory public site design checks, a native HTML profile, compiled docs,
+  structured branding and fixed site/application composition. Keep published
+  terminal/static components and legacy non-site shell props. Add the hidden
+  Chess build identity and its brand family without adding it to discovery.
+  Split gallery styles by route to keep the existing CSS budget. Reduce shared
+  runtime transfer while retaining the maintained router and class merger,
+  React 19, SSR paths, base routes, history and native cross-document fragments.
+  Native modulepreload has no polyfill: older browsers still fetch imported
+  modules but lose preload acceleration. No site is published by this change.
+
 - Add public `Terminal*` view components, `NativeCheckbox`, `Disclosure`,
   `ActionRows`, `ActionRow` and `DocumentContent` for native pages and terminal
   interfaces. Allow `Header` and `AppShell` to replace or suppress the theme

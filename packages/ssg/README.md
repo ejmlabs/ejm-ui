@@ -1,6 +1,6 @@
 # @ejm/ssg
 
-A tiny prerender package for Vite and React 19 sites. Every route is rendered to static HTML at build time, so the first paint needs no JavaScript, then `hydrateRoot` takes over and navigation is client side. Routing is [wouter](https://github.com/molefrog/wouter) (about 2 KB). Nothing else is added: an empty site is about 71 KB gzip of JavaScript, almost all of it React and react-dom.
+A tiny prerender package for Vite and React 19 sites. Every route is rendered to static HTML at build time, so the first paint needs no JavaScript, then `hydrateRoot` takes over and navigation is client side. History and location subscriptions use [Wouter's public browser hooks](https://github.com/molefrog/wouter#usebrowserlocation). SSG owns exact route matching and the site base. It does not bundle Wouter's route components or matching engine. React and react-dom account for most of the browser JavaScript.
 
 ## Set up a site
 
@@ -70,7 +70,7 @@ defineSite(config: SiteConfig): Site
 // SiteHead:   RouteHead & { titleTemplate?: '%s | Site' }
 
 hydrateSite(site: Site, container?: HTMLElement): Promise<Root>   // client entry
-Link(props: AnchorProps & { href: string; replace?: boolean })       // internal paths navigate client side
+Link(props: AnchorProps & { href: string; replace?: boolean })       // page paths navigate client side; files use native navigation
 Static(props: { render?: () => ReactNode; className? })              // server-rendered, not hydrated, not in the browser bundle (see Static parts)
 useNavigate(): (to: string, opts?: { replace?: boolean }) => Promise<void>
 usePath(): string                                                    // current path without the base or a trailing slash (`/work`), same on the server and in the browser
@@ -96,6 +96,19 @@ import { shotPreloadLinks } from '@ejm/ui/layout/ProductShot';
 { path: '/', component: Home, head: { title: 'Home', links: shotPreloadLinks(hero) } }
 ```
 
+For a route-specific stylesheet, use a Vite CSS URL and the same public head contract:
+
+```ts
+import docsStyles from './styles-docs.css?url';
+{ path: '/docs/', component: Docs, head: { links: [{ rel: 'stylesheet', href: docsStyles }] } }
+```
+
+The stylesheet is in the prerendered HTML and counts toward the route's CSS
+budget. Navigation keeps the painted sheet until all replacements load, reuses
+matching links, and ignores an older navigation's completion. A failed replacement
+leaves the prior sheet in place. Each complete Tailwind sheet must preserve its
+responsive utility order; appending a partial sheet can override earlier rules.
+
 ## Static parts
 
 `<Static>` marks a part of a page that nothing in the browser needs to change: prose, tables, a docs article. The server renders it in full, so it reads with scripts off. The browser keeps that markup and does not hydrate it, and the code behind it is not in the browser bundle. The ejm-harness site reported docs parts of about 9 KB gzip plus up to 8 KB of guide text per page, which does not fit the 95 KB budget as JavaScript; as Static HTML it costs no script.
@@ -110,20 +123,24 @@ const Guide = import.meta.env.SSR || import.meta.env.DEV ? (await import('./Guid
 
 Images and fonts imported only by a Static part are emitted into the final site too. Shared files keep Vite's asset names and are reused when their content matches; a server asset with the same filename and different content fails the build instead of overwriting the browser file.
 
-The condition guards the import on purpose: the bundler then drops `Guide` and everything only it uses from the browser build (the test checks that a marker string in the prose is in the HTML and in no script). In dev the content renders in the browser too. Internal links inside the part (`<a href="/docs/x/">`, with the site base already in the href) still navigate without a reload, through one delegated click handler; other sites, `rel="external"`, `target`, `download` and modified clicks are left to the browser. Do not put anything interactive in it (a copy button, a filter): it is never hydrated. If a client-side navigation lands on a page whose Static part has no markup to keep, the page is reloaded and the server answers it, so a docs site should prefer plain navigation between its pages. It must be used inside the site root (any page).
+The condition guards the import on purpose: the bundler then drops `Guide` and everything only it uses from the browser build (the test checks that a marker string in the prose is in the HTML and in no script). In dev the content renders in the browser too. Internal links inside the part (`<a href="/docs/x/">`, with the site base already in the href) use one delegated click handler. A link with a fragment that changes the pathname or query uses native document navigation, so the server HTML contains the target before the browser scrolls. Same-document, same-query fragments keep the current markup. Other sites, `rel="external"`, `target`, `download` and modified clicks are left to the browser. Do not put anything interactive in it (a copy button, a filter): it is never hydrated. Keep the docs frame and shared code-copy or tab controls outside the boundary; `@ejm/ui/docs/DocsPage` supports this split. If a fragment-free client navigation lands on a page whose Static part has no markup to keep, the page is reloaded and the server answers it, so a docs site should prefer plain navigation between its pages. It must be used inside the site root (any page).
 
 ## Lazy routes
 
 `load: () => import('./pages/Work')` puts the page in its own chunk. At build time the page is loaded before rendering, so its HTML is complete, and the route's HTML gets `<link rel="modulepreload">` for the chunk (and its CSS), so the hydrating browser fetches it in parallel with the entry. On the client the chunk is loaded before `hydrateRoot` (no fallback flash, no mismatch), is warmed on link hover or focus, and is loaded before a `Link` navigation commits. `React.lazy` with a `Suspense` boundary is the safety net for back and forward to a route that is not loaded yet.
 
+The shared Vite plugin uses native module preloading and leaves the configured JavaScript target unchanged. Browsers without `rel=modulepreload` still fetch and run imported modules, but lose that preload acceleration. The plugin also resolves the exact `use-sync-external-store/shim/index.js` compatibility import to React's native export: the package requires React 19, where the shim already chooses that same hook. Selector shims and other imports are unchanged.
+
 The build finds a route's chunk from its `import('...')` call in the server bundle, so keep the `import()` literal inside `load`. If it cannot be found, the build warns and that route is simply not preloaded.
 
 ## Navigation
 
-- Internal `Link` clicks use `history.pushState`, no reload. Absolute URLs, `rel="external"`, `target`, `download` and clicks with modifier keys or a non-primary button are left to the browser. Absolute URLs get `rel="external noopener"` unless you pass `rel`.
+`base` is applied to links and programmatic navigation. A path at the base or its trailing slash is `/`; matching the base ignores case and requires a path boundary. URI decoding preserves encoded separators and leaves malformed escapes intact. A path outside the base cannot match a site route. Server paths, including a query string, resolve to the same route when hydrated. Wouter owns push, replace, popstate and hash subscriptions, so Back and Forward retain the browser's history.
+
+- Internal page `Link` clicks without a cross-document fragment use `history.pushState`. A fragment link to a different pathname or query loads the full document before the browser finds its target, including targets inside `Static` prose. This also applies to delegated links inside `Static` and programmatic `useNavigate` calls. The site base, query and fragment are preserved; `replace: true` replaces the history entry. Same-document, same-query hashes stay in the current document. Undeclared file paths such as `/license.txt?raw=1` keep native navigation; a declared file-shaped route still uses the router. Extensionless unknown paths retain the site's client-side 404. Absolute URLs, `rel="external"`, `target`, `download` and clicks with modifier keys or a non-primary button are left to the browser. Absolute URLs get `rel="external noopener"` unless you pass `rel`.
 - After a route change focus moves to the page `h1` (first `#main h1`, else the first `h1`, else `#main`) with `tabindex="-1"`, `document.title` and the head tags are swapped, and the title is announced in `#ejm-announcer` (`role="status"`, `aria-live="polite"`). This also happens on back and forward. Give each page an `h1`.
 - Scroll goes to the top, or to the `#hash` target.
-- The route change runs in `document.startViewTransition` when it exists and the visitor has not asked for reduced motion; only the page area animates (opacity), the header stays still. Skipped transitions are swallowed, and a transition that cannot start within 300 ms is skipped so the page never freezes. Without the API, a CSS fade-in runs after the first navigation. Under `prefers-reduced-motion: reduce` nothing is animated and the API is not called. The first load never animates.
+- The route change runs in `document.startViewTransition` when it exists and the visitor has not asked for reduced motion; only the page area crossfades for 320 ms with the shared easing, and the header stays still. Skipped transitions are swallowed, and a transition that cannot start within 300 ms is skipped so the page never freezes. Without the API, a CSS fade-in runs after the first navigation. Under `prefers-reduced-motion: reduce` nothing is animated and the API is not called. The first load never animates.
 - `ssg.css` (under 1 KB) is imported by the package itself.
 
 ## Budget gate
@@ -145,3 +162,12 @@ For every `.html` file the gate follows only the files that page references: `<s
 - The server build is written to `<root>/.ejm-ssg/` and removed after prerendering; only `build.json` stays. Ignore `.ejm-ssg` in git.
 - Set `NODE_ENV=production` for the build (`ejm-ssg build` does). A leaked `NODE_ENV=test` bundles React's development build.
 - Security headers: the package adds no inline scripts or styles.
+
+## Route loading failures
+
+If a route chunk fails to load, the site keeps its frame and shows a readable
+error with a normal **Reload this page** link. Reload requests the current HTML,
+which can recover an old tab after a release removes its previous chunk. No
+automatic reload loop runs. An offline visitor must reconnect before retrying.
+Malformed percent escapes in URL fragments fall back to the literal fragment;
+they do not stop navigation.

@@ -44,10 +44,18 @@
     "./components/NativeCheckbox": "./src/static/NativeCheckbox.tsx",
     "./shell/Disclosure": "./src/static/Disclosure.tsx",
     "./layout/ActionRows": "./src/static/ActionRows.tsx",
-    "./layout/DocumentContent": "./src/static/DocumentContent.tsx"
+    "./layout/DocumentContent": "./src/static/DocumentContent.tsx",
+    "./styles-site.css": "./src/styles-site.css",
+    "./static.css": "./public/static.css",
+    "./control-recipes": {
+      "types": "./src/control-recipes.d.mts",
+      "import": "./src/control-recipes.mjs",
+      "default": "./src/control-recipes.mjs"
+    }
   },
   "scripts": {
-    "check": "node scripts/check-art.mjs && node scripts/check-containerless.mjs && node scripts/check-components.mjs && node scripts/check-treeshake.mjs && node scripts/check-sources.mjs && node scripts/build-merge-config.mjs --check && node scripts/build-catalog.mjs --check"
+    "check": "node scripts/build-static.mjs --check && node scripts/check-art.mjs && node scripts/check-containerless.mjs && node scripts/check-components.mjs && node scripts/check-treeshake.mjs && node scripts/check-sources.mjs && node scripts/build-merge-config.mjs --check && node scripts/build-catalog.mjs --check",
+    "build:static": "node scripts/build-static.mjs"
   },
   "sideEffects": [
     "*.css"
@@ -61,7 +69,8 @@
     "THEME.md",
     "COMPONENTS.md",
     "LICENSE",
-    "THIRD_PARTY_NOTICES.md"
+    "THIRD_PARTY_NOTICES.md",
+    "public/static.css"
   ],
   "peerDependencies": {
     "react": "^19.0.0",

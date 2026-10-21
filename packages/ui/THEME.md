@@ -6,7 +6,7 @@ The public theme contract for `@ejm/ui/styles.css` and its opt-in entries. If a 
 
 ```css
 /* a site's entry stylesheet */
-@import "@ejm/ui/styles.css";
+@import "@ejm/ui/styles-site.css";
 ```
 
 ```html
@@ -27,8 +27,19 @@ Serve `packages/ui/public/theme-boot.js` as `/theme-boot.js` (an external file, 
 @import "@ejm/ui/styles-terminal.css"; /* only if it renders TerminalWorkspace and the Terminal* views */
 ```
 
-Import every partial that the page needs after `styles.css`. Otherwise, its component classes are missing. `node packages/ui/scripts/check-sources.mjs` checks each folder's entry and keeps opt-in folders outside the default scan. A site that uses classes from a folder outside its own root needs its own `@source` line.
+Import the partial for every folder whose components you render, or their classes are missing. `node packages/ui/scripts/check-sources.mjs` checks that each folder gets its classes from the right entry and that a default folder never imports from docs or app. A consumer may scan its own folders outside the project root. Shared package source coverage belongs to the package, through its public stylesheet exports; do not scan or exclude private package files.
 
+`styles-site.css` is the smaller public profile for marketing and project sites. It includes shared site layout, branding, shell, Button, hooks and motion. Add the same docs or app partials when needed. `styles.css` remains the full default profile for component galleries and apps. Both import one internal base with identical tokens, fonts, type, motion and global rules. `base.css` is private. Product demo source coverage comes from the public `@ejm/demos/*.css` profiles.
+
+## Native HTML profile
+
+Keep visible copy brief. Use no text where the layout or native state is clear; retain labels, trust disclosures, permission limits, errors, recovery and accessible names.
+
+`@ejm/ui/static.css` is the compiled, React-free profile for applications that already own native HTML and state. It shares the current Header and Brand geometry, application title and form rhythm, tokens, system themes, local fonts, canonical controls and calm motion. Consumers supply semantic content and events through the fixed `data-ejm` recipes, with no classes, inline styles or local CSS rules.
+
+See [Native HTML applications](../site/native-html.md) for the shell and form markup, fixed setup and one-column workspace recipes, compact connection details, asset copying, no-script forms, bounded output, motion and reduced-motion behavior. Setup and workspace-header h1 headings use a fixed 2rem size and weight 600; other native pages and React headings retain their current scale. It also documents the public `@ejm/site/native` build check for authored templates, DOM presentation hooks and finished route documents.
+
+Run `npm run build:static -w @ejm/ui` after shared recipe, token or font changes. The shared check rejects stale output and keeps the 14 KiB gzip CSS and 70 KiB combined font limits. This profile does not load theme-boot.js, analytics or a browser runtime and does not store a theme choice. Native privacy-sensitive pages can continue to use the system palette and ordinary same-origin forms.
 The terminal module lives in `src/terminal` and keeps the public import
 `@ejm/ui/components/TerminalWorkspace`. Its structural utilities belong to
 `styles-terminal.css`; products should compose the public components rather
@@ -174,11 +185,17 @@ The gutter is never smaller than `env(safe-area-inset-left/right)`. Pages need `
 | `page` | `max-inline-size: var(--ejm-page-max); margin-inline: auto; padding-inline: gutter`, width 100%. |
 | `page-inset` | Padding only, for a full-bleed element (a sticky header) whose content must line up with the `page` column. |
 | `py-rhythm`, `pt-rhythm`, `gap-rhythm`, ... | The vertical rhythm of a band, 72px to 160px, times `--ejm-scale`. `*-rhythm-sm` is 40 percent of it. |
+| `gap-field`, `gap-x-field`, `gap-y-field` | Label, control and help groups: `calc(var(--spacing) * 2)`, normally 8px. Derived from the existing Tailwind spacing scale. |
+| `gap-content`, `gap-x-content`, `gap-y-content` | Application content and form groups: `calc(var(--spacing) * 6)`, normally 24px. Derived from the same scale. |
 | `px-gutter`, `p-gutter`, ... | The current gutter. |
 | `max-w-page`, `max-w-measure` | Column width and 68ch reading width. |
 | Breakpoints | Tailwind defaults, plus `xs` 420px, `3xl` 1920px, `4xl` 2560px, `5xl` 3200px, `6xl` 4400px (the same steps as the table). |
 
 `--ejm-header-h` (default 4.5rem) feeds the page `scroll-padding-top`, so anchors and focused headings land below a sticky header. A sticky header component sets it.
+
+`Page variant="application"` combines the column with the shared application rhythm. `SectionHead purpose="application"` stacks a title heading and body-sized copy. Page openings use `purpose="page"`; ordinary sections use the default `purpose="section"`. Sites cannot pick a different heading size or alter the recipe with classes.
+
+Public sites use `Hero`, `SectionHead`, structured shell identity and the recipes in `@ejm/ui/layout/SiteContent`. `@ejm/site/vite` checks that site source contains no local styling. Change typography, spacing, branding or motion in ejm-ui, then rebuild the sites. Product data, words, routes and accessible state remain in the site. See the layout README for the public composition API. Lower-level utility recipes in this document describe shared implementation, not consumer escape hatches.
 
 ## Elevation and radius
 
@@ -188,6 +205,8 @@ The gutter is never smaller than `env(safe-area-inset-left/right)`. Pages need `
 ## Motion
 
 Transform and opacity only (draw-on uses stroke offset, as specified). Every animation utility is wrapped in `prefers-reduced-motion: no-preference`, so under reduced motion nothing moves and every element is in its final state. Durations also collapse to 1ms under reduced motion.
+
+The shared theme control uses the native View Transitions API for a 320ms crossfade after an explicit click or key press. The preference still saves if a transition is skipped or cannot start; browsers without the API and visitors who prefer reduced motion switch immediately. Initial theme selection and system-theme updates do not start a transition. The shared SSG stylesheet supplies the crossfade timing. Header links and the narrow menu use the existing color and fade utilities. Keep first-paint text and product captures visible; use a transform-only entrance for large hero text.
 
 | Token | Value |
 | --- | --- |

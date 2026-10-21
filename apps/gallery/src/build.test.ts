@@ -129,7 +129,7 @@ describe('every page', () => {
   it('uses no old studio or workbench wording', () => {
     for (const file of all) {
       const text = readFileSync(join(dist, file), 'utf8');
-      expect(text, file).not.toMatch(/independent studio|workbench_|>\s*We /);
+      expect(text, file).not.toMatch(/independent studio|>\s*Workbench\s*<|>\s*We /);
     }
   });
 });

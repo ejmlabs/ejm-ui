@@ -8,3 +8,4 @@ export * from './Collapse';
 export * from './SiteLayout';
 export * from './DocsLayout';
 export * from './AppShell';
+export * from './Brand';

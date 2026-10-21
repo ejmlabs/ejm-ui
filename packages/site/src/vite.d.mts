@@ -9,6 +9,7 @@ export interface EjmSiteOptions {
 }
 /** Files the plugin serves and writes at the site root: published name to absolute path. */
 export function sharedFiles(project: Project): Record<string, string>;
-/** Tags as HTML strings, for index.html. */
-export function headTags(base?: string): string[];
+/** Tags as HTML strings. An optional content revision refreshes the icon and manifest URLs. */
+export function headTags(base?: string, version?: string): string[];
+/** Adds shared assets and requires shared design ownership in consumer source. */
 export function ejmSite(options: EjmSiteOptions): Plugin;

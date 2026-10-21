@@ -1,36 +1,39 @@
 import { Menu, X } from 'lucide-react';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
-import type { Band } from '@ejm/tokens';
+import { useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import { cn } from '../lib/utils';
+import type { Band } from '@ejm/tokens';
 import { ExternalLink } from './ExternalLink';
 import { useLinkComponent, type LinkComponent, type NavItem } from './link';
 import { ThemeToggle } from './ThemeToggle';
+import { Brand, type SiteIdentity } from './Brand';
 
 export interface HeaderProps {
-  /** The mark or wordmark. It sits inside the home link. */
-  logo: ReactNode;
+  /** Shared branding renders the project identity inside the home link. */
+  identity?: SiteIdentity;
+  /** Legacy non-site composition. Public sites supply identity data. */
+  logo?: ReactNode;
+  themeControl?: ReactNode;
+  className?: string;
   /** The accessible name of the home link. */
   homeLabel?: string;
   homeHref?: string;
   nav?: readonly NavItem[];
   /** Matches the band the page opens with. Default: the page ground. */
   band?: Band;
-  /** Replaces the last theme control. Omit to use ThemeToggle; pass null to show none. */
-  themeControl?: ReactNode;
   linkComponent?: LinkComponent;
-  className?: string;
 }
 
 const itemClass =
-  'touch-target inline-flex items-center rounded-control px-3 py-2 text-fg hover:text-link aria-[current=page]:font-semibold aria-[current=page]:underline aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-[0.5em]';
+  'touch-target inline-flex items-center rounded-control px-3 py-2 text-fg transition-colors duration-base ease-standard hover:bg-tone hover:text-link aria-[current=page]:font-semibold aria-[current=page]:underline aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-[0.5em]';
 
 /**
  * The site header, sticky on the page ground with no box or rule. Logo at the left; at the right the nav, then the
- * theme control, always last. The nav is one landmark. Below 768px its list folds into a native <details> menu, so it works without scripts and
+ * ThemeToggle, always last. The nav is one landmark. Below 768px its list folds into a native <details> menu, so it works without scripts and
  * takes no space when closed (the open menu is an overlay, so nothing moves). It sets the sticky offset
  * through --ejm-header-h and keeps clear of the notch with safe-area insets.
  */
-export function Header({ logo, homeLabel = 'Home', homeHref = '/', nav = [], band, themeControl, linkComponent, className }: HeaderProps) {
+export function Header({ identity, logo, themeControl, className, homeLabel = 'Home', homeHref = '/', nav = [], band, linkComponent }: HeaderProps) {
   const ambient = useLinkComponent();
   const Link = linkComponent ?? ambient;
   const menu = useRef<HTMLDetailsElement>(null);
@@ -74,7 +77,7 @@ export function Header({ logo, homeLabel = 'Home', homeHref = '/', nav = [], ban
     >
       <div className="page-inset flex h-(--ejm-header-h) items-center justify-between gap-4">
         <Link href={homeHref} aria-label={homeLabel} className="touch-target -ms-2 inline-flex items-center rounded-control px-2 py-2 text-fg">
-          {logo}
+          {identity ? (identity.artwork ? <Brand {...identity.artwork} name={identity.name} /> : <span className="text-heading tracking-tight">{identity.name}</span>) : logo}
         </Link>
 
         <div className="flex items-center gap-1">
@@ -88,7 +91,7 @@ export function Header({ logo, homeLabel = 'Home', homeHref = '/', nav = [], ban
                 ))}
               </ul>
               <details ref={menu} className="group md:hidden" onToggle={e => setOpen(e.currentTarget.open)}>
-                <summary className="touch-target inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-control px-3 text-fg hover:text-link marker:hidden [&::-webkit-details-marker]:hidden">
+                <summary className="touch-target inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-control px-3 text-fg transition-colors duration-base ease-standard hover:bg-tone hover:text-link marker:hidden [&::-webkit-details-marker]:hidden">
                   <span>Menu</span>
                   <Menu aria-hidden className="size-5 group-open:hidden" />
                   <X aria-hidden className="hidden size-5 group-open:block" />
@@ -97,12 +100,12 @@ export function Header({ logo, homeLabel = 'Home', homeHref = '/', nav = [], ban
                   onClick={e => {
                     if ((e.target as Element).closest('a') && menu.current) menu.current.open = false;
                   }}
-                  className="page-inset absolute inset-x-0 top-full max-h-[calc(100svh-var(--ejm-header-h)-env(safe-area-inset-top))] overflow-y-auto overscroll-contain bg-ground pb-6 shadow-raised"
+                  className="page-inset absolute inset-x-0 top-full max-h-[calc(100svh-var(--ejm-header-h)-env(safe-area-inset-top))] overflow-y-auto overscroll-contain bg-ground pb-6 shadow-raised group-open:animate-fade motion-reduce:animate-none"
                 >
                   <ul>
                     {nav.map(item => (
                       <li key={item.href} className="hairline-t">
-                        {renderItem(item, 'touch-target flex min-h-12 items-center text-heading text-fg hover:text-link aria-[current=page]:underline aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-[0.3em]')}
+                        {renderItem(item, 'touch-target flex min-h-12 items-center text-heading text-fg transition-colors duration-base ease-standard hover:bg-tone hover:text-link aria-[current=page]:underline aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-[0.3em]')}
                       </li>
                     ))}
                   </ul>

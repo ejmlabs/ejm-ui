@@ -5,6 +5,9 @@
   "ActionRows": [
     "default"
   ],
+  "Actions": [
+    "default"
+  ],
   "ActivityList": [
     "default"
   ],
@@ -12,6 +15,9 @@
     "default"
   ],
   "Art": [
+    "default"
+  ],
+  "AssetGrid": [
     "default"
   ],
   "Badge": [
@@ -23,6 +29,14 @@
     "info"
   ],
   "Band": [
+    "default"
+  ],
+  "Brand": [
+    "navigation",
+    "project",
+    "footer"
+  ],
+  "BrandAsset": [
     "default"
   ],
   "Button": [
@@ -62,6 +76,21 @@
   "CodeTabs": [
     "default"
   ],
+  "Columns": [
+    "default"
+  ],
+  "CommandLines": [
+    "default"
+  ],
+  "ContentFlow": [
+    "default"
+  ],
+  "ContentGroup": [
+    "default"
+  ],
+  "ContentHeading": [
+    "default"
+  ],
   "Contents": [
     "default"
   ],
@@ -94,8 +123,19 @@
   "Facts": [
     "default"
   ],
+  "FileDetail": [
+    "default"
+  ],
+  "FocusRegion": [
+    "default"
+  ],
   "Footer": [
     "default"
+  ],
+  "GameClock": [
+    "default",
+    "running",
+    "low"
   ],
   "Header": [
     "default"
@@ -104,6 +144,12 @@
     "default"
   ],
   "Illustration": [
+    "default"
+  ],
+  "InlineCode": [
+    "default"
+  ],
+  "InlineLink": [
     "default"
   ],
   "Input": [
@@ -124,6 +170,9 @@
     "highlighted",
     "disabled"
   ],
+  "MetricGrid": [
+    "default"
+  ],
   "NativeCheckbox": [
     "unchecked",
     "checked",
@@ -131,10 +180,17 @@
     "invalid",
     "disabled"
   ],
-  "Page": [
+  "Note": [
     "default"
   ],
+  "Page": [
+    "default",
+    "application"
+  ],
   "Pager": [
+    "default"
+  ],
+  "PaletteSwatch": [
     "default"
   ],
   "ParamTable": [
@@ -154,6 +210,15 @@
     "busy",
     "error"
   ],
+  "RadioGroup": [
+    "default",
+    "selected",
+    "focus",
+    "disabled"
+  ],
+  "ReadingColumn": [
+    "default"
+  ],
   "Row": [
     "default",
     "selected",
@@ -166,8 +231,13 @@
   "Rule": [
     "default"
   ],
-  "SectionHead": [
+  "SectionBody": [
     "default"
+  ],
+  "SectionHead": [
+    "page",
+    "section",
+    "application"
   ],
   "Select": [
     "default",
@@ -282,5 +352,8 @@
   "Tooltip": [
     "closed",
     "open"
+  ],
+  "VisuallyHidden": [
+    "default"
   ]
 }

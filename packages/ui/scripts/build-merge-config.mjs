@@ -20,10 +20,10 @@ const require = createRequire(import.meta.url);
 
 export const KEEP = new Set([
   // layout and position
-  'container', 'container-type', 'container-named', 'isolation', 'appearance', 'overscroll', 'overscroll-x', 'overscroll-y', 'col-start', 'col-end', 'row-start', 'row-end', 'display', 'position', 'visibility', 'z', 'sr', 'overflow', 'overflow-x', 'overflow-y', 'inset', 'inset-x', 'inset-y', 'start', 'end', 'top', 'right', 'bottom', 'left', 'aspect',
+  'container', 'container-type', 'container-named', 'isolation', 'appearance', 'overscroll', 'overscroll-x', 'overscroll-y', 'col-start', 'col-end', 'row-start', 'row-end', 'display', 'position', 'visibility', 'z', 'sr', 'overflow', 'overflow-x', 'overflow-y', 'inset', 'inset-x', 'inset-y', 'start', 'end', 'top', 'right', 'bottom', 'left', 'aspect', 'object-fit',
   // flex and grid
   'basis', 'flex-direction', 'flex-wrap', 'flex', 'grow', 'shrink', 'order', 'grid-cols', 'col-start-end', 'grid-rows', 'row-start-end', 'gap', 'gap-x', 'gap-y',
-  'justify-content', 'justify-items', 'justify-self', 'align-items', 'align-self',
+  'justify-content', 'justify-items', 'justify-self', 'align-items', 'align-self', 'place-items',
   // spacing and size
   'p', 'px', 'py', 'ps', 'pe', 'pt', 'pr', 'pb', 'pl', 'm', 'mx', 'my', 'ms', 'me', 'mt', 'mr', 'mb', 'ml', 'space-x', 'space-y',
   'size', 'w', 'min-w', 'max-w', 'h', 'min-h', 'max-h',
@@ -35,7 +35,7 @@ export const KEEP = new Set([
   'border-w', 'border-w-x', 'border-w-y', 'border-w-t', 'border-w-r', 'border-w-b', 'border-w-l', 'border-style', 'border-color', 'border-color-t', 'border-color-r', 'border-color-b', 'border-color-l',
   'divide-x', 'divide-y', 'divide-color', 'outline-style', 'outline-offset', 'outline-w', 'outline-color', 'shadow', 'shadow-color', 'ring-w', 'ring-color', 'opacity',
   // motion, transform, interaction
-  'transition', 'duration', 'ease', 'delay', 'animate', 'rotate', 'scale', 'translate', 'translate-x', 'translate-y', 'cursor', 'pointer-events', 'select', 'resize', 'fill', 'stroke-w', 'stroke',
+  'touch', 'accent', 'transition', 'duration', 'ease', 'delay', 'animate', 'rotate', 'scale', 'translate', 'translate-x', 'translate-y', 'cursor', 'pointer-events', 'select', 'resize', 'fill', 'stroke-w', 'stroke',
 ]);
 
 const ts = (await import(pathToFileURL(require.resolve('typescript')).href)).default;
@@ -87,14 +87,21 @@ for (let grew = true; grew; ) {
   for (const [k, g] of info) if (!kept.has(k) && g.heads.some(h => openHeads.has(h))) (kept.add(k), (grew = true));
 }
 const classGroups = allGroups.filter(p => kept.has(keyName(p)));
-const filterList = arr => `[${arr.elements.filter(e => kept.has(e.text)).map(text).join(', ')}]`;
+// These IDs are private lookup labels. Equal width avoids ambiguous modifier/group cache keys.
+// Keep font-size named because utils.ts extends that public configuration group.
+const idWidth = Math.max(1, Math.ceil(Math.log(Math.max(classGroups.length / 26, 1)) / Math.log(36)));
+const suffixCount = 36 ** idWidth;
+const ids = new Map(classGroups.map((p, i) => [keyName(p), keyName(p) === 'font-size' ? 'font-size' : String.fromCharCode(97 + Math.floor(i / suffixCount)) + (i % suffixCount).toString(36).padStart(idWidth, '0')]));
+if (new Set(ids.values()).size !== ids.size) throw new Error('build-merge-config: duplicate compact group IDs');
+const compact = id => ids.get(id);
+const filterList = arr => `[${arr.elements.filter(e => kept.has(e.text)).map(e => JSON.stringify(compact(e.text))).join(', ')}]`;
 const conflicts = prop('conflictingClassGroups').properties.filter(p => kept.has(keyName(p)))
-  .map(p => `${JSON.stringify(keyName(p))}: ${filterList(p.initializer)}`).filter(l => !l.endsWith(': []'));
+  .map(p => `${JSON.stringify(compact(keyName(p)))}: ${filterList(p.initializer)}`).filter(l => !l.endsWith(': []'));
 const postfix = filterList(prop('postfixLookupClassGroups'));
 
-const groupsSrc = classGroups.map(p => `${JSON.stringify(keyName(p))}: ${text(p.initializer)}`).join(',\n    ');
+const groupsSrc = classGroups.map(p => `${JSON.stringify(compact(keyName(p)))}: ${text(p.initializer)}`).join(',\n    ');
 const rest = [`cacheSize: 200`, `theme: ${text(prop('theme'))}`, `classGroups: {\n    ${groupsSrc},\n  }`, `conflictingClassGroups: {\n    ${conflicts.join(',\n    ')},\n  }`,
-  `conflictingClassGroupModifiers: ${text(prop('conflictingClassGroupModifiers'))}`, `postfixLookupClassGroups: ${postfix}`, `orderSensitiveModifiers: ${text(prop('orderSensitiveModifiers'))}`];
+  `conflictingClassGroupModifiers: { ${prop('conflictingClassGroupModifiers').properties.filter(p => kept.has(keyName(p))).map(p => `${JSON.stringify(compact(keyName(p)))}: ${filterList(p.initializer)}`).join(', ')} }`, `postfixLookupClassGroups: ${postfix}`, `orderSensitiveModifiers: ${text(prop('orderSensitiveModifiers'))}`];
 
 // Keep only the helper consts the kept groups use, directly or through another helper.
 const used = new Set([...reach(rest.join('\n'))].filter(id => helperText.has(id)));

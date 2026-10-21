@@ -32,6 +32,7 @@ const MOVES = [
   ['projects/cli', 'assets/projects/cli'], ['projects/ide', 'assets/projects/ide'], ['projects/harness', 'assets/projects/harness'],
   ['projects/relay', 'assets/projects/relay'],
 ];
+const GENERATED_DIRS = ['assets/projects/chess'];
 const skipped = rel => rel.split(/[\\/]/).includes('editable');
 // This is the public production bundle. Review boards and editable sources stay in the kit.
 const relayFiles = new Set([
@@ -62,6 +63,11 @@ function plan(project) {
       rows.push({ local: posix(join(to, rel)), source, file });
     }
   }
+  if (!project) for (const directory of GENERATED_DIRS) {
+    const target = join(tokens, directory);
+    if (!existsSync(target)) continue;
+    for (const file of walk(target)) rows.push({ local: posix(relative(tokens, file)), source: `generated:chess-assets/${relative(target, file)}`, file });
+  }
   return rows;
 }
 
@@ -80,7 +86,7 @@ if (values.sync) {
   for (const r of rows) {
     const dest = join(tokens, r.local);
     mkdirSync(dirname(dest), { recursive: true });
-    copyFileSync(r.file, dest);
+    if (r.file !== dest) copyFileSync(r.file, dest);
     if (sha(dest) !== r.sha) throw new Error(`Source changed during import: ${r.source}`);
   }
   if (values.project) {
@@ -133,7 +139,7 @@ for (const r of rows) {
   const file = join(tokens, r.local);
   if (!existsSync(file)) { problems.push(`missing: ${r.local}`); continue; }
   if (sha(file) !== r.sha) problems.push(`changed here: ${r.local}`);
-  if (!local && existsSync(kit)) {
+  if (!local && existsSync(kit) && !r.source.startsWith('generated:')) {
     const src = join(kit, r.source);
     if (!existsSync(src)) problems.push(`source gone: ${r.source}`);
     else if (sha(src) !== r.sha) problems.push(`source differs: ${r.source}`);
@@ -141,7 +147,7 @@ for (const r of rows) {
   }
 }
 // A file in assets/ that PROVENANCE.md does not list is also a failure.
-for (const [, to] of MOVES) {
+for (const to of [...MOVES.map(([, to]) => to), ...GENERATED_DIRS]) {
   const dir = join(tokens, to);
   if (!existsSync(dir)) continue;
   for (const f of statSync(dir).isDirectory() ? walk(dir) : [dir]) {

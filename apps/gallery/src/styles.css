@@ -1,10 +1,7 @@
-@import "@ejm/ui/styles.css";
-@import "@ejm/ui/styles-docs.css";
-@import "@ejm/ui/styles-app.css";
-/* The demos package scans its own folder; the gallery takes only the static views and the hero, which are in the page HTML.
-   The live islands add their own utilities through islands.css, loaded with the islands, so the CSS budget covers what a first paint needs. */
-@source "../../../packages/demos/src/views";
-@source "../../../packages/demos/src/hero";
-/* Prop names, Array.filter and prose trigger unused viewport container and CSS filter utilities.
-   The gallery uses page and @container queries; its filters narrow data without a CSS filter effect. */
-@source not inline("container filter");
+@import "@ejm/ui/styles.css" source(none);
+/* One complete ordered utility sheet per route, linked in the server-rendered head. */
+@source "./frame.tsx";
+@source "./island.tsx";
+@source "./tokens.tsx";
+@source "./windows.tsx";
+@source "./routes/{home,components,layout,application-layout,product,tokens,hooks,shell,not-found}.tsx";

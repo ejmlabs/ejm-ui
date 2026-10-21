@@ -25,8 +25,8 @@ describe('first scripted session', () => {
     expect(s.chatTitle).toBe('Explain this repository');
     expect(s.chat.map((c) => c.kind)).toEqual(['user', 'agent', 'tool', 'tool', 'agent']);
     expect(tools(s).map((t) => [t.name, t.arg, t.detail, t.state, t.word])).toEqual([
-      ['read_file', 'README.md', '15 lines', 'ok', 'ok'],
-      ['search_code', 'pub fn', '3 matches', 'ok', 'ok'],
+      ['workbench_read_file', 'README.md', '15 lines', 'ok', 'ok'],
+      ['workbench_search_code', 'pub fn', '3 matches', 'ok', 'ok'],
     ]);
     expect(agentTexts(s)[1]).toMatch(/^harbor is a small order library\./);
     expect(s.live.at(-1)).toBe('Run finished.');
@@ -57,7 +57,7 @@ describe('first scripted session', () => {
     const { demo, clock, prompt } = make();
     prompt('Fix the flaky retry test');
     clock.runAll();
-    const search = tools(demo.state).find((t) => t.name === 'search_code')!;
+    const search = tools(demo.state).find((t) => t.name === 'workbench_search_code')!;
     expect(search.output).toEqual(['src/retry.rs:10: let now = Instant::now();', 'src/retry.rs:20: let started = Instant::now();']);
     expect(search.detail).toBe('2 matches');
   });
@@ -85,7 +85,7 @@ describe('review of a proposed write', () => {
     const x = make();
     x.prompt('Fix the flaky retry test');
     x.clock.runAll();
-    return { ...x, write: () => tools(x.demo.state).find((t) => t.name === 'write_file')! };
+    return { ...x, write: () => tools(x.demo.state).find((t) => t.name === 'workbench_write_file')! };
   };
 
   it('proposes the diff and changes nothing until the visitor decides', () => {
@@ -148,12 +148,12 @@ describe('review of a proposed write', () => {
     const { demo, clock, prompt } = proposed();
     prompt('Fix the flaky retry test');
     clock.runAll();
-    const [first, second] = tools(demo.state).filter((t) => t.name === 'write_file');
+    const [first, second] = tools(demo.state).filter((t) => t.name === 'workbench_write_file');
     expect([first!.review, second!.review]).toEqual([true, true]);
     demo.dispatch({ type: 'accept', id: first!.id });
     const after = demo.state.files['src/retry.rs'];
     demo.dispatch({ type: 'accept', id: second!.id });
-    const [, s2] = tools(demo.state).filter((t) => t.name === 'write_file');
+    const [, s2] = tools(demo.state).filter((t) => t.name === 'workbench_write_file');
     expect(s2).toMatchObject({ state: 'error', word: 'error', review: false });
     expect(demo.state.files['src/retry.rs']).toBe(after);
     expect(demo.state.chat.at(-1)).toMatchObject({ kind: 'caption', text: 'no match for the old text; it may already be applied' });

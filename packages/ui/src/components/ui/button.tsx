@@ -1,9 +1,12 @@
 import { Slot, Slottable } from '@radix-ui/react-slot';
-import { cva, type VariantProps } from 'class-variance-authority';
+import type { VariantProps } from 'class-variance-authority';
+import { buttonVariants } from '../../control-recipes.mjs';
 import { ArrowRight } from 'lucide-react';
 import type { ComponentProps } from 'react';
 import type { Density } from '../../lib/density';
 import { cn } from '../../lib/utils';
+
+export { buttonVariants } from '../../control-recipes.mjs';
 
 /**
  * Pill button. primary is the Sage fill (Ink text), secondary a quiet tonal pill, ghost has no fill until hover, link reads as text.
@@ -11,35 +14,6 @@ import { cn } from '../../lib/utils';
  * applications. Pills stay on one line; a link wraps, so a long label does not overflow a 320px screen.
  * Only transform moves: the arrow slides 4px on hover and the whole button sinks a hair while pressed.
  */
-export const buttonVariants = cva(
-  'group inline-flex items-center justify-center gap-2 font-semibold select-none touch-target focus-ring transition-transform duration-fast ease-standard motion-safe:active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50',
-  {
-    variants: {
-      variant: {
-        primary: 'rounded-pill whitespace-nowrap bg-primary text-on-primary hover:bg-primary-hover hover:text-on-primary-hover',
-        secondary: 'rounded-pill whitespace-nowrap bg-tone text-fg hover:bg-line',
-        ghost: 'rounded-pill whitespace-nowrap text-fg hover:bg-tone',
-        link: 'rounded-control text-start text-link underline decoration-1 underline-offset-[0.2em] hover:decoration-2',
-        danger: 'rounded-pill whitespace-nowrap bg-danger text-on-danger hover:bg-danger/85',
-      },
-      size: {
-        sm: 'min-h-9 px-4 text-sm',
-        md: 'min-h-11 px-6 text-base',
-        lg: 'min-h-14 px-8 text-lg',
-        icon: 'size-11 p-0',
-      },
-      density: { comfortable: '', compact: 'rounded-compact text-[0.8125rem]' },
-    },
-    compoundVariants: [
-      { variant: 'link', className: 'px-0' },
-      // Compact: 32px tall on a fine pointer (compact-target), 44px on a coarse one (touch-target, already on every button). The icon is 32px square.
-      { density: 'compact', className: 'min-h-0 px-3 compact-target' },
-      { density: 'compact', size: 'icon', className: 'size-8 px-0' },
-    ],
-    defaultVariants: { variant: 'primary', size: 'md', density: 'comfortable' },
-  },
-);
-
 export interface ButtonProps extends ComponentProps<'button'>, Omit<VariantProps<typeof buttonVariants>, 'density'> {
   /** `compact` for applications: 5px radius, 13px type, 32px target on a fine pointer (44px on touch). Default `comfortable`. */
   density?: Density;

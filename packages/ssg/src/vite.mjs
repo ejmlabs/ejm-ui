@@ -25,6 +25,7 @@ const outFile = (route, notFound) =>
 export function ejmSsg(options) {
   /** @type {import('vite').ResolvedConfig} */
   let config;
+  let written = false;
   return {
     name: 'ejm-ssg',
     apply: 'build',
@@ -32,14 +33,24 @@ export function ejmSsg(options) {
       return {
         // The server build bundles @ejm/* (they ship TypeScript source); the client build needs the manifest to find route chunks.
         ssr: { noExternal: [/^@ejm\//] },
-        build: env.isSsrBuild ? {} : { manifest: true },
+        // React 19 supplies this exact public shim export; the compatibility implementation is unused.
+        resolve: env.isSsrBuild ? {} : { alias: [{ find: /^use-sync-external-store\/shim\/index\.js$/, replacement: 'react' }] },
+        // Native imports still work without modulepreload support; only preload acceleration is lost.
+        build: env.isSsrBuild ? {} : { manifest: true, modulePreload: { polyfill: false } },
       };
     },
     configResolved(c) {
       config = c;
     },
+    buildStart() {
+      written = false;
+    },
+    writeBundle() {
+      written = true;
+    },
     async closeBundle() {
-      if (config.build.ssr) return;
+      // closeBundle also runs after failed builds. Preserve the original diagnostic.
+      if (config.build.ssr || !written) return;
       const root = config.root;
       const dist = resolve(root, config.build.outDir);
       const work = join(root, '.ejm-ssg');

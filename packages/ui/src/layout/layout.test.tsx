@@ -4,8 +4,46 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { LinkProvider } from '../shell/link';
 import { expectAccessible, renderIn, themes } from '../components/test-setup';
-import { Band, Facts, Fact, Hero, ProductStage, ProductWindow, Row, Rows, Rule, SectionHead, Stat, Status, Text } from './index';
+import { Band, Facts, Fact, Hero, Page, ProductStage, ProductWindow, Row, Rows, Rule, SectionHead, Stat, Status, Text } from './index';
+
+describe('application layout', () => {
+  it('keeps the default column bare and lets application callers override spacing', () => {
+    const { container, rerender } = render(<Page aria-label="Games"><p>History</p></Page>);
+    const page = container.firstElementChild!;
+    expect(page).toHaveAttribute('aria-label', 'Games');
+    expect(page).toHaveClass('page');
+    for (const token of ['grid', 'gap-content', 'py-8']) expect(page).not.toHaveClass(token);
+
+    rerender(<Page variant="application"><p>History</p></Page>);
+    expect(page).toHaveClass('page', 'grid', 'gap-content', 'py-8', 'sm:py-12');
+    expect(page).not.toHaveAttribute('variant');
+
+    rerender(<Page variant="application" className="gap-4 py-4 sm:py-6"><p>History</p></Page>);
+    expect(page).toHaveClass('gap-4', 'py-4', 'sm:py-6');
+    for (const token of ['gap-content', 'py-8', 'sm:py-12']) expect(page).not.toHaveClass(token);
+  });
+
+  it('selects a complete recipe by purpose while keeping heading semantics and copy links', () => {
+    const copy = <p>Read <a href="/help/">help</a>.</p>;
+    const { rerender } = render(<SectionHead purpose="page" kicker="Your account" as="h1" id="account-title" title="Sign in">{copy}</SectionHead>);
+    expect(screen.getByRole('heading', { level: 1, name: 'Sign in' })).toHaveAttribute('id', 'account-title');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveClass('text-display');
+    expect(screen.getByRole('link', { name: 'help' }).closest('.text-lead')).not.toBeNull();
+
+    rerender(<SectionHead purpose="application" as="h1" id="account-title" title="Sign in">{copy}</SectionHead>);
+    const title = screen.getByRole('heading', { level: 1, name: 'Sign in' });
+    expect(title).toHaveAttribute('id', 'account-title');
+    expect(title).toHaveClass('text-title');
+    expect(title.parentElement?.tagName).toBe('HEADER');
+    expect(screen.getByRole('link', { name: 'help' })).toHaveAttribute('href', '/help/');
+    expect(screen.getByRole('link', { name: 'help' }).closest('.text-body')).not.toBeNull();
+
+    rerender(<SectionHead as="h2" title="Recovery" />);
+    expect(screen.getByRole('heading', { level: 2, name: 'Recovery' })).toHaveClass('text-title');
+  });
+});
 
 describe('Band', () => {
   it('sets its ground and wraps children in the page column unless told not to', () => {
@@ -19,6 +57,13 @@ describe('Band', () => {
 });
 
 describe('Rows and Row', () => {
+  it('uses the site link contract for route and download rows', () => {
+    const Adapter = (props: import('../shell/link').LinkProps) => <a {...props} data-router="site" />;
+    render(<LinkProvider value={Adapter}><Rows><Row title="Docs route" href="/docs/" /><Row title="File" href="/kit.zip" download /></Rows></LinkProvider>);
+    expect(screen.getByRole('link', { name: 'Docs route' })).toHaveAttribute('data-router', 'site');
+    expect(screen.getByRole('link', { name: 'File' })).toHaveAttribute('download', '');
+  });
+
   it('makes the whole row one link, named by its title, with rel external on another site', () => {
     render(
       <Rows aria-label="Projects">
@@ -50,7 +95,7 @@ describe('Rows and Row', () => {
     const { container } = render(<Rows aria-label="x"><Row title="Out" href="https://example.test" external /></Rows>);
     const note = container.querySelector('.sr-inline')!;
     expect(note.className).not.toContain('sr-only');
-    const css = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'styles.css'), 'utf8');
+    const css = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'base.css'), 'utf8');
     expect(css.match(/@utility sr-inline \{[^}]*\}/)![0]).not.toContain('position');
   });
 
@@ -115,6 +160,14 @@ describe('ProductStage', () => {
 });
 
 describe('Hero', () => {
+  it('names its region and keeps content present before its shared entrance', () => {
+    const { container } = render(<Hero title="Product" titleId="product-title" footnote={<p>Availability</p>} aside={<p>Preview</p>}>Description</Hero>);
+    expect(screen.getByRole('region', { name: 'Product' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveAttribute('id', 'product-title');
+    expect(screen.getByText('Availability')).toBeInTheDocument();
+    expect(container.querySelector('.animate-slide')).not.toBeNull();
+  });
+
   it('has one h1, puts the copy before the aside, and hides the decorative art', () => {
     const { container } = render(
       <Hero title="Small experiments" aside={<p>aside</p>} art="<svg><path d='M0 0'/></svg>" actions={<a href="#x">Go</a>}>
@@ -147,7 +200,7 @@ describe('Hero', () => {
   });
 
   it('defines the slide entrance without opacity, and keeps the 1.12s cap and the reduced-motion guard', () => {
-    const css = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'styles.css'), 'utf8');
+    const css = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'base.css'), 'utf8');
     expect(css).toMatch(/@keyframes ejm-slide \{ from \{ transform: [^}]*\} \}/);
     expect(css.match(/@keyframes ejm-slide[^\n]*/)![0]).not.toContain('opacity');
     const utility = css.match(/@utility animate-slide \{[\s\S]*?\n\}/)![0];
@@ -171,6 +224,7 @@ describe.each(themes)('accessibility in %s', theme => {
           <p><Text variant="code">code</Text> <Status status="warn" /></p>
         </Band>
         <ProductStage><ProductWindow title="ejm-cli">x</ProductWindow></ProductStage>
+        <Page variant="application"><SectionHead as="h2" purpose="application" title="Activity"><p>Recent changes.</p></SectionHead></Page>
       </main>,
     );
     await expectAccessible(container);
