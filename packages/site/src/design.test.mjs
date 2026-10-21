@@ -105,19 +105,24 @@ describe('site design ownership in real Vite builds', () => {
     expect(await readFile(join(root, 'src/main.tsx'), 'utf8')).toBe(source);
   });
 
-  it('checks files discovered by the initial watcher crawl without an add event', async () => {
+  it('checks document requests and recovers when watcher events are missed', async () => {
     const root = await fixture();
     const server = await createServer({ ...options(root), server: { host: '127.0.0.1', port: 0, watch: null }, optimizeDeps: { noDiscovery: true } });
     try {
       await server.listen();
       const origin = server.resolvedUrls.local[0];
-      expect((await fetch(origin)).status).toBe(200);
-      await writeFile(join(root, 'src/unused.css'), '.local { color:red }');
-      // No filesystem events: Vite can discover this file during ignoreInitial.
-      server.watcher.emit('ready');
-      const response = await fetch(origin);
+      const document = () => fetch(new URL('guide/', origin), { headers: { Accept: 'text/html' } });
+      expect((await document()).status).toBe(200);
+      const unused = join(root, 'src/unused.css');
+      await writeFile(unused, '.local { color:red }');
+      const response = await document();
       expect(response.status).toBe(500);
       expect(await response.text()).toContain('src/unused.css:1:1');
+      expect((await fetch(new URL('theme-boot.js', origin))).status).toBe(500);
+      await writeFile(unused, '@import "@ejm/ui/styles-site.css";');
+      expect((await fetch(origin, { method: 'HEAD', headers: { Accept: 'text/html' } })).status).toBe(200);
+      expect((await document()).status).toBe(200);
+      expect((await fetch(new URL('theme-boot.js', origin))).status).toBe(200);
     } finally { await server.close(); }
   });
 
@@ -136,11 +141,16 @@ describe('site design ownership in real Vite builds', () => {
         server.watcher.on('error', error => { errors.push(String(error)); });
       },
     });
-    const server = await createServer({ ...config, server: { host: '127.0.0.1', port: 0 }, optimizeDeps: { noDiscovery: true } });
+    const server = await createServer({ ...config, envDir: false, server: { host: '127.0.0.1', port: 0 }, optimizeDeps: { noDiscovery: true } });
     try {
       await server.listen();
-      // HTTP can listen before ignoreInitial finishes discovering files.
-      await expect.poll(() => watcherReady, { timeout: 5000 }).toBe(true);
+      // A ready event can precede the native directory watch. Confirm a real source change first.
+      let probe = 0;
+      await expect.poll(async () => {
+        const active = events.some(({ event, file }) => event === 'change' && file === 'src/styles.css');
+        if (watcherReady && !active) await writeFile(join(root, 'src/styles.css'), `@import "@ejm/ui/styles-site.css"; /* watch probe ${++probe} */`);
+        return { ready: watcherReady, active, errors: [...errors] };
+      }, { timeout: 5000 }).toEqual({ ready: true, active: true, errors: [] });
       const origin = server.resolvedUrls.local[0];
       expect((await fetch(origin)).status).toBe(200);
       const unused = join(root, 'src/unused.css');

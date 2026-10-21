@@ -5,6 +5,11 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Recheck dev source on HTML document requests to catch missed watcher events
+  and allow recovery. Isolate the native watcher fixture from absent env files
+  and confirm a real change before testing additions, within the same deadlines.
+- Include product-window and stage utilities in the public site CSS profile,
+  so demo styles need no private source scan in consuming sites.
 - Preserve literal entity examples in Markdown code spans, including headings
   and table labels. Synchronize the dev watcher test with initial discovery.
 - Check native file notifications and request recovery within the existing

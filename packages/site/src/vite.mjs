@@ -101,7 +101,8 @@ export function ejmSite({ project, headers = {} }) {
           server.watcher?.off('all', checkDesign);
           server.watcher?.off('ready', validateDesign);
         });
-        server.middlewares.use((_req, res, next) => {
+        server.middlewares.use((req, res, next) => {
+          if ((req.method === 'GET' || req.method === 'HEAD') && req.headers.accept?.includes('text/html')) validateDesign();
           if (!designError) return next();
           res.statusCode = 500;
           res.setHeader('Content-Type', 'text/plain; charset=utf-8');

@@ -44,9 +44,12 @@ export default defineSite({ ...siteDefaults('cli'), App, routes: [/* ... */], no
 `ejmSite({ project })` checks every consumer's `src` tree before bundling,
 including unused stylesheets. The check is mandatory. Remove the obsolete
 `enforceDesignKit` option from existing configurations; passing its former false
-value does not disable the check. Dev checks new files and edits, then checks
-once more when the initial watcher scan ends. Files found during startup receive the same checks. A local
-override shows an error; correcting the source clears it. The check protects
+value does not disable the check. Dev checks new files and edits, then rechecks
+source on HTML document requests (`GET` or `HEAD` with `Accept: text/html`).
+This catches files and corrections missed by watcher events during startup.
+A local override blocks requests; correcting the source clears the error on
+the next file event or document request. Wildcard requests rely on the watcher
+and the last checked state. The check protects
 source ownership; it is not a security sandbox or a browser layout proof.
 
 Sites own content, routes, product data, semantic markup and accessible state.
@@ -94,7 +97,9 @@ untrusted source. Normal review and type checks still apply.
 
 Checks use Vite's public TSX parser and PostCSS in Node. Neither parser enters
 browser code, and the check adds no browser dependency. Files are cached between
-dev checks; changed and deleted files invalidate that cache.
+dev checks; changed and deleted files invalidate that cache. The cache compares
+file size and modification time. An edit that preserves both needs a file event
+or a dev server restart to invalidate its cached result.
 
 ## Native HTML applications
 
