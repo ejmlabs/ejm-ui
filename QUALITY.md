@@ -8,7 +8,14 @@ The references are Anthropic, Stripe and OpenAI. ejmlabs learns from how they de
 
 1. Build the page from `@ejm/ui` components, layouts and views (`packages/ui/THEME.md` lists every token).
 2. Run `npm run check`, `npm run build`, `node scripts/size.mjs` and `node scripts/shoot.mjs <url>` in light and dark.
-3. Walk the nine dimensions below. A page ships when every line holds, or when the exception is written down in the critique.
+3. Walk the dimensions below. A page ships when every line holds, or when the exception is written down in the critique.
+
+## Content
+
+- Use the fewest words that keep the meaning clear. Remove text that repeats the interface or another label.
+- Prefer a familiar visual, an accessible icon, or no extra element when the meaning stays clear.
+- Keep labels and instructions needed for access, consent, trust, errors and recovery. Hide only decoration from assistive tools.
+- Use familiar words and active verbs. State what works now, and label examples, limits and unreleased behavior honestly.
 
 ## Typography
 

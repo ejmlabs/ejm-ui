@@ -7,6 +7,10 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 - Preserve literal entity examples in Markdown code spans, including headings
   and table labels. Synchronize the dev watcher test with initial discovery.
+- Check native file notifications and request recovery within the existing
+  watcher test deadline, with received events and errors in failure output.
+- Add the shared minimal-copy rule to the public quality bar, preserving clear
+  labels, consent, accessibility and recovery instructions.
 - Keep reused route stylesheets in cascade order, include the gallery's static
   product-window styles, and use the public site CSS profile in the packed starter.
 - Keep plain code in prerendered documentation when a static boundary has no

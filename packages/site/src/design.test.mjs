@@ -1,7 +1,7 @@
 // @vitest-environment node
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, realpath, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, relative, sep } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { build, createServer } from 'vite';
 import { ejmSite } from './vite.mjs';
@@ -122,13 +122,19 @@ describe('site design ownership in real Vite builds', () => {
   });
 
   it('blocks dev requests for newly added unused CSS and recovers when corrected', async () => {
-    const root = await fixture();
+    const root = await realpath(await fixture());
     let watcherReady = false;
+    const events = [];
+    const errors = [];
     const config = options(root);
     config.plugins.unshift({
       name: 'fixture-watch-ready',
       enforce: 'pre',
-      configureServer(server) { server.watcher.once('ready', () => { watcherReady = true; }); },
+      configureServer(server) {
+        server.watcher.once('ready', () => { watcherReady = true; });
+        server.watcher.on('all', (event, file) => { events.push({ event, file: relative(root, file).split(sep).join('/') }); });
+        server.watcher.on('error', error => { errors.push(String(error)); });
+      },
     });
     const server = await createServer({ ...config, server: { host: '127.0.0.1', port: 0 }, optimizeDeps: { noDiscovery: true } });
     try {
@@ -138,11 +144,16 @@ describe('site design ownership in real Vite builds', () => {
       const origin = server.resolvedUrls.local[0];
       expect((await fetch(origin)).status).toBe(200);
       const unused = join(root, 'src/unused.css');
+      const snapshot = async () => ({ status: (await fetch(origin)).status, events: [...events], errors: [...errors] });
       await writeFile(unused, '.local { color:red }');
-      await expect.poll(async () => (await fetch(origin)).status).toBe(500);
+      await expect.poll(snapshot, { timeout: 3000 }).toEqual({
+        status: 500, events: expect.arrayContaining([{ event: 'add', file: 'src/unused.css' }]), errors: [],
+      });
       expect(await (await fetch(origin)).text()).toContain('src/unused.css:1:1');
       await writeFile(unused, '@import "@ejm/ui/styles-site.css";');
-      await expect.poll(async () => (await fetch(origin)).status).toBe(200);
+      await expect.poll(snapshot, { timeout: 3000 }).toEqual({
+        status: 200, events: expect.arrayContaining([{ event: 'change', file: 'src/unused.css' }]), errors: [],
+      });
     } finally { await server.close(); }
   }, 15_000);
 
