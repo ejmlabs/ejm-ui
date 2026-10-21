@@ -5,6 +5,8 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Preserve 44 px touch targets for static small and compact buttons, and retain query and fragment state in route recovery links.
+
 - Recheck dev source on HTML document requests to catch missed watcher events
   and allow recovery. Isolate the native watcher fixture from absent env files
   and confirm a real change before testing additions, within the same deadlines.

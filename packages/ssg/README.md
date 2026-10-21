@@ -165,6 +165,7 @@ For every `.html` file the gate follows only the files that page references: `<s
 
 ## Route loading failures
 
+The reload link preserves the requested path, query and fragment.
 If a route chunk fails to load, the site keeps its frame and shows a readable
 error with a normal **Reload this page** link. Reload requests the current HTML,
 which can recover an old tab after a release removes its previous chunk. No

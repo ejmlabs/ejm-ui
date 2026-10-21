@@ -201,7 +201,7 @@ class RouteBoundary extends ReactComponent<{ children: ReactNode; href: string }
     return <div role="alert" className="page py-rhythm">
       <h1 className="text-title">Page could not load</h1>
       <p className="py-4">Check your connection and reload this page to get the latest version.</p>
-      <a href={this.props.href}>Reload this page</a>
+      <a href={typeof window === 'undefined' ? this.props.href : window.location.pathname + window.location.search + window.location.hash}>Reload this page</a>
     </div>;
   }
 }

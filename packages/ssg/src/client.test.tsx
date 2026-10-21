@@ -297,23 +297,23 @@ describe('view transitions', () => {
 
 
 describe('route recovery', () => {
-  it('keeps the site frame and offers a normal reload after a route chunk fails', async () => {
+  it.each(['navigation', 'initial load'])('preserves the requested URL after a route chunk fails on %s', async entry => {
     const own = defineSite({
       base: '',
       App: ({ children }) => <><header>Site navigation</header><main>{children}</main></>,
       routes: [
-        { path: '/', component: () => <><h1>Home</h1><Link href="/broken/">Open example</Link></> },
+        { path: '/', component: () => <><h1>Home</h1><Link href="/broken/?view=source">Open example</Link></> },
         { path: '/broken/', load: () => Promise.reject(new TypeError('Failed to fetch dynamically imported module')) },
       ],
     });
-    history.replaceState(null, '', '/');
+    history.replaceState(null, '', entry === 'navigation' ? '/' : '/broken/?view=source#details');
     document.body.innerHTML = '<div id="root"></div>';
     await act(async () => { root = await hydrateSite(own); });
-    await click(link('Open example'));
+    if (entry === 'navigation') await click(link('Open example'));
     await settled();
     expect(document.querySelector('header')?.textContent).toBe('Site navigation');
     expect(document.querySelector('[role="alert"]')?.textContent).toContain('Page could not load');
-    expect(link('Reload this page').getAttribute('href')).toBe('/broken/');
+    expect(link('Reload this page').getAttribute('href')).toBe(entry === 'navigation' ? '/broken/?view=source' : '/broken/?view=source#details');
   });
 
   it('handles a malformed same-document fragment without throwing', async () => {

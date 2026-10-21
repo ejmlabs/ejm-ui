@@ -103,6 +103,8 @@ Buttons use the React-free canonical `@ejm/ui/control-recipes`, also used by
 React Button and Input. Native button attributes are
 `data-variant="primary|secondary|ghost|link|danger"`,
 `data-size="sm|md|lg|icon"` and `data-density="comfortable|compact"`.
+Small and compact buttons retain a 44 px minimum touch target on coarse
+pointers; compact controls use a 32 px minimum on fine pointers.
 Defaults are primary, md and comfortable. Feedback may use
 `data-tone="muted|success|warning|danger"`. Pair color with words, labels and
 native state. An `aria-disabled` link also needs an activation guard.

@@ -22,6 +22,7 @@ const rules = [
   `[data-ejm="button"][data-density="compact"] { @apply ${difference({ density: 'compact' })}; }`,
   '[data-ejm="button"][data-density="compact"][data-size="icon"] { @apply size-8 px-0; }',
   '[data-ejm="button"][data-variant="link"] { @apply px-0; }',
+  '[data-ejm="button"][data-size="sm"], [data-ejm="button"][data-density="compact"] { @apply touch-target; }',
   `[data-ejm="field"] { @apply ${fieldClass}; }`,
   'input[data-ejm="field"], select[data-ejm="field"] { @apply min-h-11; }',
   'textarea[data-ejm="field"] { @apply min-h-28 resize-y py-2.5; }',
