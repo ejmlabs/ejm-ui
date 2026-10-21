@@ -6,6 +6,12 @@ Rules every component follows: Tailwind utilities from `THEME.md` only, no liter
 
 How to read the primitive column: **native** means a platform element does the job, **Radix** means a Radix primitive earns its weight (behavior that is hard to get right by hand), **core** means the framework-neutral model in `@ejm/core`.
 
+## Native HTML applications
+
+Existing applications that own a native DOM may use `@ejm/ui/static.css`. This compiled profile has no browser JavaScript dependency. Its `data-ejm` attributes provide the shared shell, application layout, native fields and buttons, feedback, and discrete state entrances. See the native HTML profile in `THEME.md` for the complete contract, asset paths, accessibility requirements, and reduced-motion behavior.
+
+`@ejm/ui/control-recipes` exports `buttonVariants` and `fieldClass` without importing React. The React wrappers and the static build use those same recipes. Fixed native ghost buttons in the default density can join the exported `buttonBaseClass`, `buttonGhostClass` and `buttonMediumClass` parts. This keeps the same shared style without loading the variant resolver or React slot and icon adapters; use `buttonVariants` when the choices are dynamic. This keeps native HTML adapters narrow while preserving their existing state and event ownership. The static profile is shared infrastructure; consumers compose its public contract and keep local styles out of that adapter.
+
 ## Controls and overlays (primitives workstream)
 
 Source: `src/components/ui/`, copied-in shadcn/ui style on React 19 with `cn` and `class-variance-authority`. `components.json` records the shadcn setup (aliases, no CSS variables file: the theme is `styles.css`).
@@ -70,8 +76,8 @@ Band, SectionHead, Rows, Row, Facts, Stat, Hero, ProductWindow, ProductShot, Ill
 | Component | File | Primitive | Why |
 | --- | --- | --- | --- |
 | Band | layout/Band.tsx | native `<section>` with `data-band` | A band is a data attribute and a utility, so tone needs no JavaScript. |
-| Page | layout/Band.tsx | native `<div>` | The scaling content column; bands stay full-bleed around it. |
-| SectionHead | layout/SectionHead.tsx | native heading and paragraph | Kicker, display heading and copy; the copy sits beside the heading by container query. |
+| Page | layout/Band.tsx | native `<div>` | The scaling content column; bands stay full-bleed around it. `variant="application"` adds 32px phone / 48px desktop vertical padding and shared content gaps; the default remains column-only. |
+| SectionHead | layout/SectionHead.tsx | native header, heading and support copy | Kicker, display heading and copy. The page, section and application purposes select complete shared recipes. The application purpose stacks body-sized copy. Heading level remains semantic. |
 | Rows | layout/Rows.tsx | native `<ul>` | Hairline list that replaces cards. |
 | Row | layout/Rows.tsx | native `<li>` and `<a>` | The whole row is the link through its title; states per contract. |
 | ActionRows | static/ActionRows.tsx | native `<ul>` | Compact hairline records whose actions stay separate from their text. |
@@ -91,6 +97,31 @@ Band, SectionHead, Rows, Row, Facts, Stat, Hero, ProductWindow, ProductShot, Ill
 | Illustration | layout/Illustration.tsx | native `<figure>` | A drawn stand-in for a product screen (a React composition) with the always-visible label "Illustration of <product>, not a screenshot". Never a capture. |
 | IllustrationLabel | layout/Illustration.tsx | native `<p>` | The one visible label "Illustration of <product>, not a screenshot", shared by Illustration and ProductShot. |
 
+## Opinionated site composition
+
+Sites supply content, routes, artwork data and accessible state. These components own their full visual recipes. They do not accept `className` or `style`. Add missing layouts here before using them in a site.
+
+| Component | File | Primitive | Why |
+| --- | --- | --- | --- |
+| SectionBody | layout/SiteContent.tsx | native elements | Section content spacing. |
+| Columns | layout/SiteContent.tsx | native elements | One explanatory and one supporting column. |
+| MetricGrid | layout/SiteContent.tsx | native elements | Comparable figures in one responsive grid. |
+| ContentFlow | layout/SiteContent.tsx | native elements | Readable content and status rhythm. |
+| ContentGroup | layout/SiteContent.tsx | native elements | A heading, copy and related action. |
+| ReadingColumn | layout/SiteContent.tsx | native elements | Bounded source example width. |
+| Actions | layout/SiteContent.tsx | native elements | Wrapping standalone actions. |
+| Note | layout/SiteContent.tsx | native elements | A nearby qualification. |
+| ContentHeading | layout/SiteContent.tsx | native elements | A secondary heading with semantic level. |
+| InlineLink | layout/InlineLink.tsx | native elements | Shared route and external link treatment. |
+| InlineCode | layout/SiteContent.tsx | native elements | Short code inside prose. |
+| CommandLines | layout/SiteContent.tsx | native elements | Plain source commands without a client highlighter. |
+| VisuallyHidden | layout/SiteContent.tsx | native elements | Accessible names without visual text. |
+| FileDetail | layout/SiteContent.tsx | native elements | Wrapping release metadata. |
+| FocusRegion | layout/SiteContent.tsx | native elements | A programmatic focus target with the global focus rule. |
+| AssetGrid | layout/SiteContent.tsx | native elements | Uniform responsive artwork grid. |
+| BrandAsset | layout/SiteContent.tsx | native elements | Fixed-height artwork preview and caption. |
+| PaletteSwatch | layout/SiteContent.tsx | native elements | Approved token color sample. |
+
 ## Shell, hooks and layouts (shell workstream)
 
 Header, Footer, ThemeToggle, ExternalLink, SiteLayout, DocsLayout, AppShell, SkipLink, Collapse, Reveal, Stagger. Add a row per component.
@@ -98,6 +129,7 @@ Header, Footer, ThemeToggle, ExternalLink, SiteLayout, DocsLayout, AppShell, Ski
 | Component | File | Primitive | Why |
 | --- | --- | --- | --- |
 | SiteLayout | shell/SiteLayout.tsx | native landmarks | Skip link, header, `main#main` and footer for every site. |
+| Brand | shell/Brand.tsx | decorative mark and optional name | Supplied light/dark image URLs and intrinsic dimensions; placement owns the display size. The footer always uses its light artwork. |
 | Header | shell/Header.tsx | native `<header>`, `<nav>` and `<details>` | Logo, nav and the theme control last; `themeControl` replaces or suppresses the default. The phone menu is a disclosure. |
 | Footer | shell/Footer.tsx | native `<footer>` | Ink band with link columns and the privacy note slot. |
 | ThemeToggle | shell/ThemeToggle.tsx | native `<button>` | Far right of the header; its name states the action. |
@@ -119,12 +151,23 @@ CodeBlock, CodeTabs, Callout, ParamTable, Pager, SidebarFilter, Contents. Add a 
 | SidebarFilter | docs/SidebarFilter.tsx | native `<input>` | Filters entries and announces the result count. |
 | Contents | docs/Contents.tsx | native `<nav>` and links | On this page; works with no script, scroll-aware with it. |
 | Heading | docs/Heading.tsx | native heading with anchor | Heading with an id and a native `#` permalink. |
+| CodeBlockFrame | docs/CodeBlockFrame.tsx | copy and feedback | Live code figure that accepts pre-rendered source. |
+| CodeSource | docs/CodeBlockFrame.tsx | source region | Labelled, keyboard-scrollable plain or highlighted code. |
+| CodeHighlight | docs/CodeHighlight.tsx | syntax source | Highlighted source without its figure or copy control. |
+| CodeTabsFrame | docs/CodeTabsFrame.tsx | tabs and keyboard controls | Shared tabs interaction around supplied content. |
 | CodeBlock | docs/CodeBlock.tsx | native `<pre>` and `<button>` | Language label, copy with a live confirmation, own scroll region. |
 | CodeTabs | docs/CodeTabs.tsx | core tabs model | Arrow-key language tabs; all panels show stacked without script. |
 | Callout | docs/Callout.tsx | native `<aside>` | Note, tip or warning with a text label first and a left rule, no box. |
 | ParamTable | docs/ParamTable.tsx | native `<table>` | Mono names and tabular numerals, scrolling inside its own region. |
 | Pager | docs/Pager.tsx | native `<nav>` and links | Previous and next links that name the adjacent pages. |
 | DocHead | docs/model.tsx | native header | Page title and lead from the content model. |
+| DocsPage | docs/DocsPage.tsx | live docs shell | Sidebar, contents, reading surface, code controls and pager around optional static prose. Code renders as plain source when no server highlighting callback is supplied, including inside a static boundary. |
+| Prose | docs/Prose.tsx | reading surface | Shared body type and inline-code rules for docs content. |
+| DocTable | docs/DocTable.tsx | native table | Captioned, locally scrolling table that preserves every column. |
+| DocProse | docs/DocProse.tsx | compiled prose | Renders a serialized prose run with the shared docs parts. |
+| DocCodeBlock | docs/DocCodeBlock.tsx | compiled code | Live code and tabs without the prose renderer. |
+| DocDataBlock | docs/DocDataBlock.tsx | compiled block | Renders serialized blocks, including nested code. |
+| DocBlocks | docs/model.tsx | content blocks | Renders blocks from the React content model. |
 | DocBody | docs/model.tsx | native article content | Renders a page's blocks from the content model. |
 
 ## App (app workstream)
@@ -143,6 +186,51 @@ All in `packages/ui/src/app`. Every part takes `state` default, empty, loading o
 | `ActivityList` | `app/ActivityList.tsx` | native `ul`, `time`, `Status` | Hairline rows with relative times and a status glyph and word. |
 
 ## Compact density (applications)
+
+Application page layout is opt-in and independent of control density. Use
+`Page variant="application"` with `SectionHead purpose="application"`. Native
+forms and content groups use the fixed public `AppForm`, `AppField`,
+`AppFieldset`, `AppFlow`, `AppGroup` and `AppActions` recipes from
+`@ejm/ui/layout/Application`. The consumer keeps semantics, values, validation
+and events. The shared owner fixes spacing, widths and responsive geometry.
+`GameWorkspace`, `PlayerStrip`, `MovePairs` and `MoveHistory` apply the same
+boundary to board composition and move selection. See `src/layout/README.md`
+for the complete pattern and site design rules.
+
+
+## Application leaves
+
+These exports supply their complete visual treatment. Applications use content,
+state and semantic attributes without visual classes or inline styles.
+
+| Component | File | Primitive | Why |
+| --- | --- | --- | --- |
+| GameClock | components/GameClock.tsx | native span | Supplied time and state, no timer or ticking live region. |
+| RadioGroup | components/ui/radio-group.tsx | native fieldset and radio inputs | Form validation, submission and keyboard selection. |
+| Disclosure (deep controls import) | components/ui/disclosure.tsx | native details and summary | Preserves mounted children while closed. |
+| Prose | layout/Prose.tsx | native article or div | Shared reading typography without a highlighter. |
+
+## Application composition
+
+All exports below are public through `@ejm/ui/layout/Application`. They accept
+content, refs, native events and semantic attributes without visual overrides.
+Form and game modules remain separate so account routes do not load replay UI.
+
+| Component | File | Primitive | Why |
+| --- | --- | --- | --- |
+| AppFlow, AppGroup | layout/Application.tsx | semantic content tags | Shared application rhythm and safe wrapping. |
+| AppActions | layout/Application.tsx | semantic action or navigation region | Wrapping actions without consumer spacing choices. |
+| AppHeading | layout/Application.tsx | native h2, h3 or h4 | Fixed type with heading levels and programmatic focus. |
+| AppField, AppFieldset, AppForm | layout/Application.tsx | native form elements | Labels, legends, validation and submit handlers stay native. |
+| AppSection | layout/Application.tsx | native section | Fixed reading measure for account and information pages. |
+| AppPre | layout/Application.tsx | native pre | Wrapped source and records without document overflow. |
+| GameWorkspace | layout/ApplicationGame.tsx | section and aside | Board and related state share fixed desktop and phone geometry. |
+| PlayerStrip | layout/ApplicationGame.tsx | native content row | Player details align with the supplied clock. |
+| BoardPlaceholder | layout/ApplicationGame.tsx | square loading region | Stable space while the lazy board loads. |
+| MovePairs | layout/ApplicationGame.tsx | native ordered list | Accepted moves remain readable in a bounded region. |
+| MoveHistory | layout/ApplicationGame.tsx | ordered list and shared Buttons | Current replay step, selection callback and list-only scrolling. |
+
+## Control density
 
 `Button`, `Switch`, `Tooltip`, `Badge`, `StateBlock`, `Table` and `NativeCheckbox` take `density="compact"` (default `comfortable`, every existing default is unchanged). Compact is for dense application UI such as the IDE: the 5px `rounded-compact` radius and 13px type; a button is 32px tall on a fine pointer whatever its `size` (`icon` is 32px square); a switch has a 28 by 16px track with a 32px target; a tooltip sets 13px mono text; a badge is 12px; a state block uses less space; a table has tighter rows. `NativeCheckbox` sizes its native input to 16px in compact density and 24px in comfortable density; the wrapping label is the target. `Disclosure` accepts the same density, defaulting to compact for a menu and comfortable for a section. On a coarse pointer (touch) a compact control is still 44px: `touch-target` makes it 44px on coarse pointers and `compact-target` makes it 32px on fine ones (previously measured in Chrome for a button, an icon button and a switch; new consumer layouts need their own browser check). `Table` also takes `truncate={false}` to show every character of a cell. `Button` gains `variant="danger"` and `size="icon"` in both densities.
 

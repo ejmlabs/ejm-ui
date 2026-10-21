@@ -2,6 +2,7 @@ import { contract, type RowState } from '@ejm/core';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { createContext, useContext, type ReactNode } from 'react';
 import { cn } from '../lib/utils';
+import { useLinkComponent } from '../shell/link';
 
 type RowSize = 'heading' | 'title';
 const SizeContext = createContext<RowSize>('heading');
@@ -48,6 +49,7 @@ const focusedShape = (
 /** One row of a Rows list: title, description, mono meta and an arrow. Hover shifts the tone and slides the arrow. */
 export function Row({ title, description, meta, href, external, download, state = 'default', className }: RowProps) {
   const size = useContext(SizeContext);
+  const Link = useLinkComponent();
   const disabled = state === 'disabled';
   const link = href && !disabled;
   const Arrow = external ? ArrowUpRight : ArrowRight;
@@ -71,7 +73,7 @@ export function Row({ title, description, meta, href, external, download, state 
       <div className={cn(titleClass, 'flex items-baseline gap-3')}>
         {marker}
         {link ? (
-          <a
+          <Link
             href={href}
             rel={external ? 'external' : undefined}
             download={download}
@@ -79,7 +81,7 @@ export function Row({ title, description, meta, href, external, download, state 
           >
             {title}
             {external && <span className="sr-inline">, opens another site</span>}
-          </a>
+          </Link>
         ) : (
           <span className="min-w-0">{title}</span>
         )}

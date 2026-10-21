@@ -26,6 +26,8 @@ const ENTRIES = {
   static: ['styles.css', 'styles-static.css'],
   terminal: ['styles.css', 'styles-terminal.css'],
   all: ['styles.css', 'styles-docs.css', 'styles-app.css', 'styles-static.css', 'styles-terminal.css'],
+  site: ['styles-site.css'],
+  'site-docs': ['styles-site.css', 'styles-docs.css'],
 };
 const FOLDERS = { components: 'default', layout: 'default', shell: 'default', hooks: 'default', motion: 'default', docs: 'docs', app: 'app', static: 'static', terminal: 'terminal' };
 
@@ -63,6 +65,12 @@ for (const [folder, entry] of Object.entries(FOLDERS)) {
     }
   }
 }
+// React and native HTML share these recipes. Every profile that renders controls must scan them.
+const controls = await validOf(scanFiles([join(src, 'control-recipes.mjs')]));
+for (const entry of ['default', 'site']) {
+  const missing = controls.filter(candidate => !scanned[entry].has(candidate));
+  if (missing.length) problems.push(`${entry} entry misses shared control recipes: ${missing.slice(0, 6).join(' ')}`);
+}
 // The default entry must not read the opt-in folders (a stray word such as "contents" can appear in both, so look at files, not classes).
 const filesOf = n => new Scanner({ sources: compilers[n].sources }).files.map(f => relative(src, f).split('\\').join('/'));
 for (const f of ['docs', 'app', 'static', 'terminal']) {
@@ -71,6 +79,13 @@ for (const f of ['docs', 'app', 'static', 'terminal']) {
   if (filesOf(f).some(p => /\.test\./.test(p))) problems.push(`the ${f} entry scans test files`);
 }
 if (filesOf('default').some(p => /\.test\./.test(p))) problems.push('styles.css scans test files');
+for (const f of ['app', 'docs']) if (filesOf('site').some(p => p.startsWith(`${f}/`))) problems.push(`styles-site.css scans ${f}/: it must stay opt-in`);
+// Application composition is public through layout/, but marketing must not pay for game and form recipes.
+for (const f of ['layout/Application.tsx', 'layout/ApplicationGame.tsx']) {
+  if (filesOf('site').includes(f)) problems.push(`styles-site.css scans ${f}: application recipes must stay outside the marketing profile`);
+}
+const missingSiteDocs = [...own.docs].filter(c => !scanned['site-docs'].has(c));
+if (missingSiteDocs.length) problems.push(`styles-site.css + styles-docs.css miss docs classes: ${missingSiteDocs.slice(0, 6).join(' ')}`);
 
 const size = n => gzipSync(compilers[n].build([...scanned[n]]), { level: 9 }).length;
 console.log('CSS gzip by entry: ' + Object.keys(ENTRIES).map(n => `${n} ${(size(n) / 1024).toFixed(1)} KB`).join(', '));

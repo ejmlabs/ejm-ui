@@ -5,8 +5,9 @@ Header, footer, layouts and the external link. No cards: the header, the nav and
 | Export | Purpose |
 | --- | --- |
 | `SiteLayout` | Skip link, `Header`, `<main id="main" tabIndex={-1}>`, `Footer`. The footer sits at the bottom of short pages. |
-| `Header` | Sticky, on the page ground (an opaque `band`, so text never sits on page content while scrolling; `band` sets a matching ground when the page opens on Mist, Sage or Ink), no box or rule. Logo link at the left. Nav, then the theme control last at the far right. Below 768px the nav is one native `<details>` Menu. |
-| `Footer` | Ink band with link columns, a `privacy` slot, a `legal` line, and a safe-area bottom inset. |
+| `Brand` | Decorative mark and optional name, intrinsic proportions, optional dark variant, and fixed navigation, project or footer placement. The surrounding link or heading supplies the accessible name. |
+| `Header` | Sticky, on the page ground (an opaque `band`, so text never sits on page content while scrolling; `band` sets a matching ground when the page opens on Mist, Sage or Ink), no box or rule. Structured `identity` at the left. Nav, then `ThemeToggle` last at the far right. Below 768px the nav is one native `<details>` Menu. |
+| `Footer` | Ink band with structured `identity`, link columns, a `privacy` slot, a `legal` line, and a safe-area bottom inset. |
 | `ThemeToggle` | Sun and moon, 44px, named for its action. Uses `useTheme`. |
 | `ExternalLink` | `rel="external noopener"`, an arrow, and ", opens another site" for screen readers. |
 | `SkipLink` | `<a href="#main" class="skip-link">`. Included by `SiteLayout` and `AppShell`. |
@@ -65,3 +66,9 @@ behavior. None of these APIs connects a product session or changes an account.
 - The toggle's name changes with its state ("Switch to dark theme"), and a polite status region says the result. It does not use `aria-pressed`, so name and state never disagree.
 - Targets are 44px: the toggle always, links and the Menu button through `touch-target` on coarse pointers. Contrast was checked by script in both themes for header, footer, nav and app shell.
 - Native `<details>` is used instead of a Radix collapsible: it works without script and needs no state.
+
+## Shared identity
+
+`Brand placement="project"` inherits its heading type from `Rows` or `SectionHead` and keeps the shared project mark size. The containing heading controls the name size.
+
+`Header` and `Footer` accept `identity={{ name, artwork, description }}`. `name` is plain text. `artwork` is optional and contains `src`, optional `darkSrc`, and intrinsic `width` and `height`. Supply the standalone mark when also showing a name. The footer uses `darkSrc` on its permanent Ink ground in either page theme. Both shell components own brand spacing, scale and type. Authored sites use this identity contract. Legacy non-site component consumers retain `logo`, `brand` and `className`; the site guard rejects these visual overrides.

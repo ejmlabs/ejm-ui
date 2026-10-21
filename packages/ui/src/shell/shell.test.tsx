@@ -19,6 +19,7 @@ import { SiteLayout } from './SiteLayout';
 import { ThemeToggle } from './ThemeToggle';
 
 expect.extend(axeMatchers);
+const originalViewTransition = Object.getOwnPropertyDescriptor(document, 'startViewTransition');
 const noViolations = async (el: HTMLElement) => (expect(await axe(el)) as unknown as AxeMatchers).toHaveNoViolations();
 
 beforeEach(() => {
@@ -29,6 +30,8 @@ afterEach(() => {
   vi.unstubAllGlobals();
   document.documentElement.removeAttribute('data-theme');
   localStorage.clear();
+  if (originalViewTransition) Object.defineProperty(document, 'startViewTransition', originalViewTransition);
+  else Reflect.deleteProperty(document, 'startViewTransition');
 });
 
 const nav = [
@@ -36,9 +39,9 @@ const nav = [
   { label: 'Gallery', href: '/gallery' },
   { label: 'GitHub', href: 'https://github.com/ejmlabs', external: true },
 ];
-const header = { logo: <span>ejmlabs</span>, homeLabel: 'ejmlabs home', nav };
+const header = { identity: { name: 'ejmlabs' }, homeLabel: 'ejmlabs home', nav };
 const footer = {
-  brand: <p>ejmlabs</p>,
+  identity: { name: 'ejmlabs', description: 'Shared open source tools.' },
   columns: [{ heading: 'Product', links: nav }, { heading: 'Company', links: [{ label: 'About', href: '/about' }] }],
   privacy: <p>No cookies except your theme.</p>,
   legal: <p>2026 ejmlabs</p>,
@@ -66,6 +69,57 @@ describe('ThemeToggle', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Dark theme on');
     await user.keyboard('{Enter}');
     expect(document.documentElement.dataset.theme).toBe('light');
+  });
+
+  it('saves the chosen theme when a native transition is skipped, and applies it only once', async () => {
+    const user = userEvent.setup();
+    let deferredUpdate: (() => void) | undefined;
+    const start = vi.fn((update: () => void) => {
+      deferredUpdate = update;
+      return {
+        ready: Promise.reject(new DOMException('Skipped', 'AbortError')),
+        updateCallbackDone: Promise.resolve(),
+        finished: Promise.resolve(),
+        skipTransition: vi.fn(),
+      };
+    });
+    Object.defineProperty(document, 'startViewTransition', { configurable: true, value: start });
+    render(<ThemeToggle />);
+    const button = screen.getByRole('button', { name: /Switch to .* theme/ });
+    const target = button.getAttribute('aria-label')!.includes('dark') ? 'dark' : 'light';
+    await user.click(button);
+    expect(start).toHaveBeenCalledOnce();
+    expect(document.documentElement.dataset.theme).toBe(target);
+    expect(localStorage.getItem('ejm-theme')).toBe(target);
+    deferredUpdate?.();
+    expect(document.documentElement.dataset.theme).toBe(target);
+    await user.click(button);
+  });
+
+  it('bypasses native transitions when reduced motion is requested', async () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({ matches: query.includes('prefers-reduced-motion'), addEventListener() {}, removeEventListener() {} }));
+    const start = vi.fn();
+    Object.defineProperty(document, 'startViewTransition', { configurable: true, value: start });
+    const user = userEvent.setup();
+    render(<ThemeToggle />);
+    const button = screen.getByRole('button', { name: /Switch to .* theme/ });
+    const target = button.getAttribute('aria-label')!.includes('dark') ? 'dark' : 'light';
+    await user.click(button);
+    expect(start).not.toHaveBeenCalled();
+    expect(document.documentElement.dataset.theme).toBe(target);
+    await user.click(button);
+  });
+
+  it('switches immediately if the native transition cannot start', async () => {
+    Object.defineProperty(document, 'startViewTransition', { configurable: true, value: () => { throw new Error('Unavailable'); } });
+    const user = userEvent.setup();
+    render(<ThemeToggle />);
+    const button = screen.getByRole('button', { name: /Switch to .* theme/ });
+    const target = button.getAttribute('aria-label')!.includes('dark') ? 'dark' : 'light';
+    await user.click(button);
+    expect(document.documentElement.dataset.theme).toBe(target);
+    expect(localStorage.getItem('ejm-theme')).toBe(target);
+    await user.click(button);
   });
 
   it('server-renders as a button with the light-theme name, before any script runs', () => {

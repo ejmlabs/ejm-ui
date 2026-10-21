@@ -5,25 +5,26 @@ export interface SectionHeadProps {
   /** Mono kicker, for example "01 / Projects". */
   kicker?: string;
   title: ReactNode;
-  /** Supporting copy. Sits in its own column beside the heading at wide container widths, stacked below on small ones. */
   children?: ReactNode;
-  /** The heading element. Keep levels in order on the page. */
+  /** The content's role selects the complete shared recipe. Heading level stays independent. */
+  purpose?: 'page' | 'section' | 'application';
   as?: 'h1' | 'h2' | 'h3';
-  /** display is 36 to 96px, title is 28 to 56px. */
-  size?: 'display' | 'title';
   id?: string;
+  /** Legacy component styling. Authored sites use purpose and the shared recipe. */
+  size?: 'display' | 'title';
   className?: string;
 }
 
-/** A section opening: kicker, a large balanced heading and supporting copy. */
-export function SectionHead({ kicker, title, children, as: H = 'h2', size = 'display', id, className }: SectionHeadProps) {
+/** One opening recipe per content role. Sites provide words and heading semantics. */
+export function SectionHead({ kicker, title, children, purpose = 'section', as: H = 'h2', id, size, className }: SectionHeadProps) {
+  const application = purpose === 'application';
+  const heading = <H id={id} className={(purpose === 'page' || size === 'display') ? 'text-display @3xl:col-span-7' : application ? 'text-title' : 'text-title @3xl:col-span-7'}>{title}</H>;
+  const copy = children && <div className={application ? 'grid max-w-measure gap-6 text-body' : 'grid max-w-measure gap-6 text-lead @3xl:col-span-4 @3xl:col-start-9 @3xl:self-end'}>{children}</div>;
   return (
-    <header className={cn('@container', className)}>
+    <header className={cn(application ? '@container grid gap-field' : '@container', className)}>
       {kicker && <p className="text-meta text-muted">{kicker}</p>}
-      <div className={cn('grid gap-x-12 gap-y-8 @3xl:grid-cols-12', kicker && 'mt-6')}>
-        <H id={id} className={cn(size === 'display' ? 'text-display' : 'text-title', '@3xl:col-span-7')}>{title}</H>
-        {children && <div className="text-lead max-w-measure @3xl:col-span-4 @3xl:col-start-9 @3xl:self-end">{children}</div>}
-      </div>
+      {application ? <>{heading}{copy}</> :
+        <div className={kicker ? 'grid gap-x-12 gap-y-8 @3xl:grid-cols-12 mt-6' : 'grid gap-x-12 gap-y-8 @3xl:grid-cols-12'}>{heading}{copy}</div>}
     </header>
   );
 }

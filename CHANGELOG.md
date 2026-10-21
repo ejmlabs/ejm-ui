@@ -5,6 +5,34 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Preserve 44 px touch targets for static small and compact buttons, and retain query and fragment state in route recovery links.
+
+- Recheck dev source on HTML document requests to catch missed watcher events
+  and allow recovery. Isolate the native watcher fixture from absent env files
+  and confirm a real change before testing additions, within the same deadlines.
+- Include product-window and stage utilities in the public site CSS profile,
+  so demo styles need no private source scan in consuming sites.
+- Preserve literal entity examples in Markdown code spans, including headings
+  and table labels. Synchronize the dev watcher test with initial discovery.
+- Check native file notifications and request recovery within the existing
+  watcher test deadline, with received events and errors in failure output.
+- Add the shared minimal-copy rule to the public quality bar, preserving clear
+  labels, consent, accessibility and recovery instructions.
+- Keep reused route stylesheets in cascade order, include the gallery's static
+  product-window styles, and use the public site CSS profile in the packed starter.
+- Keep plain code in prerendered documentation when a static boundary has no
+  highlighting callback, and retain product-view CSS on the gallery product route.
+
+- Add mandatory public site design checks, a native HTML profile, compiled docs,
+  structured branding and fixed site/application composition. Keep published
+  terminal/static components and legacy non-site shell props. Add the hidden
+  Chess build identity and its brand family without adding it to discovery.
+  Split gallery styles by route to keep the existing CSS budget. Reduce shared
+  runtime transfer while retaining the maintained router and class merger,
+  React 19, SSR paths, base routes, history and native cross-document fragments.
+  Native modulepreload has no polyfill: older browsers still fetch imported
+  modules but lose preload acceleration. No site is published by this change.
+
 - Add public `Terminal*` view components, `NativeCheckbox`, `Disclosure`,
   `ActionRows`, `ActionRow` and `DocumentContent` for native pages and terminal
   interfaces. Allow `Header` and `AppShell` to replace or suppress the theme

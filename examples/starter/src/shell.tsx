@@ -3,8 +3,11 @@ import { Analytics } from '@ejm/site/analytics';
 import { otherSites, PROJECTS, sourceLinks } from '@ejm/site/projects';
 import { SiteLayout, type FooterProps, type NavItem } from '@ejm/ui';
 import type { ReactNode } from 'react';
+import markInk from '@ejm/tokens/assets/logos/symbol-ink.svg?url';
+import markPaper from '@ejm/tokens/assets/logos/symbol-paper.svg?url';
 
 const here = PROJECTS.ejmlabs;
+const identity = { name: here.name, artwork: { src: markInk, darkSrc: markPaper, width: 31, height: 28 } };
 
 const pages = [
   { label: 'Home', href: '/' },
@@ -12,12 +15,7 @@ const pages = [
 ];
 
 const footer: FooterProps = {
-  brand: (
-    <>
-      <p className="text-heading">{here.name}</p>
-      <p className="mt-3 text-muted">{here.tagline}</p>
-    </>
-  ),
+  identity: { ...identity, description: here.tagline },
   columns: [
     { heading: 'Pages', links: pages },
     { heading: 'Sites', links: otherSites('ejmlabs') },
@@ -34,7 +32,7 @@ export function App({ children }: { children: ReactNode }) {
   return (
     <>
       <SiteLayout
-        header={{ logo: <span className="text-heading tracking-tight">{here.name}</span>, homeLabel: `${here.name} home`, nav }}
+        header={{ identity, homeLabel: `${here.name} home`, nav }}
         footer={footer}
         linkComponent={Link}
       >

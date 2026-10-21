@@ -1,6 +1,6 @@
 # Provenance
 
-Everything below was copied unchanged from the old `design-kit/` (read only) by `node scripts/assets.mjs --sync`.
+Imported rows retain the old `design-kit/` bytes. Rows marked `generated:chess-assets` identify the generated Chess brand family; its hashes verify the retained output.
 Do not edit this table by hand. `node scripts/assets.mjs` re-hashes every file here and, when the design-kit is present, every source.
 Paths are relative to `packages/tokens/` here and to `design-kit/` at the source.
 Retired social profile kits and ZIP archives are excluded from imports.
@@ -279,6 +279,27 @@ Retired social profile kits and ZIP archives are excluded from imports.
 | `assets/projects/relay/site.webmanifest` | `projects/relay/site.webmanifest` | `203f9b472b4a276ff9c17c1d912cb038192901ef2e52d3728cbe5fa085054b02` |
 | `assets/projects/relay/social-card.png` | `projects/relay/social-card.png` | `be66979956965f9e88a158e849a2fe1d8616e1cce6c19507a87c821d49e47208` |
 | `assets/projects/relay/social-card.svg` | `projects/relay/social-card.svg` | `df80ed0c5b98bb91861a41dd9d0b74032f6e92ed6b4c30b627cb56247039a959` |
+
+| `assets/projects/chess/android-chrome-192.png` | `generated:chess-assets/android-chrome-192.png` | `6fb29c09c3b0877c3b4d14acb784ccc112e3159113f951596d87839934ab83cd` |
+| `assets/projects/chess/android-chrome-512.png` | `generated:chess-assets/android-chrome-512.png` | `c42bb494ec4630e53e30d17b75534141b2e0b758f565921a85e40b4ee92d6de1` |
+| `assets/projects/chess/apple-touch-icon.png` | `generated:chess-assets/apple-touch-icon.png` | `938192b358fafb6b1b76fbab54cf8098aae56239b5969c327897e9850d48a363` |
+| `assets/projects/chess/favicon-16.png` | `generated:chess-assets/favicon-16.png` | `4634f2f6bce1dda3cbbf456548af583e37bcba05cfa6eaab03dd98bfa4dfe1f0` |
+| `assets/projects/chess/favicon-24.png` | `generated:chess-assets/favicon-24.png` | `6b8358572f3b5d7fa06951c8977c397b12c01a7f6a9f6b263b036b31135b162c` |
+| `assets/projects/chess/favicon-32.png` | `generated:chess-assets/favicon-32.png` | `76cee1f5b18ff460424088eccf6b6edab8a86744f2dc287fbea9dd0e1b14533e` |
+| `assets/projects/chess/favicon-48.png` | `generated:chess-assets/favicon-48.png` | `1f70723f11094c517b517d4f631d931b87ccb2df31c59a4df03f52879b694292` |
+| `assets/projects/chess/favicon.ico` | `generated:chess-assets/favicon.ico` | `d71b7fe23c904568e9c7c9414dd635af6a41c44368fdff40d01a96ebf629181e` |
+| `assets/projects/chess/favicon.svg` | `generated:chess-assets/favicon.svg` | `28afc79f2819d6d3efe45bd184bef9bfbcabfa999952e63204fb3809022c6fdf` |
+| `assets/projects/chess/icon-forest.svg` | `generated:chess-assets/icon-forest.svg` | `7f078c8160b24280c73fcfca01e2d2bed9054cbb69a1ab7dd3dfad6ae9c2911c` |
+| `assets/projects/chess/icon-sage.svg` | `generated:chess-assets/icon-sage.svg` | `3f1b50b545446406f922e4b8db0e88858684153e77ee6f1bca548f0285b9e0ce` |
+| `assets/projects/chess/logo-ink.svg` | `generated:chess-assets/logo-ink.svg` | `3408f94beccdbd31b0585d70f5260586a50a318d9212fe2e6e4629eaf988ff15` |
+| `assets/projects/chess/logo-paper.svg` | `generated:chess-assets/logo-paper.svg` | `460af7810ed5605ad34b4afd2863a7265f4956ac550e92d5d10cec58002b7afb` |
+| `assets/projects/chess/logo-primary.svg` | `generated:chess-assets/logo-primary.svg` | `d63426412445e872c692be02fff39d0b9cf372d20f8fbc336965d3d2f27e8b21` |
+| `assets/projects/chess/mark-ink.svg` | `generated:chess-assets/mark-ink.svg` | `edd3368418df55e1bb75bcd72e11468511e84d2e59ed145fde8b2469239ab47b` |
+| `assets/projects/chess/mark-paper.svg` | `generated:chess-assets/mark-paper.svg` | `203152f1ebb538e77217b2b66f2d0b6971c8875e308a0ce839be11af2b193f07` |
+| `assets/projects/chess/mark-sage.svg` | `generated:chess-assets/mark-sage.svg` | `1f60c6eb70065fdfe2192f7038b2ee71d05605e08a3b326ce7c123edc5bb327c` |
+| `assets/projects/chess/site.webmanifest` | `generated:chess-assets/site.webmanifest` | `01b2aadf7837650b777c742c4a29bbcad9d94b590ec7a14a321446da585e03e4` |
+| `assets/projects/chess/social-card.png` | `generated:chess-assets/social-card.png` | `c7dc5947b4f96e2416075f363e39495edaf370434a12e4d2fd4fb17608e35c7e` |
+| `assets/projects/chess/social-card.svg` | `generated:chess-assets/social-card.svg` | `7d51571a2f4ae62b33f2264500646338cb782ec3cd7de0c9c8b75dfba197821d` |
 
 ## Moved and then edited
 

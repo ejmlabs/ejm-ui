@@ -67,7 +67,8 @@ npm run check      # text checks, type check and tests`,
             </>
           ),
         },
-        { type: 'code', lang: 'css', code: '@import "@ejm/ui/styles.css";' },
+        { type: 'code', lang: 'css', code: '@import "@ejm/ui/styles-site.css" source(none);' },
+        { type: 'p', children: <>The site profile includes shared component sources. Disabling the automatic scan keeps unrelated installed package styles out of the bundle. Add <code>@ejm/ui/styles-docs.css</code> for documentation.</> },
         {
           type: 'p',
           children: (
