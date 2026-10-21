@@ -7,13 +7,15 @@
 // Run it in light and dark; theme-boot.js turns ?theme= into data-theme, so --theme needs that script on the page.
 // Exit code 1 is the gate: the matrix check in quality-gates fails the build when any size overflows.
 //
-// Usage: node scripts/shoot.mjs <url> [--out dir] [--only name,name] [--theme dark|light] [--full]
+// Usage: node scripts/shoot.mjs <url> [--out dir] [--only name,name] [--theme dark|light] [--full] [--layout application] [--report file]
 //   --out dir      where the PNGs go (default: <tmpdir>/ejm-shoot)
 //   --only a,b     run only these matrix names
 //   --theme t      appends ?theme=t to the url and emulates prefers-color-scheme: t
 //   --full         save the whole page as strips of up to 2400 CSS px (name-1.png, name-2.png, ...).
 //                  Without it each size is one PNG, cut off at 16000 device px of height.
-// Exit code: 0 clean, 1 when any size overflows horizontally, 2 on a usage or launch error.
+//   --layout application  check the application-layout gallery fixture's rendered spacing and touch targets.
+//   --report file  save the viewport measurements, layout findings and screenshot paths as JSON.
+// Exit code: 0 clean, 1 on overflow or a failed layout contract, 2 on a usage or launch error.
 // Pages are shot with prefers-reduced-motion: reduce so reveal animations cannot hide content.
 // Chrome gets a safe-area inset override on the iPhone sizes, so env(safe-area-inset-*) can be seen
 // (it only applies when the page sets viewport-fit=cover).
@@ -53,19 +55,23 @@ for (const part of (process.env.EJM_SHOOT_EXTRA || '').split(',').filter(Boolean
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 function parseArgs(argv) {
-  const o = { url: '', out: join(tmpdir(), 'ejm-shoot'), only: null, theme: '', full: false };
+  const o = { url: '', out: join(tmpdir(), 'ejm-shoot'), only: null, theme: '', full: false, layout: '', report: '' };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--out') o.out = argv[++i];
     else if (a === '--only') o.only = String(argv[++i] || '').split(',').filter(Boolean);
     else if (a === '--theme') o.theme = argv[++i];
     else if (a === '--full') o.full = true;
+    else if (a === '--layout') o.layout = argv[++i];
+    else if (a === '--report') o.report = argv[++i];
     else if (a.startsWith('--')) throw new Error(`unknown option ${a}`);
     else if (!o.url) o.url = a;
     else throw new Error(`unexpected argument ${a}`);
   }
   if (!o.url) throw new Error('missing <url>');
   if (o.theme && !['dark', 'light'].includes(o.theme)) throw new Error('--theme must be dark or light');
+  if (argv.includes('--layout') && o.layout !== 'application') throw new Error('--layout must be application');
+  if (argv.includes('--report') && !o.report) throw new Error('--report needs a file path');
   if (o.only) {
     const bad = o.only.filter(n => !MATRIX.some(m => m.name === n));
     if (bad.length) throw new Error(`unknown viewport ${bad.join(', ')}. Names: ${MATRIX.map(m => m.name).join(', ')}`);
@@ -186,6 +192,95 @@ const MEASURE = (W, touch) => `(async () => {
   return { innerWidth: window.innerWidth, scrollWidth, overflow: scrollWidth > limit || offenders.some(o => o.right > limit + 0.5), offenders: offenders.slice(0, 10), offenderCount: offenders.length, small: small.slice(0, 12), smallCount: small.length };
 })()`;
 
+// Run inside Chrome. Fixture markers identify the contract; every value comes from rendered boxes or computed styles.
+function measureApplicationLayout() {
+  const breaches = [];
+  const metrics = { theme: document.documentElement.dataset.theme, padding: {}, contentGaps: [], fieldGaps: [], tables: {} };
+  const near = (label, actual, expected) => {
+    if (!Number.isFinite(actual) || Math.abs(actual - expected) > 0.75) breaches.push(`${label}: expected ${expected}px, measured ${actual}px`);
+  };
+  const one = (selector, parent = document) => {
+    const found = parent.querySelectorAll(selector);
+    if (found.length !== 1) { breaches.push(`${selector}: expected one visible element, found ${found.length}`); return null; }
+    const element = found[0];
+    const box = element.getBoundingClientRect();
+    if (!box.width || !box.height || getComputedStyle(element).visibility === 'hidden') {
+      breaches.push(`${selector}: element is not visible`);
+      return null;
+    }
+    return element;
+  };
+  const gaps = (element, expected, label) => {
+    const boxes = [...element.children].map(child => child.getBoundingClientRect());
+    if (boxes.length < 2 || boxes.some(box => !box.width || !box.height)) breaches.push(`${label}: visible child boxes are missing`);
+    return boxes.slice(1).map((box, index) => {
+      const gap = box.top - boxes[index].bottom;
+      near(`${label} ${index + 1}`, gap, expected);
+      return gap;
+    });
+  };
+  const page = one('[data-application-layout]');
+  if (!page) return { breaches, metrics };
+  const style = getComputedStyle(page);
+  const padding = window.innerWidth >= 640 ? 48 : 32;
+  metrics.padding = { top: parseFloat(style.paddingTop), bottom: parseFloat(style.paddingBottom) };
+  near('page top padding', metrics.padding.top, padding);
+  near('page bottom padding', metrics.padding.bottom, padding);
+  if (page.children.length !== 4) breaches.push(`application page: expected four content groups, found ${page.children.length}`);
+  metrics.contentGaps = gaps(page, 24, 'page content gap');
+  const heading = one('#application-title', page);
+  const description = one('[data-layout-description]', page);
+  if (heading && description) {
+    const h = heading.getBoundingClientRect(), d = description.getBoundingClientRect();
+    metrics.heading = { left: h.left, bottom: h.bottom, copyLeft: d.left, copyTop: d.top, gap: d.top - h.bottom };
+    near('heading/copy left alignment', d.left - h.left, 0);
+    near('heading/copy gap', d.top - h.bottom, 8);
+  }
+  if (document.querySelectorAll('h1').length !== 1 || page.querySelector('header header')) breaches.push('application heading: expected one h1 and no nested headers');
+  const form = one('[data-layout-form]', page);
+  if (form) metrics.formGaps = gaps(form, 24, 'form content gap');
+  const fields = [...page.querySelectorAll('[data-layout-field]')];
+  if (fields.length !== 2) breaches.push(`fields: expected two groups, found ${fields.length}`);
+  metrics.fieldGaps = fields.map((field, index) => {
+    if (field.children.length !== 3) breaches.push(`field ${index + 1}: label, control or help is missing`);
+    return gaps(field, 8, `field ${index + 1} gap`);
+  });
+  const inline = one('[data-layout-inline]', page);
+  if (inline && (getComputedStyle(inline).display !== 'inline' || !inline.closest('p'))) breaches.push('prose link: expected an inline link within a paragraph');
+  const action = one('[data-layout-action]', page);
+  if (action) {
+    const box = action.getBoundingClientRect();
+    metrics.action = { width: box.width, height: box.height };
+    if (box.width < 43.5 || box.height < 43.5) breaches.push(`standalone action: measured ${box.width} by ${box.height}px, expected at least 44 by 44px`);
+  }
+  if (page.querySelectorAll('[data-layout-table]').length !== 8) breaches.push('tables: expected all four states in both densities');
+  for (const density of ['comfortable', 'compact']) {
+    const expected = density === 'compact' ? 6 : 12;
+    const paddingOf = (cell, label) => {
+      if (!cell) { breaches.push(`${label}: table cell is missing`); return null; }
+      const box = cell.getBoundingClientRect(), css = getComputedStyle(cell);
+      if (!box.width || !box.height) breaches.push(`${label}: table cell is not visible`);
+      const value = { top: parseFloat(css.paddingTop), bottom: parseFloat(css.paddingBottom), end: parseFloat(css.paddingInlineEnd) };
+      near(`${label} top padding`, value.top, expected);
+      near(`${label} bottom padding`, value.bottom, expected);
+      return value;
+    };
+    const state = name => one(`[data-layout-table="${name}"][data-layout-density="${density}"]`, page);
+    const data = state('default'), loading = state('loading');
+    for (const name of ['empty', 'error']) {
+      const element = state(name);
+      if (element && (!element.querySelector('table thead th') || !element.querySelector('table tbody td'))) breaches.push(`${density} ${name}: table content is missing`);
+    }
+    const dataPadding = paddingOf(data?.querySelector('tbody tr:first-child > :first-child'), `${density} data`);
+    const loadingPadding = paddingOf(loading?.querySelector('tbody tr[aria-hidden="true"] > td:first-child'), `${density} loading`);
+    metrics.tables[density] = { data: dataPadding, loading: loadingPadding };
+    if (dataPadding && loadingPadding) {
+      for (const axis of ['top', 'bottom', 'end']) near(`${density} data/loading ${axis} parity`, loadingPadding[axis] - dataPadding[axis], 0);
+    }
+  }
+  return { breaches, metrics };
+}
+
 // Scroll through the page once so lazy images and scroll-driven parts have run, then return to the top.
 const SCROLL_PASS = `(async () => {
   const step = Math.max(200, window.innerHeight - 100);
@@ -198,7 +293,7 @@ const SCROLL_PASS = `(async () => {
 async function main() {
   let opts;
   try { opts = parseArgs(process.argv.slice(2)); } catch (e) {
-    console.error(`${e.message}\nUsage: node scripts/shoot.mjs <url> [--out dir] [--only name,name] [--theme dark|light] [--full]`);
+    console.error(`${e.message}\nUsage: node scripts/shoot.mjs <url> [--out dir] [--only name,name] [--theme dark|light] [--full] [--layout application] [--report file]`);
     process.exit(2);
   }
   const target = new URL(opts.url);
@@ -244,6 +339,10 @@ async function main() {
       await sleep(250);
 
       row.result = await evalIn(MEASURE(m.w, !!m.touch));
+      if (opts.layout === 'application') {
+        row.layout = await evalIn(`(${measureApplicationLayout.toString()})()`);
+        if (opts.theme && row.layout.metrics.theme !== opts.theme) row.layout.breaches.push(`theme: expected ${opts.theme}, measured ${row.layout.metrics.theme}`);
+      }
       const lm = await cdp.send('Page.getLayoutMetrics', {}, s);
       const cw = Math.ceil(lm.cssContentSize.width), ch = Math.ceil(lm.cssContentSize.height);
       row.pageHeight = ch;
@@ -275,10 +374,10 @@ async function main() {
   const pad = (v, n) => String(v).padEnd(n);
   console.log(`${pad('viewport', 17)}${pad('size', 14)}${pad('page height', 12)}${pad('scrollW', 9)}${pad('overflow', 10)}tap<44`);
   let bad = 0;
-  for (const { m, result: r, error, pageHeight, cut } of rows) {
+  for (const { m, result: r, error, pageHeight, cut, layout } of rows) {
     const size = `${m.w}x${m.h}@${m.dpr}`;
     if (error) { bad++; console.log(`${pad(m.name, 17)}${pad(size, 14)}ERROR ${error}`); continue; }
-    if (r.overflow) bad++;
+    if (r.overflow || (opts.layout && (r.smallCount || !layout || layout.breaches.length))) bad++;
     const tap = m.touch ? r.smallCount : '-';
     console.log(`${pad(m.name, 17)}${pad(size, 14)}${pad(pageHeight + (cut ? '+' : ''), 12)}${pad(r.scrollWidth, 9)}${pad(r.overflow ? 'YES' : 'no', 10)}${tap}`);
   }
@@ -295,7 +394,13 @@ async function main() {
     console.log(`\n${m.name}: ${r.smallCount} tap target(s) under 44 px`);
     for (const t of r.small) console.log(`  ${t.el}  ${t.w}x${t.h}`);
   }
-  console.log(bad ? `\n${bad} viewport(s) with overflow or errors` : '\nno horizontal overflow at any size');
+  for (const { m, layout } of rows) {
+    if (!layout?.breaches.length) continue;
+    console.log(`\n${m.name}: application layout contract failed`);
+    for (const breach of layout.breaches) console.log(`  ${breach}`);
+  }
+  if (opts.report) writeFileSync(opts.report, JSON.stringify({ url: target.href, theme: opts.theme, layout: opts.layout, rows, failed: bad }, null, 2) + '\n');
+  console.log(bad ? `\n${bad} viewport(s) with overflow, errors or failed layout checks` : opts.layout ? '\napplication layout passed at every size' : '\nno horizontal overflow at any size');
   try { await cdp.send('Browser.close', {}, undefined, 3000); } catch {}
   cleanup();
   process.exit(bad ? 1 : 0);

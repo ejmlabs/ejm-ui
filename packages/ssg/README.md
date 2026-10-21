@@ -60,6 +60,10 @@ export default defineSite({
 
 Scripts (they take no flags: use `vite` or `vite build` directly for those, the plugin does the work either way): `ejm-ssg build` (a Vite build; the plugin prerenders and then checks the budget, so a breach fails the build), `ejm-ssg dev` (Vite dev server, client render only), `ejm-ssg budget [dist]`.
 
+Prerendering starts only after the client build writes its output. If an earlier
+plugin rejects source or the build fails, the original diagnostic remains
+visible instead of being masked by a missing-manifest error.
+
 ## API
 
 ```ts
@@ -145,3 +149,5 @@ For every `.html` file the gate follows only the files that page references: `<s
 - The server build is written to `<root>/.ejm-ssg/` and removed after prerendering; only `build.json` stays. Ignore `.ejm-ssg` in git.
 - Set `NODE_ENV=production` for the build (`ejm-ssg build` does). A leaked `NODE_ENV=test` bundles React's development build.
 - Security headers: the package adds no inline scripts or styles.
+
+Client navigation retains the current route stylesheet until its replacement loads. A later navigation owns the final removal, so a slower earlier load cannot remove the new route CSS. Failed or pending sheets are recreated on a retry. The current paint remains available if a replacement fails to load. This changes stylesheet handling only.

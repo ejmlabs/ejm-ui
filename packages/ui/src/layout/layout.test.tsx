@@ -5,7 +5,64 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { expectAccessible, renderIn, themes } from '../components/test-setup';
-import { Band, Facts, Fact, Hero, ProductStage, ProductWindow, Row, Rows, Rule, SectionHead, Stat, Status, Text } from './index';
+import { Band, Facts, Fact, Hero, Page, ProductStage, ProductWindow, Row, Rows, Rule, SectionHead, Stat, Status, Text } from './index';
+
+describe('application layout', () => {
+  it('selects an application heading recipe without losing semantics or existing caller overrides', () => {
+    const { rerender } = render(<SectionHead purpose="application" as="h1" id="account-title" title="Account"><p>Recovery options.</p></SectionHead>);
+    const title = screen.getByRole('heading', { level: 1, name: 'Account' });
+    expect(title).toHaveAttribute('id', 'account-title');
+    expect(title).toHaveClass('text-title');
+    expect(title.parentElement).toHaveClass('grid', 'gap-field');
+    expect(screen.getByText('Recovery options.').parentElement).toHaveClass('text-body');
+    rerender(<SectionHead purpose="application" layout="split" size="display" as="h1" title="Account" />);
+    expect(screen.getByRole('heading', { level: 1, name: 'Account' })).toHaveClass('text-display', '@3xl:col-span-7');
+    rerender(<SectionHead purpose="section" as="h2" title="History" />);
+    expect(screen.getByRole('heading', { level: 2, name: 'History' })).toHaveClass('text-title', '@3xl:col-span-7');
+  });
+
+  it('keeps the default column bare and lets application callers override spacing', () => {
+    const { container, rerender } = render(<Page aria-label="Games"><p>History</p></Page>);
+    const page = container.firstElementChild!;
+    expect(page).toHaveAttribute('aria-label', 'Games');
+    expect(page).toHaveClass('page');
+    for (const token of ['grid', 'gap-content', 'py-8']) expect(page).not.toHaveClass(token);
+
+    rerender(<Page variant="application"><p>History</p></Page>);
+    expect(page).toHaveClass('page', 'grid', 'gap-content', 'py-8', 'sm:py-12');
+    expect(page).not.toHaveAttribute('variant');
+
+    rerender(<Page variant="application" className="gap-4 py-4 sm:py-6"><p>History</p></Page>);
+    expect(page).toHaveClass('gap-4', 'py-4', 'sm:py-6');
+    for (const token of ['gap-content', 'py-8', 'sm:py-12']) expect(page).not.toHaveClass(token);
+  });
+
+  it('keeps heading semantics and copy links while switching layout independently of type size', () => {
+    const { rerender } = render(<SectionHead kicker="Your account" as="h1" id="account-title" title="Sign in"><p>Read <a href="/help/">help</a>.</p></SectionHead>);
+    const title = screen.getByRole('heading', { level: 1, name: 'Sign in' });
+    expect(title).toHaveAttribute('id', 'account-title');
+    expect(title).toHaveClass('text-display', '@3xl:col-span-7');
+    expect(title.parentElement).toHaveClass('@3xl:grid-cols-12', 'mt-6');
+    expect(screen.getByRole('link', { name: 'help' }).closest('.text-lead')).not.toBeNull();
+
+    rerender(<SectionHead layout="stacked" kicker="Your account" as="h1" id="account-title" title="Sign in"><p>Read <a href="/help/">help</a>.</p></SectionHead>);
+    const stackedTitle = screen.getByRole('heading', { level: 1, name: 'Sign in' });
+    const header = stackedTitle.closest('header')!;
+    expect(stackedTitle).toHaveAttribute('id', 'account-title');
+    expect(stackedTitle).toHaveClass('text-display');
+    expect(stackedTitle).not.toHaveClass('@3xl:col-span-7');
+    expect(stackedTitle.parentElement).toBe(header);
+    expect(header).toHaveClass('grid', 'gap-field');
+    expect(header.querySelector('header')).toBeNull();
+    expect(screen.getByRole('link', { name: 'help' })).toHaveAttribute('href', '/help/');
+    expect(screen.getByRole('link', { name: 'help' }).closest('.text-body')).not.toBeNull();
+
+    rerender(<SectionHead layout="stacked" as="h2" size="title" className="gap-4" title="Recovery" />);
+    expect(screen.getByRole('heading', { level: 2, name: 'Recovery' })).toHaveClass('text-title');
+    expect(screen.getByRole('heading', { level: 2, name: 'Recovery' }).closest('header')).toHaveClass('gap-4');
+    expect(screen.getByRole('heading', { level: 2, name: 'Recovery' }).closest('header')).not.toHaveClass('gap-field');
+  });
+});
 
 describe('Band', () => {
   it('sets its ground and wraps children in the page column unless told not to', () => {
@@ -171,6 +228,7 @@ describe.each(themes)('accessibility in %s', theme => {
           <p><Text variant="code">code</Text> <Status status="warn" /></p>
         </Band>
         <ProductStage><ProductWindow title="ejm-cli">x</ProductWindow></ProductStage>
+        <Page variant="application"><SectionHead as="h2" size="title" layout="stacked" title="Activity"><p>Recent changes.</p></SectionHead></Page>
       </main>,
     );
     await expectAccessible(container);

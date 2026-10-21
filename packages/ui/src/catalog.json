@@ -56,6 +56,18 @@
     "focus",
     "disabled"
   ],
+  "Chessboard": [
+    "loading",
+    "interactive",
+    "read-only",
+    "orientation",
+    "disabled",
+    "last-move",
+    "premove",
+    "legal-moves",
+    "promotion",
+    "reduced-motion"
+  ],
   "CodeBlock": [
     "default"
   ],
@@ -97,6 +109,11 @@
   "Footer": [
     "default"
   ],
+  "GameClock": [
+    "default",
+    "active",
+    "low"
+  ],
   "Header": [
     "default"
   ],
@@ -132,7 +149,8 @@
     "disabled"
   ],
   "Page": [
-    "default"
+    "default",
+    "application"
   ],
   "Pager": [
     "default"
@@ -154,6 +172,15 @@
     "busy",
     "error"
   ],
+  "Prose": [
+    "default"
+  ],
+  "RadioGroup": [
+    "default",
+    "selected",
+    "focus",
+    "disabled"
+  ],
   "Row": [
     "default",
     "selected",
@@ -167,7 +194,8 @@
     "default"
   ],
   "SectionHead": [
-    "default"
+    "default",
+    "stacked"
   ],
   "Select": [
     "default",

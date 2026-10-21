@@ -32,7 +32,8 @@
   },
   "dependencies": {
     "@ejm/tokens": "0.1.0",
-    "@ejm/ui": "0.1.0"
+    "@ejm/ui": "0.1.0",
+    "postcss": "8.5.31"
   },
   "license": "SEE LICENSE IN LICENSE",
   "repository": {

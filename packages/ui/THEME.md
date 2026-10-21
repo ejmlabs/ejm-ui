@@ -174,11 +174,23 @@ The gutter is never smaller than `env(safe-area-inset-left/right)`. Pages need `
 | `page` | `max-inline-size: var(--ejm-page-max); margin-inline: auto; padding-inline: gutter`, width 100%. |
 | `page-inset` | Padding only, for a full-bleed element (a sticky header) whose content must line up with the `page` column. |
 | `py-rhythm`, `pt-rhythm`, `gap-rhythm`, ... | The vertical rhythm of a band, 72px to 160px, times `--ejm-scale`. `*-rhythm-sm` is 40 percent of it. |
+| `gap-field`, `gap-x-field`, `gap-y-field` | Label, control and help groups: `calc(var(--spacing) * 2)`, normally 8px. Derived from the existing Tailwind spacing scale. |
+| `gap-content`, `gap-x-content`, `gap-y-content` | Application content and form groups: `calc(var(--spacing) * 6)`, normally 24px. Derived from the same scale. |
 | `px-gutter`, `p-gutter`, ... | The current gutter. |
 | `max-w-page`, `max-w-measure` | Column width and 68ch reading width. |
 | Breakpoints | Tailwind defaults, plus `xs` 420px, `3xl` 1920px, `4xl` 2560px, `5xl` 3200px, `6xl` 4400px (the same steps as the table). |
 
 `--ejm-header-h` (default 4.5rem) feeds the page `scroll-padding-top`, so anchors and focused headings land below a sticky header. A sticky header component sets it.
+
+`Page variant="application"` combines the column with `grid gap-content py-8
+sm:py-12`: 32px vertical padding below 640px and 48px from 640px. The default
+Page adds no layout or vertical padding. `SectionHead layout="stacked"`
+uses `grid gap-field` and body-sized supporting copy at every width; the
+default split layout retains the marketing columns and lead type. These
+options do not change control density or touch targets. Use the named gaps
+on native form and content groups; caller classes can override them through
+the public `cn` helper. See the layout README for labelled-input examples
+and conditional empty-group handling.
 
 ## Elevation and radius
 
@@ -265,3 +277,5 @@ Generated art lives in `packages/ui/src/art`. The inline files (`art/inline/*.sv
 ## Measured
 
 Gallery tokens route (4 bands, type scale, elevation, about 60 distinct utilities): built CSS 31.2 KB, 6.99 KB gzip, including Tailwind's reset, the full band and theme variables, the window colors (about 1.4 KB gzip) and all five `@font-face` rules. The 14 KB gzip budget is measured on this near-empty page and is re-measured when the components land (`node scripts/size.mjs`).
+
+`prose-content` is the shared reading utility used by Prose. It groups semantic headings, paragraphs, lists, inline code, preformatted text and quotes through token-only selectors. Specific caller utilities can override its outer width and type.

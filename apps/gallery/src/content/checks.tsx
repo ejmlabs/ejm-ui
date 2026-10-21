@@ -35,6 +35,7 @@ export const checks: DocPage = {
           rows: [
             { name: 'Text, types and tests', type: 'npm run check', description: 'Em dashes, stale generated files, changed brand assets, type errors and failing tests.' },
             { name: 'Contrast', type: 'node packages/tokens/scripts/contrast.mjs --verbose', description: 'Text under 4.5:1, control borders or focus under 3:1, in both themes and on every band.' },
+            { name: 'Application layout', type: 'node scripts/check-application-layout.mjs', description: 'Rendered 8px field and 24px content gaps, page padding, table density parity, touch targets and overflow in light and dark.' },
             { name: 'Viewport matrix', type: 'node scripts/shoot.mjs <url>', description: 'Horizontal overflow from 320px to 5120px, and touch targets under 44px.' },
             { name: 'Budgets', type: 'node scripts/size.mjs [dist]', description: 'HTML, CSS, JavaScript or font size over its budget.' },
             { name: 'Parity', type: 'node scripts/parity.mjs', description: 'A web, Ink or Rust target that lacks a component or a state from the contract.' },

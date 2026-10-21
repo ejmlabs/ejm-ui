@@ -2,7 +2,7 @@
 
 Every component in `@ejm/ui`, the primitive under it (Radix or native) and why. `node packages/ui/scripts/check-components.mjs` fails when a component file is missing here, and when anything is named or classed card, panel or tile. The states each component renders are in `src/catalog/*.json`, merged into `src/catalog.json` by `node packages/ui/scripts/build-catalog.mjs`, which `scripts/parity.mjs` compares with `packages/core/contract.json`.
 
-Rules every component follows: Tailwind utilities from `THEME.md` only, no literal colors, no new CSS files, `touch-target` (44px on coarse pointers) on every control, the global 2px focus ring, motion on transform and opacity only with the final state under reduced motion. Only product windows, menus and overlays have shadows. The gallery documents these APIs at `/docs/components` and shows control examples in both themes at `/components`.
+Rules every component follows: Tailwind utilities from `THEME.md` only, no literal colors, no new CSS files for native components, `touch-target` (44px on coarse pointers) on every control, the global 2px focus ring, motion on transform and opacity only with the final state under reduced motion. Only product windows, menus and overlays have shadows. The gallery documents these APIs at `/docs/components` and shows control examples in both themes at `/components`.
 
 How to read the primitive column: **native** means a platform element does the job, **Radix** means a Radix primitive earns its weight (behavior that is hard to get right by hand), **core** means the framework-neutral model in `@ejm/core`.
 
@@ -16,6 +16,7 @@ Source: `src/components/ui/`, copied-in shadcn/ui style on React 19 with `cn` an
 | `Input` | `components/ui/input.tsx` | native `<input>` | The platform gives labels, autofill, mobile keyboards and validation. `Input` only adds the control look. |
 | `Textarea` | `components/ui/textarea.tsx` | native `<textarea>` | Same as Input. |
 | `Select` | `components/ui/select.tsx` | native `<select>` | The native picker is better on phones, has full keyboard and typeahead support, and costs no JavaScript. Radix Select was rejected: it re-implements the same and adds about 10 KB gzip. |
+| `RadioGroup` | `components/ui/radio-group.tsx` | native `fieldset`, `legend` and radio inputs | A labelled set of controlled choices with descriptions, form values, validation and browser arrow keys. Labels keep a 44px touch target; compact density uses 32px targets on a fine pointer. No extra dependency. |
 | `Switch` | `components/ui/switch.tsx` | Radix Switch | A `role="switch"` button with form value, controlled and uncontrolled use. Native checkbox styling cannot do the thumb without extra markup. |
 | `Checkbox` | `components/ui/checkbox.tsx` | Radix Checkbox | The indeterminate (mixed) state and a styled box. |
 | `NativeCheckbox` | `static/NativeCheckbox.tsx` | native `<input type="checkbox">` inside `<label>` | Named form submission, required validation, label activation and reset work before hydration. Uses the platform checkmark with the shared accent color. The standard `Checkbox` keeps its Radix API. |
@@ -24,6 +25,7 @@ Source: `src/components/ui/`, copied-in shadcn/ui style on React 19 with `cn` an
 | `Tooltip` | `components/ui/tooltip.tsx` | Radix Tooltip | Hover and focus timing, Escape, collision handling and `aria-describedby`. Hard to hand-roll well. No shadow: it is a mark, not a surface. |
 | `Tabs` | `components/ui/tabs.tsx` | core (`tabsReducer`) on native buttons | The same arrows, Home, End, wrap and roving tabindex as the Ink and Rust tabs. No Radix needed, so no extra weight. |
 | `Dialog` | `components/ui/dialog.tsx` | native `<dialog>` | `showModal()` traps focus, makes the page inert, handles Escape and restores focus. The component adds the label, the backdrop click and an explicit focus return. Radix Dialog was rejected as the heavier path. |
+| `Disclosure` (form leaf) | `components/ui/disclosure.tsx` | native `<details>` | A disclosure at every width. Accepts native `open`, `onToggle`, `name` and other details props. Hidden children stay mounted, preserving forms and widgets. Unlike `Collapse`, it does not become always visible on desktop. |
 | `Menu`, `MenuTrigger`, `MenuContent`, `MenuItem`, `MenuLabel`, `MenuSeparator`, `MenuGroup` | `components/ui/menu.tsx` | Radix DropdownMenu | Roving focus, typeahead, Escape, focus return and collision-aware placement. A native popover has no menu keyboard model. |
 | `Toast`, `ToastProvider` (with `useToast`) | `components/ui/toast.tsx` | Radix Toast | A polite live region per toast (`type="background"`), auto-dismiss that pauses on hover and focus, F8 to reach the stack, swipe to dismiss. |
 
@@ -33,10 +35,35 @@ These four are in `packages/core/contract.json` and exist on every target (web, 
 
 | Component | File | Primitive | Why |
 | --- | --- | --- | --- |
-| `Table` | `components/Table.tsx` | native `<table>` in a labelled, focusable scroll region | Real table semantics. States default, empty, loading, error; header and a hairline stay in every state. |
+| `Table` | `components/Table.tsx` | native `<table>` in a labelled, focusable scroll region | Real table semantics. States default, empty, loading, error; header and a hairline stay in every state. Web cells also accept React nodes, with optional visible `caption`, `rowHeader` column key and stable `rowKey` field or callback. Text/number cells keep numeric alignment and optional truncation; interactive cells render intact. |
 | `KeyHints` | `components/KeyHints.tsx` | native `<ul>` and `<kbd>` | One line of plain key and label pairs; what does not fit is clipped from the end. |
 | `Prompt` | `components/Prompt.tsx` | native `<form>` and `<input>` | States idle, busy, error. Busy says "working" in a live region and ignores input. |
 | `StateBlock`, `SkeletonBar` | `components/StateBlock.tsx` | native elements | States empty, loading, error: a word, one sentence, at most one action. Loading adds a skeleton that only fades. |
+
+## Game presentation (web only)
+
+The maintained board adapter uses a scoped token-only CSS bridge for its SVG renderer. This is the only game stylesheet; products compose the public component.
+
+| Component | File | Primitive | Why |
+| --- | --- | --- | --- |
+| `GameClock` | `components/GameClock.tsx` | native span | Formatted clock text, accessible label, running and low-time treatments. The host owns time estimation and ticking. No timer or per-tick live region. |
+| `Chessboard` | `components/Chessboard.tsx` | React lazy boundary | Public leaf-only board surface. SSR shows a labelled loading square; the maintained renderer loads after mount. Hosts supply FEN, orientation, accepted moves and optional legal destinations. No chess rules, product records, server or engine code enters the kit. |
+| `ChessboardSurface` (internal) | `components/chessboard/ChessboardSurface.tsx` | maintained cm-chessboard SVG | Owns pointer and keyboard interaction, promotion, marker layers, orientation serialization, reduced motion and cleanup. It is an internal renderer; consumers use the public Chessboard leaf. |
+
+`Chessboard` is deliberately absent from the `@ejm/ui` barrel so its renderer and CSS cannot enter an unrelated consumer through a barrel import. Use the public leaf in a lazy boundary. `GameClock` is a small static display and is also available from the barrel.
+
+```tsx
+import { lazy, Suspense } from 'react';
+import { GameClock } from '@ejm/ui/components/GameClock';
+
+const Chessboard = lazy(() => import('@ejm/ui/components/Chessboard').then(module => ({ default: module.Chessboard })));
+<Suspense fallback={null}>
+  <Chessboard fen={fen} color="w" enabled={false} readOnly onMove={() => {}} />
+</Suspense>
+<GameClock value="5:03" label="White has 5 minutes and 3 seconds" running />
+```
+
+`Chessboard` accepts `fen`, `color: 'w' | 'b'`, `enabled`, `readOnly`, `showLegalMoves`, `getLegalMoves(square)`, `lastMove`, `premove`, `onMove`, `className` and `aria-label`. It imports no chess rules. Optional destination rows are `{ square, capture? }`; the host computes them from its authoritative position. Hints default off and the host decides which modes permit them. Accepted positions come back through `fen`; a move callback is a proposal. The maintained board and its separately licensed piece assets keep their notices and source files. This package's board tests protect disposal, current callbacks and presentation behavior; a host must still test its move authority and legality adapter.
 
 ## Terminal views
 
@@ -70,8 +97,10 @@ Band, SectionHead, Rows, Row, Facts, Stat, Hero, ProductWindow, ProductShot, Ill
 | Component | File | Primitive | Why |
 | --- | --- | --- | --- |
 | Band | layout/Band.tsx | native `<section>` with `data-band` | A band is a data attribute and a utility, so tone needs no JavaScript. |
-| Page | layout/Band.tsx | native `<div>` | The scaling content column; bands stay full-bleed around it. |
-| SectionHead | layout/SectionHead.tsx | native heading and paragraph | Kicker, display heading and copy; the copy sits beside the heading by container query. |
+| Page | layout/Band.tsx | native `<div>` | The scaling content column; bands stay full-bleed around it. `variant="application"` adds 32px phone / 48px desktop vertical padding and shared content gaps; the default remains column-only. |
+| SectionHead | layout/SectionHead.tsx | native header, heading and support copy | Kicker, display heading and copy. The default split layout places lead copy beside the title by container query. `purpose="application"` selects a stacked title-sized opening; `purpose="page"` and `purpose="section"` select display and title recipes. Existing size/layout options remain compatible. Heading level stays independent. |
+| AppFlow, AppGroup, AppActions, AppHeading, AppField, AppFieldset, AppForm, AppSection, AppPre | layout/Application.tsx | native semantic content and form elements | Fixed reading measures and field/content/action grouping. Native attributes, refs, labels, validation and handlers pass through. Visual overrides are excluded from these recipe props. |
+| GameWorkspace, PlayerStrip, BoardPlaceholder, MovePairs, MoveHistory | layout/Application.tsx | native section, aside, list and shared Button | Responsive board and details slots, player/clock alignment, loading region and bounded move lists. The host supplies data and selection; replay scrolling stays inside the move list. |
 | Rows | layout/Rows.tsx | native `<ul>` | Hairline list that replaces cards. |
 | Row | layout/Rows.tsx | native `<li>` and `<a>` | The whole row is the link through its title; states per contract. |
 | ActionRows | static/ActionRows.tsx | native `<ul>` | Compact hairline records whose actions stay separate from their text. |
@@ -80,6 +109,7 @@ Band, SectionHead, Rows, Row, Facts, Stat, Hero, ProductWindow, ProductShot, Ill
 | Facts | layout/Facts.tsx | native `<dl>` | Mono labels with hairlines; stacks by container width. |
 | Fact | layout/Facts.tsx | native `<div>` with `<dt>` and `<dd>` | One label and value pair inside Facts. |
 | Stat | layout/Stat.tsx | native `<p>` pair | Large numerals with a mono label and no box; states per contract. |
+| Prose | layout/Prose.tsx | native article or div | Reading width and semantic prose typography without a code highlighter. |
 | Text | layout/Text.tsx | native span or element | Default, muted, strong and code variants per contract. |
 | Rule | layout/Rule.tsx | native `<hr>` or labelled rule | A single hairline, never a frame. |
 | Status | layout/Status.tsx | native `<span>` | Glyph and word, so status never relies on color. |
@@ -143,6 +173,8 @@ All in `packages/ui/src/app`. Every part takes `state` default, empty, loading o
 | `ActivityList` | `app/ActivityList.tsx` | native `ul`, `time`, `Status` | Hairline rows with relative times and a status glyph and word. |
 
 ## Compact density (applications)
+
+Use `Page variant="application"` and `SectionHead layout="stacked"` for compact application pages. Group labels, controls and help with `grid gap-field`; separate form and content groups with `grid gap-content`. These aliases derive from the existing spacing scale and accept normal Tailwind overrides through `cn`. Control density remains independent.
 
 `Button`, `Switch`, `Tooltip`, `Badge`, `StateBlock`, `Table` and `NativeCheckbox` take `density="compact"` (default `comfortable`, every existing default is unchanged). Compact is for dense application UI such as the IDE: the 5px `rounded-compact` radius and 13px type; a button is 32px tall on a fine pointer whatever its `size` (`icon` is 32px square); a switch has a 28 by 16px track with a 32px target; a tooltip sets 13px mono text; a badge is 12px; a state block uses less space; a table has tighter rows. `NativeCheckbox` sizes its native input to 16px in compact density and 24px in comfortable density; the wrapping label is the target. `Disclosure` accepts the same density, defaulting to compact for a menu and comfortable for a section. On a coarse pointer (touch) a compact control is still 44px: `touch-target` makes it 44px on coarse pointers and `compact-target` makes it 32px on fine ones (previously measured in Chrome for a button, an icon button and a switch; new consumer layouts need their own browser check). `Table` also takes `truncate={false}` to show every character of a cell. `Button` gains `variant="danger"` and `size="icon"` in both densities.
 
@@ -235,3 +267,37 @@ Use an external script for consumer handlers under a strict content security
 policy. These components emit no inline scripts or styles by default. Check
 the actual HTML, emitted CSS, focus, coarse-pointer targets, overflow and
 forced-colors behavior in the consuming product before release.
+
+## Form choices and disclosures
+
+Native forms, labels, fieldsets, lists and landmarks remain semantic page composition. `Input` and `Textarea` accept native element props; use a label with `htmlFor` and `id`, plus `aria-invalid` and `aria-describedby` for errors. Do not replace these semantics with a visual wrapper.
+
+```tsx
+import { RadioGroup } from '@ejm/ui/components/ui/radio-group';
+import { Disclosure } from '@ejm/ui/components/ui/disclosure';
+import { Textarea } from '@ejm/ui/components/ui/textarea';
+
+<RadioGroup label="Duration" name="duration" value={duration} onValueChange={setDuration}
+  options={[{ value: 'fast', label: 'Fast', description: 'A short session.' }, { value: 'long', label: 'Long' }]}
+  required />
+<Disclosure summary="Optional details" open={open} onToggle={event => setOpen(event.currentTarget.open)}>
+  <label htmlFor="note">Note</label>
+  <Textarea id="note" />
+</Disclosure>
+```
+
+The root `Disclosure` and `@ejm/ui/shell/Disclosure` keep their existing static `label` API. The form leaf above uses `summary`, stays in the default CSS scan, and is not exported from the root barrel.
+
+`RadioGroup` is controlled: provide unique option values and an `onValueChange` handler. The shared `name` keeps native radio selection, required validation and form submission. An option or the entire group can be disabled. `label` names the group; option descriptions have their own accessible description. Native `onToggle` reports the current details state. Closing `Disclosure` hides content without unmounting it or pausing a widget's work; the widget owner controls its lifecycle.
+
+## Rich web table cells
+
+```tsx
+import { Table } from '@ejm/ui/components/Table';
+
+<Table label="Releases" caption="Current releases" rowHeader="name" rowKey="id"
+  columns={[{ key: 'name', label: 'Package' }, { key: 'version', label: 'Version' }]}
+  rows={[{ id: 'ui', name: <a href="/ui/">UI</a>, version: '0.1.0' }]} />
+```
+
+`rowKey` accepts a string field name or `(row, index) => React.Key`. Provide stable keys for reordered interactive rows; callers without it retain positional keys. `rowHeader` names one column whose cells become `th scope="row"`. Rich cells render as supplied and are never stringified or truncated. Primitive strings and numbers keep the existing title, truncation and numeric alignment rules. Use explicit column alignment for formatted numeric React content. The visible caption names the table; `label` separately names its keyboard-scrollable region.

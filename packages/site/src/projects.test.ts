@@ -26,6 +26,21 @@ describe('project registry', () => {
     expect(sourceLinks('ide')).toEqual([{ label: 'ejm-ide on GitHub', href: PROJECTS.ide.repo, external: true }]);
   });
 
+  it('builds the chess identity without advertising unverified destinations or source links', () => {
+    expect(PROJECTS.chess.discoverable).toBe(false);
+    expect(PROJECT_LIST.some(project => project.id === 'chess')).toBe(false);
+    expect(siteDefaults('chess').origin).toBe('https://chess.ejmlabs.com');
+    expect(sourceLinks('chess')).toEqual([]);
+    expect(PROJECTS.chess.repo).toBe('');
+    expect(PROJECTS.chess.analyticsToken).toBe('');
+    const files = sharedFiles(PROJECTS.chess);
+    expect(files['favicon.svg']).toContain('/assets/projects/chess/');
+    expect(JSON.parse(readFileSync(files['site.webmanifest']!, 'utf8')).name).toBe('Chess by ejmlabs');
+    expect(PROJECTS.chess.guides?.map(guide => guide.href)).toEqual([
+      'https://chess.ejmlabs.com/help/', 'https://chess.ejmlabs.com/docs/developer-guide/',
+    ]);
+  });
+
   it('falls back to the ejmlabs brand files for a project without a folder', () => {
     expect(assetPaths(PROJECTS.cli).favicon).toBe('favicon');
     expect(assetPaths(PROJECTS.cli, d => d === 'projects/cli')).toMatchObject({ favicon: 'projects/cli', logoInk: 'projects/cli/logo-ink.svg', socialCard: 'projects/cli/social-card.png' });
@@ -46,11 +61,11 @@ describe('project registry', () => {
   });
 
   it('every shared file the plugin serves exists in @ejm/ui and @ejm/tokens', () => {
-    for (const p of PROJECT_LIST) for (const [name, path] of Object.entries(sharedFiles(p))) expect(existsSync(path), `${p.id}: ${name}`).toBe(true);
+    for (const p of Object.values(PROJECTS)) for (const [name, path] of Object.entries(sharedFiles(p))) expect(existsSync(path), `${p.id}: ${name}`).toBe(true);
   });
 
   it('serves the original font notices as plain text for every project in development', () => {
-    for (const project of PROJECT_LIST) {
+    for (const project of Object.values(PROJECTS)) {
       const use = vi.fn();
       const configure = ejmSite({ project }).configureServer;
       if (typeof configure !== 'function') throw new Error('Missing development server hook');

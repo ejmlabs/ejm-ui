@@ -15,6 +15,14 @@ Header, footer, layouts and the external link. No cards: the header, the nav and
 | `Collapse` | The shared disclosure behind the sidebars: one `<details>`, labelled on narrow screens, always visible from a breakpoint. |
 | `Disclosure` (root or deep import) | Native `<details>` with a `label`, always collapsible at every width. Default `presentation="section"` uses hairlines in normal flow; `presentation="menu"` opens a bounded, scrollable overlay. |
 | `LinkProvider`, `useLinkComponent`, `LinkComponent`, `NavItem` | Router-agnostic links. |
+| `Brand`, `BrandArtwork`, `SiteIdentity` | Shared artwork placement with content-only identity data. Artwork dimensions preserve its supplied proportions. The surrounding link names the decorative images. |
+
+`Header` accepts either the existing `logo` slot or `identity` data with a
+`name`, optional `description` and optional `artwork` (`src`, `darkSrc`, `width`
+and `height`). The identity renders through shared branding inside the named
+home link. Existing logo callers, theme-control slots, links and class overrides
+retain their behavior. If both logo and identity are supplied, logo takes
+precedence. Sites using `enforceDesignKit` supply identity data.
 
 ## Links without a router
 

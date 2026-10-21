@@ -5,8 +5,8 @@ The containerless language as components. Group with display type, space, hairli
 | Component | Props | Use it for | Accessibility |
 | --- | --- | --- | --- |
 | `Band` | `tone` paper, mist, sage or ink (default paper); `as`; `column` (default true, wraps children in `Page`); `flush` (no vertical rhythm) | A full-bleed section with its own ground. Children read correctly on every band. Alternate tones by section, and let Sage lead (about 30 percent of a page). | Pass `aria-labelledby` to name a section. |
-| `Page` | div props | The content column when you set `column={false}`. | None needed. |
-| `SectionHead` | `kicker` ("01 / Projects"); `title`; `children` (supporting copy); `as` h1, h2 or h3; `size` display or title; `id` | The opening of a section: mono kicker, a huge balanced heading, copy beside it from 48rem of its own width and below it when narrower. | Keep heading levels in order. Give the heading an `id` and point `aria-labelledby` at it. |
+| `Page` | `variant` default or application; div props | The content column. The application variant adds 32px vertical padding below 640px, 48px from 640px, and shared content gaps. The default adds no vertical padding or layout. | None needed. |
+| `SectionHead` | `kicker` ("01 / Projects"); `title`; `children` (supporting copy); `layout` split or stacked; `as` h1, h2 or h3; `size` display or title; `id` | The opening of a section. Split is the default marketing layout, with lead copy beside the heading from 48rem of its own width. Stacked keeps body-sized copy under the title with the shared field gap at every width. | Keep heading levels in order. Give the heading an `id` and point `aria-labelledby` at it. Do not wrap this header in another header. |
 | `Rows` | `size` heading or title; `aria-label` | A hairline list that replaces cards. Rows go in columns from 42rem of the list's own width. The list reaches 1rem past the column so the tone and hairlines meet the gutter and text stays on the column edge. Use it inside `Page` or give the parent a gutter. | A `ul`. Give it a label. |
 | `Row` | `title`; `description`; `meta` (mono); `href`; `external`; `download` (true or a file name); `state` default, selected, disabled or focused | One row. With `href` the whole row is the link through its title, so the link name is the title alone. Hover shifts the tone (an opacity layer) and slides the arrow (transform). `external` adds `rel="external"`, the diagonal arrow and "opens another site" for screen readers (so the link name is then "title, opens another site"). `download` passes through to the anchor. | `selected` sets `aria-current` and shows the selected glyph. `focused` shows the focused glyph and a ring (real focus uses `:focus-visible`). `disabled` renders no link and adds the contract word "(disabled)". Row targets are at least 44px on coarse pointers. |
 | `ActionRows` and `ActionRow` | Native list and list-item attributes; row `title`, optional `description`, `meta`, `actions`, `children` | Compact records with separate buttons, links or forms. Long text and action groups wrap independently. | A real `ul` and `li`. Name the list and give each action a name that identifies its record. The row is never a stretched link. |
@@ -38,6 +38,116 @@ The containerless language as components. Group with display type, space, hairli
   exports or public aliases `@ejm/ui/layout/DocumentContent` and
   `@ejm/ui/layout/ActionRows`. The `@ejm/ui/layout` barrel does not export these
   static parts.
+
+## Application pages and forms
+
+Use `Page variant="application"` for account, history, list and play pages.
+It keeps the same column and gutters as `Page`, with 32px vertical padding
+below 640px and 48px from 640px. Its direct children form a grid separated by
+`gap-content`. `SectionHead layout="stacked"` keeps title, optional kicker and
+body-sized support copy aligned, separated by `gap-field`. Heading level and
+`size` remain independent of layout. Existing Page and SectionHead callers
+keep their current defaults.
+
+`gap-field` is two steps of the existing Tailwind spacing scale, normally 8px.
+Use `grid gap-field` to group a label, control and help or error text.
+`gap-content` is six steps, normally 24px. Use `grid gap-content` on native
+forms and content groups. These aliases also support Tailwind's normal axis
+and breakpoint variants, such as `gap-y-field` and `sm:gap-content`.
+
+```tsx
+import { Button, Input, Page, SectionHead, Text } from '@ejm/ui';
+
+<Page variant="application">
+  <SectionHead as="h1" size="title" layout="stacked" title="Your account">
+    <p>Manage the name other players see.</p>
+  </SectionHead>
+  <form className="grid gap-content max-w-xl">
+    <div className="grid gap-field">
+      <label htmlFor="username">Username</label>
+      <Input id="username" name="username" required aria-describedby="username-help" />
+      <Text as="p" variant="muted" id="username-help">Shown on your public profile.</Text>
+    </div>
+    <div><Button type="submit">Save account</Button></div>
+  </form>
+</Page>
+```
+
+Keep labels, input IDs, validation, form submission and conditional content in
+the consumer. Omit groups when they have no content; an empty group still
+occupies a grid gap. Use inline links inside sentences and Buttons for
+standalone actions. Form width, board width and column arrangements remain
+product choices. Control `density` is separate from page layout and keeps its
+existing touch targets. Caller `className` values can override the shared
+spacing through `cn`, for example `gap-4 py-4 sm:py-6` on Page.
+
+## Fixed application recipes
+
+Import `@ejm/ui/layout/Application` when a product should supply content and
+behavior while the kit owns every visual choice. These recipes accept native
+semantic attributes, refs and handlers. Their props exclude `className`,
+`style` and raw markup. Existing lower-level layout APIs remain compatible.
+
+| Export | Contract |
+| --- | --- |
+| `AppFlow`, `AppGroup`, `AppActions` | Content separated by 32px, related content separated by 16px, and wrapping action groups separated by 12px. The optional `as` selects a semantic element. |
+| `AppHeading`, `AppPre` | Heading levels h2 to h4 with shared heading type, and wrapped monospace records. |
+| `AppField`, `AppFieldset`, `AppForm` | Native fields at 8px gaps, fieldsets at 16px gaps and forms at 24px gaps with a fixed reading width. Labels, legends, validation, disabled state and submission remain native. |
+| `AppSection` | A section with a fixed reading width and 32px content gaps. |
+| `GameWorkspace` | A `board` slot followed by details children, with optional `after` content. It uses one column on phones and board/details columns from 64rem. The host owns keyboard game navigation. |
+| `PlayerStrip`, `BoardPlaceholder` | Player and clock alignment, and a square loading region. |
+| `MovePairs`, `MoveHistory` | Accepted move pairs or selectable SAN moves within a bounded scroll region. `MoveHistory` takes `items`, `selectedId` and `onSelect`; it scrolls only its own list. |
+
+Use `SectionHead purpose="application"` for the complete application opening.
+It selects title type and stacked body copy. `purpose="page"` selects display
+type; `purpose="section"` selects title type with the existing split layout.
+Heading level stays independent. Omitting purpose preserves the previous
+display/split default, and existing explicit size/layout overrides still work.
+Sites that opt into `enforceDesignKit` use purpose instead of visual overrides.
+
+```tsx
+import { AppActions, AppField, AppForm } from '@ejm/ui/layout/Application';
+
+<Page variant="application">
+  <SectionHead purpose="application" as="h1" title="Your account" />
+  <AppForm onSubmit={save}>
+    <AppField>
+      <label htmlFor="player">Username</label>
+      <Input id="player" name="player" required />
+    </AppField>
+    <AppActions><Button type="submit">Save</Button></AppActions>
+  </AppForm>
+</Page>
+```
+
+All recipes use the default `@ejm/ui/styles.css` entry. They add no rule engine,
+observer or product transport. Check the complete product composition in a
+browser; shared component tests do not establish a product release.
+
+## Static prose
+
+Import `Prose` from `@ejm/ui/layout/Prose` for a help or policy page whose
+content already uses semantic HTML. It supplies the same reading measure and
+type scale as the docs parts without requiring the docs navigation or code
+highlighter. Use `DocHead` and `DocBody` when a structured documentation set
+needs derived contents and previous/next navigation.
+
+```tsx
+<Page className="py-rhythm">
+  <SectionHead as="h1" size="title" title="How to play" />
+  <Prose className="mt-8">
+    <p>Choose a time control, then invite a friend.</p>
+    <h2>Reconnect</h2>
+    <p>Return to the same game link in the same browser.</p>
+  </Prose>
+</Page>
+```
+
+On prerendered sites, wrap noninteractive prose in the public `Static` export
+from `@ejm/ssg` with an SSR/dev guarded render function. The server keeps the
+full article and links in HTML while the browser skips its text and rendering
+code. Native links remain usable without script. Do not place forms or other
+interactive components inside a `Static` part.
 
 ## Product shots
 

@@ -139,6 +139,9 @@
 }
 
 @theme inline {
+  /* Application grouping uses the existing Tailwind spacing scale. */
+  --spacing-field: calc(var(--spacing) * 2);
+  --spacing-content: calc(var(--spacing) * 6);
   /* Band rhythm and page geometry, defined as plain variables below so they can step with the screen. */
   --spacing-rhythm: var(--ejm-rhythm);
   --spacing-rhythm-sm: calc(var(--ejm-rhythm) * 0.4);
@@ -400,4 +403,24 @@
   @media print {
     [data-reveal] { opacity: 1 !important; transform: none !important; animation: none !important; }
   }
+}
+
+/* Native reading typography shares selectors so each descendant utility is emitted once. */
+@utility prose-content {
+  @apply max-w-measure text-body;
+  & p { @apply mt-4; }
+  & h2 { @apply mt-12 text-heading; }
+  & h3 { @apply mt-8 text-lead font-semibold; }
+  & a { @apply link; }
+  & :is(ul, ol) { @apply mt-4 ps-6; }
+  & ul { @apply list-disc; }
+  & ol { @apply list-decimal; }
+  & li + li { @apply mt-2; }
+  & :not(pre) > code {
+    @apply rounded-control bg-tone px-1.5 py-0.5 font-mono text-[0.875em];
+    overflow-wrap: anywhere;
+  }
+  & pre { @apply mt-6 overflow-x-auto whitespace-pre-wrap break-words font-mono text-sm leading-relaxed; }
+  & strong { @apply font-semibold; }
+  & blockquote { @apply mt-6 border-s-2 border-line ps-6 text-muted; }
 }

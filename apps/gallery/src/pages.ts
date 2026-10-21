@@ -29,6 +29,7 @@ export interface GalleryPage {
 }
 
 export const pages: GalleryPage[] = [
+  { path: '/application-layout/', label: 'Application layout', title: 'Application layout', description: 'A compact application page with shared form spacing and table states.', meta: 'Forms and content rhythm', group: 'Kits', load: () => import('./routes/application-layout') },
   { path: '/components/', label: 'Components', title: 'Components', description: 'Every component and every state, drawn in light and dark.', meta: 'Buttons, forms, menus, tables', group: 'Kits', nav: true, deferred: true, load: () => import('./routes/components') },
   { path: '/layout/', label: 'Layout', title: 'Layout', description: 'The containerless language end to end: hero, bands, rows, facts, stats and product windows.', meta: 'Bands and rows', group: 'Kits', nav: true, deferred: true, load: () => import('./routes/layout') },
   { path: '/docs/', label: 'Docs', title: 'Docs', description: 'Getting started, the design language, tokens and bands, theming, components, and the checks.', meta: `${docSlugs.length} pages`, group: 'Foundations', nav: true, deferred: true, load: () => import('./routes/docs') },

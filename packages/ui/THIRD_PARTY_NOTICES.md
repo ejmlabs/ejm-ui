@@ -21,3 +21,11 @@ notices when redistributing the fonts, including subsets and WOFF2 files:
 Third-party dependencies retain their own licenses and notices. Preserve the
 applicable notices when redistributing dependencies or bundles. The source
 repository and lockfiles are at [ejmlabs/ejm-ui](https://github.com/ejmlabs/ejm-ui).
+
+## Chess renderer and pieces
+
+The optional public Chessboard leaf uses [cm-chessboard 8.15.4](https://github.com/shaack/cm-chessboard), copyright Stefan Haack, under the MIT license. Keep its license with distributed code.
+
+The unchanged `assets/pieces/standard.svg` is by [Cburnett](https://en.wikipedia.org/wiki/User:Cburnett) and [Rfc1394](https://en.wikipedia.org/wiki/User:Rfc1394), modified by shaack for cm-chessboard. It is licensed under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The SVG retains its attribution. Keep these credits and source links in consumer credits, and retain the license and share-alike terms for artwork adaptations. The noncommercial Staunty sprite is not used.
+
+The chess knight brand assets in `@ejm/tokens/assets/projects/chess` are original ejmlabs artwork and retain the brand terms above. They are separate from the board piece sprite.

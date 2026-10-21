@@ -7,7 +7,7 @@
   "Fact": ["default"],
   "Facts": ["default"],
   "Hero": ["default"],
-  "Page": ["default"],
+  "Page": ["default", "application"],
   "Illustration": ["default"],
   "ProductShot": ["default"],
   "ProductStage": ["default"],
@@ -15,8 +15,9 @@
   "Row": ["default", "selected", "disabled", "focused"],
   "Rows": ["default"],
   "Rule": ["default"],
-  "SectionHead": ["default"],
+  "SectionHead": ["default", "stacked"],
   "Stat": ["default", "loading", "error", "empty"],
   "Status": ["ok", "warn", "error", "info", "pending"],
-  "Text": ["default"]
+  "Text": ["default"],
+  "Prose": ["default"]
 }

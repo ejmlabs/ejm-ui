@@ -34,6 +34,7 @@ export const components: DocPage = {
             { name: 'Button', description: 'Five variants, including danger. Pass asChild to give a link the same look; compact density suits applications.' },
             { name: 'Input, Textarea', description: 'Text fields with the control border and the 3:1 focus ring.' },
             { name: 'Select', description: 'A native select with the control look. Phones keep their own picker.' },
+            { name: 'RadioGroup', description: 'A controlled native radio group with labels, descriptions, required validation, submitted values and disabled choices.' },
             { name: 'Switch, Checkbox', description: 'The button is the 44px touch target; the drawing inside is compact.' },
             { name: 'NativeCheckbox', description: 'A real form checkbox with label activation, required validation and named submission before hydration.' },
             { name: 'Badge', description: 'A tag as plain mono text. No fill, no border.' },
@@ -78,7 +79,13 @@ export const components: DocPage = {
           labels: { name: 'Component', description: 'What it is' },
           rows: [
             { name: 'Band', description: 'A full-bleed section with a ground: paper, mist, sage or ink.' },
-            { name: 'SectionHead', description: 'A kicker, a large balanced heading and supporting copy.' },
+            { name: 'Page', description: 'A content column. variant=application adds 32px phone / 48px desktop vertical padding and 24px content gaps; the default stays bare.' },
+            { name: 'SectionHead', description: 'A kicker, heading and supporting copy. purpose=application uses a stacked title with 8px gaps; purpose=section uses a split title. The default keeps the existing split display heading.' },
+            { name: 'AppFlow, AppGroup, AppActions', description: 'Fixed application composition with 32px, 16px and 12px gaps. Accept content, semantics, handlers and refs without appearance overrides.' },
+            { name: 'AppField, AppFieldset, AppForm', description: 'Native field, fieldset and form semantics with fixed 8px, 16px and 24px gaps and a shared form reading width.' },
+            { name: 'AppSection, AppHeading, AppPre', description: 'A fixed reading column, application subheading and wrapped preformatted content.' },
+            { name: 'GameWorkspace, PlayerStrip, BoardPlaceholder, MovePairs, MoveHistory', description: 'Responsive board and move composition. The consumer supplies accepted positions, clocks, moves and commands.' },
+            { name: 'Prose', description: 'Reading width and semantic prose typography without the docs highlighter.' },
             { name: 'Rows, Row', description: 'A hairline list that replaces cards. A row has a title, text, mono meta and an arrow.' },
             { name: 'ActionRows, ActionRow', description: 'Compact records with wrapping text and separate shared buttons, links or forms.' },
             { name: 'DocumentContent', description: 'Reading width, headings, native form rhythm and wrapped preformatted text from the shared stylesheet.' },
@@ -89,6 +96,57 @@ export const components: DocPage = {
             { name: 'Text, Rule, Status, Art', description: 'A run of text, a hairline with a label, a glyph and a word, and decorative line art.' },
           ],
         },
+      ],
+    },
+    {
+      id: 'application-spacing',
+      title: 'Application pages and forms',
+      blocks: [
+        { type: 'p', children: <>Use <code>Page variant="application"</code> with <code>SectionHead purpose="application"</code> for account, history and play pages. <code>AppField</code> keeps label, control and help text 8px apart. <code>AppForm</code> separates groups by 24px and supplies their reading width. These recipes accept native semantics, handlers and refs; the shared owner fixes appearance. Keep data rules and validation in the consumer. Omit empty conditional groups because they still create a gap.</> },
+        { type: 'code', lang: 'tsx', code: `import { Button, Input, Page, SectionHead, Text } from '@ejm/ui';
+import { AppActions, AppField, AppForm } from '@ejm/ui/layout/Application';
+
+<Page variant="application">
+  <SectionHead purpose="application" as="h1" title="Your account">
+    <p>Manage your public name.</p>
+  </SectionHead>
+  <AppForm onSubmit={save}>
+    <AppField>
+      <label htmlFor="name">Username</label>
+      <Input id="name" name="username" required aria-describedby="name-help" />
+      <Text as="p" id="name-help" variant="muted">Shown to other players.</Text>
+    </AppField>
+    <AppActions><Button type="submit">Save</Button></AppActions>
+  </AppForm>
+</Page>` },
+        { type: 'p', children: <>Sites can set <code>ejmSite({'{ project, enforceDesignKit: true }'})</code> to check their source during development and builds. This optional guard rejects local styles, visual overrides and unsupported raw presentation markup. It defaults off, so existing sites keep their current <code>className</code>, <code>layout</code> and <code>size</code> APIs. New recipes and <code>purpose</code> are additive public contracts. Read the <a className="link" href="https://github.com/ejmlabs/ejm-ui/tree/main/packages/site#optional-design-ownership-check" rel="external noopener">site package guide</a> before enabling the guard.</> },
+        { type: 'p', children: <>The <a className="link" href="/application-layout/">application-layout fixture</a> shows populated, loading, empty and error tables in both densities. Loading and populated rows use the same cell padding. The browser check measures rendered spacing, inline link flow, touch targets and overflow. It does not prove every consumer composition.</> },
+        { type: 'code', lang: 'sh', code: 'npm run build -w @ejm/gallery\nnode scripts/check-application-layout.mjs --out /tmp/ejm-application-layout' },
+      ],
+    },
+    {
+      id: 'form-choices',
+      title: 'Native choices and form disclosures',
+      blocks: [
+        { type: 'p', children: <>Import <code>RadioGroup</code> from <code>@ejm/ui/components/ui/radio-group</code>. Supply <code>label</code>, <code>name</code>, <code>value</code>, unique <code>options</code> and <code>onValueChange</code>. The shared form name keeps native arrow keys, validation and submission. Each option accepts a description and disabled state. The group accepts native fieldset attributes, required and compact density.</> },
+        { type: 'p', children: <>The <code>@ejm/ui/components/ui/disclosure</code> leaf accepts <code>summary</code>, children and native details attributes such as <code>open</code> and <code>onToggle</code>. Closed children stay mounted, preserving form and widget state. Their owner still controls background work. This leaf is styled by the default entry. The existing root <code>Disclosure</code> and <code>@ejm/ui/shell/Disclosure</code> retain their <code>label</code> API and opt-in static stylesheet.</> },
+      ],
+    },
+    {
+      id: 'chess-surfaces',
+      title: 'Chessboard and clocks',
+      blocks: [
+        { type: 'p', children: <>The optional <code>@ejm/ui/components/Chessboard</code> leaf wraps <code>cm-chessboard 8.15.4</code>. It renders a square loading state on the server and loads the maintained SVG board after mount. It is absent from the root barrel so unrelated consumers do not load its renderer or CSS. The host owns chess rules, network commands and accepted positions.</> },
+        { type: 'code', lang: 'tsx', code: `import { Chessboard } from '@ejm/ui/components/Chessboard';
+import { GameClock } from '@ejm/ui/components/GameClock';
+
+<Chessboard fen={acceptedFen} color="w" enabled={canSubmit}
+  showLegalMoves={hintsEnabled} getLegalMoves={legalDestinations}
+  lastMove={lastMove} premove={premove} onMove={submitMove} />
+<GameClock value="5:03" label="White has 5 minutes and 3 seconds" running />` },
+        { type: 'p', children: <>A legal destination is <code>{'{ square: "e4", capture: false }'}</code>. Hints default off. The kit draws only the destinations supplied by the host and loads no rules or engine. A move callback proposes a move; only the next accepted <code>fen</code> changes the visible position. Use <code>readOnly</code> and <code>enabled={'{false}'}</code> for replays. The kit owns input, promotion, focus, marker cleanup, orientation changes and disposal. Real keyboard, pointer and promotion flows still need browser checks in the consumer.</> },
+        { type: 'p', children: <>GameClock takes <code>value</code>, accessible <code>label</code>, <code>running</code>, <code>low</code> and native span attributes. It starts no timer and adds no per-tick live region. The host owns ticking, time estimates and adjudication.</> },
+        { type: 'p', children: <>cm-chessboard code uses MIT. Its unchanged standard piece sprite is by Cburnett and Rfc1394, modified by shaack, under <a className="link" href="https://creativecommons.org/licenses/by-sa/3.0/" rel="external noopener">CC BY-SA 3.0</a>. Keep the embedded attribution and source credits in consumer notices. Artwork changes keep the share-alike terms. The noncommercial Staunty sprite is unused. The ejmlabs knight logo is separate original brand artwork.</> },
       ],
     },
     {
@@ -104,7 +162,7 @@ export const components: DocPage = {
           caption: 'Contract components',
           labels: { name: 'Component', type: 'States', description: 'What it is' },
           rows: [
-            { name: 'Table', type: 'default, empty, loading, error', description: 'Hairline rows, right-aligned numbers, and a scroll region on narrow screens.' },
+            { name: 'Table', type: 'default, empty, loading, error', description: 'Hairline rows and a scroll region. Web cells accept React nodes, caption, rowHeader and rowKey. Numbers stay aligned; rich cells stay interactive and stable keys preserve focus on reorder.' },
             { name: 'StateBlock', type: 'empty, loading, error', description: 'One plain sentence and at most one action. Never a bare zero.' },
             { name: 'Prompt', type: 'idle, busy, error', description: 'An input line in the terminal manner.' },
             { name: 'KeyHints', type: 'default', description: 'Key and label pairs in one line of mono text.' },

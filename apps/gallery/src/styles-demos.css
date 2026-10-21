@@ -1,0 +1,12 @@
+@import "./styles.css";
+@import "@ejm/demos/ide.css";
+@source "./routes/demos.tsx";
+@source "../../../packages/demos/src/views";
+@source "../../../packages/demos/src/islands/*Showcase.tsx";
+@source "../../../packages/demos/src/islands/*-showcase.tsx";
+@source not "../../../packages/demos/src/**/*.test.{ts,tsx}";
+/* This route uses native product markup, not the gallery's form and layout examples. */
+@source not "./routes/{home,components,layout,product,tokens,hooks,shell,not-found}.tsx";
+@source not "./tokens.tsx";
+@source not "./windows.tsx";
+@source not "../../../packages/ui/src/components/ui";

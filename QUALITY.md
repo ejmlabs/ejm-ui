@@ -86,5 +86,10 @@ The numbers are a starting point, tuned from measurement. A change to a budget i
 | Contrast | `node packages/tokens/scripts/contrast.mjs --verbose` (also in `npm run check`) | Text under 4.5:1, control border or focus under 3:1, for both themes and every band |
 | Viewport matrix | `node scripts/shoot.mjs <url> [--theme dark]` | Horizontal overflow from 320px to 5120px, small touch targets |
 | Budgets | `node scripts/size.mjs [dist]` | HTML, CSS, JavaScript or font size over its budget |
+| Opt-in design ownership | `npm test -- packages/site/src/design.test.mjs` | Visual overrides accepted by an opted-in site, errors hidden during prerendering, broken dev recovery or changed default legacy build behavior |
 
 More gates are added with the components and the gallery: no card or panel classes, missing simulated labels, and a missing head, header or toggle on a route.
+
+## Application spacing contract
+
+Build the gallery, then run `node scripts/check-application-layout.mjs --out /tmp/ejm-application-layout`. It reuses the existing capture engine and static server. Four passes cover light and dark at 360px and 1280px, with fresh JSON measurements and full-page PNGs. The gate measures real 8px field gaps, 24px content gaps, 32px/48px page padding, heading alignment, inline link flow, 44px actions, all table states and data/loading padding parity in both densities. It rejects missing, stale or clipped evidence and horizontal overflow. Use the normal screenshot matrix for ultrawide review and inspect the PNGs. Component tests protect semantics and caller overrides; neither check proves a product's complete composition or publication.
