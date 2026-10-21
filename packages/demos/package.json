@@ -18,7 +18,14 @@
     "./islands/harness-lazy": "./src/islands/harness-lazy.tsx",
     "./islands/LazyIsland": "./src/islands/LazyIsland.tsx",
     "./styles.css": "./src/styles.css",
-    "./ide.css": "./src/ide.css"
+    "./ide.css": "./src/ide.css",
+    "./ide-preview.css": "./src/ide-styles.css",
+    "./ShowcaseFrame": "./src/ShowcaseFrame.tsx",
+    "./islands/cli-preview": "./src/islands/cli-preview.tsx",
+    "./cli.css": "./src/cli-styles.css",
+    "./islands/ide-preview": "./src/islands/ide-preview.tsx",
+    "./islands/harness-preview": "./src/islands/harness-preview.tsx",
+    "./harness.css": "./src/harness-styles.css"
   },
   "sideEffects": [
     "*.css"
@@ -29,7 +36,9 @@
     "!src/test-helpers.tsx",
     "README.md",
     "LICENSE",
-    "THIRD_PARTY_NOTICES.md"
+    "THIRD_PARTY_NOTICES.md",
+    "LUCIDE-LICENSE",
+    "fixtures"
   ],
   "scripts": {
     "honesty": "node scripts/check-demos-honesty.mjs",
@@ -37,6 +46,7 @@
   },
   "dependencies": {
     "@ejm/core": "0.1.0",
+    "@ejm/tokens": "0.1.0",
     "@ejm/ui": "0.1.0"
   },
   "peerDependencies": {

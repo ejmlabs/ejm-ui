@@ -24,6 +24,15 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
   product-window styles, and use the public site CSS profile in the packed starter.
 - Keep plain code in prerendered documentation when a static boundary has no
   highlighting callback, and retain product-view CSS on the gallery product route.
+- Add native passive CLI, IDE and Harness previews through additive `*-preview`
+  entries, with complete static excerpts, finite offline playback and retained
+  capture receipts. Load native IDE colors through an opt-in generated neutral
+  scale. Keep all interactive and
+  caller-owned recording APIs.
+  Reuse the loaded player for bundled data and omit unused private terminal
+  modes, retaining recorded output and the public plain-mode contract.
+  Update the gallery's component example, design guides and deployment recipe
+  for `ui.ejmlabs.com`; this source change does not publish the site.
 
 - Add mandatory public site design checks, a native HTML profile, compiled docs,
   structured branding and fixed site/application composition. Keep published

@@ -68,7 +68,10 @@ npm run check      # text checks, type check and tests`,
           ),
         },
         { type: 'code', lang: 'css', code: '@import "@ejm/ui/styles-site.css" source(none);' },
-        { type: 'p', children: <>The site profile includes shared component sources. Disabling the automatic scan keeps unrelated installed package styles out of the bundle. Add <code>@ejm/ui/styles-docs.css</code> for documentation.</> },
+        { type: 'p', children: <>The site profile includes shared layouts and Button. Disabling the automatic scan keeps unrelated installed package styles out of the bundle. Use the complete <code>styles.css</code> profile for form and application controls. Add <code>@ejm/ui/styles-docs.css</code> for documentation. Native product previews import the public <code>@ejm/demos/cli.css</code>, <code>ide-preview.css</code> or <code>harness.css</code> profile. The existing <code>ide.css</code> entry still styles the interactive simulated IDE. These imports own their source lists; do not scan private package paths.</> },
+        { type: 'p', children: <>Use the public Button and Input components for controls, Brand for approved artwork, and DocsSidebar and Contents for documentation navigation. Compose site content with SectionBody, Columns, ContentFlow and Actions. Add missing visual patterns to ejm-ui; public sites do not author CSS or utility classes.</> },
+        { type: 'p', children: <>The gallery links a complete stylesheet per route through <code>@ejm/ssg</code> head links, so docs, app examples and recorded demos load their own required styles before hydration. Interactive examples stay disabled while page code loads and enable when their handlers are ready. With scripts off, their content remains readable.</> },
+        { type: 'p', children: <>If a page chunk cannot load, a recovery message offers <strong>Reload this page</strong>. Reconnect first if you are offline. Reloading requests the latest HTML and can recover a tab opened before a release.</> },
         {
           type: 'p',
           children: (
@@ -98,7 +101,7 @@ npm run check      # text checks, type check and tests`,
         {
           type: 'code',
           lang: 'tsx',
-          code: `import { Band, Row, Rows, SectionHead } from '@ejm/ui';
+          code: `import { Band, Row, Rows, SectionBody, SectionHead } from '@ejm/ui';
 
 export default function Projects() {
   return (
@@ -106,9 +109,9 @@ export default function Projects() {
       <SectionHead kicker="01 / Projects" title="Three tools, one engine." id="projects-title">
         <p>ejm-harness is the engine. ejm-cli and ejm-ide run on it.</p>
       </SectionHead>
-      <Rows size="title" aria-label="Projects">
+      <SectionBody><Rows aria-label="Projects">
         <Row title="ejm-cli" href="/cli" description="A Rust terminal coding agent." meta="Rust / terminal" />
-      </Rows>
+      </Rows></SectionBody>
     </Band>
   );
 }`,

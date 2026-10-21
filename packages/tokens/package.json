@@ -10,6 +10,7 @@
     ".": "./src/index.ts",
     "./tailwind.css": "./generated/tailwind.css",
     "./window.css": "./generated/window.css",
+    "./neutral.css": "./generated/neutral.css",
     "./theme.css": "./generated/theme.css",
     "./theme.json": "./theme.json",
     "./generated/*": "./generated/*",

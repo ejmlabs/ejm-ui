@@ -34,6 +34,14 @@ function Player<Frame, Update>({ name, source, recording, options, create, rende
   );
 }
 
+/** Bundled previews arrive with validated data through their existing lazy module boundary. */
+export function LoadedRecording<Frame, Update>(props: Omit<RecordedIslandProps<Frame, Update>, 'validate'> & { recording: Recording<Update> }) {
+  const reduced = useReducedMotion();
+  return reduced
+    ? <RecordedView name={props.name}>{props.renderFrame(props.source.finalFrame)}</RecordedView>
+    : <Player {...props} />;
+}
+
 /** Shared lazy data and lifecycle boundary. Product content and validation stay with the supplied adapter. */
 export function RecordedIsland<Frame, Update>({ name, source, options, validate, create, renderFrame }: RecordedIslandProps<Frame, Update>) {
   const reduced = useReducedMotion();

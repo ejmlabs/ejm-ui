@@ -1,5 +1,5 @@
-// Writers for the two Tailwind v4 CSS files: generated/tailwind.css (semantic colors, bands, elevation) and
-// generated/window.css (the ui roles for product windows). See packages/ui/THEME.md for how they are used.
+// Writers for the Tailwind v4 theme and opt-in product window CSS profiles.
+// See packages/ui/THEME.md for how they are used.
 import { rgb } from './theme.mjs';
 
 const hex = v => `#${v.toLowerCase()}`;
@@ -109,6 +109,19 @@ export function windowCss({ resolved, banner }) {
 ${colors.join('\n')}
 }
 
+@layer base {
+${themeBlocks(vars)}
+}
+`;
+}
+
+// Native product styles use the complete neutral scale alongside the semantic ui roles.
+// Keep this opt-in so pages without those styles do not carry the extra variables.
+export function neutralCss({ resolved, banner }) {
+  const vars = mode => resolved[mode].neutral
+    .map((value, i) => `    --ejm-ui-n${i}: ${hex(value)};`).join('\n');
+  return `/* ${banner}
+   Neutral colors for native product styles on the web. They follow the page theme, not the band. */
 @layer base {
 ${themeBlocks(vars)}
 }
