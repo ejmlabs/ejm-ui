@@ -142,6 +142,18 @@ try {
     if (c.recordingMarker) console.log(`  recorded lazy closure ${kb(r.lazySize)} ${recordingLeak ? 'LEAK, MISSING OR OVER BUDGET' : 'data stays lazy, ok'}`);
     console.log(`  ${c.label.padEnd(44)} +${kb(added)}   ${c.only ? (foreign.length ? 'LEAK: ' + foreign.join(', ') + ' view' : over ? 'OVER BUDGET' : own ? 'only the ' + c.only + ' view' : 'MISSING the ' + c.only + ' view') : 'all three views'}`);
   }
+  // Additive native previews retain server excerpts without shipping them in the
+  // initial browser closure. Their complete per-product player/data stays lazy.
+  const previewMarkers = { cli: 'done · shell cargo test --quiet', ide: 'workbench_write_file', harness: 'reopened saved session: Harbor checks' };
+  console.log('\nNative previews, initial addition and complete lazy closure, gzip\n');
+  for (const name of names) {
+    const r = await initialOf(`${name}-preview`, mount(`import { Lazy${Cap(name)}Preview } from ${JSON.stringify(src(`islands/${name}-preview.tsx`))};`, `<Lazy${Cap(name)}Preview />`));
+    const added = r.size - base;
+    const foreign = names.filter(other => other !== name && (r.code + r.lazyCode).includes(previewMarkers[other]));
+    const invalid = added > firstLoadBudget * 1024 || r.lazySize > budget * 1024 || r.code.includes(previewMarkers[name]) || !r.lazyCode.includes(previewMarkers[name]) || foreign.length > 0;
+    failed ||= invalid;
+    console.log(`  Lazy${Cap(name)}Preview initial +${kb(added)}, lazy ${kb(r.lazySize)}   ${invalid ? 'MISSING, LEAK OR OVER BUDGET' : 'one product, stays lazy, ok'}`);
+  }
 } finally {
   rmSync(tmp, { recursive: true, force: true });
 }

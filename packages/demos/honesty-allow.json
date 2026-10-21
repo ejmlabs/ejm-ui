@@ -2,6 +2,12 @@
   "ejm-cli": [
     {
       "kind": "tool",
+      "name": "shell",
+      "source": "ejm-harness/crates/ejm-harness-coding/src/lib.rs",
+      "reason": "The native preview's shell calls use the public coding crate. CLI launch grants control permission to run them."
+    },
+    {
+      "kind": "tool",
       "name": "read_file",
       "source": "ejm-harness/crates/ejm-harness-coding/src/lib.rs",
       "reason": "ejm-cli gets its native file tools from ejm-harness-coding. The README says only that native file tools are read only until write is granted."
@@ -104,6 +110,12 @@
     }
   ],
   "ejm-ide": [
+    {
+      "kind": "tool",
+      "name": "workbench_open_file",
+      "source": "ejm-ide/docs/agent-tools.md",
+      "reason": "The native preview opens a file through the public tool named in the agent tools table."
+    },
     {
       "kind": "tool",
       "name": "workbench_search_code",

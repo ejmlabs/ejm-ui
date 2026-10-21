@@ -12,13 +12,13 @@ export const components: DocPage = {
           type: 'p',
           children: (
             <>
-              Controls are shadcn/ui source copied in and edited here, on React 19. Where a native element meets the contract, the component uses it: <code>Dialog</code> is the browser's <code>dialog</code>, <code>Select</code> is a native <code>select</code>, and <code>NativeCheckbox</code> and <code>Disclosure</code> work before hydration. Radix remains behind <code>Checkbox</code> for the mixed state and behind menus, tooltips and switches.
+              Controls are shadcn/ui source copied in and edited here, on React 19. Where a native element replaces a primitive, the component uses the native element: <code>Dialog</code> is the browser's <code>dialog</code>, <code>Select</code> is a native <code>select</code>, and the mobile menus are <code>details</code>. Radix is used where it earns its weight, in menus, tooltips, switches and checkboxes.
             </>
           ),
         },
         {
           type: 'p',
-          children: <>Shared checks cover rendering, form behavior and structural accessibility. A consuming product must also check its real CSS, keyboard flow, touch targets, overflow and forced-colors behavior. Passing source checks does not deploy a site.</>,
+          children: <>Every component has a render test and an accessibility check in light and dark. Components with behavior also have a keyboard test.</>,
         },
       ],
     },
@@ -31,11 +31,10 @@ export const components: DocPage = {
           caption: 'Controls',
           labels: { name: 'Component', description: 'What it is' },
           rows: [
-            { name: 'Button', description: 'Five variants, including danger. Pass asChild to give a link the same look; compact density suits applications.' },
+            { name: 'Button', description: 'Primary, secondary, ghost, link and danger variants. Pass asChild to give a link the same look.' },
             { name: 'Input, Textarea', description: 'Text fields with the control border and the 3:1 focus ring.' },
             { name: 'Select', description: 'A native select with the control look. Phones keep their own picker.' },
             { name: 'Switch, Checkbox', description: 'The button is the 44px touch target; the drawing inside is compact.' },
-            { name: 'NativeCheckbox', description: 'A real form checkbox with label activation, required validation and named submission before hydration.' },
             { name: 'Badge', description: 'A tag as plain mono text. No fill, no border.' },
             { name: 'Separator', description: 'A hairline. Never a box edge.' },
             { name: 'Tooltip', description: 'A small label for a control. No shadow.' },
@@ -51,8 +50,8 @@ export const components: DocPage = {
           caption: 'Button props',
           rows: [
             { name: 'variant', type: "'primary' | 'secondary' | 'ghost' | 'link' | 'danger'", default: "'primary'", description: 'The look. Primary is the Sage fill with Ink text.' },
-            { name: 'size', type: "'sm' | 'md' | 'lg' | 'icon'", default: "'md'", description: 'Heights of 36px, 44px and 56px, or a square icon target with an accessible name.' },
-            { name: 'density', type: "'comfortable' | 'compact'", default: "'comfortable'", description: 'Compact uses 13px type and a 32px fine-pointer target; coarse-pointer targets stay 44px.' },
+            { name: 'size', type: "'sm' | 'md' | 'lg' | 'icon'", default: "'md'", description: 'Heights of 36px, 44px and 56px, or a 44px square for a labelled icon control.' },
+            { name: 'density', type: "'comfortable' | 'compact'", default: "'comfortable'", description: 'Compact uses 32px application controls on a fine pointer and keeps 44px targets on touch.' },
             { name: 'arrow', type: 'boolean', default: 'false', description: 'Adds the trailing arrow, which slides 4px on hover and stays put under reduced motion.' },
             { name: 'asChild', type: 'boolean', default: 'false', description: 'Renders the child element, for example a link, with the button look.' },
           ],
@@ -80,10 +79,8 @@ export const components: DocPage = {
             { name: 'Band', description: 'A full-bleed section with a ground: paper, mist, sage or ink.' },
             { name: 'SectionHead', description: 'A kicker, a large balanced heading and supporting copy.' },
             { name: 'Rows, Row', description: 'A hairline list that replaces cards. A row has a title, text, mono meta and an arrow.' },
-            { name: 'ActionRows, ActionRow', description: 'Compact records with wrapping text and separate shared buttons, links or forms.' },
-            { name: 'DocumentContent', description: 'Reading width, headings, native form rhythm and wrapped preformatted text from the shared stylesheet.' },
             { name: 'Facts, Fact', description: 'Mono labels, hairlines and values. Stacks in a narrow column.' },
-            { name: 'Stat', description: 'A large figure with a mono label. Loading, error and empty are words.' },
+            { name: 'Stat', description: 'A figure with a mono label. Use size="title" in dense examples. Loading, error and empty are words.' },
             { name: 'Hero', description: 'A type-led opening with a slot for floating product windows. No panel.' },
             { name: 'ProductWindow, ProductStage', description: 'The only layout part with a shadow. Always carries a simulated label unless it is live.' },
             { name: 'Text, Rule, Status, Art', description: 'A run of text, a hairline with a label, a glyph and a word, and decorative line art.' },
@@ -123,83 +120,16 @@ export const components: DocPage = {
           labels: { name: 'Name', description: 'What it does' },
           rows: [
             { name: 'SiteLayout', description: 'Skip link, Header, main and Footer. The route supplies bands and one h1.' },
+            { name: 'Brand', description: 'Canonical artwork with optional light and dark sources, an optional name and shared sizing.' },
             { name: 'DocsLayout', description: 'A sidebar, a 68ch reading column and a contents list, both folding into labelled disclosures on narrow screens.' },
-            { name: 'AppShell', description: 'A top bar, a side navigation and content for applications. themeControl can replace or suppress the default toggle.' },
-            { name: 'Header, Footer, ThemeToggle', description: 'The sticky header with a menu below 768px, the Ink footer, and the light and dark switch. Header also accepts themeControl.' },
+            { name: 'AppShell', description: 'A top bar, a side navigation and content for applications.' },
+            { name: 'Header, Footer, ThemeToggle', description: 'The sticky header with a menu below 768px, the Ink footer, and the light and dark switch.' },
             { name: 'ExternalLink, SkipLink, Collapse', description: 'A link to another site with an arrow, the first focusable element, and one native disclosure.' },
-            { name: 'Disclosure', description: 'Always-collapsible native details, either an in-flow section or a compact menu overlay. No script requirement.' },
             { name: 'Reveal, Stagger, useReveal, useDrawOn', description: 'Entrance and scroll motion. Nothing is hidden without scripts or under reduced motion.' },
             { name: 'useTheme', description: 'Light, dark or system, saved to the ejm-theme cookie.' },
             { name: 'useMediaQuery, useReducedMotion, useContainerQuery, useInView', description: 'Server-safe measurements. The first render matches the server.' },
             { name: 'useClipboard, useHotkeys', description: 'Copy with a confirmation, and keyboard shortcuts that ignore typing in fields.' },
           ],
-        },
-      ],
-    },
-    {
-      id: 'native-static-pages',
-      title: 'Native static pages',
-      blocks: [
-        {
-          type: 'p',
-          children: <><code>NativeCheckbox</code>, <code>Disclosure</code>, <code>ActionRows</code> and <code>DocumentContent</code> support prerendered native pages. Import <code>@ejm/ui/styles-static.css</code> after <code>@ejm/ui/styles.css</code>. Their styles stay outside the default bundle. Keep account rules, transport and validation in the product.</>,
-        },
-        {
-          type: 'code',
-          lang: 'css',
-          code: '@import "@ejm/ui/styles.css";\n@import "@ejm/ui/styles-static.css";',
-        },
-        {
-          type: 'code',
-          lang: 'tsx',
-          code: `import { Button, Disclosure, DocumentContent, NativeCheckbox } from '@ejm/ui';
-
-<DocumentContent>
-  <form action="/preferences" method="post">
-    <NativeCheckbox name="updates" value="yes" label="Send product updates" />
-    <Button type="submit" density="compact">Save preferences</Button>
-  </form>
-  <Disclosure label="More options"><p>Supporting content</p></Disclosure>
-</DocumentContent>`,
-        },
-        {
-          type: 'p',
-          children: <>Import <code>NativeCheckbox</code> from <code>@ejm/ui/components/NativeCheckbox</code> or the root exports. It forwards ordinary input attributes, including <code>required</code>, <code>form</code>, <code>checked</code> and <code>defaultChecked</code>. The platform supplies its checkmark. Use <code>Checkbox</code> for the Radix mixed-state API. Give each separate <code>ActionRow</code> action an accessible name that identifies its record.</>,
-        },
-        {
-          type: 'p',
-          children: <><code>Disclosure</code> takes a label, standard details attributes and section or menu presentation. A menu defaults to compact density. The platform supplies its open/closed marker. Native disclosure behavior works before hydration. Use <code>Menu</code> for arrow keys, typeahead, Escape and focus return. For <code>Header</code> and <code>AppShell</code>, omitted or undefined <code>themeControl</code> keeps the default toggle. Pass null to suppress it.</>,
-        },
-      ],
-    },
-    {
-      id: 'terminal-views',
-      title: 'Terminal views',
-      blocks: [
-        {
-          type: 'p',
-          children: <>The web <code>Terminal*</code> components own visual composition. Import <code>@ejm/ui/styles-terminal.css</code> after <code>@ejm/ui/styles.css</code>. Add <code>@ejm/ui/styles-static.css</code> if the page also uses static parts. These views do not connect to hosts, verify pairing or execute commands. Products can prerender them and attach native DOM handlers from an external script. Transcript body text is 16px on phones and 14px from the <code>sm</code> breakpoint.</>,
-        },
-        {
-          type: 'params',
-          caption: 'Terminal composition',
-          labels: { name: 'Public component', description: 'Contract' },
-          rows: [
-            { name: 'TerminalWorkspace', description: 'One full-height main landmark. Do not nest it in another main or AppShell.' },
-            { name: 'TerminalHeader, TerminalLink', description: 'Brand, title, navigation, context and compact native links.' },
-            { name: 'TerminalOutput, TerminalPairing', description: 'Pairing and transcript space. The product sets hidden on pairing after verification.' },
-            { name: 'TerminalLog, TerminalEntry', description: 'Focusable log, live announcements off by default, plain text entries with prompt, assistant, output or error kind.' },
-            { name: 'TerminalStatus', description: 'Connection words and a supplied status node, so state never relies on color alone.' },
-            { name: 'TerminalComposer, TerminalTextarea, TerminalSelect', description: 'One native form with a legend, linked label, shared fields, separate actions, outcome and hints.' },
-          ],
-        },
-        {
-          type: 'p',
-          children: <>Import the module from <code>@ejm/ui/components/TerminalWorkspace</code> or use the root exports. For native transcript updates, prerender a <code>TerminalEntry</code> template and fill its <code>data-terminal-label</code> and <code>data-terminal-text</code> hooks with <code>textContent</code>. Choose <code>data-kind</code> explicitly. Never infer presentation from translated labels, inject transcript HTML or copy a shared component class list.</>,
-        },
-        {
-          type: 'p',
-          children: <>These source APIs are not a published package or a deployed product. Verify the consuming page with its real stylesheet, content security policy, long transcript text and keyboard flow before release.</>,
         },
       ],
     },

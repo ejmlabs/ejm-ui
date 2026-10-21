@@ -47,7 +47,7 @@ describe('honesty gate', () => {
   });
 
   it('accepts a tool name only when code formatted, in the README or in the file the allow list cites', () => {
-    const tools = 'Tools: `workbench_search_code`, `workbench_read_file`, `workbench_write_file`.';
+    const tools = 'Tools: `workbench_search_code`, `workbench_read_file`, `workbench_write_file`, `workbench_open_file`.';
     const inReadme = run(checkouts({ 'ejm-ide': tools })).out;
     // The allow entries are stale once the README documents the names, which is how the gate asks for them to be removed.
     expect(inReadme).toContain('stale allow entry');

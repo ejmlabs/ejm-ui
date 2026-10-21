@@ -98,9 +98,14 @@ import { checkBudget } from '@ejm/ssg/budget';
 import { PROJECTS } from '@ejm/site/projects';
 import { CliHeroWindow, ProductHeroStage } from '@ejm/demos/hero';
 import { LazyCliDemo } from '@ejm/demos/islands/cli-lazy';
+import { ShowcaseFrame } from '@ejm/demos/ShowcaseFrame';
+import { LazyCliPreview } from '@ejm/demos/islands/cli-preview';
+import { LazyIdePreview } from '@ejm/demos/islands/ide-preview';
+import { LazyHarnessPreview } from '@ejm/demos/islands/harness-preview';
 export const probe = [fontPreloads, Hero, ProductWindow, NativeCheckbox, Disclosure, Header, AppShell, ActionRows, ActionRow, DocumentContent,
   TerminalWorkspace, TerminalHeader, TerminalLink, TerminalOutput, TerminalPairing, TerminalLog, TerminalEntry, TerminalStatus, TerminalComposer, TerminalTextarea, TerminalSelect,
-  useInView, useReducedMotion, useTheme, tokenize, ripple, ejmSsg, checkBudget, PROJECTS, CliHeroWindow, ProductHeroStage, LazyCliDemo];
+  useInView, useReducedMotion, useTheme, tokenize, ripple, ejmSsg, checkBudget, PROJECTS, CliHeroWindow, ProductHeroStage, LazyCliDemo,
+  ShowcaseFrame, LazyCliPreview, LazyIdePreview, LazyHarnessPreview];
 `);
 run('npm', ['install', '--no-audit', '--no-fund'], consumer);
 
@@ -164,11 +169,12 @@ import { compile } from '@tailwindcss/node';
 import { Scanner } from '@tailwindcss/oxide';
 import { writeFileSync } from 'node:fs';
 const css = ['styles.css', 'styles-docs.css', 'styles-app.css', 'styles-static.css', 'styles-terminal.css']
-  .map(name => '@import "@ejm/ui/' + name + '";').join('\\n');
+  .map(name => '@import "@ejm/ui/' + name + '";')
+  .concat(['cli.css', 'ide-preview.css', 'harness.css'].map(name => '@import "@ejm/demos/' + name + '";')).join('\\n');
 const compiler = await compile(css, { base: process.cwd(), onDependency() {} });
 const scanner = new Scanner({ sources: compiler.sources });
 const output = compiler.build(scanner.scan());
-for (const name of ['native-check-label', 'disclosure-menu', 'document-content', 'terminal-workspace']) {
+for (const name of ['native-check-label', 'disclosure-menu', 'document-content', 'terminal-workspace', 'ejm-ide-viewport']) {
   if (!output.includes('.' + name)) throw new Error('Installed CSS is missing ' + name);
 }
 writeFileSync('css-entry-proof.css', output);

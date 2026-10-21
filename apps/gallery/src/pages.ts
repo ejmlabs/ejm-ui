@@ -23,7 +23,7 @@ export interface GalleryPage {
   nav?: boolean;
   /** The page is a whole frame with its own header, skip link and main (an app shell), so the gallery adds none. */
   bare?: boolean;
-  /** The page body hydrates on the first interaction (see island.tsx). For pages whose code does not fit the first-load script budget. */
+  /** The page body hydrates after the small site entry. Interactive controls wait until it is ready (see island.tsx). */
   deferred?: boolean;
   load: Load;
 }
@@ -33,8 +33,9 @@ export const pages: GalleryPage[] = [
   { path: '/layout/', label: 'Layout', title: 'Layout', description: 'The containerless language end to end: hero, bands, rows, facts, stats and product windows.', meta: 'Bands and rows', group: 'Kits', nav: true, deferred: true, load: () => import('./routes/layout') },
   { path: '/docs/', label: 'Docs', title: 'Docs', description: 'Getting started, the design language, tokens and bands, theming, components, and the checks.', meta: `${docSlugs.length} pages`, group: 'Foundations', nav: true, deferred: true, load: () => import('./routes/docs') },
   { path: '/app/', label: 'App', title: 'App kit', description: 'A dashboard, three chart types and every empty, loading and error state, with sample data.', meta: 'Dashboard and charts', group: 'Kits', nav: true, deferred: true, load: () => import('./routes/app') },
-  { path: '/product/', label: 'Product', title: 'Product views', description: 'The ejm-cli, ejm-ide and ejm-harness screens, drawn from the same scenarios as the demos.', meta: 'Simulated screens', group: 'Kits', nav: true, deferred: true, load: () => import('./routes/product') },
-  { path: '/demos/', label: 'Demos', title: 'Demos', description: 'Three interactive demos that run in the page and send nothing anywhere.', meta: 'Live, scripted', group: 'Kits', deferred: true, load: () => import('./routes/demos') },
+  { path: '/application-layout/', label: 'Application layout', title: 'Application layout', description: 'Compact page spacing, grouped form fields and every table state in both densities.', meta: 'Page and field spacing', group: 'Kits', load: () => import('./routes/application-layout') },
+  { path: '/product/', label: 'Product', title: 'Product views', description: 'Real captures of ejm-cli, ejm-ide and ejm-harness, with source versions and capture dates.', meta: 'Real product captures', group: 'Kits', nav: true, deferred: true, load: () => import('./routes/product') },
+  { path: '/demos/', label: 'Demos', title: 'Demos', description: 'Three read-only local playbacks of recorded product workflows, with pause and restart controls.', meta: 'Recorded workflows', group: 'Kits', deferred: true, load: () => import('./routes/demos') },
   { path: '/tokens/', label: 'Tokens', title: 'Tokens', description: 'Every band, the type scale, elevation and motion that the theme defines.', meta: 'Colors, type, depth', group: 'Foundations', load: () => import('./routes/tokens') },
   { path: '/hooks/', label: 'Hooks', title: 'Hooks and motion', description: 'Live demos of the hooks and motion primitives, each safe to render on the server.', meta: 'Theme, media, motion', group: 'Foundations', load: () => import('./routes/hooks') },
   { path: '/shell/', label: 'Shell', title: 'Shell', description: 'The header, footer and layouts that frame a site, in both themes.', meta: 'Header, footer, docs', group: 'Foundations', load: () => import('./routes/shell') },

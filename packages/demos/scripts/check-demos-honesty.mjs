@@ -24,8 +24,8 @@ const labels = sc('labels.json');
 
 /** Which scenario data and engine file belong to which product. */
 const PRODUCTS = {
-  'ejm-cli': { data: [sc('cli.json'), labels.cli], engine: ['cli.ts'], skip: ['edits'] },
-  'ejm-ide': { data: [sc('ide.json'), labels.ide], engine: ['ide.ts'], skip: ['edits'] },
+  'ejm-cli': { data: [sc('cli.json'), labels.cli], engine: ['cli.ts'], skip: ['edits'], preview: 'cli' },
+  'ejm-ide': { data: [sc('ide.json'), labels.ide], engine: ['ide.ts'], skip: ['edits'], preview: 'ide' },
   'ejm-harness': { data: [sc('harness.json')], engine: ['harness.ts'], skip: ['langs'] },
 };
 
@@ -114,6 +114,20 @@ function corpusFor(name, product) {
   for (const f of product.engine) {
     const src = readFileSync(join(pkg, 'src', f), 'utf8');
     for (const s of literals(src)) text.push([`src/${f}`, s]);
+  }
+  // Preview code/output contains user source. Read tool identity fields only,
+  // so Rust function names and shell flags cannot become product API claims.
+  if (product.preview) {
+    const file = `src/previews/recordings/${product.preview}.json`;
+    const visit = value => {
+      if (!value || typeof value !== 'object') return;
+      if (value.kind === 'tool') {
+        const name = value.name ?? value.title?.match(/^(?:running|done|error) · ([a-z_]+)/)?.[1];
+        if (name) tools.push([file, name]);
+      }
+      for (const child of Object.values(value)) visit(child);
+    };
+    visit(readJson(join(pkg, file)));
   }
   return { text, tools, commands, keys, noSlash: false };
 }

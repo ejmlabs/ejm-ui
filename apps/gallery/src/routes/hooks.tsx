@@ -1,21 +1,20 @@
-import { Reveal, Stagger, useClipboard, useContainerQuery, useDrawOn, useHotkeys, useInView, useMediaQuery, useReducedMotion, useTheme } from '@ejm/ui';
-import { useState, type ReactNode } from 'react';
+import { Button, Input, Reveal, Stagger, useClipboard, useContainerQuery, useDrawOn, useHotkeys, useInView, useMediaQuery, useReducedMotion, useTheme } from '@ejm/ui';
+import { useId, useState, type ReactNode } from 'react';
 
 // Live demos of the hooks and motion primitives. Each section is one hook, its value, and the control that changes it.
 
 function Demo({ name, children, lead }: { name: string; lead: string; children: ReactNode }) {
+  const headingId = useId();
   return (
-    <Reveal as="section" className="hairline-t grid gap-x-12 gap-y-4 py-10 lg:grid-cols-12" aria-labelledby={`h-${name}`}>
+    <Reveal as="section" className="hairline-t grid gap-x-12 gap-y-4 py-10 lg:grid-cols-12" aria-labelledby={headingId}>
       <div className="lg:col-span-6">
-        <h2 id={`h-${name}`} className="text-heading font-mono">{name}</h2>
+        <h2 id={headingId} className="text-heading font-mono">{name}</h2>
         <p className="mt-3 max-w-measure text-muted">{lead}</p>
       </div>
       <div className="lg:col-span-6">{children}</div>
     </Reveal>
   );
 }
-
-const btn = 'touch-target inline-flex items-center rounded-pill border border-control px-6 py-2 font-semibold text-fg hover:bg-tone';
 
 function ThemeDemo() {
   const { choice, resolved, setChoice, toggle } = useTheme();
@@ -24,9 +23,9 @@ function ThemeDemo() {
       <p className="m-0 text-meta">choice: {choice} / on screen: {resolved}</p>
       <p className="mt-4 flex flex-wrap gap-3">
         {(['light', 'dark', 'system'] as const).map(c => (
-          <button key={c} type="button" className={btn} aria-pressed={choice === c} onClick={() => setChoice(c)}>{c}</button>
+          <Button key={c} type="button" variant={choice === c ? 'secondary' : 'ghost'} aria-pressed={choice === c} onClick={() => setChoice(c)}>{c}</Button>
         ))}
-        <button type="button" className={btn} onClick={toggle}>toggle</button>
+        <Button type="button" variant="secondary" onClick={toggle}>toggle</Button>
       </p>
     </>
   );
@@ -71,7 +70,7 @@ function ClipboardDemo() {
     <>
       <p className="m-0 flex flex-wrap items-center gap-4">
         <code className="text-meta">npm i @ejm/ui</code>
-        <button type="button" className={btn} onClick={() => void copy('npm i @ejm/ui')}>{label}</button>
+        <Button type="button" variant="secondary" onClick={() => void copy('npm i @ejm/ui')}>{label}</Button>
       </p>
       <p role="status" className="mt-3 text-meta text-muted">{announcement}</p>
     </>
@@ -85,7 +84,7 @@ function HotkeysDemo() {
   return (
     <>
       <p className="m-0 text-meta">Press ?, /, g or mod+k (not while typing in the field).</p>
-      <p className="mt-4"><input aria-label="Typing here does not fire plain keys" placeholder="Type here" className="min-h-11 border-b border-control bg-transparent px-2" /></p>
+      <p className="mt-4"><Input aria-label="Typing here does not fire plain keys" placeholder="Type here" /></p>
       <p className="mt-2 text-meta text-muted">{log.length ? `last: ${log.join(', ')}` : 'no keys yet'}</p>
     </>
   );
