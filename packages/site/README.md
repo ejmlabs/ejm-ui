@@ -187,6 +187,8 @@ number when present.
 - CommonMark paragraphs, inline code, emphasis, strong text, links, reference
   links, line breaks, nested lists, ordered-list starts and GFM tables are
   supported. All table columns remain visible in a locally scrolling table.
+  Code spans preserve literal entities such as `&lt;tag&gt;`; ordinary text
+  decodes entities before React escapes its output.
 - `<!-- table: Caption -->` or a `Table: Caption` paragraph names the next table.
   Otherwise the nearest section title names it.
 - A blockquote can start with `[!NOTE]`, `[!TIP]`, `[!WARNING]`, `[!IMPORTANT]`,

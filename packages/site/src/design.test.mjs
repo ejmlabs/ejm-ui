@@ -123,9 +123,18 @@ describe('site design ownership in real Vite builds', () => {
 
   it('blocks dev requests for newly added unused CSS and recovers when corrected', async () => {
     const root = await fixture();
-    const server = await createServer({ ...options(root), server: { host: '127.0.0.1', port: 0 }, optimizeDeps: { noDiscovery: true } });
+    let watcherReady = false;
+    const config = options(root);
+    config.plugins.unshift({
+      name: 'fixture-watch-ready',
+      enforce: 'pre',
+      configureServer(server) { server.watcher.once('ready', () => { watcherReady = true; }); },
+    });
+    const server = await createServer({ ...config, server: { host: '127.0.0.1', port: 0 }, optimizeDeps: { noDiscovery: true } });
     try {
       await server.listen();
+      // HTTP can listen before ignoreInitial finishes discovering files.
+      await expect.poll(() => watcherReady, { timeout: 5000 }).toBe(true);
       const origin = server.resolvedUrls.local[0];
       expect((await fetch(origin)).status).toBe(200);
       const unused = join(root, 'src/unused.css');

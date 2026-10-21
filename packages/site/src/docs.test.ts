@@ -4,6 +4,15 @@ import { parseDoc, slug, splitDoc } from './docs.mjs';
 const blocks = (source: string) => parseDoc(`## Guide\n\n${source}`).sections[0]!.blocks;
 
 describe('compiled documentation contracts', () => {
+  it('preserves literal entities in code spans, headings and table headers', () => {
+    const page = parseDoc('## Use `&lt;tag&gt;`\n\nOutside &amp; inside `&lt;tag&gt; &amp; &#60;`.\n\n| `&lt;tag&gt;` |\n| --- |\n| `&amp;` |');
+    expect(page.sections[0]!.title).toBe('Use &lt;tag&gt;');
+    expect(page.sections[0]!.blocks).toEqual([
+      { type: 'p', children: ['Outside & inside ', ['code', '&lt;tag&gt; &amp; &#60;'], '.'] },
+      { type: 'table', caption: 'Use &lt;tag&gt;', heads: ['&lt;tag&gt;'], rows: [[[['code', '&amp;']]]] },
+    ]);
+  });
+
   it('preserves nested lists, ordered starts, code labels, callouts, and every table cell', () => {
     const page = parseDoc([
       '---', 'title: Guide', 'lead: Use it.', 'description: A guide.', 'group: Start', '---', '',

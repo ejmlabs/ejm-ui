@@ -13,7 +13,7 @@ const safeHref = (value) => {
   return href;
 };
 const defaultLink = (href) => ({ href, external: /^(?:https?:)?\/\//i.test(href) });
-const plain = (tokens = []) => tokens.map((t) => t.tokens ? plain(t.tokens) : decodeHTML(t.text ?? '')).join('');
+const plain = (tokens = []) => tokens.map((t) => t.type === 'codespan' ? t.text : t.tokens ? plain(t.tokens) : decodeHTML(t.text ?? '')).join('');
 
 function frontMatter(source, required) {
   const match = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/.exec(source);
@@ -33,7 +33,7 @@ function inline(tokens, link) {
   return tokens.flatMap((t) => {
     switch (t.type) {
       case 'text': case 'escape': return t.tokens ? inline(t.tokens, link) : [decodeHTML(t.text)];
-      case 'codespan': return [['code', decodeHTML(t.text)]];
+      case 'codespan': return [['code', t.text]];
       case 'strong': case 'em': case 'del': return [[t.type, inline(t.tokens, link)]];
       case 'br': return [['br']];
       case 'link': {
