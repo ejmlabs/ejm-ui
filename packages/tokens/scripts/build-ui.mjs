@@ -2,6 +2,7 @@
 // Generates every file that carries colors from theme.json, so no surface keeps its own copy:
 //   generated/tailwind.css   Tailwind v4 theme: brand palette, semantic colors, the four bands, elevation (sites and apps)
 //   generated/window.css     the ui roles and syntax colors as Tailwind colors, for product windows and editors on the web
+//   generated/neutral.css    opt-in neutral scale for native product styles on the web
 //   generated/theme.css      the ui roles as plain --ejm-ui-* variables (dark by default), for the IDE and other non-Tailwind apps
 //   generated/monaco/*.json  Monaco editor themes
 //   generated/terminal/*     iTerm, Warp, Alacritty, kitty, Ghostty and Windows Terminal color schemes
@@ -13,7 +14,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { checkAll } from './contrast.mjs';
 import { loadTheme, resolveBands, resolveThemes, rgb, tokensRoot } from './theme.mjs';
-import { tailwindCss, windowCss } from './tailwind.mjs';
+import { tailwindCss, windowCss, neutralCss } from './tailwind.mjs';
 
 const root = tokensRoot;
 const { theme, brand } = loadTheme();
@@ -53,6 +54,7 @@ ${cssVars('light').replace(/^/gm, '  ')}
   }
 }
 `);
+files.set('generated/neutral.css', neutralCss({ resolved, banner: banner('').trim() }));
 
 // Rust module for ratatui apps.
 // type and macro are reserved words in Rust.

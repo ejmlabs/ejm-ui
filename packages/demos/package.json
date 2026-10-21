@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "@ejm/core": "0.1.0",
+    "@ejm/tokens": "0.1.0",
     "@ejm/ui": "0.1.0"
   },
   "peerDependencies": {

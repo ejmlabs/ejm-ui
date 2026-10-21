@@ -1,4 +1,5 @@
 /* Public passive product preview profile. */
+@import "@ejm/tokens/neutral.css";
 @import "./native-ide.css";
 @source "./previews/IdeView.tsx";
 @source "./previews/ide-parts.tsx";

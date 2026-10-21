@@ -174,6 +174,11 @@ const css = ['styles.css', 'styles-docs.css', 'styles-app.css', 'styles-static.c
 const compiler = await compile(css, { base: process.cwd(), onDependency() {} });
 const scanner = new Scanner({ sources: compiler.sources });
 const output = compiler.build(scanner.scan());
+const neutralRefs = new Set([...output.matchAll(/var\\((--ejm-ui-n\\d+)\\)/g)].map(match => match[1]));
+if (!neutralRefs.size) throw new Error('Installed native preview has no neutral colors');
+for (const name of neutralRefs) {
+  if (!output.includes(name + ':')) throw new Error('Installed preview color is missing ' + name);
+}
 for (const name of ['native-check-label', 'disclosure-menu', 'document-content', 'terminal-workspace', 'ejm-ide-viewport']) {
   if (!output.includes('.' + name)) throw new Error('Installed CSS is missing ' + name);
 }

@@ -197,7 +197,7 @@ Import `@ejm/demos/cli.css` after the shared UI stylesheet. For IDE use
 `@ejm/demos/ide-preview.css`. For Harness use `LazyHarnessPreview` from
 `@ejm/demos/islands/harness-preview` and `@ejm/demos/harness.css`. The existing
 `@ejm/demos/ide.css` remains the interactive simulated-view stylesheet.
-These public profiles own their source lists. Do not scan private package paths.
+These public profiles own their source lists. The native IDE profile also loads the opt-in `@ejm/tokens/neutral.css` scale used by the desktop app. It follows the page theme without loading the full application theme again. Do not add the broad legacy `@ejm/demos/styles.css` unless a page also uses an older simulated view. Do not scan private package paths.
 
 The only preview options are `rootMargin` (default `240px`) and `eager` (default
 `false`). The complete static excerpt renders on the server. A one-product

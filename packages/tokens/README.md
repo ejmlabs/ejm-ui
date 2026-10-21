@@ -11,6 +11,7 @@ npm run check -w @ejm/tokens   # contrast gates, and fail on any stale generated
 | --- | --- |
 | `generated/tailwind.css` | Tailwind v4 theme: brand colors, semantic colors, the four bands, elevation. Imported by `@ejm/ui/styles.css`. |
 | `generated/window.css` | The ui roles and syntax colors as web variables and Tailwind colors, for product windows and editors. |
+| `generated/neutral.css` | The complete neutral scale for native product styles on the web, through the opt-in `@ejm/tokens/neutral.css` export. It follows the page theme and adds no utilities. |
 | `generated/theme.css` | The ui roles as plain `--ejm-ui-*` variables, dark by default, for the IDE and other non-Tailwind apps. |
 | `generated/monaco/*.json` | Monaco editor themes. |
 | `generated/terminal/*` | Color schemes for iTerm, Warp, Alacritty, kitty, Ghostty and Windows Terminal. |
