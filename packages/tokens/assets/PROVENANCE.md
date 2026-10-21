@@ -301,6 +301,20 @@ Retired social profile kits and ZIP archives are excluded from imports.
 | `assets/projects/chess/social-card.png` | `generated:chess-assets/social-card.png` | `c7dc5947b4f96e2416075f363e39495edaf370434a12e4d2fd4fb17608e35c7e` |
 | `assets/projects/chess/social-card.svg` | `generated:chess-assets/social-card.svg` | `7d51571a2f4ae62b33f2264500646338cb782ec3cd7de0c9c8b75dfba197821d` |
 
+| `assets/projects/cli/editable/logo-ink.svg` | `projects/cli/editable/logo-ink.svg` | `866c68ccfb99b14fdbd088a2a1096e575c88fd42424bc0b9a05094448c769b0e` |
+| `assets/projects/cli/editable/logo-paper.svg` | `projects/cli/editable/logo-paper.svg` | `3dd5a215fed73c8f3e1f1573e9d328f16d6131ca3d23730c18e351cd13e3da8f` |
+| `assets/projects/cli/editable/logo-primary.svg` | `projects/cli/editable/logo-primary.svg` | `f18f75f9d530df5756854621656295b29a8701251530bdf1f8e355fc5bb3a01f` |
+| `assets/projects/ide/editable/logo-ink.svg` | `projects/ide/editable/logo-ink.svg` | `dee01c314ef22c22bc6635c07272fe08ec4c85df951f5cada813dfab5b177475` |
+| `assets/projects/ide/editable/logo-paper.svg` | `projects/ide/editable/logo-paper.svg` | `d1754a649b5a36a7615421da4a723ded252d61407d2322574cc76452d653eccf` |
+| `assets/projects/ide/editable/logo-primary.svg` | `projects/ide/editable/logo-primary.svg` | `807b72ff8ea0a1306165467b2f60954bbf8c6740a46c88561470bacea87402f0` |
+| `assets/projects/harness/editable/logo-ink.svg` | `projects/harness/editable/logo-ink.svg` | `0e9517ee04303c02fda641f5939de7bbcaa48b864ab51c2dc8c2dc16ca9c998d` |
+| `assets/projects/harness/editable/logo-paper.svg` | `projects/harness/editable/logo-paper.svg` | `4967a1581cf987a063cb7f0e00c4a8ea3be9ca492f8c9f49ae691c6bc71b3aaa` |
+| `assets/projects/harness/editable/logo-primary.svg` | `projects/harness/editable/logo-primary.svg` | `fce66025006bb6f62f57791a3a733a1076a853bf5770651062c388f52c6bf556` |
+| `assets/projects/family-dark.svg` | `projects/family-dark.svg` | `356be63cf734b66a63e5bcdf41872feba4618ca727f83c9a15937de0c4b48897` |
+| `assets/projects/family-dark.png` | `projects/family-dark.png` | `974a26aa2525faeca10c08429f70bcc25e4840ed6bf71ff2f6332965f5278564` |
+| `assets/projects/family-light.svg` | `projects/family-light.svg` | `c99fe75a78c2280fc128d7e7f2391e3291d67bd42fea9d1c1bfb7d0bd19c4d8f` |
+| `assets/projects/family-light.png` | `projects/family-light.png` | `3438098de98f2bad143a4cab98e8a5241933ee66760eee4bdaaaf99682153966` |
+
 ## Moved and then edited
 
 These came from the design-kit too but were changed on purpose, so their hashes are not compared. The short hash is the original.

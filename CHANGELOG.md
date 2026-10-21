@@ -12,6 +12,8 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
   and confirm a real change before testing additions, within the same deadlines.
 - Include product-window and stage utilities in the public site CSS profile,
   so demo styles need no private source scan in consuming sites.
+- Include retained brand download inputs in the tokens tarball, with approved editable project logos and family artwork, provenance and a package file-list check.
+
 - Preserve literal entity examples in Markdown code spans, including headings
   and table labels. Synchronize the dev watcher test with initial discovery.
 - Check native file notifications and request recovery within the existing

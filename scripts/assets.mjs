@@ -28,12 +28,13 @@ const MOVES = [
   ['social', 'assets/social'], ['lockups', 'assets/lockups'], ['templates', 'assets/templates'], ['fonts', 'assets/fonts'],
   ['tokens/palette.json', 'assets/brand/palette.json'], ['tokens/design-tokens.json', 'assets/brand/design-tokens.json'],
   ['ui/rust/ejm_tui.rs', 'rust/ejm_tui.rs'], ['ui/TUI.md', 'rust/TUI.md'],
-  // The regenerated per-project logo families (marks, logos, icons, favicons, social card). Their editable/ sources stay in the kit.
+  // Public project families include approved editable CLI/IDE/Harness logos.
   ['projects/cli', 'assets/projects/cli'], ['projects/ide', 'assets/projects/ide'], ['projects/harness', 'assets/projects/harness'],
   ['projects/relay', 'assets/projects/relay'],
+  ...['dark', 'light'].flatMap(theme => ['svg', 'png'].map(ext => [`projects/family-${theme}.${ext}`, `assets/projects/family-${theme}.${ext}`])),
 ];
 const GENERATED_DIRS = ['assets/projects/chess'];
-const skipped = rel => rel.split(/[\\/]/).includes('editable');
+const skipped = rel => rel.split(/[\\/]/).includes('editable') && !/^editable\/logo-(?:ink|paper|primary)\.svg$/.test(posix(rel));
 // This is the public production bundle. Review boards and editable sources stay in the kit.
 const relayFiles = new Set([
   ...['mark-sage', 'mark-ink', 'mark-paper', 'logo-primary', 'logo-ink', 'logo-paper', 'icon-sage', 'icon-forest', 'social-card'].flatMap(name => [`${name}.svg`, `${name}.png`]),
