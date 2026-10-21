@@ -88,3 +88,7 @@ The numbers are a starting point, tuned from measurement. A change to a budget i
 | Budgets | `node scripts/size.mjs [dist]` | HTML, CSS, JavaScript or font size over its budget |
 
 More gates are added with the components and the gallery: no card or panel classes, missing simulated labels, and a missing head, header or toggle on a route.
+
+## Application spacing contract
+
+Build the gallery, then run `node scripts/check-application-layout.mjs --out /tmp/ejm-application-layout`. It reuses the existing capture engine and static server. Four passes cover light and dark at 360px and 1280px, with fresh JSON measurements and full-page PNGs. The gate measures real 8px field gaps, 24px content gaps, 32px/48px page padding, heading alignment, inline link flow, 44px actions, all table states and data/loading padding parity in both densities. It rejects missing, stale or clipped evidence and horizontal overflow. Use the normal screenshot matrix for ultrawide review and inspect the PNGs. Component tests protect semantics and caller overrides; neither check proves a product's complete composition or publication.

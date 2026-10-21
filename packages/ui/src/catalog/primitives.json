@@ -27,5 +27,6 @@
   "TerminalStatus": ["default"],
   "TerminalComposer": ["default"],
   "TerminalTextarea": ["default", "focus", "invalid", "disabled"],
-  "TerminalSelect": ["default", "focus", "invalid", "disabled"]
+  "TerminalSelect": ["default", "focus", "invalid", "disabled"],
+  "RadioGroup": ["default", "selected", "focus", "disabled"]
 }

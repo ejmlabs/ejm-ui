@@ -11,3 +11,4 @@ export * from './SectionHead';
 export * from './Stat';
 export * from './Status';
 export * from './Text';
+export * from './Prose';

@@ -5,6 +5,14 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Add shared application Page and stacked SectionHead options, field/content gap aliases, and matching loading-table padding. Existing layout defaults stay unchanged.
+- Add rich web table cells, captions, row headers and stable row keys, plus native RadioGroup, a form Disclosure leaf and lightweight Prose.
+- Add an optional lazy Chessboard adapter and GameClock. The host owns rules, accepted moves, legal hints and clocks. Keep the separate board-artwork license.
+- Add the generated chess brand family and an undiscoverable build identity, with no repository or analytics token until publication is verified.
+- Version favicon and manifest references while preserving stable asset paths and original font notices.
+- Keep gallery route styles within the existing 14 KB CSS budget by loading docs, app and demo styles only on their routes. Keep the current stylesheet until its replacement loads, including rapid navigation and failed-sheet retry.
+- Add a complete application-layout gallery fixture and browser measurements for spacing, table density, touch targets and overflow. Local checks do not establish package or site publication.
+
 - Add public `Terminal*` view components, `NativeCheckbox`, `Disclosure`,
   `ActionRows`, `ActionRow` and `DocumentContent` for native pages and terminal
   interfaces. Allow `Header` and `AppShell` to replace or suppress the theme

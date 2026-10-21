@@ -1,0 +1,4 @@
+{
+  "Chessboard": ["loading", "interactive", "read-only", "orientation", "disabled", "last-move", "premove", "legal-moves", "promotion", "reduced-motion"],
+  "GameClock": ["default", "active", "low"]
+}

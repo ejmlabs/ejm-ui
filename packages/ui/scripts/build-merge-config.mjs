@@ -31,11 +31,11 @@ export const KEEP = new Set([
   'font-size', 'font-style', 'font-weight', 'font-family', 'fvn-normal', 'fvn-ordinal', 'fvn-slashed-zero', 'fvn-figure', 'fvn-spacing', 'fvn-fraction', 'tracking', 'line-clamp', 'leading', 'list-style-type', 'text-alignment', 'text-color', 'text-decoration',
   'text-decoration-thickness', 'underline-offset', 'text-transform', 'text-overflow', 'text-wrap', 'vertical-align', 'whitespace', 'break',
   // color, border, effects
-  'bg-color', 'rounded', 'rounded-s', 'rounded-e', 'rounded-t', 'rounded-r', 'rounded-b', 'rounded-l', 'rounded-tl', 'rounded-tr', 'rounded-br', 'rounded-bl',
+  'bg-color', 'accent', 'rounded', 'rounded-s', 'rounded-e', 'rounded-t', 'rounded-r', 'rounded-b', 'rounded-l', 'rounded-tl', 'rounded-tr', 'rounded-br', 'rounded-bl',
   'border-w', 'border-w-x', 'border-w-y', 'border-w-t', 'border-w-r', 'border-w-b', 'border-w-l', 'border-style', 'border-color', 'border-color-t', 'border-color-r', 'border-color-b', 'border-color-l',
   'divide-x', 'divide-y', 'divide-color', 'outline-style', 'outline-offset', 'outline-w', 'outline-color', 'shadow', 'shadow-color', 'ring-w', 'ring-color', 'opacity',
   // motion, transform, interaction
-  'transition', 'duration', 'ease', 'delay', 'animate', 'rotate', 'scale', 'translate', 'translate-x', 'translate-y', 'cursor', 'pointer-events', 'select', 'resize', 'fill', 'stroke-w', 'stroke',
+  'transition', 'duration', 'ease', 'delay', 'animate', 'rotate', 'scale', 'translate', 'translate-x', 'translate-y', 'cursor', 'pointer-events', 'select', 'touch', 'touch-x', 'touch-y', 'touch-pz', 'resize', 'fill', 'stroke-w', 'stroke',
 ]);
 
 const ts = (await import(pathToFileURL(require.resolve('typescript')).href)).default;

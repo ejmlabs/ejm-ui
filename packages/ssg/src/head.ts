@@ -55,13 +55,45 @@ export const tagToString = (t: HeadTag) =>
 
 export const headToString = (h: ResolvedHead) => `<title>${esc(h.title)}</title>\n${h.tags.map(tagToString).join('\n')}`;
 
+let headRevision = 0;
+
 export function applyHead(h: ResolvedHead) {
+  const revision = ++headRevision;
   document.title = h.title;
-  document.head.querySelectorAll('[data-ejm]').forEach(n => n.remove());
+  const previous = [...document.head.querySelectorAll('[data-ejm]')];
+  const oldStyles = previous.filter(n => n.matches('link[rel="stylesheet"]'));
+  previous.filter(n => !oldStyles.includes(n)).forEach(n => n.remove());
+  const styleLoads: Promise<void>[] = [];
+  const nextStyles = new Set<Element>();
   for (const t of h.tags) {
-    const el = document.createElement(t.tag);
+    // Reuse a sheet already painted by this document, including rapid back navigation.
+    const existing = t.tag === 'link' && t.attrs.rel === 'stylesheet'
+      ? oldStyles.find(n => (n as HTMLLinkElement).sheet
+        && Object.entries(t.attrs).every(([name, value]) => n.getAttribute(name) === value)
+        && n.getAttributeNames().every(name => name === 'data-ejm' || name in t.attrs))
+      : undefined;
+    // A failed or still-pending link has no sheet. Recreate it on a new request
+    // so recovery cannot wait forever for a load event that already failed.
+    if (!existing && t.tag === 'link' && t.attrs.rel === 'stylesheet') {
+      oldStyles.filter(n => n.getAttribute('href') === t.attrs.href && !(n as HTMLLinkElement).sheet).forEach(n => n.remove());
+    }
+    const el = existing ?? document.createElement(t.tag);
     for (const [k, v] of Object.entries(t.attrs)) el.setAttribute(k, v);
     el.setAttribute('data-ejm', '');
-    document.head.append(el);
+    if (t.tag === 'link' && t.attrs.rel === 'stylesheet') {
+      nextStyles.add(el);
+      if (!(el as HTMLLinkElement).sheet) styleLoads.push(new Promise(resolve => {
+        el.addEventListener('load', () => resolve(), { once: true });
+        // Keep the current sheet if its replacement cannot load.
+      }));
+    }
+    if (!existing) document.head.append(el);
   }
+  // Keep the current paint until every replacement sheet is ready. A newer
+  // navigation owns its own set, so an older completion cannot remove its CSS.
+  const current = [...nextStyles];
+  void Promise.all(styleLoads).then(() => {
+    if (revision !== headRevision || current.some(el => !el.isConnected)) return;
+    oldStyles.filter(el => !nextStyles.has(el)).forEach(el => el.remove());
+  });
 }

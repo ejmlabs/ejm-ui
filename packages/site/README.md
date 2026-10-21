@@ -5,7 +5,7 @@ What every ejmlabs site shares beyond the look: the project registry, Cloudflare
 | Entry | What it is |
 | --- | --- |
 | `@ejm/site` | Re-exports `Analytics`, the analytics helpers, `siteDefaults`, `siteFonts` and the registry. |
-| `@ejm/site/projects` | The four sites: `PROJECTS`, `PROJECT_LIST`, `otherSites(id)`, `sourceLinks(id)`, `assetPaths`. |
+| `@ejm/site/projects` | Build identities and public discovery: `PROJECTS`, `PROJECT_LIST`, `otherSites(id)`, `sourceLinks(id)`, `assetPaths`. |
 | `@ejm/site/analytics` | The `Analytics` component and `analyticsToken`, `loadAnalytics`, `optedOut`. |
 | `@ejm/site/head` | `siteDefaults(id)` for `defineSite`, and `siteFonts()`. |
 | `@ejm/site/headers` | `headersFile`, `csp`, `directives`: the policy as a typed generator. |
@@ -40,7 +40,11 @@ export default defineSite({ ...siteDefaults('cli'), App, routes: [/* ... */], no
 
 ## projects
 
-One registry feeds the analytics host map, the headers, the nav and the footers. Each entry has `id`, `name` (`ejm-cli`), `host`, `url`, `tagline`, `repo`, `analyticsToken` and `assetDir`. `otherSites(id)` returns the other three as `{ label, href, external: true }`, ready for the `nav` and footer `links` of `@ejm/ui`, which render them with `ExternalLink` (`rel="external noopener"`). `sourceLinks(id)` is the repo link.
+`PROJECTS` contains build identities, including unreleased projects. Each entry has `id`, `name` (`ejm-cli`), `host`, `url`, `tagline`, `repo`, `analyticsToken` and `assetDir`. Optional `guides` entries contain a `label` and an intended canonical `href`; these URLs are metadata, not proof of publication. `repo` and `analyticsToken` are empty strings when no repository or analytics token is configured. `sourceLinks(id)` returns the repo link, or an empty list when the remote is unconfigured.
+
+`PROJECT_LIST` includes only discoverable projects. `discoverable` defaults to true for existing identities; an explicit false keeps a project out of that list, the analytics host map, `otherSites(id)`, gallery project rows, and starter links. `otherSites(id)` returns the other discoverable projects as `{ label, href, external: true }`, ready for `@ejm/ui` navigation and footer links (`rel="external noopener"`). The four existing identities and their navigation are unchanged.
+
+The `chess` identity is available to `siteDefaults('chess')` and `ejmSite({ project: 'chess' })` for local and protected preview builds. It remains `discoverable: false`. Its player guide is intended for `/help/` and its developer guide for `/docs/developer-guide/` on `chess.ejmlabs.com`. No product remote or analytics token is configured. Builds use the owned chess asset family, including a distinct manifest and versioned favicons. The artwork does not establish public availability. See the token package guide for generation and provenance. Before enabling discovery, publish and verify the canonical product and guide destinations, review its source and asset facts, then change the registry through the approved owner release process and rebuild affected consumers. An unrelated rebuild must not expose an unreleased project.
 
 Brand files: ejmlabs uses the root sets of `@ejm/tokens/assets` (`favicon/`, `logos/`, `social/`). cli, ide and harness each have their own family in `@ejm/tokens/assets/projects/<id>/` (marks, logos, icons, the favicon set, `apple-touch-icon.png`, `android-chrome-*`, `site.webmanifest`, `social-card`), copied from `design-kit/projects/` with sha256 in `assets/PROVENANCE.md`. `assetPaths(project, exists)` points at that folder when it exists and falls back to the ejmlabs files otherwise; `ejmSite` serves the project's favicon set, manifest and social card at the site root.
 
@@ -68,3 +72,5 @@ Brand files: ejmlabs uses the root sets of `@ejm/tokens/assets` (`favicon/`, `lo
 `ejmSite()` adds the static tags `ssg` cannot carry to `index.html`, right before `<!--ejm-head-->`: `color-scheme` (`light dark`), `theme-color` for both schemes, the synchronous external `<script src="/theme-boot.js">`, the icon links and the manifest. It also writes `theme-boot.js` (from `@ejm/ui`), the favicon set, `site.webmanifest` and `social-card.png` (from `@ejm/tokens`) into the build, and serves them in `ejm-ssg dev`. `index.html` keeps the charset and the viewport (`viewport-fit=cover`, needed for safe-area insets) and the two ssg markers. Do not keep your own copies of these files in `public/`.
 
 The plugin also distributes the original font notices from the public `@ejm/ui/fonts/Manrope-OFL.txt` and `@ejm/ui/fonts/IBMPlexMono-OFL.txt` exports. Every build includes their exact bytes at `/Manrope-OFL.txt` and `/IBMPlexMono-OFL.txt`, alongside the bundled font assets. Development serves the same paths as `text/plain; charset=utf-8`. Their stable names stay outside `/assets/*` and keep the default revalidation policy described above. Keep both notices with any deployed site that distributes these fonts.
+
+Icon and manifest head URLs carry one content revision for the complete favicon family. The manifest uses that same revision for its local icon references. Development and builds serve the same manifest bytes. Original root paths and font notices stay available. `headTags(base, version?)` keeps unversioned URLs when called without a revision.

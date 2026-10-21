@@ -10,5 +10,5 @@ export interface EjmSiteOptions {
 /** Files the plugin serves and writes at the site root: published name to absolute path. */
 export function sharedFiles(project: Project): Record<string, string>;
 /** Tags as HTML strings, for index.html. */
-export function headTags(base?: string): string[];
+export function headTags(base?: string, version?: string): string[];
 export function ejmSite(options: EjmSiteOptions): Plugin;

@@ -1,7 +1,7 @@
-// The four ejmlabs sites. One registry feeds the analytics host map, the security headers, the cross-site nav and the footers.
+// Build identities include unreleased projects. Only discoverable entries feed public lists, navigation and analytics.
 // Plain JavaScript with a .d.mts next to it, so the Vite plugin and the CLI can load it from node_modules without a TypeScript loader.
 
-/** @type {Readonly<Record<'ejmlabs' | 'cli' | 'ide' | 'harness', import('./projects.d.mts').Project>>} */
+/** @type {Readonly<Record<import('./projects.d.mts').ProjectId, import('./projects.d.mts').Project>>} */
 export const PROJECTS = Object.freeze({
   ejmlabs: {
     id: 'ejmlabs',
@@ -44,9 +44,24 @@ export const PROJECTS = Object.freeze({
     analyticsToken: '0bfa5a59716e48008f6b02a8e19389f4',
     assetDir: 'projects/harness',
   },
+  chess: {
+    id: 'chess',
+    name: 'ejm-chess',
+    host: 'chess.ejmlabs.com',
+    url: 'https://chess.ejmlabs.com/',
+    tagline: 'Multiplayer chess in development. Ranked play and public release are not available yet.',
+    repo: '',
+    analyticsToken: '',
+    assetDir: 'projects/chess',
+    discoverable: false,
+    guides: [
+      { label: 'Player guide', href: 'https://chess.ejmlabs.com/help/' },
+      { label: 'Developer guide', href: 'https://chess.ejmlabs.com/docs/developer-guide/' },
+    ],
+  },
 });
 
-export const PROJECT_LIST = Object.freeze(Object.values(PROJECTS));
+export const PROJECT_LIST = Object.freeze(Object.values(PROJECTS).filter(p => p.discoverable !== false));
 
 /** Where a project's brand files are inside @ejm/tokens/assets. cli, ide and harness have their own set in `projects/<id>/`;
  *  ejmlabs uses the root files (`favicon/`, `logos/`, `social/`). `exists` lets the caller say which directories are really there,
@@ -69,5 +84,5 @@ export function otherSites(currentId) {
 /** Source links for the footer (all external). */
 export function sourceLinks(currentId) {
   const own = PROJECTS[currentId];
-  return [{ label: `${own.name} on GitHub`, href: own.repo, external: true }];
+  return own.repo ? [{ label: `${own.name} on GitHub`, href: own.repo, external: true }] : [];
 }
