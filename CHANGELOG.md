@@ -5,6 +5,8 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Add shared terminal workspace layout, identity, activity, resource counts, worker rows and contextual controls.
+
 - Keep brand names on one line and reserve their width in project rows.
 
 - Update gallery setup for public source, locked installs and the required node-pty rebuild with Linux build prerequisites.
