@@ -26,6 +26,6 @@ export function Brand({ src, darkSrc, width, height, name, placement = 'navigati
   return <span className={placement === 'project' ? 'inline-flex max-w-full items-center gap-2.5 tracking-tight' : 'inline-flex max-w-full items-center gap-2.5 tracking-tight text-heading'}>
     <img src={source} width={width} height={height} alt="" aria-hidden="true" loading="lazy" decoding="async" className={paired ? `${image} dark:hidden` : image} />
     {paired && <img src={darkSrc} width={width} height={height} alt="" aria-hidden="true" loading="lazy" decoding="async" className={`${image} hidden dark:block`} />}
-    {name && <span className="min-w-0">{name}</span>}
+    {name && <span className="whitespace-nowrap">{name}</span>}
   </span>;
 }

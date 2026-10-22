@@ -72,3 +72,5 @@ behavior. None of these APIs connects a product session or changes an account.
 `Brand placement="project"` inherits its heading type from `Rows` or `SectionHead` and keeps the shared project mark size. The containing heading controls the name size.
 
 `Header` and `Footer` accept `identity={{ name, artwork, description }}`. `name` is plain text. `artwork` is optional and contains `src`, optional `darkSrc`, and intrinsic `width` and `height`. Supply the standalone mark when also showing a name. The footer uses `darkSrc` on its permanent Ink ground in either page theme. Both shell components own brand spacing, scale and type. Authored sites use this identity contract. Legacy non-site component consumers retain `logo`, `brand` and `className`; the site guard rejects these visual overrides.
+
+Brand names stay on one line, including names with hyphens. In `Rows`, the title column reserves the intrinsic name width so the description cannot overlap it.
