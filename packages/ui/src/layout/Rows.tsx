@@ -61,7 +61,7 @@ export function Row({ title, description, meta, href, external, download, state 
       data-state={state}
       className={cn(
         'group hairline relative isolate grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-6 gap-y-2 px-4 py-6',
-        '@2xl:grid-cols-[minmax(0,4fr)_minmax(0,5fr)_minmax(0,3fr)_1.5rem] @2xl:gap-x-8 @2xl:py-8',
+        '@2xl:grid-cols-[minmax(min-content,4fr)_minmax(0,5fr)_minmax(0,3fr)_1.5rem] @2xl:gap-x-8 @2xl:py-8',
         // The hover tone is an opacity layer behind the content, so the shift is transform and opacity only.
         'before:absolute before:inset-0 before:-z-10 before:bg-tone before:opacity-0 before:transition-opacity before:duration-base',
         link && 'hover:before:opacity-100 has-[:focus-visible]:before:opacity-100 has-[:focus-visible]:outline-2 has-[:focus-visible]:-outline-offset-2 has-[:focus-visible]:outline-focus',
