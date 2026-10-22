@@ -5,6 +5,8 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Update gallery setup for the public source repository and locked npm workspace install.
+
 - Correct gallery verification instructions to use the existing viewport capture tool and distinguish manual layout review from automated checks.
 
 - Preserve 44 px touch targets for static small and compact buttons, and retain query and fragment state in route recovery links.
