@@ -5,7 +5,7 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
-- Update gallery setup for the public source repository and locked npm workspace install.
+- Update gallery setup for public source, locked installs and the required node-pty rebuild with Linux build prerequisites.
 
 - Correct gallery verification instructions to use the existing viewport capture tool and distinguish manual layout review from automated checks.
 
