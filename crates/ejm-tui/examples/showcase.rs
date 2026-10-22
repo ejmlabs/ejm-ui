@@ -9,9 +9,9 @@
 use std::fmt::Write as _;
 
 use ejm_tui::{
-    Action, Appearance, Callout, CalloutKind, ColorDepth, Column, KeyHints, Prompt, PromptState,
-    Row, RowState, Rule, Stat, StatState, StateBlock, StateKind, Status, StatusLevel, Table,
-    TableState, Text, TextVariant, Theme, theme,
+    Action, Appearance, Callout, CalloutKind, ColorDepth, Column, KeyHints, Markdown, Prompt,
+    PromptState, Row, RowState, Rule, Stat, StatState, StateBlock, StateKind, Status, StatusLevel,
+    Table, TableState, Text, TextVariant, Theme, theme,
 };
 use ratatui::buffer::Buffer;
 use ratatui::layout::Rect;
@@ -211,6 +211,13 @@ fn gallery(t: &Theme, width: u16) -> Page {
     row_status_stat(t, &mut page);
     table_section(t, &mut page);
     prompt_hints_callout_state(t, &mut page);
+    page.heading(t, "Markdown (Rust)");
+    let markdown = Markdown::new(
+        t,
+        "# A readable conversation\n\nUse **emphasis** and `code`.\n\n- Keep the first item\n- Keep the second item\n\n```rust\nlet columns = 40; // layout budget\n```\n\n```diff\n-old\n+new\n```\n",
+    );
+    page.put(markdown.height(width), markdown);
+    page.space();
     page
 }
 

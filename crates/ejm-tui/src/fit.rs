@@ -7,6 +7,7 @@
 
 use ratatui::style::Style;
 use ratatui::text::{Line, Span};
+use unicode_segmentation::UnicodeSegmentation;
 use unicode_truncate::UnicodeTruncateStr;
 use unicode_width::UnicodeWidthStr;
 
@@ -139,6 +140,94 @@ pub(crate) fn put_lines(
             .y
             .saturating_add(u16::try_from(row).unwrap_or(u16::MAX));
         buf.set_line(area.x, y, line, area.width);
+    }
+}
+
+/// Column-wrap a styled line without splitting grapheme clusters. A grapheme wider than the
+/// entire area is replaced with `?`, so a one-column area still consumes input and terminates.
+pub(crate) fn wrap_columns(line: &Line<'_>, columns: usize) -> Vec<Line<'static>> {
+    if columns == 0 {
+        return Vec::new();
+    }
+    let mut lines = Vec::new();
+    let mut spans = Vec::new();
+    let mut used = 0;
+    for grapheme in line.styled_graphemes(Style::default()) {
+        let symbol = if width(grapheme.symbol) > columns {
+            "?"
+        } else {
+            grapheme.symbol
+        };
+        let cells = width(symbol);
+        if used + cells > columns {
+            lines.push(Line::from(std::mem::take(&mut spans)));
+            used = 0;
+        }
+        push_span(&mut spans, symbol, grapheme.style);
+        used += cells;
+    }
+    if !spans.is_empty() || lines.is_empty() {
+        lines.push(Line::from(spans));
+    }
+    lines
+}
+
+/// Word placement belongs to textwrap; the byte ranges map its output back to the original
+/// spans. Long words use the same grapheme-safe column wrapping as code. Adjacent style changes
+/// are not whitespace, so `foo` followed by a differently styled `.` remains `foo.`.
+pub(crate) fn wrap_styled(line: &Line<'_>, columns: usize) -> Vec<Line<'static>> {
+    if columns == 0 {
+        return Vec::new();
+    }
+    let mut text = String::new();
+    let mut styles = Vec::new();
+    for span in &line.spans {
+        text.push_str(&span.content);
+        styles.push((text.len(), line.style.patch(span.style)));
+    }
+    let words: Vec<_> = textwrap::WordSeparator::AsciiSpace
+        .find_words(&text)
+        .collect();
+    let line_widths = [columns];
+    let groups = textwrap::WrapAlgorithm::FirstFit.wrap(&words, &line_widths);
+    let (mut offset, mut style_index) = (0, 0);
+    let mut lines = Vec::new();
+    for group in groups {
+        let bytes: usize = group
+            .iter()
+            .map(|word| word.word.len() + word.whitespace.len())
+            .sum();
+        let end = offset + bytes - group.last().map_or(0, |word| word.whitespace.len());
+        let mut spans = Vec::new();
+        let mut start = offset;
+        while start < end {
+            let Some(grapheme) = text[start..end].graphemes(true).next() else {
+                break;
+            };
+            while styles[style_index].0 <= start {
+                style_index += 1;
+            }
+            let style = styles[style_index].1;
+            push_span(&mut spans, grapheme, style);
+            start += grapheme.len();
+        }
+        lines.extend(wrap_columns(&Line::from(spans), columns));
+        offset += bytes;
+    }
+    lines
+}
+
+/// Append adjacent fragments without allocating a span for each character.
+pub(crate) fn push_span(spans: &mut Vec<Span<'static>>, text: &str, style: Style) {
+    if text.is_empty() {
+        return;
+    }
+    if let Some(last) = spans.last_mut()
+        && last.style == style
+    {
+        last.content.to_mut().push_str(text);
+    } else {
+        spans.push(Span::styled(text.to_owned(), style));
     }
 }
 

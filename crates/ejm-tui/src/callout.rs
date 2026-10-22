@@ -22,28 +22,47 @@ pub enum CalloutKind {
     Warning,
 }
 
-/// A label (`Note`, `Tip`, `Warning`) over wrapped text, all behind a one-column left rule in the
-/// kind's color. There is no box: nothing closes the other three sides.
+/// A label (`Note`, `Tip`, `Warning`, or an override) over wrapped text, all behind a one-column
+/// left rule in the kind's color. There is no box: nothing closes the other three sides.
 #[derive(Clone, Copy, Debug)]
 pub struct Callout<'a> {
     theme: &'a Theme,
     kind: CalloutKind,
     text: &'a str,
+    label: Option<&'a str>,
 }
 
 impl<'a> Callout<'a> {
     /// A callout of a kind.
     #[must_use]
     pub fn new(theme: &'a Theme, kind: CalloutKind, text: &'a str) -> Self {
-        Self { theme, kind, text }
+        Self {
+            theme,
+            kind,
+            text,
+            label: None,
+        }
     }
 
-    fn parts(&self) -> (&'static str, Style) {
-        match self.kind {
-            CalloutKind::Note => ("Note", self.theme.accent),
-            CalloutKind::Tip => ("Tip", self.theme.ok),
-            CalloutKind::Warning => ("Warning", self.theme.warn),
-        }
+    /// Replace the kind word. Color still follows [`CalloutKind`].
+    #[must_use]
+    pub fn label(mut self, label: &'a str) -> Self {
+        self.label = Some(label);
+        self
+    }
+
+    fn parts(&self) -> (&str, Style) {
+        let style = match self.kind {
+            CalloutKind::Note => self.theme.accent,
+            CalloutKind::Tip => self.theme.ok,
+            CalloutKind::Warning => self.theme.warn,
+        };
+        let label = self.label.unwrap_or(match self.kind {
+            CalloutKind::Note => "Note",
+            CalloutKind::Tip => "Tip",
+            CalloutKind::Warning => "Warning",
+        });
+        (label, style)
     }
 
     /// The lines for a width, for layouts that need to measure first.
@@ -54,7 +73,7 @@ impl<'a> Callout<'a> {
         let body = usize::from(w).saturating_sub(2);
         let mut lines = vec![Line::from(vec![
             rule.clone(),
-            Span::styled(label, style.add_modifier(Modifier::BOLD)),
+            Span::styled(label.to_owned(), style.add_modifier(Modifier::BOLD)),
         ])];
         for para in self.text.split('\n') {
             for l in wrap(para, body, "", "") {
@@ -77,5 +96,29 @@ impl<'a> Callout<'a> {
 impl Widget for Callout<'_> {
     fn render(self, area: Rect, buf: &mut Buffer) {
         put_lines(buf, area, &self.lines(area.width));
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::Theme;
+
+    #[test]
+    fn label_replaces_the_kind_word() {
+        let theme = Theme::no_color();
+        let lines = Callout::new(&theme, CalloutKind::Tip, "keep going west")
+            .label("Steering")
+            .lines(40);
+        let text: Vec<String> = lines.iter().map(ToString::to_string).collect();
+        assert!(
+            text.iter().any(|line| line.contains("Steering")),
+            "{text:?}"
+        );
+        assert!(
+            text.iter().any(|line| line.contains("keep going west")),
+            "{text:?}"
+        );
+        assert!(!text.iter().any(|line| line.contains("Tip")), "{text:?}");
     }
 }
