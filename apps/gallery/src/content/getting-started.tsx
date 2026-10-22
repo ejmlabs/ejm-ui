@@ -34,7 +34,7 @@ export const gettingStarted: DocPage = {
         {
           type: 'callout',
           kind: 'note',
-          children: <p>ejm-ui is local only. It has no remote and no published packages yet, so you use it from this workspace.</p>,
+          children: <p>Packages are not published to a registry yet. Clone the repository and use its npm workspace.</p>,
         },
       ],
     },
@@ -42,15 +42,19 @@ export const gettingStarted: DocPage = {
       id: 'install',
       title: 'Install and run',
       blocks: [
-        { type: 'p', children: <>You need Node 22 or later. The repo uses npm workspaces, so one install covers every package.</> },
+        { type: 'p', children: <>Use Node.js 24 and npm. On Linux, tests also need Python and C/C++ build tools for node-pty. One workspace install covers every package.</> },
         {
           type: 'code',
           lang: 'sh',
-          code: `npm install
+          code: `git clone https://github.com/ejmlabs/ejm-ui.git
+cd ejm-ui
+npm ci --ignore-scripts
+npm rebuild node-pty --ignore-scripts=false
 npm run dev        # the gallery dev server (ejm-ssg dev)
 npm run build      # build every package and app; the gallery prerenders every page
 npm run check      # text checks, type check and tests`,
         },
+        { type: 'p', children: <>Rebuild only <code>node-pty</code>, without repository, model or release credentials. Keep other dependency install scripts disabled.</> },
         { type: 'p', children: <>Run <code>npm run check</code> before you commit. <a href="/docs/checks">Checks and budgets</a> lists what it protects.</> },
       ],
     },
