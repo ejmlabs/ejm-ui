@@ -338,4 +338,8 @@ export const componentStates = {
   KeyHints: ["default"],
   Callout: Object.keys(CALLOUT),
   StateBlock: Object.keys(BLOCK),
-} as const satisfies Record<keyof typeof contract.components, readonly string[]>;
+} as const satisfies Record<
+  // Markdown is rust-only; Ink does not claim it.
+  Exclude<keyof typeof contract.components, "Markdown">,
+  readonly string[]
+>;

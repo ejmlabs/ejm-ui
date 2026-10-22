@@ -5,7 +5,10 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Hide the worker strip before reducing draft space in short terminal windows.
+
 - Add shared terminal workspace layout, identity, activity, resource counts, worker rows and contextual controls.
+- Add shared terminal Markdown, GFM tables and code rendering, with theme syntax roles and bounded text fitting.
 
 - Keep brand names on one line and reserve their width in project rows.
 

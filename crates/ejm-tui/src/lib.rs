@@ -17,6 +17,7 @@
 //! | [`Prompt`] | idle, busy, error |
 //! | [`KeyHints`] | `default` |
 //! | [`Callout`] | note, tip, warning |
+//! | [`Markdown`] | `default` (Rust only) |
 //! | [`StateBlock`] | empty, loading, error |
 //!
 //! Build a [`Theme`] once, then borrow it in each widget:
@@ -39,8 +40,10 @@
 #![forbid(unsafe_code)]
 
 mod callout;
+mod code;
 mod fit;
 mod hints;
+mod markdown;
 mod prompt;
 mod row;
 mod stat;
@@ -56,16 +59,18 @@ mod workspace;
 pub mod theme;
 
 pub use callout::{Callout, CalloutKind};
+pub use code::{CodeLanguage, code_lines};
 pub use fit::{pad_left, pad_right, truncate, truncate_start, width};
 pub use hints::KeyHints;
+pub use markdown::Markdown;
 pub use prompt::{Prompt, PromptState};
 pub use row::{Row, RowState};
 pub use stat::{Stat, StatState};
 pub use state::{Action, StateBlock, StateKind};
 pub use status::{Status, StatusLevel};
 pub use style::{
-    ASCII_MARKS, Appearance, ColorDepth, Marks, Theme, UNICODE_MARKS, color_depth, glyph_set,
-    glyphs_from_env, is_ascii, is_light, is_utf8_locale, pick_locale, spinner_frame,
+    ASCII_MARKS, Appearance, ColorDepth, Marks, SyntaxStyles, Theme, UNICODE_MARKS, color_depth,
+    glyph_set, glyphs_from_env, is_ascii, is_light, is_utf8_locale, pick_locale, spinner_frame,
 };
 pub use table::{Align, Column, Table, TableState};
 pub use text::{Rule, Text, TextVariant};
@@ -97,6 +102,7 @@ pub fn catalog() -> BTreeMap<&'static str, Vec<&'static str>> {
         ("Prompt", names::<PromptState>()),
         ("KeyHints", vec!["default"]),
         ("Callout", names::<CalloutKind>()),
+        ("Markdown", vec!["default"]),
         ("StateBlock", names::<StateKind>()),
     ])
 }

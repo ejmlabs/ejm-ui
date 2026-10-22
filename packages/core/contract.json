@@ -418,6 +418,22 @@
         "rust"
       ]
     },
+    "Markdown": {
+      "summary": "CommonMark as terminal text: headings without source markers, lists, emphasis, inline code, fenced code with a language tag and syntax colors, and unified diffs. Registered for the rust target only.",
+      "props": [
+        {
+          "name": "source",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "states": [
+        "default"
+      ],
+      "targets": [
+        "rust"
+      ]
+    },
     "StateBlock": {
       "summary": "An empty, loading or error state: one plain sentence and at most one action. Never a bare zero or blank area.",
       "props": [

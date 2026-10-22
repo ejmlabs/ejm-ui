@@ -72,6 +72,7 @@ export type ComponentName =
   | "Prompt"
   | "KeyHints"
   | "Callout"
+  | "Markdown"
   | "StateBlock";
 
 export const contract = contractJson as Contract;

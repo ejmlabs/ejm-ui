@@ -16,7 +16,8 @@ Everything is containerless. Groups are separated by space and a single hairline
 | `Table` | default, empty, loading, error | Header, one hairline, rows. Numbers right aligned |
 | `Prompt` | idle, busy, error | `›` and the typed value; spinner and `working`; message under the line |
 | `KeyHints` | `default` | `Enter send · Ctrl+C stop`, dropped from the end |
-| `Callout` | note, tip, warning | Left rule, a label, wrapped text |
+| `Callout` | note, tip, warning | Left rule, a kind or override label, wrapped text |
+| `Markdown` | `default` (Rust only) | CommonMark as terminal text: headings, lists, emphasis, fences, diffs |
 | `StateBlock` | empty, loading, error | Glyph and word, one sentence, at most one action |
 
 Each is a ratatui `Widget`. Components that wrap also have `height(width)` and `lines(width)`, so a layout can measure before it draws.
@@ -24,8 +25,8 @@ Each is a ratatui `Widget`. Components that wrap also have `height(width)` and `
 ## Use
 
 ```toml
-# ejm-cli/Cargo.toml
-ejm-tui = { path = "../ejm-ui/crates/ejm-tui" }
+# crates/ejm-cli/Cargo.toml, with sibling checkouts
+ejm-tui = { path = "../../../ejm-ui/crates/ejm-tui" }
 ```
 
 ```rust
@@ -69,9 +70,19 @@ Under `NO_COLOR` the states still differ:
 
 Do not draw boxes around groups. Use a blank row and a `Rule`. A `Callout` has a left rule and a label, and a `Table` has one hairline under its header; nothing closes the other sides. The old rounded `Block` helpers (composer box, picker box) are not part of this crate on purpose.
 
+## Markdown and code
+
+`Markdown::new(&theme, source).lines(width)` renders CommonMark headings, lists, bold, italic, inline code, quotes, links, code fences and GFM pipe tables as terminal text. It also implements `Widget` and `height(width)`. Headings omit `#`. Fences show a language tag without ticks, then highlighted source. Pipe tables use the shared `Table` widget: a header, a hairline, then rows that never wrap. Trailing columns drop when the area is too narrow. Right-aligned columns stay right-aligned; center alignment renders as left. Cell emphasis flattens to plain text. The widget is registered for the `rust` target only; web and Ink can claim it later. The CLI still uses its local widget file until that migration lands.
+
+`code_lines(&theme, CodeLanguage::from_tag("rust"), source_line, width)` highlights and column-wraps one source line without losing its continuation. Tags cover Rust, JavaScript/TypeScript, Python, JSON, shell, TOML/YAML and unified diffs; unknown tags stay plain. Highlighting is intentionally line-local and does not understand multiline comments or full language grammars. The 14 syntax styles come from generated tokens in truecolor and 256-color terminals, and collapse to plain and bold at 16 colors and under `NO_COLOR`.
+
+Fenced code preserves blank lines, tabs become four spaces, and a fence still being streamed renders as code. Raw patches are recognized conservatively by a `diff --git` line or adjacent `---`/`+++` file headers with a hunk header. Diff file headers stay muted, added and removed lines retain their signs and success/error roles, and hunk headers use the existing information role. Bare lists are not treated as patches. Links retain their destination in text, without executing it; HTML is literal text, not markup. GFM tables are enabled. Task lists stay off.
+
+Prose wrapping uses the existing `textwrap` dependency, with a byte-range mapping back to styled spans. Code wraps by terminal columns on grapheme boundaries. A zero-width area renders nothing; a grapheme wider than the entire area becomes `?` so a one-column view never hangs. ASCII mode changes UI glyphs, not user-authored Unicode text. The renderer allocates in proportion to its input and output; hosts remain responsible for bounding retained messages and view caches.
+
 ## Safe with untrusted text
 
-Text from the network, tools or files can go straight into any widget. Control characters, including escape, are removed before drawing, so an escape sequence cannot reach the terminal. Widths are terminal columns counted with `unicode-width`; wide characters are never split, and a cut cell ends in an ellipsis.
+Widgets strip control characters, including escape, before drawing. This is defense in depth, not an ANSI-sequence sanitizer: printable parts such as `[31m` can remain. Hosts must strip complete terminal escape sequences from untrusted content before parsing or rendering; ejm-cli already does this through `safe_text`. No markdown, link or HTML is executed. Widths are terminal columns counted with `unicode-width`; fitted text never splits a wide grapheme.
 
 ## Theme
 
@@ -99,7 +110,7 @@ The render tests draw every component and state into a ratatui `TestBackend` at 
 
 ## Not in this crate
 
-The app-specific helpers of the old `ejm_tui.rs` (header, transcript blocks, diff styling, composer box, picker popup, tabs, progress bar, step lines) are not ported. Some are boxed, and the rest belong to ejm-cli's screens. They stay in `packages/tokens/rust/ejm_tui.rs` until ejm-cli has moved to this crate; then that file should be deleted.
+Product transcript state, command handling, framed overlays and terminal lifecycle stay in the host. Shared Markdown, diff presentation, workspace layout and identity belong to this crate. Consumers adopt these APIs through their reviewed dependency pins. The retained `packages/tokens/rust/ejm_tui.rs` is a legacy migration reference, not the active component authority.
 
 ## Conversation workspace recipes
 
