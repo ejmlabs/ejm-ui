@@ -60,6 +60,27 @@ import.meta.resolve('@ejm/tokens/assets/projects/relay/mark-ink.svg');
 import.meta.resolve('@ejm/tokens/assets/projects/relay/favicon.svg');
 ```
 
+### ejm-ui assets
+
+ejm-ui's own family lives in `assets/projects/ui/`, in the same format as CLI,
+IDE and Harness: marks, outlined and editable logos, square icons, browser icons,
+a manifest and social cards. The mark is the approved grid-e artwork, the ejmlabs
+e squared onto the 256 grid with one 36-unit ribbon and a lower-left flick. The
+ejmlabs symbol in `assets/logos/` stays the company mark.
+
+The files are generated, not imported. `scripts/ui-assets.mjs` holds the mark
+path, outlines text from the fonts in `assets/fonts/` with Python fontTools,
+renders rasters with sharp and the ICO with Pillow, and rewrites the
+`generated:ui-assets` provenance rows. From the repository root:
+
+```sh
+node scripts/ui-assets.mjs          # write the files and their provenance rows
+node scripts/ui-assets.mjs --check  # fail if any file or row would change
+```
+
+The family sheets (`assets/projects/family-*.svg`) present the three tools, CLI,
+IDE and Harness, so ejm-ui is not on them, like Relay and Chess.
+
 ### Rights
 
 Brand materials retain their owner's rights. Manrope and IBM Plex Mono retain the SIL Open Font License notices in `assets/fonts/`. See the package [license](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md) before copying assets or fonts.

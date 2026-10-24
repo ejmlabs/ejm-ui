@@ -1,8 +1,8 @@
 import { Link, usePath } from '@ejm/ssg';
 import { otherSites, sourceLinks } from '@ejm/site/projects';
 import { SiteLayout, type FooterProps, type NavItem } from '@ejm/ui';
-import symbolInk from '@ejm/tokens/assets/logos/symbol-ink.svg?url';
-import symbolPaper from '@ejm/tokens/assets/logos/symbol-paper.svg?url';
+import markInk from '@ejm/tokens/assets/projects/ui/mark-ink.svg?url';
+import markPaper from '@ejm/tokens/assets/projects/ui/mark-paper.svg?url';
 import type { ReactNode } from 'react';
 import { pages } from './pages';
 
@@ -12,7 +12,7 @@ const normal = (p: string) => p.replace(/\/$/, '') || '/';
 const footer: FooterProps = {
   identity: {
     name: 'ejm-ui',
-    artwork: { src: symbolInk, darkSrc: symbolPaper, width: 418, height: 381 },
+    artwork: { src: markInk, darkSrc: markPaper, width: 256, height: 256 },
   },
   columns: [
     { heading: 'Foundations', links: pages.filter(p => p.group === 'Foundations').map(item) },
@@ -31,7 +31,7 @@ export function App({ children }: { children: ReactNode }) {
   const nav = pages.filter(p => p.nav).map(p => ({ ...item(p), current: path === normal(p.path) || path.startsWith(normal(p.path) + '/') }));
   return (
     <SiteLayout
-      header={{ identity: { name: 'ejm-ui', artwork: { src: symbolInk, darkSrc: symbolPaper, width: 418, height: 381 } }, homeLabel: 'ejm-ui home', nav }}
+      header={{ identity: { name: 'ejm-ui', artwork: { src: markInk, darkSrc: markPaper, width: 256, height: 256 } }, homeLabel: 'ejm-ui home', nav }}
       footer={footer}
       linkComponent={Link}
     >

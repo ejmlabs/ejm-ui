@@ -1,6 +1,6 @@
 # Provenance
 
-Imported rows retain the old `design-kit/` bytes. Rows marked `generated:chess-assets` identify the generated Chess brand family; its hashes verify the retained output.
+Imported rows retain the old `design-kit/` bytes. Rows marked `generated:chess-assets` and `generated:ui-assets` identify the Chess and ejm-ui brand families written by `scripts/chess-assets.mjs` and `scripts/ui-assets.mjs`; their hashes verify the retained output.
 Do not edit this table by hand. `node scripts/assets.mjs` re-hashes every file here and, when the design-kit is present, every source.
 Paths are relative to `packages/tokens/` here and to `design-kit/` at the source.
 Retired social profile kits and ZIP archives are excluded from imports.
@@ -314,6 +314,37 @@ Retired social profile kits and ZIP archives are excluded from imports.
 | `assets/projects/family-dark.png` | `projects/family-dark.png` | `974a26aa2525faeca10c08429f70bcc25e4840ed6bf71ff2f6332965f5278564` |
 | `assets/projects/family-light.svg` | `projects/family-light.svg` | `c99fe75a78c2280fc128d7e7f2391e3291d67bd42fea9d1c1bfb7d0bd19c4d8f` |
 | `assets/projects/family-light.png` | `projects/family-light.png` | `3438098de98f2bad143a4cab98e8a5241933ee66760eee4bdaaaf99682153966` |
+| `assets/projects/ui/android-chrome-192.png` | `generated:ui-assets/android-chrome-192.png` | `e18aa6bdc1234485fe2419944cdea90b721be0ca60923e621a9b3bb3594ab718` |
+| `assets/projects/ui/android-chrome-512.png` | `generated:ui-assets/android-chrome-512.png` | `ee3477ef103dcf99b1faa4a2caf7af0e5b07467a394292e07d0bc749bc24c577` |
+| `assets/projects/ui/apple-touch-icon.png` | `generated:ui-assets/apple-touch-icon.png` | `0ce33b0169c87d134c3946aae3f384c37e95ef989458142f4904bb314f1ff62b` |
+| `assets/projects/ui/editable/logo-ink.svg` | `generated:ui-assets/editable/logo-ink.svg` | `a54763c2c56edcb855dfa69a81e79cbe33191df8f39c55934ea71070e7eb999d` |
+| `assets/projects/ui/editable/logo-paper.svg` | `generated:ui-assets/editable/logo-paper.svg` | `f2d7ee87e5be3d7a3f79d707b7585c281cd8dd93e257ea453cf6bff7c2a86261` |
+| `assets/projects/ui/editable/logo-primary.svg` | `generated:ui-assets/editable/logo-primary.svg` | `97e8f05f9316708baa7782c705618f2bc9f4495d2f85b67c75610cc43f4e8f0e` |
+| `assets/projects/ui/favicon-16.png` | `generated:ui-assets/favicon-16.png` | `ead8456124c23942ee3b4a34a776411b446185f7fd0884bf1b5b72f550f5c105` |
+| `assets/projects/ui/favicon-24.png` | `generated:ui-assets/favicon-24.png` | `13dadb328b9afc718ef58b0f25745b32f3a9f1c3747f67d5ea49a14d6968211d` |
+| `assets/projects/ui/favicon-32.png` | `generated:ui-assets/favicon-32.png` | `a03783339ad6a471a61336570b93ee82bd015e30445f7a452c6267f1366ecca6` |
+| `assets/projects/ui/favicon-48.png` | `generated:ui-assets/favicon-48.png` | `a57d94b93e33233f9f36c7e6904a5905c91ab80ac584075e781a87dd5ef3fe6f` |
+| `assets/projects/ui/favicon.ico` | `generated:ui-assets/favicon.ico` | `7e2de6f174de429533e2ffb6375dd46bd117da947aed7db98749a1d47ef4dd7d` |
+| `assets/projects/ui/favicon.svg` | `generated:ui-assets/favicon.svg` | `92a7f6453285ff3334e2afa597968d2d8fd72651cf9adee7fb094fdd6082c10e` |
+| `assets/projects/ui/icon-forest.png` | `generated:ui-assets/icon-forest.png` | `857d8705a58e36658e3db7b1d0495d0ccff7d831102c36e14d92732dc79896a3` |
+| `assets/projects/ui/icon-forest.svg` | `generated:ui-assets/icon-forest.svg` | `058c8a33fabca698e75c5f3c1efb56d78777e3b8e6d01586d99299235fdf5572` |
+| `assets/projects/ui/icon-sage.png` | `generated:ui-assets/icon-sage.png` | `302d0715a7d2835a69e39a4d055e4ff92a93369f136a3c9437edaeb477a33049` |
+| `assets/projects/ui/icon-sage.svg` | `generated:ui-assets/icon-sage.svg` | `c62d90db4f2fcaf23aeb4db4d7b1c04803047e0022d746f3963190ddab8e2091` |
+| `assets/projects/ui/logo-ink.png` | `generated:ui-assets/logo-ink.png` | `cc2e696360180ce67160af4911e4dc34568b4ed634a18e18318363a25c7613c3` |
+| `assets/projects/ui/logo-ink.svg` | `generated:ui-assets/logo-ink.svg` | `f0b976657762e98a154658d19c8862a78409d3c8316c13ab5190cdf3c5f48788` |
+| `assets/projects/ui/logo-paper.png` | `generated:ui-assets/logo-paper.png` | `25baf2a17a058b0e60010af5965ad9873918bbec101ba9986aed63a193bc6751` |
+| `assets/projects/ui/logo-paper.svg` | `generated:ui-assets/logo-paper.svg` | `4b41930e5fbcf87aafac60900caf40d5f7687b0a73da8f0006ba816f59289fe4` |
+| `assets/projects/ui/logo-primary.png` | `generated:ui-assets/logo-primary.png` | `78308daa1043a30217d276424f9d44782c07f4c747a4697d5c3bd45a0182bee0` |
+| `assets/projects/ui/logo-primary.svg` | `generated:ui-assets/logo-primary.svg` | `aada420e59b928802870b2821086ca3c9c5b8c15e17e3b8a0f1abf76b86a8b9b` |
+| `assets/projects/ui/mark-ink.png` | `generated:ui-assets/mark-ink.png` | `6b3d65450b13603444e19665b6727d0315496c5f4b392a564e194f23877ad741` |
+| `assets/projects/ui/mark-ink.svg` | `generated:ui-assets/mark-ink.svg` | `08ff7f3099ba18d9e1dc2a1e309fa3d444d996bbb7832b7d401aa91caaa8b049` |
+| `assets/projects/ui/mark-paper.png` | `generated:ui-assets/mark-paper.png` | `c4f9a529d6c73c8d9ba86059948586e7e9f9aafbd6f4462917ca4b9f97ad837a` |
+| `assets/projects/ui/mark-paper.svg` | `generated:ui-assets/mark-paper.svg` | `1f99047803cbcc92149f9c37867e8bcbec384091b9283267266177a3872c4296` |
+| `assets/projects/ui/mark-sage.png` | `generated:ui-assets/mark-sage.png` | `385103ce279a59cbd7dc50cfc5700daf67c2d592c392c7602d589f79980cad35` |
+| `assets/projects/ui/mark-sage.svg` | `generated:ui-assets/mark-sage.svg` | `21e67810874ff6d83f95fca32066d3085e472bc32e31565b002c925b8b8961f4` |
+| `assets/projects/ui/site.webmanifest` | `generated:ui-assets/site.webmanifest` | `df2f6b7191f1305ade1aebd212088d5ebf02ac9064b65fcf702501fd552c7398` |
+| `assets/projects/ui/social-card.png` | `generated:ui-assets/social-card.png` | `9859dc8de7dd2aa175dbacb51c9a68f5fca3654e951ce31bf03f3057767c35fe` |
+| `assets/projects/ui/social-card.svg` | `generated:ui-assets/social-card.svg` | `68069f4f193b12f4349ce9e372a9d36abea04b0c3f636df36e0faf9ee9d9bb49` |
 
 ## Moved and then edited
 
