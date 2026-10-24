@@ -39,6 +39,17 @@ describe('project registry', () => {
     expect(JSON.parse(readFileSync(files['site.webmanifest']!, 'utf8')).name).toBe('Chess by ejmlabs');
   });
 
+  it('builds the ejm-ui gallery with its own brand files while it stays out of discovery', () => {
+    expect(PROJECTS.ui.discoverable).toBe(false);
+    expect(PROJECT_LIST.some(p => p.id === 'ui')).toBe(false);
+    expect(siteDefaults('ui').origin).toBe('https://ui.ejmlabs.com');
+    expect(siteDefaults('ui').head.titleTemplate).toBe('%s | ejm-ui');
+    expect(sourceLinks('ui')).toEqual([{ label: 'ejm-ui on GitHub', href: 'https://github.com/ejmlabs/ejm-ui', external: true }]);
+    const files = sharedFiles(PROJECTS.ui);
+    for (const name of ['favicon.svg', 'apple-touch-icon.png', 'social-card.png']) expect(files[name], name).toContain('/assets/projects/ui/');
+    expect(JSON.parse(readFileSync(files['site.webmanifest']!, 'utf8')).name).toBe('ui by ejmlabs');
+  });
+
   it('falls back to the ejmlabs brand files for a project without a folder', () => {
     expect(assetPaths(PROJECTS.cli).favicon).toBe('favicon');
     expect(assetPaths(PROJECTS.cli, d => d === 'projects/cli')).toMatchObject({ favicon: 'projects/cli', logoInk: 'projects/cli/logo-ink.svg', socialCard: 'projects/cli/social-card.png' });
