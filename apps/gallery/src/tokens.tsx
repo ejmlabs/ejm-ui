@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import { BANDS, HUES, type Band as BandName } from '@ejm/tokens';
-import { Band, SectionHead } from '@ejm/ui';
+import { Band, Button, SectionHead } from '@ejm/ui';
 
 // The contract page: every band, the type scale, elevation and motion, drawn only with the utilities @ejm/ui/styles.css defines.
 // It is also the screenshot target for the band, theme and size checks.
@@ -32,10 +32,10 @@ function BandSample({ band }: { band: BandName }) {
           ))}
         </ul>
         <p className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
-          <a href="#main" className="touch-target inline-flex items-center rounded-pill bg-primary px-6 py-3 font-semibold text-on-primary hover:bg-primary-hover hover:text-on-primary-hover focus-ring">
+          <Button asChild><a href="#main">
             Primary action
-          </a>
-          <a href="#main" className="link touch-target inline-flex items-center focus-ring">A plain link</a>
+          </a></Button>
+          <Button asChild variant="link"><a href="#main">A plain link</a></Button>
           <span className="text-link-large text-heading">Large accent</span>
         </p>
         <p className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-meta">
@@ -60,7 +60,7 @@ export function Tokens() {
   return (
     <>
       <Band tone="paper" aria-labelledby="tokens-title">
-        <SectionHead kicker="ejm-ui / tokens" title="Four bands, one type scale." size="title" as="h1" id="tokens-title">
+        <SectionHead purpose="page" kicker="ejm-ui / tokens" title="Four bands, one type scale." as="h1" id="tokens-title">
           <p className="m-0">Every band, the type scale, elevation and motion, drawn with only the utilities that the theme defines.</p>
         </SectionHead>
       </Band>

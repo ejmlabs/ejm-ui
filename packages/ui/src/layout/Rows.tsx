@@ -2,6 +2,7 @@ import { contract, type RowState } from '@ejm/core';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { createContext, useContext, type ReactNode } from 'react';
 import { cn } from '../lib/utils';
+import { useLinkComponent } from '../shell/link';
 
 type RowSize = 'heading' | 'title';
 const SizeContext = createContext<RowSize>('heading');
@@ -48,6 +49,7 @@ const focusedShape = (
 /** One row of a Rows list: title, description, mono meta and an arrow. Hover shifts the tone and slides the arrow. */
 export function Row({ title, description, meta, href, external, download, state = 'default', className }: RowProps) {
   const size = useContext(SizeContext);
+  const Link = useLinkComponent();
   const disabled = state === 'disabled';
   const link = href && !disabled;
   const Arrow = external ? ArrowUpRight : ArrowRight;
@@ -59,7 +61,7 @@ export function Row({ title, description, meta, href, external, download, state 
       data-state={state}
       className={cn(
         'group hairline relative isolate grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-6 gap-y-2 px-4 py-6',
-        '@2xl:grid-cols-[minmax(0,4fr)_minmax(0,5fr)_minmax(0,3fr)_1.5rem] @2xl:gap-x-8 @2xl:py-8',
+        '@2xl:grid-cols-[minmax(min-content,4fr)_minmax(0,5fr)_minmax(0,3fr)_1.5rem] @2xl:gap-x-8 @2xl:py-8',
         // The hover tone is an opacity layer behind the content, so the shift is transform and opacity only.
         'before:absolute before:inset-0 before:-z-10 before:bg-tone before:opacity-0 before:transition-opacity before:duration-base',
         link && 'hover:before:opacity-100 has-[:focus-visible]:before:opacity-100 has-[:focus-visible]:outline-2 has-[:focus-visible]:-outline-offset-2 has-[:focus-visible]:outline-focus',
@@ -71,7 +73,7 @@ export function Row({ title, description, meta, href, external, download, state 
       <div className={cn(titleClass, 'flex items-baseline gap-3')}>
         {marker}
         {link ? (
-          <a
+          <Link
             href={href}
             rel={external ? 'external' : undefined}
             download={download}
@@ -79,7 +81,7 @@ export function Row({ title, description, meta, href, external, download, state 
           >
             {title}
             {external && <span className="sr-inline">, opens another site</span>}
-          </a>
+          </Link>
         ) : (
           <span className="min-w-0">{title}</span>
         )}

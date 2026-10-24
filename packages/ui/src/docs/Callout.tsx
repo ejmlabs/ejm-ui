@@ -1,4 +1,5 @@
-import { contract, type CalloutKind } from '@ejm/core';
+import type { CalloutKind } from '@ejm/core';
+import { glyphs } from '@ejm/core/contract.json';
 import type { ReactNode } from 'react';
 import { cn } from '../lib/utils';
 
@@ -18,7 +19,7 @@ const tone: Record<CalloutKind, string> = {
  * The word carries the meaning; the rule color only backs it up. On a Sage band every status color is Ink, so the word still reads.
  */
 export function Callout({ kind = 'note', children, className }: { kind?: CalloutKind; children: ReactNode; className?: string }) {
-  const label = contract.glyphs.callout[kind].label;
+  const label = glyphs.callout[kind].label;
   return (
     <div role="note" data-kind={kind} className={cn('my-8 border-s-2 ps-5', rule[kind], className)}>
       <p className={cn('text-meta font-medium uppercase tracking-wider', tone[kind])}>{label}</p>

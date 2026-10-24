@@ -1,6 +1,7 @@
 // Draws a terminal screen (see screen.mjs) as HTML in IBM Plex Mono with a product color scheme, and
 // photographs it with headless Chrome over the DevTools Protocol (no automation library).
 import { spawn } from 'node:child_process';
+import { once } from 'node:events';
 import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -119,11 +120,15 @@ export async function withChrome(fn) {
     '--headless=new', '--remote-debugging-port=0', `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check',
     '--disable-extensions', '--disable-background-networking', '--hide-scrollbars', '--mute-audio', '--force-color-profile=srgb', '--disable-gpu', 'about:blank',
   ], { stdio: ['ignore', 'ignore', 'pipe'] });
+  let closed = false;
+  chrome.once('close', () => { closed = true; });
+  let failure;
   try {
     const wsUrl = await new Promise((resolve, reject) => {
       let buf = '';
       const timer = setTimeout(() => reject(new Error('Chrome did not report a debugging port in 20 s')), 20000);
       chrome.stderr.on('data', d => { buf += d; const m = buf.match(/DevTools listening on (ws:\/\/\S+)/); if (m) { clearTimeout(timer); resolve(m[1]); } });
+      chrome.once('error', error => { clearTimeout(timer); reject(error); });
       chrome.on('exit', code => { clearTimeout(timer); reject(new Error(`Chrome exited early (${code})`)); });
     });
     const cdp = await Cdp.connect(/** @type {string} */ (wsUrl));
@@ -144,8 +149,20 @@ export async function withChrome(fn) {
       const shot = await cdp.send('Page.captureScreenshot', { format: 'png', fromSurface: true, clip: { x: 0, y: 0, width, height, scale: 1 } }, sessionId);
       return { png: Buffer.from(shot.data, 'base64'), rowText: ev.result.value };
     });
+  } catch (error) {
+    failure = { error };
+    throw error;
   } finally {
-    try { chrome.kill('SIGKILL'); } catch { /* already gone */ }
-    rmSync(profile, { recursive: true, force: true });
+    try {
+      if (!closed) {
+        const stopped = once(chrome, 'close', { signal: AbortSignal.timeout(5000) });
+        try { chrome.kill('SIGKILL'); } catch (error) { void stopped.catch(() => {}); throw error; }
+        await stopped;
+      }
+      rmSync(profile, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+    } catch (error) {
+      if (failure) throw new AggregateError([failure.error, error], 'Chrome rendering and cleanup failed', { cause: failure.error });
+      throw error;
+    }
   }
 }

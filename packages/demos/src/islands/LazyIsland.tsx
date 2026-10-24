@@ -1,5 +1,5 @@
 import { useInView } from '@ejm/ui/hooks/useInView';
-import { Suspense, useEffect, useState, type ComponentType, type ReactNode } from 'react';
+import { isValidElement, Suspense, useEffect, useState, type ComponentType, type ReactElement, type ReactNode } from 'react';
 import { Btn } from './btn';
 
 export interface LazyIslandOptions {
@@ -10,10 +10,12 @@ export interface LazyIslandOptions {
 }
 
 export interface LazyIslandProps extends LazyIslandOptions {
-  /** The interactive demo, as a `React.lazy` component, so it is its own chunk. */
-  island: ComponentType;
+  /** A `React.lazy` component, or its element when the island takes props. */
+  island: ComponentType | ReactElement;
   /** The static view of the same screen: what the server renders and what shows without scripts. */
   fallback: ReactNode;
+  /** Hide or name the loading action for passive entries. Interactive entries keep the current default. */
+  loadLabel?: string | false;
 }
 
 /**
@@ -22,7 +24,7 @@ export interface LazyIslandProps extends LazyIslandOptions {
  * key or the "Try the live demo" button that appears after hydration. It imports no view and no island, so a page pays only for the
  * ones it passes in. Pages normally use a per-product entry (`@ejm/demos/islands/cli-lazy`) instead of calling this directly.
  */
-export function LazyIsland({ island: Island, fallback, rootMargin = '600px', eager = false }: LazyIslandProps) {
+export function LazyIsland({ island: Island, fallback, rootMargin = '600px', eager = false, loadLabel = 'Try the live demo' }: LazyIslandProps) {
   const [wanted, setWanted] = useState(eager);
   const { ref, inView } = useInView<HTMLDivElement>({ once: true, rootMargin });
   const [hydrated, setHydrated] = useState(false);
@@ -34,14 +36,14 @@ export function LazyIsland({ island: Island, fallback, rootMargin = '600px', eag
     <div ref={ref} onPointerEnter={() => setWanted(true)} onFocusCapture={() => setWanted(true)} onKeyDownCapture={() => setWanted(true)}>
       {wanted ? (
         <Suspense fallback={fallback}>
-          <Island />
+          {isValidElement(Island) ? Island : <Island />}
         </Suspense>
       ) : (
         <>
           {fallback}
-          {hydrated && (
+          {hydrated && loadLabel !== false && (
             <p className="mt-4 mb-0">
-              <Btn onClick={() => setWanted(true)}>Try the live demo</Btn>
+              <Btn onClick={() => setWanted(true)}>{loadLabel}</Btn>
             </p>
           )}
         </>

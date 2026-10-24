@@ -8,11 +8,26 @@
     "stopButton": "Stop (Ctrl+C)",
     "sessionsButton": "Sessions (Ctrl+S)",
     "hints": [
-      ["Enter", "send"],
-      ["Ctrl+C", "stop/quit"],
-      ["Alt+Enter", "new line"],
-      ["Ctrl+S", "sessions"],
-      ["/help", "commands"]
+      [
+        "Enter",
+        "send"
+      ],
+      [
+        "Ctrl+C",
+        "stop/quit"
+      ],
+      [
+        "Alt+Enter",
+        "new line"
+      ],
+      [
+        "Ctrl+S",
+        "sessions"
+      ],
+      [
+        "/help",
+        "commands"
+      ]
     ],
     "patchTool": "patch_file",
     "blockedLine": "blocked: write access is not granted",
@@ -21,11 +36,21 @@
     "quitNotice": "The demo cannot quit. Use Reset to start over.",
     "unsupportedNotice": "{cmd} exists in ejm-cli but is not part of this demo.",
     "unknownCommand": "Unknown command {cmd}. Use /help for the list.",
-    "commands": ["/help", "/sessions", "/new", "/stop", "/quit"],
-    "unsupportedCommands": ["/resume", "/queue", "/steer"]
+    "commands": [
+      "/help",
+      "/sessions",
+      "/new",
+      "/stop",
+      "/quit"
+    ],
+    "unsupportedCommands": [
+      "/resume",
+      "/queue",
+      "/steer"
+    ]
   },
   "ide": {
-    "writeTool": "write_file",
+    "writeTool": "workbench_write_file",
     "paletteSwitchModel": "Switch model: ",
     "paletteToggleTheme": "Toggle theme",
     "paletteOpenFile": "Open file: ",

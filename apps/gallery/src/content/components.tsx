@@ -31,7 +31,7 @@ export const components: DocPage = {
           caption: 'Controls',
           labels: { name: 'Component', description: 'What it is' },
           rows: [
-            { name: 'Button', description: 'A pill with four variants. Pass asChild to give a link the same look.' },
+            { name: 'Button', description: 'Primary, secondary, ghost, link and danger variants. Pass asChild to give a link the same look.' },
             { name: 'Input, Textarea', description: 'Text fields with the control border and the 3:1 focus ring.' },
             { name: 'Select', description: 'A native select with the control look. Phones keep their own picker.' },
             { name: 'Switch, Checkbox', description: 'The button is the 44px touch target; the drawing inside is compact.' },
@@ -49,8 +49,9 @@ export const components: DocPage = {
           type: 'params',
           caption: 'Button props',
           rows: [
-            { name: 'variant', type: "'primary' | 'secondary' | 'ghost' | 'link'", default: "'primary'", description: 'The look. Primary is the Sage fill with Ink text.' },
-            { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Heights of 36px, 44px and 56px.' },
+            { name: 'variant', type: "'primary' | 'secondary' | 'ghost' | 'link' | 'danger'", default: "'primary'", description: 'The look. Primary is the Sage fill with Ink text.' },
+            { name: 'size', type: "'sm' | 'md' | 'lg' | 'icon'", default: "'md'", description: 'Heights of 36px, 44px and 56px, or a 44px square for a labelled icon control.' },
+            { name: 'density', type: "'comfortable' | 'compact'", default: "'comfortable'", description: 'Compact uses 32px application controls on a fine pointer and keeps 44px targets on touch.' },
             { name: 'arrow', type: 'boolean', default: 'false', description: 'Adds the trailing arrow, which slides 4px on hover and stays put under reduced motion.' },
             { name: 'asChild', type: 'boolean', default: 'false', description: 'Renders the child element, for example a link, with the button look.' },
           ],
@@ -79,7 +80,7 @@ export const components: DocPage = {
             { name: 'SectionHead', description: 'A kicker, a large balanced heading and supporting copy.' },
             { name: 'Rows, Row', description: 'A hairline list that replaces cards. A row has a title, text, mono meta and an arrow.' },
             { name: 'Facts, Fact', description: 'Mono labels, hairlines and values. Stacks in a narrow column.' },
-            { name: 'Stat', description: 'A large figure with a mono label. Loading, error and empty are words.' },
+            { name: 'Stat', description: 'A figure with a mono label. Use size="title" in dense examples. Loading, error and empty are words.' },
             { name: 'Hero', description: 'A type-led opening with a slot for floating product windows. No panel.' },
             { name: 'ProductWindow, ProductStage', description: 'The only layout part with a shadow. Always carries a simulated label unless it is live.' },
             { name: 'Text, Rule, Status, Art', description: 'A run of text, a hairline with a label, a glyph and a word, and decorative line art.' },
@@ -119,6 +120,7 @@ export const components: DocPage = {
           labels: { name: 'Name', description: 'What it does' },
           rows: [
             { name: 'SiteLayout', description: 'Skip link, Header, main and Footer. The route supplies bands and one h1.' },
+            { name: 'Brand', description: 'Canonical artwork with optional light and dark sources, an optional name and shared sizing.' },
             { name: 'DocsLayout', description: 'A sidebar, a 68ch reading column and a contents list, both folding into labelled disclosures on narrow screens.' },
             { name: 'AppShell', description: 'A top bar, a side navigation and content for applications.' },
             { name: 'Header, Footer, ThemeToggle', description: 'The sticky header with a menu below 768px, the Ink footer, and the light and dark switch.' },

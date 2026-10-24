@@ -19,7 +19,7 @@ const { build } = await import(pathToFileURL(require.resolve('vite')).href);
 const react = (await import(pathToFileURL(require.resolve('@vitejs/plugin-react')).href)).default;
 const TOLERANCE = 1024;
 
-export async function size(source, tmp) {
+async function bundle(source, tmp) {
   const page = join(tmp, `p${Math.random().toString(36).slice(2)}.tsx`);
   writeFileSync(page, source);
   const result = await build({
@@ -27,7 +27,11 @@ export async function size(source, tmp) {
     build: { write: false, minify: true, target: 'es2022', rollupOptions: { input: page, external: [/^react($|\/)/, /^react-dom($|\/)/], output: { format: 'es' } } },
   });
   const out = (Array.isArray(result) ? result : [result]).flatMap(r => r.output);
-  return out.filter(o => o.type === 'chunk').reduce((n, c) => n + gzipSync(c.code, { level: 9 }).length, 0);
+  return out.filter(o => o.type === 'chunk');
+}
+
+export async function size(source, tmp) {
+  return (await bundle(source, tmp)).reduce((n, c) => n + gzipSync(c.code, { level: 9 }).length, 0);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
@@ -47,6 +51,37 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     if (barrel > deep + TOLERANCE) {
       console.error(`FAIL: the barrel import is ${((barrel - deep) / 1024).toFixed(1)} KB larger. Check "sideEffects" in packages/ui/package.json and top-level statements in the modules.`);
       process.exitCode = 1;
+    }
+    const controls = await bundle(`import { buttonBaseClass, buttonGhostClass, buttonMediumClass } from '@ejm/ui/control-recipes';
+console.log([buttonBaseClass, buttonGhostClass, buttonMediumClass].join(' '));
+`, tmp);
+    const adapters = controls.flatMap(chunk => Object.keys(chunk.modules)).filter(id => /class-variance-authority|@radix-ui\/react-slot|lucide-react/.test(id));
+    if (adapters.length) {
+      console.error('FAIL: fixed native control styles must not load variant, slot or icon adapters.', adapters);
+      process.exitCode = 1;
+    } else {
+      console.log('fixed native controls: canonical styles load without variant, slot or icon adapters');
+    }
+    const docs = await bundle(`import { DocCodeBlock } from '@ejm/ui/docs/DocCodeBlock';
+console.log(<DocCodeBlock block={{ type: 'code', code: 'npm test', lang: 'sh' }} />);
+`, tmp);
+    const byName = new Map(docs.map(chunk => [chunk.fileName, chunk]));
+    const entry = docs.find(chunk => chunk.isEntry);
+    const tabs = docs.find(chunk => Object.keys(chunk.modules).some(id => id.replaceAll('\\', '/').endsWith('/docs/CodeTabsFrame.tsx')));
+    const reachable = new Set();
+    const pending = entry ? [entry.fileName] : [];
+    while (pending.length) {
+      const file = pending.pop();
+      if (reachable.has(file)) continue;
+      reachable.add(file);
+      pending.push(...(byName.get(file)?.imports ?? []).filter(name => byName.has(name)));
+    }
+    if (!entry || !tabs || reachable.has(tabs.fileName)) {
+      console.error('FAIL: plain compiled docs must keep the available tab frame outside their static JavaScript imports.');
+      console.error(JSON.stringify(docs.map(({ fileName, imports, dynamicImports }) => ({ fileName, imports, dynamicImports })), null, 2));
+      process.exitCode = 1;
+    } else {
+      console.log('compiled docs: tab controls are deferred outside the static import graph');
     }
   } finally {
     rmSync(tmp, { recursive: true, force: true });

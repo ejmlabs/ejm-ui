@@ -7,7 +7,7 @@ import { renderRoute } from './server';
 let onServer = true;
 const Prose = () => (
   <p id="prose">
-    Words only in the HTML. <a id="to-about" href="/about/#team">About</a> <a id="out" href="https://example.com/">Elsewhere</a> <a id="same-tab" href="/about/" rel="external">Plain</a>
+    Words only in the HTML. <a id="to-about" href="/about/?view=source">About</a> <a id="out" href="https://example.com/">Elsewhere</a> <a id="same-tab" href="/about/" rel="external">Plain</a>
   </p>
 );
 const Home = () => (
@@ -78,7 +78,8 @@ describe('Static', () => {
     await click(document.getElementById('to-about')!);
     await act(async () => void (await new Promise(r => setTimeout(r, 10))));
     expect(location.pathname).toBe('/about/');
-    expect(location.hash).toBe('#team');
+    expect(location.search).toBe('?view=source');
+    expect(location.hash).toBe('');
     expect(document.querySelector('h1')?.textContent).toBe('About');
     expect(reload).not.toHaveBeenCalled();
 

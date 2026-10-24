@@ -1,6 +1,6 @@
 # @ejm/demos
 
-The simulated product screens for ejm-cli, ejm-ide and ejm-harness: scenario data, headless engines, static views, lazy interactive islands and the product hero. Strict TypeScript, React 19. Every screen is a simulation that runs in the visitor's browser, follows a script and sends nothing anywhere.
+Product views for ejm-cli, ejm-ide and ejm-harness: headless engines, simulated interactive islands, caller-owned recorded sources and native passive previews. Strict TypeScript, React 19. All run locally in the browser without a model connection. Recorded entries never start a provider or command.
 
 | Import | What it is |
 | --- | --- |
@@ -8,6 +8,9 @@ The simulated product screens for ejm-cli, ejm-ide and ejm-harness: scenario dat
 | `@ejm/demos/views` | `CliView`, `IdeView`, `HarnessView`: one frame of each product inside the layout `ProductWindow`. |
 | `@ejm/demos/hero` | `ProductHeroStage` with `CliHeroWindow`, `HarnessHeroWindow` and `IdeHeroWindow` (pay only for the windows you pass), and `ProductHero` (all three). |
 | `@ejm/demos/islands/cli-lazy`, `/ide-lazy`, `/harness-lazy` | `LazyCliDemo`, `LazyIdeDemo`, `LazyHarnessDemo`: static view first, island on approach or use. Ship only that product's view. Use these. |
+| `@ejm/demos/islands/cli-lazy`, `/harness-lazy` | Additive `LazyCliShowcase` and `LazyHarnessShowcase` entries for passive, product-owned recordings. Existing interactive exports stay available. |
+| `@ejm/demos/islands/cli-preview`, `/ide-preview`, `/harness-preview` | `LazyCliPreview`, `LazyIdePreview`, `LazyHarnessPreview`: native passive views with bundled, finite workflow data. No source prop. |
+| `@ejm/demos/ShowcaseFrame` | `ShowcaseFrame`: fixed width and an accessible nearby disclosure, with an optional project-specific `note`. |
 | `@ejm/demos/islands` | `LazyDemo product="..."`: the same for any product, but it imports all three views (about 5 KB gzip more than one). |
 | `@ejm/demos/islands/cli`, `/ide`, `/harness` | The interactive islands, default exports, for `React.lazy`. |
 | `@ejm/demos/styles.css` | `@source` lines so Tailwind scans the views, islands and hero (not the tests or the scenario data). Import it once from the site stylesheet, after `@ejm/ui/styles.css`. About 1.7 KB gzip of CSS. |
@@ -84,12 +87,152 @@ Targets are 44px on coarse pointers, inputs are 16px there, and the layout react
 
 ## Honesty rules
 
-1. Every window and island says it is simulated, and an island also states that nothing is sent anywhere. Neither can be hidden or shortened.
+1. Every simulated window and interactive island says it is simulated, and an island also states that nothing is sent anywhere. Neither can be hidden or shortened.
 2. No claim of real output, no benchmarks, no customers. Every number that is not a count of what is on screen is labelled as a sample value.
 3. Every command, flag, key and tool name shown appears in that product's README, or in a file named in `honesty-allow.json` with a reason. `node packages/demos/scripts/check-demos-honesty.mjs` checks this against `~/Desktop/ejm-cli`, `ejm-ide` and `ejm-harness` (or `--root DIR`) and fails on a name that is not documented, on an allow entry whose source does not contain the name, and on a stale entry. Never add an entry to make the gate pass: add it only when the name really is documented elsewhere.
-4. The ejm-ide tool names are the plain ones in `ejm-ide/docs/agent-tools.md`: `search_code`, `read_file`, `write_file`. There is no documented palette shortcut, so the palette opens from a Commands button.
+4. The ejm-ide tool identifiers retain the public `workbench_` prefix, including `workbench_search_code`, `workbench_read_file` and `workbench_write_file`. Read the product's current `docs/agent-tools.md`. A simulated palette shortcut is not a product API claim.
 5. Where a demo needs a control the product lacks, the control says so: Grant write stands in for `--allow-write`, Accept and Reject exist to show both outcomes.
 6. No network, no storage, no cookies and no analytics. `src/islands/no-network.test.ts` fails when a view, island or the hero uses a network, storage or cookie API, and the cli island test spies on `fetch`.
+
+## Recorded CLI entry
+
+`LazyCliShowcase` is a separate named export from `@ejm/demos/islands/cli-lazy`.
+It preserves the existing `LazyCliDemo` simulation and takes no editable prompt,
+grant control or product command. Use it only with a verified recording. This
+caller-owned entry includes no default recording. Bundled native previews below
+use a separate additive export.
+
+The product owns its data, narration and capture receipt. Declare one stable
+`CliRecordingSource` outside the React component. It supplies `id`,
+`initialFrame`, `finalFrame` and `load`. The ID is the 64-character lowercase
+SHA-256 of the product's capture input manifest. `load` must only dynamically
+import that product's bundled recording. Its `{ id, beats }` result must use the
+same ID. Each beat has an `at` timestamp in milliseconds and an `update` with
+optional `status` fields (`title`, `agents`, `models`, `tools`) and changed transcript `blocks`. Existing block
+IDs are replaced in place; new IDs append.
+
+```tsx
+import { LazyCliShowcase, type CliRecordingSource } from '@ejm/demos/islands/cli-lazy';
+import frames from './recordings/cli-frames';
+
+// Generate these typed product modules from the reviewed capture. Do not copy sample output.
+const source: CliRecordingSource = {
+  id: frames.id,
+  initialFrame: frames.initialFrame,
+  finalFrame: frames.finalFrame,
+  load: () => import('./recordings/cli-recording').then(module => module.default),
+};
+
+<LazyCliShowcase source={source} />
+```
+
+The generated timeline module must satisfy `CliRecording`; its frame module must
+satisfy the frame fields in `CliRecordingSource`. This preserves literal block
+kinds and roles without treating raw JSON as a checked TypeScript module.
+
+With a stable source, parent rerenders preserve the loaded recording, playback
+progress and pause state, including when `options` is a new equivalent object.
+Clock and speed options initialize the player; remount it to change them.
+Changing the source starts that source's playback from the beginning.
+
+The initial HTML and no-JS view show the compact final frame without importing
+the full timeline. On approach, the same lazy loader loads the passive island.
+Playback exposes only Pause/Resume and Restart. It suspends offscreen and when
+the page is hidden, stops its pending work on unmount, and shows the final frame
+without importing the timeline or starting playback timers under reduced motion. The fixed read/write/shell grants
+come from the source. They cannot be changed by the visitor.
+
+A source identity mismatch, failed playback bound or rejected loader keeps the
+static final frame and shows a generic status message. The identity check catches
+stale source/data pairings. It does not authenticate JavaScript served by an
+operator or validate the truth of a recording. Review the real input/output
+hashes, product source and binary, and generated final frame through the product's
+capture and release gates. Label authored narration and timing separately from
+observed tool output. Never claim real execution from an unverified payload.
+
+A timeline has 1 to 256 beats, nondecreasing finite timestamps from zero through
+120,000 ms, at most 256 distinct transcript blocks and 512 lines per block. CLI
+recording JSON is limited to 262,144 UTF-16 code units. These are playback bounds,
+not a bundle allowance. The existing 14 KiB gzip initial-load and 40 KiB gzip
+island budgets still apply; the size gate also checks the caller's lazy-data
+boundary. Real product data needs its own normal site and budget checks.
+
+`LazyHarnessShowcase` has the same source, options, lazy loading, motion and
+cleanup contract. Import it and `HarnessRecordingSource` from
+`@ejm/demos/islands/harness-lazy`. Its source supplies `HarnessFrame` snapshots;
+each `HarnessRecordedUpdate` replaces the supplied fields of a snapshot. Replace
+`stats` as a whole, and supply complete replacement `sessions` and `journal`
+arrays when those fields change. A beat allows at most 256 sessions and 512
+journal entries, within the same 262,144 UTF-16 code-unit serialized-data and
+finite-time bounds.
+The static `HarnessScreen` keeps its sample-value labels. A capture must state
+which displayed values were observed and which labels, progress or samples were
+authored. Visitors cannot add sessions, alter capacity or crash a worker here.
+
+The generic adapter in `src/recordings/playback.ts` and the shared
+`RecordedIsland` loader reuse the current cancellable runtime and lifecycle.
+Neither entry includes a product recording. Each product owns its actual
+session counts, observed capacity, transcript, narration and capture receipt.
+No recording or execution is claimed by the package's test fixtures. The
+simulation honesty rules above still apply to existing interactive entries.
+
+## Bundled native previews
+
+Use the preview entry when a site needs the reviewed Harbor workflow without
+owning a new recording. The existing `Lazy*Demo` simulations and source-required
+`Lazy*Showcase` APIs keep their contracts.
+
+```tsx
+import { ShowcaseFrame } from '@ejm/demos/ShowcaseFrame';
+import { LazyCliPreview } from '@ejm/demos/islands/cli-preview';
+
+<ShowcaseFrame label="ejm-cli recorded workflow"
+  note="Local recording. No command or model runs in this page.">
+  <LazyCliPreview />
+</ShowcaseFrame>
+```
+
+Import `@ejm/demos/cli.css` after the shared UI stylesheet. For IDE use
+`LazyIdePreview` from `@ejm/demos/islands/ide-preview` and
+`@ejm/demos/ide-preview.css`. For Harness use `LazyHarnessPreview` from
+`@ejm/demos/islands/harness-preview` and `@ejm/demos/harness.css`. The existing
+`@ejm/demos/ide.css` remains the interactive simulated-view stylesheet.
+These public profiles own their source lists. The native IDE profile also loads the opt-in `@ejm/tokens/neutral.css` scale used by the desktop app. It follows the page theme without loading the full application theme again. Do not add the broad legacy `@ejm/demos/styles.css` unless a page also uses an older simulated view. Do not scan private package paths.
+
+The only preview options are `rootMargin` (default `240px`) and `eager` (default
+`false`). The complete static excerpt renders on the server. A one-product
+client loads only its own player when it approaches the viewport. Reduced
+motion shows the excerpt without scheduling playback. Pause, Resume and Restart
+sit outside the passive product surface and use the canonical medium control
+recipe. Product inputs are disabled. The native IDE workspace keeps its desktop
+geometry in a labelled horizontal scrollport on narrow pages.
+
+Bundled modules validate their data at the existing lazy module boundary and
+reuse the shared loaded player, without a second asynchronous data loader.
+The source-required `RecordedIsland` keeps its caller-owned loading contract.
+The shared player, `createRecordedPlayback` and injected clock own validation,
+pause, page/viewport visibility, restart and disposal. The adapters
+apply immutable product updates; they add no worker, network client, storage or
+second timer engine. Each timeline retains the existing 256-beat, 120-second
+and 262,144 UTF-16-code-unit bounds. IDE text updates group two original 20ms
+chunks into one update, at most 25 updates per second, without dropping text or
+changing the end time. Completed playback returns to the same useful excerpt
+as the no-script view. Full workflow data remains in the recording.
+The bundled CLI uses the recorded Unicode glyphs and colors. Public interactive
+views retain their plain and ASCII modes.
+
+A rejected module or recording keeps the server excerpt and announces that
+playback is unavailable. Reload retries the module. The 14 KiB initial-load and
+40 KiB island limits still apply, alongside each consuming site's normal gate.
+
+`ShowcaseFrame` supplies one nearby accessible disclosure. Its optional `note`
+replaces the default, so project-specific capture facts do not need a second
+paragraph. Keep a truthful offline disclosure near each preview. The CLI
+contains recorded Cargo/Git results; IDE edits are authored and its tests were
+not run; Harness retains historical worker output and admission reservations.
+See [preview provenance](src/previews/PROVENANCE.md) for raw artifacts, source
+references, hashes, capture commands and limits. These source changes do not
+establish a package release or a published site.
 
 ## Tests
 

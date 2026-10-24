@@ -10,6 +10,7 @@
     ".": "./src/index.ts",
     "./tailwind.css": "./generated/tailwind.css",
     "./window.css": "./generated/window.css",
+    "./neutral.css": "./generated/neutral.css",
     "./theme.css": "./generated/theme.css",
     "./theme.json": "./theme.json",
     "./generated/*": "./generated/*",
@@ -18,7 +19,8 @@
   },
   "scripts": {
     "build": "node scripts/build-ui.mjs",
-    "check": "node scripts/build-ui.mjs --check"
+    "check": "node scripts/build-ui.mjs --check",
+    "pack:check": "node scripts/check-brand-pack.mjs"
   },
   "files": [
     "src",
@@ -29,13 +31,6 @@
     "README.md",
     "assets",
     "!assets/**/*.zip",
-    "!assets/**/editable",
-    "!assets/**/*.ttf",
-    "!assets/motifs/*.png",
-    "!assets/templates",
-    "!assets/projects/*/logo-*.png",
-    "!assets/projects/*/mark-*.png",
-    "!assets/projects/*/icon-*.png",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md"
   ],

@@ -4,9 +4,14 @@ import { cn } from '../lib/utils';
 
 export type BandTone = BandName;
 
-/** The content column. Bands stay full bleed; the column steps up with the screen (see THEME.md). */
-export function Page({ className, ...rest }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('page', className)} {...rest} />;
+export interface PageProps extends HTMLAttributes<HTMLDivElement> {
+  /** Applications use 32px phone / 48px desktop padding and shared content gaps. The default is the column alone. */
+  variant?: 'default' | 'application';
+}
+
+/** The content column. Bands stay full bleed; application pages add a compact content rhythm. */
+export function Page({ variant = 'default', className, ...rest }: PageProps) {
+  return <div className={cn('page', variant === 'application' && 'grid gap-content py-8 sm:py-12 animate-slide', className)} {...rest} />;
 }
 
 export interface BandProps extends HTMLAttributes<HTMLElement> {

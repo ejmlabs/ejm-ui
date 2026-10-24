@@ -1,35 +1,35 @@
-import { LazyDemo } from '@ejm/demos/islands';
-import '../islands.css';
+import { LazyCliPreview } from '@ejm/demos/islands/cli-preview';
+import { LazyIdePreview } from '@ejm/demos/islands/ide-preview';
+import { LazyHarnessPreview } from '@ejm/demos/islands/harness-preview';
 import { Band, SectionHead } from '@ejm/ui';
 
-// The three interactive demo islands. Each page section serves the static product view (complete without scripts) and
-// loads the live demo when it nears the viewport or when the visitor uses it. Nothing is sent anywhere.
+// Local recorded workflows. Each section keeps a complete static outcome before its playback loads.
 
 export default function Demos() {
   return (
     <>
       <Band tone="paper" aria-labelledby="demos-title">
-        <SectionHead kicker="Demos" title="Try the three products." id="demos-title" as="h1">
-          <p className="m-0">Each demo is a simulation that runs in this page, follows a script and sends nothing anywhere. Replies are scripted and every number is a sample value.</p>
+        <SectionHead purpose="page" kicker="Demos" title="Watch the three products." id="demos-title" as="h1">
+          <p className="m-0">Recorded product workflows. Pause, resume or restart each playback.</p>
         </SectionHead>
       </Band>
       <Band id="cli" tone="mist" aria-labelledby="cli-title">
-        <SectionHead kicker="01 / ejm-cli" title="A terminal coding agent." id="cli-title">
-          <p className="m-0">Send a prompt, watch the patch get blocked, then grant write to apply it.</p>
+        <SectionHead title="ejm-cli" id="cli-title">
+          <p className="m-0">A retry fix, its patch and three recorded passing tests. This local playback runs no commands or model calls.</p>
         </SectionHead>
-        <div className="mt-16"><LazyDemo product="cli" /></div>
+        <div className="mt-16"><LazyCliPreview /></div>
       </Band>
       <Band id="ide" tone="sage" aria-labelledby="ide-title">
-        <SectionHead kicker="02 / ejm-ide" title="An agent beside the editor." id="ide-title">
-          <p className="m-0">Ask Edi for a change, review the diff, accept or reject it.</p>
+        <SectionHead title="ejm-ide" id="ide-title">
+          <p className="m-0">Two reviewed edits and five added boundary tests. The tests were not run; this local playback uses no model connection.</p>
         </SectionHead>
-        <div className="mt-16"><LazyDemo product="ide" /></div>
+        <div className="mt-16"><LazyIdePreview /></div>
       </Band>
       <Band id="harness" tone="paper" aria-labelledby="harness-title">
-        <SectionHead kicker="03 / ejm-harness" title="One governor, one journal." id="harness-title">
-          <p className="m-0">Add sessions, lower the limit, then crash the worker and watch the journal recover them.</p>
+        <SectionHead title="ejm-harness" id="harness-title">
+          <p className="m-0">Formatted local recording. No worker or model runs here. Resource figures are admission reservations.</p>
         </SectionHead>
-        <div className="mt-16"><LazyDemo product="harness" /></div>
+        <div className="mt-16"><LazyHarnessPreview /></div>
       </Band>
     </>
   );

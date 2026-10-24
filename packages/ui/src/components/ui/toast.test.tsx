@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { expectAccessible, renderIn, themes } from '../test-setup';
@@ -31,11 +31,16 @@ describe('Toast', () => {
   });
 
   it('dismisses itself after its duration', async () => {
-    const user = userEvent.setup();
-    render(ui({ title: 'Copied', duration: 60 }));
-    await user.click(screen.getByRole('button', { name: 'Show' }));
-    expect((await screen.findAllByText('Copied')).length).toBeGreaterThan(0);
-    await waitFor(() => expect(screen.queryAllByText('Copied')).toHaveLength(0), { timeout: 2000 });
+    vi.useFakeTimers();
+    try {
+      render(ui({ title: 'Copied', duration: 60 }));
+      fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+      expect(screen.getAllByText('Copied').length).toBeGreaterThan(0);
+      await act(async () => { await vi.advanceTimersByTimeAsync(59); });
+      expect(screen.getAllByText('Copied').length).toBeGreaterThan(0);
+      await act(async () => { await vi.advanceTimersByTimeAsync(1); });
+      expect(screen.queryAllByText('Copied')).toHaveLength(0);
+    } finally { vi.useRealTimers(); }
   });
 
   it('dismisses with the Dismiss button', async () => {

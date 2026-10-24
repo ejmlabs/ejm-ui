@@ -79,6 +79,21 @@ describe('Contents', () => {
     expect(screen.getByRole('link', { name: 'Theme' })).toHaveAttribute('aria-current', 'true');
   });
 
+  it('collapses an in-flow phone contents list before scrolling to its heading', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<>
+      <details open><summary>On this page</summary><Contents items={items} /></details>
+      <main><Heading id="theme">Theme</Heading></main>
+    </>);
+    const details = container.querySelector('details')!;
+    const heading = document.getElementById('theme')!;
+    heading.scrollIntoView = vi.fn(() => { expect(details.open).toBe(false); });
+    await user.click(screen.getByRole('link', { name: 'Theme' }));
+    expect(heading.scrollIntoView).toHaveBeenCalledOnce();
+    expect(heading).toHaveFocus();
+    expect(window.location.hash).toBe('#theme');
+  });
+
   it('works from the keyboard with Enter', async () => {
     const user = userEvent.setup();
     page();

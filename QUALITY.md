@@ -8,7 +8,14 @@ The references are Anthropic, Stripe and OpenAI. ejmlabs learns from how they de
 
 1. Build the page from `@ejm/ui` components, layouts and views (`packages/ui/THEME.md` lists every token).
 2. Run `npm run check`, `npm run build`, `node scripts/size.mjs` and `node scripts/shoot.mjs <url>` in light and dark.
-3. Walk the nine dimensions below. A page ships when every line holds, or when the exception is written down in the critique.
+3. Walk the dimensions below. A page ships when every line holds, or when the exception is written down in the critique.
+
+## Content
+
+- Use the fewest words that keep the meaning clear. Remove text that repeats the interface or another label.
+- Prefer a familiar visual, an accessible icon, or no extra element when the meaning stays clear.
+- Keep labels and instructions needed for access, consent, trust, errors and recovery. Hide only decoration from assistive tools.
+- Use familiar words and active verbs. State what works now, and label examples, limits and unreleased behavior honestly.
 
 ## Typography
 
@@ -69,7 +76,7 @@ The references are Anthropic, Stripe and OpenAI. ejmlabs learns from how they de
 Budgets per prerendered route, enforced by `node scripts/size.mjs` (a breach exits non-zero and fails the build). Sizes are gzip, except fonts, which are WOFF2.
 
 - JavaScript at most 95 KB gzip for the first load: React and react-dom (about 71 KB, measured), router, hydration, theme and header. The demo island (40 KB) and code highlighting (20 KB) load lazily and are not part of it.
-- CSS at most 14 KB. Only used utilities ship: `styles.css` scans the components most sites use, and the docs and app components are opt-in (`styles-docs.css`, `styles-app.css`).
+- CSS at most 14 KB. `styles.css` scans the common components. Docs, app, static and terminal components have opt-in entries: `styles-docs.css`, `styles-app.css`, `styles-static.css` and `styles-terminal.css`. Import each required entry after `styles.css`. Measure the combined stylesheets for each route.
 - The two preloaded text fonts (Manrope and IBM Plex Mono, Latin subsets) at most 70 KB together, with `font-display: swap` and metric-matched fallbacks so the swap moves nothing.
 - HTML at most 30 KB per route.
 - On a throttled mobile profile, Largest Contentful Paint at or under 1.2 seconds and Cumulative Layout Shift under 0.05.

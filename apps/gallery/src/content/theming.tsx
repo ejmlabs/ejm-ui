@@ -78,11 +78,11 @@ export const theming: DocPage = {
         {
           type: 'code',
           lang: 'tsx',
-          code: `import { useTheme } from '@ejm/ui';
+          code: `import { Button, useTheme } from '@ejm/ui';
 
 function Sun() {
   const { resolved, toggle } = useTheme();
-  return <button onClick={toggle}>Switch to {resolved === 'dark' ? 'light' : 'dark'}</button>;
+  return <Button variant="secondary" onClick={toggle}>Switch to {resolved === 'dark' ? 'light' : 'dark'}</Button>;
 }`,
         },
         {

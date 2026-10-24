@@ -1,5 +1,7 @@
 import { Link } from '@ejm/ssg';
-import { AppShell } from '@ejm/ui';
+import logoInk from '@ejm/tokens/assets/projects/ide/logo-ink.svg?url';
+import logoPaper from '@ejm/tokens/assets/projects/ide/logo-paper.svg?url';
+import { AppShell, Brand, Button } from '@ejm/ui';
 
 // AppShell is a whole page frame (top bar, side nav, content), so it has its own route.
 
@@ -14,7 +16,7 @@ export default function AppShellPage() {
   return (
     <AppShell
       linkComponent={Link}
-      brand={<span className="text-heading tracking-tight">ejm-ide</span>}
+      brand={<Brand src={logoInk} darkSrc={logoPaper} width={605} height={256} />}
       homeLabel="ejm-ide home"
       nav={
         <ul className="m-0 list-none p-0">
@@ -28,9 +30,9 @@ export default function AppShellPage() {
         </ul>
       }
       actions={
-        <Link href="/shell/" className="touch-target inline-flex items-center px-3 text-fg hover:text-link">
+        <Button asChild variant="ghost" size="sm"><Link href="/shell/">
           Shell
-        </Link>
+        </Link></Button>
       }
     >
       <h1 className="text-title">Workspace</h1>

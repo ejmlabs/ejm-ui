@@ -3,16 +3,20 @@
 // the emulator text, the transcript check can fail, and the metadata names what it must. They use a tiny shell script,
 // not the products, so they run anywhere. Tests that need Chrome skip when it is missing.
 // Directory ownership tests use the real filesystem and stub the PTY and Chrome boundaries.
+import * as childProcess from 'node:child_process';
+import { ChildProcess } from 'node:child_process';
 import * as fs from 'node:fs';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { PassThrough } from 'node:stream';
+import { setImmediate } from 'node:timers/promises';
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 import { captureShot, FIXTURES, withWorkspace } from './capture.mjs';
 import { UI_ROOT } from './meta.mjs';
 import * as renderer from './render.mjs';
 import * as session from './session.mjs';
-import { chromeAvailable, toHtml, withChrome } from './render.mjs';
+import { CHROME, chromeAvailable, toHtml, withChrome } from './render.mjs';
 import { runSession } from './session.mjs';
 import { Screen } from './screen.mjs';
 import { loadTheme, palette256 } from './theme.mjs';
@@ -20,6 +24,7 @@ import { compareToTranscript, domMatches, replayCursorStream } from './verify.mj
 
 // Keep real filesystem operations while allowing the capture test to reject unsafe deletion paths.
 vi.mock('node:fs', async importOriginal => ({ ...await importOriginal() }));
+vi.mock('node:child_process', async importOriginal => ({ ...await importOriginal() }));
 
 const script = join(FIXTURES, 'colors.sh');
 const EXPECTED = [
@@ -127,6 +132,81 @@ describe('capture work directories', () => {
   });
 });
 
+describe('Chrome profile cleanup', () => {
+  afterEach(() => { vi.restoreAllMocks(); });
+
+  it('waits for Chrome to close before removing its profile and preserves a startup failure', async () => {
+    const child = new ChildProcess();
+    child.stderr = new PassThrough();
+    const exists = fs.existsSync;
+    vi.spyOn(fs, 'existsSync').mockImplementation(path => path === CHROME || exists(path));
+    let profile = '';
+    vi.spyOn(childProcess, 'spawn').mockImplementation((file, args) => {
+      profile = args.find(arg => arg.startsWith('--user-data-dir=')).slice('--user-data-dir='.length);
+      return child;
+    });
+    const kill = vi.spyOn(child, 'kill').mockReturnValue(true);
+    const failure = new Error('Chrome could not start');
+    const pending = withChrome(() => { throw new Error('renderer must not run'); });
+    let settled = false;
+    void pending.catch(() => { settled = true; });
+    try {
+      child.emit('error', failure);
+      await setImmediate();
+      expect(kill).toHaveBeenCalledWith('SIGKILL');
+      expect(existsSync(profile)).toBe(true);
+      expect(settled).toBe(false);
+      child.emit('close', null, 'SIGKILL');
+      await expect(pending).rejects.toBe(failure);
+      expect(existsSync(profile)).toBe(false);
+    } finally {
+      child.emit('close', null, 'SIGKILL');
+      await pending.catch(() => {});
+      child.stderr.destroy();
+      if (profile) rmSync(profile, { recursive: true, force: true });
+    }
+  });
+
+  it('bounds a missing close event and retains the profile and original failure', async () => {
+    const timeout = new AbortController();
+    vi.spyOn(AbortSignal, 'timeout').mockImplementation(milliseconds => {
+      expect(milliseconds).toBe(5000);
+      return timeout.signal;
+    });
+    const child = new ChildProcess();
+    child.stderr = new PassThrough();
+    const exists = fs.existsSync;
+    vi.spyOn(fs, 'existsSync').mockImplementation(path => path === CHROME || exists(path));
+    let profile = '';
+    vi.spyOn(childProcess, 'spawn').mockImplementation((file, args) => {
+      profile = args.find(arg => arg.startsWith('--user-data-dir=')).slice('--user-data-dir='.length);
+      return child;
+    });
+    const kill = vi.spyOn(child, 'kill').mockReturnValue(true);
+    const failure = new Error('Chrome could not start');
+    const pending = withChrome(() => { throw new Error('renderer must not run'); });
+    let outcome;
+    void pending.catch(error => { outcome = error; });
+    try {
+      child.emit('error', failure);
+      await setImmediate();
+      expect(kill).toHaveBeenCalledWith('SIGKILL');
+      timeout.abort();
+      await setImmediate();
+      expect(outcome).toBeInstanceOf(AggregateError);
+      expect(outcome.cause).toBe(failure);
+      expect(outcome.errors[0]).toBe(failure);
+      expect(outcome.errors[1]).toMatchObject({ name: 'AbortError' });
+      expect(existsSync(profile)).toBe(true);
+    } finally {
+      child.emit('close', null, 'SIGKILL');
+      await pending.catch(() => {});
+      child.stderr.destroy();
+      if (profile) rmSync(profile, { recursive: true, force: true });
+    }
+  });
+});
+
 describe('pseudo-terminal session', () => {
   it('runs at the requested size and keeps colors and glyphs', async () => {
     const { raw, screen } = await runSession({ file: '/bin/sh', args: [script], cols: 40, rows: 6, env: { PATH: process.env.PATH ?? '', TERM: 'xterm-256color', LANG: 'en_US.UTF-8' }, waitExit: true });
@@ -180,10 +260,14 @@ describe('rendering and capture', () => {
   chrome('draws the screen in Chrome with the rendered text equal to the emulator text', async () => {
     const { screen } = await runSession({ file: '/bin/sh', args: [script], cols: 40, rows: 6, env: { PATH: process.env.PATH ?? '', TERM: 'xterm-256color', LANG: 'en_US.UTF-8' }, waitExit: true });
     const { html, width, height } = toHtml(screen.grid(), loadTheme('dark'), { rows: 6 });
-    const { png, rowText } = await withChrome(render => render(html, width, height));
-    expect(png.subarray(1, 4).toString()).toBe('PNG');
-    expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([width * 2, height * 2]);
-    expect(domMatches(rowText, screen.lines(), 6)).toBe(true);
+    const failure = new Error('caller stopped after rendering');
+    await expect(withChrome(async render => {
+      const { png, rowText } = await render(html, width, height);
+      expect(png.subarray(1, 4).toString()).toBe('PNG');
+      expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([width * 2, height * 2]);
+      expect(domMatches(rowText, screen.lines(), 6)).toBe(true);
+      throw failure;
+    })).rejects.toBe(failure);
   }, 60000);
 
   chrome('writes both themes and a metadata file that records how the shot was made', async () => {

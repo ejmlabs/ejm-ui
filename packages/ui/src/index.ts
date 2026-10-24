@@ -17,9 +17,19 @@ export * from './components/Table';
 export * from './components/KeyHints';
 export * from './components/Prompt';
 export * from './components/StateBlock';
+export * from './terminal/TerminalWorkspace';
 export * from './hooks';
 export * from './motion';
 export * from './shell';
 export * from './layout';
 export * from './docs';
 export * from './app';
+export * from './components/ui/radio-group';
+export * from './components/GameClock';
+export * from './static/NativeCheckbox';
+export * from './static/Disclosure';
+export * from './static/ActionRows';
+export * from './static/DocumentContent';
+
+// Preserve the root docs export; application prose has its own layout leaf.
+export { Prose } from './docs/Prose';

@@ -12,6 +12,8 @@ export interface AppShellProps {
   homeLabel?: string;
   /** Controls that sit in the top bar before the theme toggle (a search field, an account menu). */
   actions?: ReactNode;
+  /** Replaces the last theme control. Omit to use ThemeToggle; pass null to show none. */
+  themeControl?: ReactNode;
   /** The side navigation list. Below 768px it becomes a labelled disclosure above the content. */
   nav: ReactNode;
   navLabel?: string;
@@ -25,7 +27,7 @@ export interface AppShellProps {
  * the nav are the page ground, separated by one hairline each (one under the bar from 768px, one beside the nav). The page scrolls as a whole (the bar and nav stay put), which
  * keeps find, zoom and print working. Collapses to a single column below 768px.
  */
-export function AppShell({ brand, homeHref = '/', homeLabel = 'Home', actions, nav, navLabel = 'Navigation', linkComponent, className, children }: AppShellProps) {
+export function AppShell({ brand, homeHref = '/', homeLabel = 'Home', actions, themeControl, nav, navLabel = 'Navigation', linkComponent, className, children }: AppShellProps) {
   const ambient = useLinkComponent();
   const Link = linkComponent ?? ambient;
   return (
@@ -39,7 +41,7 @@ export function AppShell({ brand, homeHref = '/', homeLabel = 'Home', actions, n
             </Link>
             <div className="flex items-center gap-2">
               {actions}
-              <ThemeToggle />
+              {themeControl === undefined ? <ThemeToggle /> : themeControl}
             </div>
           </div>
         </header>

@@ -17,7 +17,7 @@ function Part({ name, note, children }: { name: string; note?: string; children:
         <h3 className="text-heading">{name}</h3>
         {note && <p className="mt-2 text-meta text-muted">{note}</p>}
       </div>
-      <div className="grid min-w-0 gap-y-8">{children}</div>
+      <div className="flex min-w-0 flex-col gap-y-8">{children}</div>
     </section>
   );
 }
@@ -210,7 +210,7 @@ export default function ComponentsPage() {
   return (
     <>
       <Band tone="paper" aria-labelledby="components-title">
-        <SectionHead kicker="ejm-ui / components" title="Every component, every state." size="title" as="h1" id="components-title">
+        <SectionHead purpose="page" kicker="ejm-ui / components" title="Every component, every state." as="h1" id="components-title">
           <p className="m-0">Each part below is drawn twice, under the light theme and then the dark one. They use only the kit utilities and read the theme contract.</p>
         </SectionHead>
       </Band>

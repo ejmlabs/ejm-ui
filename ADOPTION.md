@@ -122,18 +122,46 @@ src/shell.tsx         App: SiteLayout (Header, Footer, linkComponent={Link}) and
 
 Notes that cost time when missed:
 
-- **Tailwind sources.** `@ejm/ui/styles.css` scans the components most sites use (`components`, `layout`, `shell`, `hooks`, `motion`), and it works from `node_modules` and through links (checked). The docs and app components are opt-in, which keeps about 1.5 KB gzip of CSS out of a site that does not render them: add `@import "@ejm/ui/styles-docs.css";` if you render `DocsLayout`, `DocsSidebar`, `CodeBlock`, `ParamTable`, `Callout`, `Pager` or `Contents`, and `@import "@ejm/ui/styles-app.css";` for `Dashboard`, the charts and `ActivityList`, after the `styles.css` line. A product demo site also adds `@import "@ejm/demos/styles.css";` (about 1.7 KB gzip of CSS, so the starter's 11.9 KB becomes about 13.6 KB). Tailwind scans your own project folder by itself. A folder outside the project (another package of your own) needs its own `@source "../other/src";` line in `src/styles.css`.
+- **Tailwind sources.** `@ejm/ui/styles.css` scans `components`, `layout`, `shell`, `hooks` and `motion`. Add each required partial after that import:
+
+  - `@ejm/ui/styles-docs.css` for `DocsLayout`, `DocsSidebar`, `CodeBlock`, `ParamTable`, `Callout`, `Pager` and `Contents`.
+  - `@ejm/ui/styles-app.css` for `Dashboard`, charts and `ActivityList`.
+  - `@ejm/ui/styles-static.css` for `NativeCheckbox`, `Disclosure`, `ActionRows` and `DocumentContent`.
+  - `@ejm/ui/styles-terminal.css` for the `Terminal*` views.
+
+  A product demo site also adds `@import "@ejm/demos/styles.css";`. Measure the actual entries used by the consumer. Tailwind scans your project folder automatically. A source folder outside the project needs its own `@source "../other/src";` line in `src/styles.css`.
+
 - **Keep `dist` and `.ejm-ssg` in `.gitignore`.** Tailwind skips ignored paths. Without that line it reads the previous build's HTML, and the CSS grew from 13.1 KB to 14.2 KB in the proof, enough to breach the 14 KB budget on the second build.
 - **`tsconfig.json`.** Types resolve through the package `exports`, so with installed packages (route B) no `paths` are needed. With linked packages (route A) the four `paths` for `react` and `react-dom` shown in route A are required. Inside the `ejm-ui` repo the starter extends `tsconfig.base.json`; outside it, copy the options listed above.
 - **Import deep or by name.** `@ejm/ui` has `sideEffects: ["*.css"]`, so `import { Band } from '@ejm/ui'` tree-shakes to the same bytes as `@ejm/ui/layout/Band` (`packages/ui/scripts/check-treeshake.mjs` checks it). A bare `@ejm/ui` in a module that runs in the first load is still worth avoiding when you only need one thing (`@ejm/ui/font-preloads`). `@ejm/site` and `@ejm/demos` never import the barrel.
 - **Vite config import order.** The ejm-ide site reported TypeScript 6.0.3 crashing with "parameter should have errors" when the `@ejm/*` imports in `vite.config.ts` came before the `vite` imports. A throwaway consumer with the ejm-ide `tsconfig` options and `@ejm/*` first typechecked cleanly on 6.0.3 and 5.9, and the plugin typings are plain `Plugin` returns, so this looks specific to that project's file set. If it happens, put the `vite`, `@tailwindcss/vite` and `@vitejs/plugin-react` imports first.
 - **Routes** are written the way Cloudflare serves them: `/about/` with the slash, so there is no redirect. One `h1` per route, and `head: { title, description }` on each.
 - **Links.** Internal links use `Link` from `@ejm/ssg` (give it to `SiteLayout` as `linkComponent`). Other sites use `otherSites('cli')` from `@ejm/site/projects` in the nav or footer, which renders `ExternalLink`, or `<Row external>`: both set `rel="external"`.
-- **Header.** `Header` puts the nav and then the `ThemeToggle` last in the tools group, at the far right. Do not add anything after it.
+- **Header.** `Header` puts the nav and then the theme control last in the tools group, at the far right. `themeControl` omitted or `undefined` keeps `ThemeToggle`; `null` suppresses it. A replacement stays in that final slot.
 - **Heavy features are lazy.** A route with a demo or code highlighting uses `load: () => import('./pages/Demo')`, so the initial JavaScript stays under 95 KB.
 - **A product demo.** Add `@ejm/demos` and `@import "@ejm/demos/styles.css"` (or its `@ejm/demos/ide.css` entry for the current IDE views), and import the entry for the product you show, so you do not ship the views of the other two: `LazyCliDemo` from `@ejm/demos/islands/cli-lazy` (also `ide-lazy`, `harness-lazy`), or `ProductHeroStage` with `CliHeroWindow` from `@ejm/demos/hero`. `LazyDemo` and `ProductHero` take any product but carry all three views (about 5 KB gzip more). Details and measured sizes: `packages/demos/README.md`.
 - **Prose that needs no script.** A docs page keeps its text in the HTML with `<Static>` from `@ejm/ssg` (see `packages/ssg/README.md`), which keeps the guide text out of the JavaScript budget.
 - **Static pages that are not routes** (copied brand assets) are measured as routes by the budget gate. Skip them with `ignore: ['brand/assets/**']` in `defineSite`, or `ejm-ssg budget --ignore <glob>` and `node scripts/perf.mjs <dist> --ignore <glob>`.
+
+### Native product pages
+
+A product can prerender `NativeCheckbox`, `Disclosure`, `ActionRows`,
+`DocumentContent` and the `Terminal*` view components through public `@ejm/ui`
+exports. Import `@ejm/ui/styles.css` first. Add `@ejm/ui/styles-static.css`
+for the static controls and document layouts. Add
+`@ejm/ui/styles-terminal.css` for `Terminal*` views. A page that uses both
+groups needs both partials. The partials share the same theme. Read
+[Native static pages](packages/ui/COMPONENTS.md#native-static-pages)
+for the exact form, disclosure and transcript-template contracts.
+
+Keep authentication, transport, pairing verification, content validation and
+command logic in the product. An external script can bind native DOM handlers
+without shipping React in the browser. Use shared component output as the
+template, fill user text with `textContent`, and keep source pins and consumer
+checks current. `NativeCheckbox` uses `@ejm/ui/components/NativeCheckbox`.
+The other static parts keep their public shell and layout deep paths. The
+changed source still needs its installed consumer and pack proof. Source
+documentation does not establish deployment or browser acceptance.
 
 ### Theme boot, head, analytics, headers (all from `@ejm/site`)
 

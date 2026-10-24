@@ -1,12 +1,12 @@
 # Theme contract
 
-Everything a component, layout, view or site may rely on from `@ejm/ui/styles.css`. If a name is not in this file, it does not exist. Colors never appear as literals in components: they come from the semantic names below, which come from `packages/tokens/theme.json`.
+The public theme contract for `@ejm/ui/styles.css` and its opt-in entries. If a name is not in this file, it does not exist. Colors never appear as literals in components: they come from the semantic names below, which come from `packages/tokens/theme.json`.
 
 ## Use it
 
 ```css
 /* a site's entry stylesheet */
-@import "@ejm/ui/styles.css";
+@import "@ejm/ui/styles-site.css" source(none);
 ```
 
 ```html
@@ -17,15 +17,44 @@ Everything a component, layout, view or site may rely on from `@ejm/ui/styles.cs
 </head>
 ```
 
-Serve `packages/ui/public/theme-boot.js` as `/theme-boot.js` (an external file, so `script-src 'self'` holds). Tailwind scans the app's own folder by itself, and `styles.css` adds `@source` lines for the parts of this package most sites use: `components`, `layout`, `shell`, `hooks` and `motion`. The docs and app components are opt-in, so a site that never renders them does not ship their CSS (about 1.8 KB gzip):
+Serve `packages/ui/public/theme-boot.js` as `/theme-boot.js` (an external file, so `script-src 'self'` holds). Each profile scans its own shared components. `styles.css` scans `components`, `layout`, `shell`, `hooks` and `motion`. Docs, app, static and terminal components use opt-in entries:
 
 ```css
 @import "@ejm/ui/styles.css";
 @import "@ejm/ui/styles-docs.css";   /* only if the site renders DocsLayout, DocsSidebar, CodeBlock, ParamTable, Callout, Pager, Contents */
 @import "@ejm/ui/styles-app.css";    /* only if it renders Dashboard, ChartLine, ChartBar, Legend, ActivityList */
+@import "@ejm/ui/styles-static.css"; /* only if it renders NativeCheckbox, Disclosure, ActionRows, DocumentContent */
+@import "@ejm/ui/styles-terminal.css"; /* only if it renders TerminalWorkspace and the Terminal* views */
 ```
 
-Import the partial for every folder whose components you render, or their classes are missing. `node packages/ui/scripts/check-sources.mjs` checks that each folder gets its classes from the right entry and that a default folder never imports from docs or app. A site that uses classes from a folder outside its own root needs its own `@source` line.
+Import the partial for every folder whose components you render, or their classes are missing. `node packages/ui/scripts/check-sources.mjs` checks that each folder gets its classes from the right entry and that a default folder never imports from docs or app. Applications may scan their own source folders. Sites use the stricter shared design guard. Shared package source coverage belongs to the package, through its public stylesheet exports; do not scan or exclude private package files.
+
+`styles-site.css` is the smaller public profile for marketing and project sites. It includes shared site layout, branding, shell, Button, hooks and motion. Add the same docs or app partials when needed. `styles.css` remains the full default profile for component galleries and apps. Both import one internal base with identical tokens, fonts, type, motion and global rules. `base.css` is private. Product demo source coverage comes from the public `@ejm/demos/*.css` profiles.
+
+Use `source(none)` on the entry import. This retains the profile's explicit
+component sources and avoids scanning unrelated installed package files. Sites
+compose public components and do not add utility classes or source directives.
+The starter and installed-package proof use this setup.
+
+## Native HTML profile
+
+Keep visible copy brief. Use no text where the layout or native state is clear; retain labels, trust disclosures, permission limits, errors, recovery and accessible names.
+
+`@ejm/ui/static.css` is the compiled, React-free profile for applications that already own native HTML and state. It shares the current Header and Brand geometry, application title and form rhythm, tokens, system themes, local fonts, canonical controls and calm motion. Consumers supply semantic content and events through the fixed `data-ejm` recipes, with no classes, inline styles or local CSS rules.
+
+See [Native HTML applications](../site/native-html.md) for the shell and form markup, fixed setup and one-column workspace recipes, compact connection details, asset copying, no-script forms, bounded output, motion and reduced-motion behavior. Setup and workspace-header h1 headings use a fixed 2rem size and weight 600; other native pages and React headings retain their current scale. It also documents the public `@ejm/site/native` build check for authored templates, DOM presentation hooks and finished route documents.
+
+Run `npm run build:static -w @ejm/ui` after shared recipe, token or font changes. The shared check rejects stale output and keeps the 14 KiB gzip CSS and 70 KiB combined font limits. This profile does not load theme-boot.js, analytics or a browser runtime and does not store a theme choice. Native privacy-sensitive pages can continue to use the system palette and ordinary same-origin forms.
+The terminal module lives in `src/terminal` and keeps the public import
+`@ejm/ui/components/TerminalWorkspace`. Its structural utilities belong to
+`styles-terminal.css`; products should compose the public components rather
+than copy their markup or utility classes. `NativeCheckbox`, `Disclosure`,
+`ActionRows` and `DocumentContent` live in `src/static` and use
+`styles-static.css`. All keep root exports. `Disclosure`, `ActionRows` and
+`DocumentContent` keep their shell or layout deep aliases. `NativeCheckbox`
+uses `@ejm/ui/components/NativeCheckbox`. A page that
+uses both groups needs both partials. All entries share the same tokens, fonts
+and theme.
 
 The Tailwind default palette, radius, shadow and font namespaces are reset. `bg-red-500`, `rounded-xl`, `shadow-md`, `font-serif` and `drop-shadow-*` do not exist, so a color or shape outside the system fails to compile.
 
@@ -115,6 +144,7 @@ Full values for every band and theme are in `packages/tokens/generated/tailwind.
 - Semantic: the table above.
 - shadcn names, so copied-in shadcn source works: `background` (ground), `foreground` (fg), `muted-foreground` (muted), `popover` (ground), `popover-foreground` (fg), `primary-foreground` (on-primary), `secondary` and `accent` (tone), `secondary-foreground` and `accent-foreground` (fg), `destructive` (danger), `destructive-foreground` (on-danger), `border` (line), `input` (control), `ring` (focus). `primary` is shared. **Not aliased on purpose:** `card`, `card-foreground` (there are no cards), and `bg-muted` (our `muted` is a text color: use `bg-tone`).
 - Product windows and editors on the web, from the ui theme, following the page theme and never the band: `ui-ground` `ui-panel` `ui-editor` `ui-raised` `ui-overlay` `ui-hover` `ui-line` `ui-line-strong` `ui-text` `ui-text-strong` `ui-text-muted` `ui-text-subtle` `ui-primary` `ui-on-primary` `ui-focus` `ui-accent` `ui-accent-strong` `ui-tint-1` to `ui-tint-3` `ui-error` `ui-warning` `ui-success` `ui-special` `ui-info` `ui-control-border` `ui-diff-add` `ui-diff-del` `ui-diff-add-bg` `ui-diff-del-bg` `ui-selection` `ui-dim`, `ui-hue-1` to `ui-hue-6`, and syntax `syn-comment` `syn-keyword` `syn-string` `syn-number` `syn-type` `syn-type-parameter` `syn-function` `syn-macro` `syn-parameter` `syn-property` `syn-constant` `syn-namespace` `syn-identifier` `syn-delimiter`. Plain variables are `--ejm-ui-*` and `--ejm-ui-syn-*`.
+- Native product styles can load the complete `--ejm-ui-n0` to `--ejm-ui-n15` scale through `@ejm/tokens/neutral.css`. It follows the page theme. The public `@ejm/demos/ide-preview.css` profile includes it.
 
 Use `text-*` and `bg-*` freely; there is no card color. Tags are plain mono text, not filled chips.
 
@@ -161,11 +191,17 @@ The gutter is never smaller than `env(safe-area-inset-left/right)`. Pages need `
 | `page` | `max-inline-size: var(--ejm-page-max); margin-inline: auto; padding-inline: gutter`, width 100%. |
 | `page-inset` | Padding only, for a full-bleed element (a sticky header) whose content must line up with the `page` column. |
 | `py-rhythm`, `pt-rhythm`, `gap-rhythm`, ... | The vertical rhythm of a band, 72px to 160px, times `--ejm-scale`. `*-rhythm-sm` is 40 percent of it. |
+| `gap-field`, `gap-x-field`, `gap-y-field` | Label, control and help groups: `calc(var(--spacing) * 2)`, normally 8px. Derived from the existing Tailwind spacing scale. |
+| `gap-content`, `gap-x-content`, `gap-y-content` | Application content and form groups: `calc(var(--spacing) * 6)`, normally 24px. Derived from the same scale. |
 | `px-gutter`, `p-gutter`, ... | The current gutter. |
 | `max-w-page`, `max-w-measure` | Column width and 68ch reading width. |
 | Breakpoints | Tailwind defaults, plus `xs` 420px, `3xl` 1920px, `4xl` 2560px, `5xl` 3200px, `6xl` 4400px (the same steps as the table). |
 
 `--ejm-header-h` (default 4.5rem) feeds the page `scroll-padding-top`, so anchors and focused headings land below a sticky header. A sticky header component sets it.
+
+`Page variant="application"` combines the column with the shared application rhythm. `SectionHead purpose="application"` stacks a title heading and body-sized copy. Page openings use `purpose="page"`; ordinary sections use the default `purpose="section"`. Sites cannot pick a different heading size or alter the recipe with classes.
+
+Public sites use `Hero`, `SectionHead`, structured shell identity and the recipes in `@ejm/ui/layout/SiteContent`. `@ejm/site/vite` checks that site source contains no local styling. Change typography, spacing, branding or motion in ejm-ui, then rebuild the sites. Product data, words, routes and accessible state remain in the site. See the layout README for the public composition API. Lower-level utility recipes in this document describe shared implementation, not consumer escape hatches.
 
 ## Elevation and radius
 
@@ -175,6 +211,8 @@ The gutter is never smaller than `env(safe-area-inset-left/right)`. Pages need `
 ## Motion
 
 Transform and opacity only (draw-on uses stroke offset, as specified). Every animation utility is wrapped in `prefers-reduced-motion: no-preference`, so under reduced motion nothing moves and every element is in its final state. Durations also collapse to 1ms under reduced motion.
+
+The shared theme control uses the native View Transitions API for a 320ms crossfade after an explicit click or key press. The preference still saves if a transition is skipped or cannot start; browsers without the API and visitors who prefer reduced motion switch immediately. Initial theme selection and system-theme updates do not start a transition. The shared SSG stylesheet supplies the crossfade timing. Header links and the narrow menu use the existing color and fade utilities. Keep first-paint text and product captures visible; use a transform-only entrance for large hero text.
 
 | Token | Value |
 | --- | --- |
@@ -215,6 +253,24 @@ Under reduced motion, with scripts off, and in print, `pending` hides nothing. T
 - `link` (color, underline, 2px on hover) for classed anchors. Bare `<a>` elements with no class already get it.
 - `skip-link`: first focusable element on every page, `<a href="#main" class="skip-link">`. Visible on focus.
 - `duration-*`, `ease-*`, `shadow-*`, `rounded-*` as above. `sr-only` is Tailwind's own.
+
+### Shared component structure
+
+These public, implementation-owned utilities keep shared component output
+small. Prefer the components when composing a product; keep their markup and
+state hooks with `@ejm/ui`. The native and document utilities below belong to
+`styles-static.css`. Import that entry after `styles.css` for the static parts.
+
+- `native-check-label`, `native-check`: checkbox label target and native input
+  with the shared accent color. The platform supplies the checkmark.
+- `disclosure-summary`, `disclosure-content`, `disclosure-menu`: native
+  disclosure structure and bounded menu presentation. The platform supplies
+  the open/closed marker. Menus retain a border in forced colors.
+- `document-content`: shared reading width, heading and form rhythm, wrapped
+  preformatted text and status/error presentation.
+- `terminal-*`: the workspace, header, navigation, transcript, status and
+  composer structure in the opt-in `styles-terminal.css` entry. Import that
+  entry after `styles.css` when rendering the `Terminal*` components.
 
 ## Base styles
 

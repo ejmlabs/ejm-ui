@@ -16,8 +16,7 @@ describe('static product views', () => {
 
   it('ejm-ide shows the tool calls with the names ejm-ide documents, the diff and the edited code', () => {
     render(<IdeView label="ejm-ide" layout="split" />);
-    for (const tool of ['read_file', 'search_code', 'write_file']) expect(screen.getByText(tool)).toBeInTheDocument();
-    expect(screen.queryByText(/workbench_/)).toBeNull();
+    for (const tool of ['workbench_read_file', 'workbench_search_code', 'workbench_write_file']) expect(screen.getByText(tool)).toBeInTheDocument();
     expect(screen.getByRole('group').querySelectorAll('[data-changed]').length).toBeGreaterThan(0);
     expect(screen.getAllByText('applied', { exact: false }).length).toBeGreaterThan(0);
   });

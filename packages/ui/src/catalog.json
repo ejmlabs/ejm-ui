@@ -1,4 +1,13 @@
 {
+  "ActionRow": [
+    "default"
+  ],
+  "ActionRows": [
+    "default"
+  ],
+  "Actions": [
+    "default"
+  ],
   "ActivityList": [
     "default"
   ],
@@ -6,6 +15,9 @@
     "default"
   ],
   "Art": [
+    "default"
+  ],
+  "AssetGrid": [
     "default"
   ],
   "Badge": [
@@ -17,6 +29,14 @@
     "info"
   ],
   "Band": [
+    "default"
+  ],
+  "Brand": [
+    "navigation",
+    "project",
+    "footer"
+  ],
+  "BrandAsset": [
     "default"
   ],
   "Button": [
@@ -56,6 +76,21 @@
   "CodeTabs": [
     "default"
   ],
+  "Columns": [
+    "default"
+  ],
+  "CommandLines": [
+    "default"
+  ],
+  "ContentFlow": [
+    "default"
+  ],
+  "ContentGroup": [
+    "default"
+  ],
+  "ContentHeading": [
+    "default"
+  ],
   "Contents": [
     "default"
   ],
@@ -66,10 +101,17 @@
     "closed",
     "open"
   ],
+  "Disclosure": [
+    "closed",
+    "open"
+  ],
   "DocsLayout": [
     "default"
   ],
   "DocsSidebar": [
+    "default"
+  ],
+  "DocumentContent": [
     "default"
   ],
   "ExternalLink": [
@@ -81,8 +123,19 @@
   "Facts": [
     "default"
   ],
+  "FileDetail": [
+    "default"
+  ],
+  "FocusRegion": [
+    "default"
+  ],
   "Footer": [
     "default"
+  ],
+  "GameClock": [
+    "default",
+    "running",
+    "low"
   ],
   "Header": [
     "default"
@@ -91,6 +144,12 @@
     "default"
   ],
   "Illustration": [
+    "default"
+  ],
+  "InlineCode": [
+    "default"
+  ],
+  "InlineLink": [
     "default"
   ],
   "Input": [
@@ -111,10 +170,27 @@
     "highlighted",
     "disabled"
   ],
-  "Page": [
+  "MetricGrid": [
     "default"
   ],
+  "NativeCheckbox": [
+    "unchecked",
+    "checked",
+    "focus",
+    "invalid",
+    "disabled"
+  ],
+  "Note": [
+    "default"
+  ],
+  "Page": [
+    "default",
+    "application"
+  ],
   "Pager": [
+    "default"
+  ],
+  "PaletteSwatch": [
     "default"
   ],
   "ParamTable": [
@@ -134,6 +210,15 @@
     "busy",
     "error"
   ],
+  "RadioGroup": [
+    "default",
+    "selected",
+    "focus",
+    "disabled"
+  ],
+  "ReadingColumn": [
+    "default"
+  ],
   "Row": [
     "default",
     "selected",
@@ -146,8 +231,13 @@
   "Rule": [
     "default"
   ],
-  "SectionHead": [
+  "SectionBody": [
     "default"
+  ],
+  "SectionHead": [
+    "page",
+    "section",
+    "application"
   ],
   "Select": [
     "default",
@@ -199,6 +289,50 @@
     "selected",
     "focus"
   ],
+  "TerminalComposer": [
+    "default"
+  ],
+  "TerminalEntry": [
+    "prompt",
+    "assistant",
+    "output",
+    "error"
+  ],
+  "TerminalHeader": [
+    "default"
+  ],
+  "TerminalLink": [
+    "default"
+  ],
+  "TerminalLog": [
+    "default"
+  ],
+  "TerminalOutput": [
+    "default"
+  ],
+  "TerminalPairing": [
+    "visible",
+    "hidden"
+  ],
+  "TerminalSelect": [
+    "default",
+    "focus",
+    "invalid",
+    "disabled"
+  ],
+  "TerminalStatus": [
+    "default"
+  ],
+  "TerminalTextarea": [
+    "default",
+    "focus",
+    "invalid",
+    "disabled"
+  ],
+  "TerminalWorkspace": [
+    "pairing",
+    "session"
+  ],
   "Text": [
     "default"
   ],
@@ -218,5 +352,8 @@
   "Tooltip": [
     "closed",
     "open"
+  ],
+  "VisuallyHidden": [
+    "default"
   ]
 }

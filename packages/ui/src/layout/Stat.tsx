@@ -9,18 +9,20 @@ export interface StatProps {
   /** The mono label under the figure. */
   label: string;
   state?: StatState;
+  /** Figure scale. Use title for dense examples or narrow compositions. */
+  size?: 'stat' | 'title';
   /** Replaces the default word for loading, error or empty. */
   message?: string;
   className?: string;
 }
 
 /** A large figure with a mono label and a hairline above. No box. Loading, error and empty replace the figure with a word. */
-export function Stat({ figure, label, state = 'default', message, className }: StatProps) {
+export function Stat({ figure, label, state = 'default', size = 'stat', message, className }: StatProps) {
   const words = contract.text.stat;
   return (
     <div className={cn('hairline-t pt-6', className)} data-state={state} aria-busy={state === 'loading' || undefined}>
       {state === 'default' ? (
-        <p className="text-stat -ms-[0.05em] tabular-nums">{figure}</p>
+        <p className={cn(size === 'title' ? 'text-title' : 'text-stat', '-ms-[0.05em] tabular-nums')}>{figure}</p>
       ) : state === 'error' ? (
         <p className="text-heading" role="status"><Status status="error" label={message ?? words.error} className="text-heading" /></p>
       ) : (

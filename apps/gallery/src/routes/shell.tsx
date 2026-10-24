@@ -1,10 +1,11 @@
 import { Link } from '@ejm/ssg';
-import { DocsLayout, ExternalLink, Header, Reveal, type HeaderProps } from '@ejm/ui';
+import symbolInk from '@ejm/tokens/assets/logos/symbol-ink.svg?url';
+import symbolPaper from '@ejm/tokens/assets/logos/symbol-paper.svg?url';
+import { Contents, DocsLayout, DocsSidebar, ExternalLink, Header, Reveal, type HeaderProps } from '@ejm/ui';
 
 // Header, footer and layouts, shown the way a site uses them. The gallery's SiteLayout (src/frame.tsx) wraps this whole page. The previews
 // below use a data-theme on a wrapper to show both themes side by side; the toggle in each still switches the real page.
 
-const wordmark = <span className="text-heading tracking-tight">ejmlabs</span>;
 const nav: HeaderProps['nav'] = [
   { label: 'Docs', href: '/docs/' },
   { label: 'Components', href: '/components/' },
@@ -12,39 +13,29 @@ const nav: HeaderProps['nav'] = [
   { label: 'App', href: '/app/' },
   { label: 'Product', href: '/product/' },
 ];
-const header: HeaderProps = { logo: <span className="text-heading tracking-tight">ejm-ui</span>, homeLabel: 'ejm-ui home', nav };
+const header: Omit<HeaderProps, 'identity'> = { homeLabel: 'ejm-ui home', nav };
 
 function Preview({ theme }: { theme: 'light' | 'dark' }) {
   return (
     <section data-theme={theme} aria-label={`Header preview, ${theme} theme`} className="band relative">
       <p className="page-inset pt-6 text-meta text-muted">{theme} theme</p>
-      <Header {...header} className="static" />
+      <Header {...header} identity={{ name: 'ejm-ui', artwork: { src: symbolInk, darkSrc: symbolPaper, width: 418, height: 381 } }} />
     </section>
   );
 }
 
-const sidebar = (
-  <ul className="m-0 list-none p-0">
-    {['Get started', 'Components', 'Hooks', 'Layouts', 'Theme'].map((t, i) => (
-      <li key={t}>
-        <a href="#main" aria-current={i === 3 ? 'page' : undefined} className="touch-target flex items-center py-2 text-fg hover:text-link aria-[current=page]:font-semibold aria-[current=page]:underline aria-[current=page]:decoration-2">
-          {t}
-        </a>
-      </li>
-    ))}
-  </ul>
-);
-const contents = (
-  <ul className="m-0 list-none p-0 text-meta">
-    {['Overview', 'Sidebar', 'Contents', 'Reading column'].map(t => (
-      <li key={t}>
-        <a href="#main" className="touch-target flex items-center py-1.5 text-muted hover:text-fg">
-          {t}
-        </a>
-      </li>
-    ))}
-  </ul>
-);
+const sidebar = <DocsSidebar current="/shell/" filter={false} groups={[{
+  title: 'Gallery',
+  items: [
+    { label: 'Get started', href: '/docs/' },
+    { label: 'Components', href: '/components/' },
+    { label: 'Hooks', href: '/hooks/' },
+    { label: 'Layouts', href: '/layout/' },
+    { label: 'Shell', href: '/shell/' },
+    { label: 'Theme', href: '/docs/theming/' },
+  ],
+}]} />;
+const contents = <Contents items={[{ id: 'docs-article', label: 'Reading column', level: 3 }]} />;
 
 export default function ShellPage() {
   return (
@@ -76,7 +67,7 @@ export default function ShellPage() {
         </div>
         <DocsLayout sidebar={sidebar} contents={contents}>
           <article>
-            <h3 className="text-heading">An article in the reading column</h3>
+            <h3 id="docs-article" className="text-heading">An article in the reading column</h3>
             <p className="mt-4">
               Lines stop at 68 characters, so the eye can find the next line. The docs parts fill the two slots; this layout only owns the grid, the collapsing and the width.
             </p>

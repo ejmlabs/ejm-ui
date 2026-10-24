@@ -25,7 +25,7 @@ describe('IdeDemo', () => {
     renderIn('light', <IdeDemo {...options} />);
     await user.click(fix());
     await settle();
-    expect(within(chat()).getByText('write_file')).toBeInTheDocument();
+    expect(within(chat()).getByText('workbench_write_file')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Accept' }));
     expect(screen.queryByRole('button', { name: 'Accept' })).toBeNull();
     expect(within(chat()).getByText(/applied/)).toBeInTheDocument();

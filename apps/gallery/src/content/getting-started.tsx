@@ -34,7 +34,7 @@ export const gettingStarted: DocPage = {
         {
           type: 'callout',
           kind: 'note',
-          children: <p>ejm-ui is local only. It has no remote and no published packages yet, so you use it from this workspace.</p>,
+          children: <p>Packages are not published to a registry yet. Clone the repository and use its npm workspace.</p>,
         },
       ],
     },
@@ -42,15 +42,19 @@ export const gettingStarted: DocPage = {
       id: 'install',
       title: 'Install and run',
       blocks: [
-        { type: 'p', children: <>You need Node 22 or later. The repo uses npm workspaces, so one install covers every package.</> },
+        { type: 'p', children: <>Use Node.js 24 and npm. On Linux, tests also need Python and C/C++ build tools for node-pty. One workspace install covers every package.</> },
         {
           type: 'code',
           lang: 'sh',
-          code: `npm install
+          code: `git clone https://github.com/ejmlabs/ejm-ui.git
+cd ejm-ui
+npm ci --ignore-scripts
+npm rebuild node-pty --ignore-scripts=false
 npm run dev        # the gallery dev server (ejm-ssg dev)
 npm run build      # build every package and app; the gallery prerenders every page
 npm run check      # text checks, type check and tests`,
         },
+        { type: 'p', children: <>Rebuild only <code>node-pty</code>, without repository, model or release credentials. Keep other dependency install scripts disabled.</> },
         { type: 'p', children: <>Run <code>npm run check</code> before you commit. <a href="/docs/checks">Checks and budgets</a> lists what it protects.</> },
       ],
     },
@@ -67,7 +71,11 @@ npm run check      # text checks, type check and tests`,
             </>
           ),
         },
-        { type: 'code', lang: 'css', code: '@import "@ejm/ui/styles.css";' },
+        { type: 'code', lang: 'css', code: '@import "@ejm/ui/styles-site.css" source(none);' },
+        { type: 'p', children: <>The site profile includes shared layouts and Button. Disabling the automatic scan keeps unrelated installed package styles out of the bundle. Use the complete <code>styles.css</code> profile for form and application controls. Add <code>@ejm/ui/styles-docs.css</code> for documentation. Native product previews import the public <code>@ejm/demos/cli.css</code>, <code>ide-preview.css</code> or <code>harness.css</code> profile. The existing <code>ide.css</code> entry still styles the interactive simulated IDE. These imports own their source lists; do not scan private package paths.</> },
+        { type: 'p', children: <>Use the public Button and Input components for controls, Brand for approved artwork, and DocsSidebar and Contents for documentation navigation. Compose site content with SectionBody, Columns, ContentFlow and Actions. Add missing visual patterns to ejm-ui; public sites do not author CSS or utility classes.</> },
+        { type: 'p', children: <>The gallery links a complete stylesheet per route through <code>@ejm/ssg</code> head links, so docs, app examples and recorded demos load their own required styles before hydration. Interactive examples stay disabled while page code loads and enable when their handlers are ready. With scripts off, their content remains readable.</> },
+        { type: 'p', children: <>If a page chunk cannot load, a recovery message offers <strong>Reload this page</strong>. Reconnect first if you are offline. Reloading requests the latest HTML and can recover a tab opened before a release.</> },
         {
           type: 'p',
           children: (
@@ -97,7 +105,7 @@ npm run check      # text checks, type check and tests`,
         {
           type: 'code',
           lang: 'tsx',
-          code: `import { Band, Row, Rows, SectionHead } from '@ejm/ui';
+          code: `import { Band, Row, Rows, SectionBody, SectionHead } from '@ejm/ui';
 
 export default function Projects() {
   return (
@@ -105,9 +113,9 @@ export default function Projects() {
       <SectionHead kicker="01 / Projects" title="Three tools, one engine." id="projects-title">
         <p>ejm-harness is the engine. ejm-cli and ejm-ide run on it.</p>
       </SectionHead>
-      <Rows size="title" aria-label="Projects">
+      <SectionBody><Rows aria-label="Projects">
         <Row title="ejm-cli" href="/cli" description="A Rust terminal coding agent." meta="Rust / terminal" />
-      </Rows>
+      </Rows></SectionBody>
     </Band>
   );
 }`,

@@ -23,8 +23,8 @@
       "title": "Explain this repository",
       "steps": [
         { "say": "I will read the README and search for the public functions." },
-        { "tool": "read_file", "args": "README.md", "read": { "path": "README.md" } },
-        { "tool": "search_code", "args": "pub fn", "search": "pub fn" },
+        { "tool": "workbench_read_file", "args": "README.md", "read": { "path": "README.md" } },
+        { "tool": "workbench_search_code", "args": "pub fn", "search": "pub fn" },
         { "say": "harbor is a small order library. src/lib.rs exports order_total, src/retry.rs holds the retry backoff and window check, and web/config.ts reads the host and port. The test in src/retry.rs reads the wall clock, which is the first thing I would fix." }
       ]
     },
@@ -32,8 +32,8 @@
       "title": "Fix the flaky retry test",
       "steps": [
         { "say": "I will read the retry module and find where it reads the clock." },
-        { "tool": "read_file", "args": "src/retry.rs", "read": { "path": "src/retry.rs" } },
-        { "tool": "search_code", "args": "Instant::now", "search": "Instant::now" },
+        { "tool": "workbench_read_file", "args": "src/retry.rs", "read": { "path": "src/retry.rs" } },
+        { "tool": "workbench_search_code", "args": "Instant::now", "search": "Instant::now" },
         {
           "write": {
             "path": "src/retry.rs",
@@ -58,7 +58,7 @@
       "title": "Validate the port in config.ts",
       "steps": [
         { "say": "I will read the config loader." },
-        { "tool": "read_file", "args": "web/config.ts", "read": { "path": "web/config.ts" } },
+        { "tool": "workbench_read_file", "args": "web/config.ts", "read": { "path": "web/config.ts" } },
         {
           "write": {
             "path": "web/config.ts",
