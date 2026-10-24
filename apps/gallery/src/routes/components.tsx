@@ -211,7 +211,7 @@ export default function ComponentsPage() {
     <>
       <Band tone="paper" aria-labelledby="components-title">
         <SectionHead purpose="page" kicker="ejm-ui / components" title="Every component, every state." as="h1" id="components-title">
-          <p className="m-0">Each part below is drawn twice, under the light theme and then the dark one. They use only the kit utilities and read the theme contract.</p>
+          <p className="m-0">Each part is drawn in the light theme, then the dark one, using only the kit utilities and the theme contract.</p>
         </SectionHead>
       </Band>
       <Themed theme="light" />

@@ -134,7 +134,7 @@ export default function App() {
     <>
       <Band tone="paper" aria-labelledby="app-title">
         <SectionHead purpose="page" kicker="ejm-ui / application kit" title="Figures, charts and calm states." as="h1" id="app-title">
-          <p className="m-0">A dashboard, three chart types and every empty, loading and error state, with no boxes. All data on this page is sample data, invented for the demo.</p>
+          <p className="m-0">A dashboard, three chart types and the empty, loading and error states, with no boxes. All data here is sample data.</p>
         </SectionHead>
       </Band>
 
@@ -151,7 +151,7 @@ export default function App() {
       <Band tone="mist" flush column={false} aria-labelledby="charts-title">
         <div className="page py-rhythm-sm">
           <SectionHead kicker="03 / Charts" title="Line, bar and area." id="charts-title">
-            <p className="m-0">Each series has a hue, a marker or fill pattern, a name in the legend and a table of its values. The dashboard above shows a chart on Ink.</p>
+            <p className="m-0">Each series has a hue, a marker or fill pattern, a legend name and a table of its values.</p>
           </SectionHead>
         </div>
         <Pair band="paper">{Charts}</Pair>
@@ -160,7 +160,7 @@ export default function App() {
       <Band tone="paper" flush column={false} aria-labelledby="states-title">
         <div className="page py-rhythm-sm">
           <SectionHead kicker="04 / States" title="Every list, table and panel has a sentence." id="states-title">
-            <p className="m-0">Empty, loading and error each say one plain sentence and offer one action where one exists.</p>
+            <p className="m-0">Empty, loading and error each get one plain sentence, and one action where there is one.</p>
           </SectionHead>
         </div>
         <Pair band="paper">{States}</Pair>
