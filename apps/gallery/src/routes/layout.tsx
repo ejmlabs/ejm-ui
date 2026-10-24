@@ -1,7 +1,7 @@
 import ripple from '@ejm/ui/art/inline/divider-ripple.svg?raw';
 import { Band, Button, Fact, Facts, Hero, ProductStage, Row, Rows, Rule, SectionHead, Stat, Status, Text } from '@ejm/ui';
 import type { RowState, StatState } from '@ejm/core';
-import { Cli, Harness, Ide } from '../windows';
+import { Cli, Harness, Ide, StageCaptions } from '../windows';
 
 // The layout showcase: the containerless language end to end, built only from layout components and the theme contract.
 // Words come from the ejmlabs project READMEs; the product images are real captures with provenance captions.
@@ -27,11 +27,14 @@ export default function Layout() {
         title="Open source. Room to explore."
         aside={
           // ejm-shots-allow: layout demonstration of ProductStage with real ProductShot children.
-          <ProductStage>
-            <Cli />
-            <Ide />
-            <Harness />
-          </ProductStage>
+          <>
+            <ProductStage>
+              <Cli />
+              <Ide />
+              <Harness />
+            </ProductStage>
+            <StageCaptions />
+          </>
         }
         actions={
           <>
