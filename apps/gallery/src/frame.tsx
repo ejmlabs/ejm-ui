@@ -19,7 +19,7 @@ const footer: FooterProps = {
     { heading: 'Kits', links: pages.filter(p => p.group === 'Kits').map(item) },
     { heading: 'ejmlabs', links: [...otherSites('ejmlabs'), ...sourceLinks('ejmlabs')] },
   ],
-  privacy: 'This site keeps one cookie, your theme choice. It has no analytics and sends nothing about your visit.',
+  privacy: 'One cookie stores your theme choice. This site has no analytics and sends nothing about your visit.',
   legal: 'ejm-ui by ejmlabs.',
 };
 

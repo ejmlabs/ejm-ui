@@ -16,7 +16,7 @@ const ORIGIN = 'https://ui.ejmlabs.com';
 const SITE_TITLE = 'ejm-ui, the ejmlabs design system';
 
 const expected = [
-  { path: '/', title: SITE_TITLE, description: /ejm-ui is the ejmlabs design system/ },
+  { path: '/', title: SITE_TITLE, description: /The ejmlabs design system/ },
   ...[...pages, ...docRoutes].map(p => ({ path: p.path, title: `${p.title} | ejm-ui`, description: p.description })),
 ];
 const fileOf = (path: string) => (path === '/' ? 'index.html' : `${path.slice(1)}index.html`);
