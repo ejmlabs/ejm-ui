@@ -61,15 +61,15 @@ export function Contents({ items, label = 'On this page', className }: { items: 
     const heading = document.getElementById(id);
     if (!heading) return;
     event.preventDefault();
+    // On a phone the list sits in a native <details>: fold it away once the reader has chosen.
+    const details = event.currentTarget.closest('details');
+    const summary = details?.querySelector('summary');
+    if (details && summary && getComputedStyle(summary).display !== 'none') details.open = false;
     if (!heading.hasAttribute('tabindex')) heading.tabIndex = -1;
     heading.focus({ preventScroll: true });
     heading.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
     history.pushState(null, '', `#${id}`);
     setCurrent(id);
-    // On a phone the list sits in a native <details>: fold it away once the reader has chosen.
-    const details = event.currentTarget.closest('details');
-    const summary = details?.querySelector('summary');
-    if (details && summary && getComputedStyle(summary).display !== 'none') details.open = false;
   };
 
   return (

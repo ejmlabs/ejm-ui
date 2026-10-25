@@ -60,7 +60,7 @@ export function TermBlock({ block, plain = false }: { block: CliBlock; plain?: b
 
 const oneLine = 'overflow-hidden whitespace-pre text-ellipsis';
 
-export function CliHeader({ provider, title, write, cwd, sessionId, plain = false }: { provider: string; title: string; write: boolean; cwd: string; sessionId: string; plain?: boolean }) {
+export function CliHeader({ provider, title, write, shell = false, cwd, sessionId, plain = false }: { provider: string; title: string; write: boolean; shell?: boolean; cwd: string; sessionId: string; plain?: boolean }) {
   const g = glyphsFor(plain);
   return (
     <div className="shrink-0">
@@ -70,7 +70,7 @@ export function CliHeader({ provider, title, write, cwd, sessionId, plain = fals
         <span className={roleTone('dim', plain)}>{'  ' + g.sep + '  ' + title}</span>
       </div>
       <div className={oneLine}>
-        <span className={plain ? 'font-bold' : write ? 'text-ui-warning' : 'text-ui-dim'}>{'grants: read' + (write ? ' + write' : '')}</span>
+        <span className={plain ? 'font-bold' : write ? 'text-ui-warning' : 'text-ui-dim'}>{'grants: read' + (write ? ' + write' : '') + (shell ? ' + shell' : '')}</span>
         <span className={roleTone('dim', plain)}>{'  ' + g.sep + '  ' + cwd + '  ' + g.sep + '  ' + sessionId}</span>
       </div>
     </div>

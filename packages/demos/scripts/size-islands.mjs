@@ -100,7 +100,7 @@ try {
     writeFileSync(file, source);
     const out = await bundle(tmp, { [name]: file }, undefined);
     const closed = closure(out, out.find((c) => c.isEntry));
-    return { size: closed.reduce((s, c) => s + gz(c.code), 0), code: closed.map((c) => c.code).join('\n') };
+    return { size: closed.reduce((s, c) => s + gz(c.code), 0), code: closed.map((c) => c.code).join('\n'), lazyCode: out.filter((c) => !closed.includes(c)).map((c) => c.code).join('\n'), lazySize: out.filter((c) => !closed.includes(c)).reduce((s, c) => s + gz(c.code), 0) };
   };
   const mount = (imports, jsx) => `import { createRoot } from 'react-dom/client';\n${imports}\ncreateRoot(document.body).render(${jsx});\n`;
   // Strings only one product's frame holds, to tell whose view is in a bundle.
@@ -110,7 +110,21 @@ try {
   const mark = Object.fromEntries(names.map((n) => [n, only(n)]));
   const base = (await initialOf('empty', emptyPage)).size;
   const Cap = (n) => n[0].toUpperCase() + n.slice(1);
+  // Build-only counter data, never a claimed product capture. The late marker must stay in its lazy data chunk.
+  const recordedMarker = 'RECORDED_SIZE_TIMELINE_ONLY';
+  const recordedId = 'a'.repeat(64);
+  const recordedFile = join(tmp, 'recorded-size-data.js');
+  writeFileSync(recordedFile, `export default ${JSON.stringify({ id: recordedId, beats: [{ at: 0, update: { blocks: [{ id: 1, kind: 'notice', title: 'Size fixture', lines: [{ t: recordedMarker, r: null }] }] } }] })};\n`);
+  const recordedFrame = { provider: 'size fixture', cwd: 'fixture', title: 'Recorded size fixture', sessionId: 'test', write: false, agents: 0, models: 0, tools: 0, blocks: [], hints: [] };
+  const recordedPage = mount(`import { LazyCliShowcase } from ${JSON.stringify(src('islands/cli-lazy.tsx'))};\nconst frame = ${JSON.stringify(recordedFrame)};\nconst source = { id: ${JSON.stringify(recordedId)}, initialFrame: frame, finalFrame: frame, load: () => import(${JSON.stringify(recordedFile)}).then(m => m.default) };`, '<LazyCliShowcase source={source} />');
+  const harnessRecordedMarker = 'RECORDED_HARNESS_SIZE_TIMELINE_ONLY';
+  const harnessRecordedFile = join(tmp, 'recorded-harness-size-data.js');
+  writeFileSync(harnessRecordedFile, `export default ${JSON.stringify({ id: recordedId, beats: [{ at: 0, update: { journal: [{ seq: 1, tick: 0, time: '+0.00s', event: harnessRecordedMarker, detail: 'Size fixture', level: 'info', session: null }] } }] })};\n`);
+  const harnessRecordedFrame = { limit: 3, commands: 2, stats: { running: 0, queued: 0, done: 0, commandsHeld: 0 }, sessions: [], journal: [], sample: { id: 'rust', label: 'Size fixture', caption: 'Harness recorded size fixture', code: '// size fixture' } };
+  const harnessRecordedPage = mount(`import { LazyHarnessShowcase } from ${JSON.stringify(src('islands/harness-lazy.tsx'))};\nconst frame = ${JSON.stringify(harnessRecordedFrame)};\nconst source = { id: ${JSON.stringify(recordedId)}, initialFrame: frame, finalFrame: frame, load: () => import(${JSON.stringify(harnessRecordedFile)}).then(m => m.default) };`, '<LazyHarnessShowcase source={source} />');
   const cases = [
+    { label: 'LazyHarnessShowcase (caller data)', only: 'harness', required: 'Harness recorded size fixture', recordingMarker: harnessRecordedMarker, source: harnessRecordedPage },
+    { label: 'LazyCliShowcase (caller data)', only: 'cli', required: 'Recorded size fixture', recordingMarker: recordedMarker, source: recordedPage },
     ...names.map((n) => ({ label: `Lazy${Cap(n)}Demo (${n}-lazy)`, only: n, ...{ source: mount(`import { Lazy${Cap(n)}Demo } from ${JSON.stringify(src(`islands/${n}-lazy.tsx`))};`, `<Lazy${Cap(n)}Demo />`) } })),
     { label: 'ProductHeroStage with CliHeroWindow', only: 'cli', source: mount(`import { ProductHeroStage, CliHeroWindow } from ${JSON.stringify(src('hero/ProductHero.tsx'))};`, '<ProductHeroStage title="t" windows={<CliHeroWindow />} />') },
     { label: 'LazyDemo product="cli" (all three views)', only: null, source: mount(`import { LazyDemo } from ${JSON.stringify(src('islands/LazyDemo.tsx'))};`, '<LazyDemo product="cli" />') },
@@ -121,10 +135,24 @@ try {
     const r = await initialOf(c.label.replace(/\W+/g, '-'), c.source);
     const added = r.size - base;
     const foreign = c.only ? names.filter((n) => n !== c.only).filter((n) => mark[n].some((s) => r.code.includes(s))) : [];
-    const own = !c.only || mark[c.only].some((s) => r.code.includes(s));
+    const own = c.required ? r.code.includes(c.required) : !c.only || mark[c.only].some((s) => r.code.includes(s));
     const over = c.only && added > firstLoadBudget * 1024;
-    failed ||= foreign.length > 0 || !own || over;
+    const recordingLeak = c.recordingMarker && (r.code.includes(c.recordingMarker) || !r.lazyCode.includes(c.recordingMarker) || r.lazySize > budget * 1024 || names.filter((n) => n !== c.only).some((n) => mark[n].some((s) => r.lazyCode.includes(s))) || ['Grant write', 'Crash worker'].some((s) => r.lazyCode.includes(s)));
+    failed ||= foreign.length > 0 || !own || over || recordingLeak;
+    if (c.recordingMarker) console.log(`  recorded lazy closure ${kb(r.lazySize)} ${recordingLeak ? 'LEAK, MISSING OR OVER BUDGET' : 'data stays lazy, ok'}`);
     console.log(`  ${c.label.padEnd(44)} +${kb(added)}   ${c.only ? (foreign.length ? 'LEAK: ' + foreign.join(', ') + ' view' : over ? 'OVER BUDGET' : own ? 'only the ' + c.only + ' view' : 'MISSING the ' + c.only + ' view') : 'all three views'}`);
+  }
+  // Additive native previews retain server excerpts without shipping them in the
+  // initial browser closure. Their complete per-product player/data stays lazy.
+  const previewMarkers = { cli: 'done · shell cargo test --quiet', ide: 'workbench_write_file', harness: 'reopened saved session: Harbor checks' };
+  console.log('\nNative previews, initial addition and complete lazy closure, gzip\n');
+  for (const name of names) {
+    const r = await initialOf(`${name}-preview`, mount(`import { Lazy${Cap(name)}Preview } from ${JSON.stringify(src(`islands/${name}-preview.tsx`))};`, `<Lazy${Cap(name)}Preview />`));
+    const added = r.size - base;
+    const foreign = names.filter(other => other !== name && (r.code + r.lazyCode).includes(previewMarkers[other]));
+    const invalid = added > firstLoadBudget * 1024 || r.lazySize > budget * 1024 || r.code.includes(previewMarkers[name]) || !r.lazyCode.includes(previewMarkers[name]) || foreign.length > 0;
+    failed ||= invalid;
+    console.log(`  Lazy${Cap(name)}Preview initial +${kb(added)}, lazy ${kb(r.lazySize)}   ${invalid ? 'MISSING, LEAK OR OVER BUDGET' : 'one product, stays lazy, ok'}`);
   }
 } finally {
   rmSync(tmp, { recursive: true, force: true });

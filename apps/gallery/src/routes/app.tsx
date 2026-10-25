@@ -98,7 +98,7 @@ const States = (
       <Rule label="Stat" />
       <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-8">
         {statStates.map(s => (
-          <Stat key={s} state={s} figure="1,284" label={`sessions, ${s}`} className="[&_.text-stat]:text-title" />
+          <Stat key={s} state={s} figure="1,284" label={`sessions, ${s}`} size="title" />
         ))}
       </div>
     </div>
@@ -133,24 +133,24 @@ export default function App() {
   return (
     <>
       <Band tone="paper" aria-labelledby="app-title">
-        <SectionHead kicker="ejm-ui / application kit" title="Figures, charts and calm states." size="title" as="h1" id="app-title">
+        <SectionHead purpose="page" kicker="ejm-ui / application kit" title="Figures, charts and calm states." as="h1" id="app-title">
           <p className="m-0">A dashboard, three chart types and every empty, loading and error state, with no boxes. All data on this page is sample data, invented for the demo.</p>
         </SectionHead>
       </Band>
 
       <Band tone="paper" aria-labelledby="dash-title">
-        <SectionHead kicker="01 / Dashboard" title="One row of figures, then the detail." size="title" id="dash-title" />
+        <SectionHead kicker="01 / Dashboard" title="One row of figures, then the detail." id="dash-title" />
         <Dashboard {...dashboard} as="h3" className="mt-16" />
       </Band>
 
       <Band tone="ink" aria-labelledby="dash-ink-title">
-        <SectionHead kicker="02 / Dashboard on Ink" title="The same dashboard on a dark band." size="title" id="dash-ink-title" />
+        <SectionHead kicker="02 / Dashboard on Ink" title="The same dashboard on a dark band." id="dash-ink-title" />
         <Dashboard {...dashboard} as="h3" className="mt-16" />
       </Band>
 
       <Band tone="mist" flush column={false} aria-labelledby="charts-title">
         <div className="page py-rhythm-sm">
-          <SectionHead kicker="03 / Charts" title="Line, bar and area." size="title" id="charts-title">
+          <SectionHead kicker="03 / Charts" title="Line, bar and area." id="charts-title">
             <p className="m-0">Each series has a hue, a marker or fill pattern, a name in the legend and a table of its values. The dashboard above shows a chart on Ink.</p>
           </SectionHead>
         </div>
@@ -159,7 +159,7 @@ export default function App() {
 
       <Band tone="paper" flush column={false} aria-labelledby="states-title">
         <div className="page py-rhythm-sm">
-          <SectionHead kicker="04 / States" title="Every list, table and panel has a sentence." size="title" id="states-title">
+          <SectionHead kicker="04 / States" title="Every list, table and panel has a sentence." id="states-title">
             <p className="m-0">Empty, loading and error each say one plain sentence and offer one action where one exists.</p>
           </SectionHead>
         </div>
@@ -168,7 +168,7 @@ export default function App() {
       </Band>
 
       <Band tone="mist" aria-labelledby="dash-states-title">
-        <SectionHead kicker="05 / Dashboard states" title="The whole dashboard, and parts of it." size="title" id="dash-states-title" />
+        <SectionHead kicker="05 / Dashboard states" title="The whole dashboard, and parts of it." id="dash-states-title" />
         <div className="mt-16 flex flex-col gap-10">
           <Dashboard {...dashboard} as="h3" title="Loading" state="loading" />
           <Dashboard {...dashboard} as="h3" title="Error" state="error" action={{ key: 'r', label: 'Try again' }} onAction={none} />

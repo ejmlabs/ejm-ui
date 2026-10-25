@@ -49,6 +49,7 @@ mod status;
 mod style;
 mod table;
 mod text;
+mod workspace;
 /// The generated palettes and glyph tables. Do not edit: run `node scripts/sync-rust-theme.mjs`.
 #[allow(missing_docs, reason = "generated file, documented by the generator's banner")]
 #[rustfmt::skip]
@@ -68,6 +69,10 @@ pub use style::{
 };
 pub use table::{Align, Column, Table, TableState};
 pub use text::{Rule, Text, TextVariant};
+pub use workspace::{
+    ActivityLine, ResourceCount, ResourceLine, SessionHeader, WorkspaceLayout, worker_line,
+    workspace_controls,
+};
 
 use std::collections::BTreeMap;
 

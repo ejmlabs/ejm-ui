@@ -3,3 +3,5 @@
      @import "@ejm/ui/styles-docs.css"; */
 @source "./docs";
 @source not "./docs/**/*.test.{ts,tsx}";
+@source "./shell/DocsLayout.tsx";
+@source "./components/Table.tsx";

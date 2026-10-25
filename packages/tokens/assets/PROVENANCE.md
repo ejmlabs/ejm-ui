@@ -1,9 +1,9 @@
 # Provenance
 
-Everything below was copied unchanged from the old `design-kit/` (read only) by `node scripts/assets.mjs --sync`.
+Imported rows retain the old `design-kit/` bytes. Rows marked `generated:chess-assets` identify the generated Chess brand family; its hashes verify the retained output.
 Do not edit this table by hand. `node scripts/assets.mjs` re-hashes every file here and, when the design-kit is present, every source.
 Paths are relative to `packages/tokens/` here and to `design-kit/` at the source.
-Retired kit handoff files, editable kit sources, and ZIP archives are excluded from imports.
+Retired social profile kits and ZIP archives are excluded from imports.
 
 | File | Source | sha256 |
 | --- | --- | --- |
@@ -136,44 +136,6 @@ Retired kit handoff files, editable kit sources, and ZIP archives are excluded f
 | `assets/social/social-card-sage.svg` | `social/social-card-sage.svg` | `e3e3b7422dffc4794416ac12910ab099f59f7972bccfdc71561c26bf8dc58c5d` |
 | `assets/social/social-card.png` | `social/social-card.png` | `a049eeff3edebc326f89f58c286d7a1bbf469ad42789e8df2056afe4e90dc024` |
 | `assets/social/social-card.svg` | `social/social-card.svg` | `e3e3b7422dffc4794416ac12910ab099f59f7972bccfdc71561c26bf8dc58c5d` |
-| `assets/social/x-kit/UPLOAD-avatar.png` | `social/x-kit/UPLOAD-avatar.png` | `ab03d3daeb485b3d336d7145fe42f39ca5e53e263b6a0a94f49a092df6aebb25` |
-| `assets/social/x-kit/UPLOAD-forest-avatar.png` | `social/x-kit/UPLOAD-forest-avatar.png` | `c362b7d2f734e7a25c6b0f282e9c94f24d864735cde1c723bdcea109570bb9d3` |
-| `assets/social/x-kit/UPLOAD-forest-header.png` | `social/x-kit/UPLOAD-forest-header.png` | `b05173194cb7d4940d664b16550f047912f2ca64fe9823548bc05064131bac9d` |
-| `assets/social/x-kit/UPLOAD-header.png` | `social/x-kit/UPLOAD-header.png` | `08c593e5dbf65b12f461adb1f5558e1a5c7abcc8d436e11de0d0b0085f286e5d` |
-| `assets/social/x-kit/avatars/forest-1024.png` | `social/x-kit/avatars/forest-1024.png` | `ed9a2570a4124526b9af402f279a80404a34f511b5537b65e0b1e51033707b73` |
-| `assets/social/x-kit/avatars/forest-1024.svg` | `social/x-kit/avatars/forest-1024.svg` | `6d78e8f7b2b83836b7d63486540f75d61cf66a4755d4464b8fdb81b168d0bb4e` |
-| `assets/social/x-kit/avatars/forest-400.png` | `social/x-kit/avatars/forest-400.png` | `c362b7d2f734e7a25c6b0f282e9c94f24d864735cde1c723bdcea109570bb9d3` |
-| `assets/social/x-kit/avatars/forest-400.svg` | `social/x-kit/avatars/forest-400.svg` | `0e221adcb2fc917980165e568a498800bf5b3a054741cc43bf9b6d87e8448dee` |
-| `assets/social/x-kit/avatars/paper-1024.png` | `social/x-kit/avatars/paper-1024.png` | `3df1009c39b4ae18ad4b84cca416d98856fa437d201892e79bfb9cd0e0c55b3a` |
-| `assets/social/x-kit/avatars/paper-1024.svg` | `social/x-kit/avatars/paper-1024.svg` | `f902f1fce045e11c5292c6ee19ff040084d18f6f5c14b58b268bee9738948775` |
-| `assets/social/x-kit/avatars/paper-400.png` | `social/x-kit/avatars/paper-400.png` | `9fe6ece5a6904ac595d6240186d187ae74dcb702444dbfb0834c16af7e8e2884` |
-| `assets/social/x-kit/avatars/paper-400.svg` | `social/x-kit/avatars/paper-400.svg` | `4a6ac885dd3a211931ad8cee1d45791442f5648ece5eaf79cb61fe30cf3b333d` |
-| `assets/social/x-kit/avatars/sage-1024.png` | `social/x-kit/avatars/sage-1024.png` | `02b05778b0f9c5a1f601f27f3ab4858de48bbe353ac09a6ba0addba9b75ba898` |
-| `assets/social/x-kit/avatars/sage-1024.svg` | `social/x-kit/avatars/sage-1024.svg` | `5191e060db330b179e004b9a3abe4f09d472944322b9bc470955ad25425546d6` |
-| `assets/social/x-kit/avatars/sage-400.png` | `social/x-kit/avatars/sage-400.png` | `ab03d3daeb485b3d336d7145fe42f39ca5e53e263b6a0a94f49a092df6aebb25` |
-| `assets/social/x-kit/avatars/sage-400.svg` | `social/x-kit/avatars/sage-400.svg` | `90fbd46edb534a820e1edd7f48fef9c8220ad60b6f1a89f502567af7127420d2` |
-| `assets/social/x-kit/banners/forest-1500x500.png` | `social/x-kit/banners/forest-1500x500.png` | `b05173194cb7d4940d664b16550f047912f2ca64fe9823548bc05064131bac9d` |
-| `assets/social/x-kit/banners/forest-1500x500.svg` | `social/x-kit/banners/forest-1500x500.svg` | `8c0ae56ce8b6b81234a4e7c7aaad84ef308e3011a4bfb877cb8140980b7fe68d` |
-| `assets/social/x-kit/banners/paper-1500x500.png` | `social/x-kit/banners/paper-1500x500.png` | `42014e119a121764ec24a55f60fa2f7d17e2c4c9e343ea342bb247b041d28a77` |
-| `assets/social/x-kit/banners/paper-1500x500.svg` | `social/x-kit/banners/paper-1500x500.svg` | `0ef5529362bfec04722a4c7b63edbc21b9d057c44c82d739bfd959eaf3d729c5` |
-| `assets/social/x-kit/banners/sage-1500x500.png` | `social/x-kit/banners/sage-1500x500.png` | `08c593e5dbf65b12f461adb1f5558e1a5c7abcc8d436e11de0d0b0085f286e5d` |
-| `assets/social/x-kit/banners/sage-1500x500.svg` | `social/x-kit/banners/sage-1500x500.svg` | `725885ebb4931ebd224d74a9506c8fd1dfc8fab41eca6aaf14a7900e1ad6b50b` |
-| `assets/social/x-kit/fonts/IBMPlexMono-Medium.ttf` | `social/x-kit/fonts/IBMPlexMono-Medium.ttf` | `a9b4c49bb299e05b5f6c481e7fb5e78943d2793249a0c8874ab574a2d1ea6755` |
-| `assets/social/x-kit/fonts/IBMPlexMono-OFL.txt` | `social/x-kit/fonts/IBMPlexMono-OFL.txt` | `7e6b2818edbd8f6a01ae80641cc8f16a51080d08fb4e532be3a0b6f74adb07da` |
-| `assets/social/x-kit/fonts/Manrope-OFL.txt` | `social/x-kit/fonts/Manrope-OFL.txt` | `58172e0c0fac2cda8a37b348164bb55e44b0e69051e557e92b1d3f6910141f7b` |
-| `assets/social/x-kit/fonts/Manrope-Variable.ttf` | `social/x-kit/fonts/Manrope-Variable.ttf` | `3ae11c49db0455a3cc33e37d380f20fdb8c7f8b41dc07625c177e3d87a9d6ae6` |
-| `assets/social/x-kit/guides/banner-safe-area.png` | `social/x-kit/guides/banner-safe-area.png` | `443bcd72832c67af6836978e8540c6f2bf755fe624588b62ecea3edb313db514` |
-| `assets/social/x-kit/guides/banner-safe-area.svg` | `social/x-kit/guides/banner-safe-area.svg` | `5df2bc85877591f5067c7117a955705ad208010d4e70635a02f92a408ac67c90` |
-| `assets/social/x-kit/posts/project-template-1600x900.png` | `social/x-kit/posts/project-template-1600x900.png` | `5c3fa94c6f9e3e3b43127737a92da221dce352a76948d4073a71da02d8f41f77` |
-| `assets/social/x-kit/posts/project-template-1600x900.svg` | `social/x-kit/posts/project-template-1600x900.svg` | `53ea3b1b4c997d411ce2ad5a759bde4fee00c5fb2ba1c09970c4a0b403a7bfd3` |
-| `assets/social/x-kit/posts/project-template-sage-1600x900.png` | `social/x-kit/posts/project-template-sage-1600x900.png` | `39ed810226beb96467a6f13fe0f4b2d0030bbae405238686e61d1b98f4034b84` |
-| `assets/social/x-kit/posts/project-template-sage-1600x900.svg` | `social/x-kit/posts/project-template-sage-1600x900.svg` | `d877be1f330a4a186a491ca91766dcb686add928f9c5291f545610364b8d02be` |
-| `assets/social/x-kit/posts/signature-1600x900.png` | `social/x-kit/posts/signature-1600x900.png` | `dbfc5af24a5ae4b1cf49690aca730686a50811fdba79cd9ccb098fac4d2ec323` |
-| `assets/social/x-kit/posts/signature-1600x900.svg` | `social/x-kit/posts/signature-1600x900.svg` | `16de0e6e170e383c335515bab08e026cf172fed93c43b33dbfd0cfb3d9e549c9` |
-| `assets/social/x-kit/posts/signature-sage-1600x900.png` | `social/x-kit/posts/signature-sage-1600x900.png` | `ea02245616f7134965e108a3bbb485111f3e037e27eea75704bdc2650846316a` |
-| `assets/social/x-kit/posts/signature-sage-1600x900.svg` | `social/x-kit/posts/signature-sage-1600x900.svg` | `764cb251f93c22d1671c2a1b3427af2989894420394c60af4c238819ecbb6894` |
-| `assets/social/x-kit/previews/profile-desktop.png` | `social/x-kit/previews/profile-desktop.png` | `c26957aae2aec4ba99f1f500d8bb62d6c1a82eb650f7f1b378fb2bcab675a703` |
-| `assets/social/x-kit/previews/profile-mobile.png` | `social/x-kit/previews/profile-mobile.png` | `a7daccbc1b0e822cea54c74e32645b4cd3baeb3ecaa0922bb49a8a5d2e2261b1` |
 | `assets/lockups/editable/signature-forest.svg` | `lockups/editable/signature-forest.svg` | `b325e51ba6c3941b9cf2cb11ba41a59dbd154164edbfd84a171cc720525a44f8` |
 | `assets/lockups/editable/signature-paper.svg` | `lockups/editable/signature-paper.svg` | `cd7ce83be1175fe0fc0ecd5234f06590657160889d09c9142ac77ba97629bc3f` |
 | `assets/lockups/editable/signature-sage.svg` | `lockups/editable/signature-sage.svg` | `62b31edb734b5bedb21be787de279487305b57625ae1f6fd6244299829e5b00a` |
@@ -289,6 +251,69 @@ Retired kit handoff files, editable kit sources, and ZIP archives are excluded f
 | `assets/projects/harness/site.webmanifest` | `projects/harness/site.webmanifest` | `c89b51f6b89f3c92eec7de23ca4cff0014ab1735ccc4a76aa6c41f7894228258` |
 | `assets/projects/harness/social-card.png` | `projects/harness/social-card.png` | `423714a99a3e675107b95129581a625b8c5ec451b8b866a6a9ddc60e6448db6e` |
 | `assets/projects/harness/social-card.svg` | `projects/harness/social-card.svg` | `3265165a7fb051744ddd085edd535230f817f71911851fbf40ce1e89cabc23ed` |
+| `assets/projects/relay/android-chrome-192.png` | `projects/relay/android-chrome-192.png` | `da830422a1b7a053e3328d9978311842a048a53b1afde4a91070f52223c16d02` |
+| `assets/projects/relay/android-chrome-512.png` | `projects/relay/android-chrome-512.png` | `7f3a17443141d601400eea219e6ab9f158ef0c731b298d82e5ca8ddc1a916694` |
+| `assets/projects/relay/apple-touch-icon.png` | `projects/relay/apple-touch-icon.png` | `aa059a56bebac2c90cb834deb4447e54dc088ef70e0bc48a07ea1a3de6b9b42b` |
+| `assets/projects/relay/favicon-16.png` | `projects/relay/favicon-16.png` | `9807bc4eb5c3e007a3676c723ded96bc97bd07b5f0b1cf2e4a53178e7799c5bb` |
+| `assets/projects/relay/favicon-24.png` | `projects/relay/favicon-24.png` | `f4059fd1dc4f79dbb973e40468f0d874d1d0b69dc769aba8878648389b166583` |
+| `assets/projects/relay/favicon-32.png` | `projects/relay/favicon-32.png` | `29f5506113354addc9562918c2d5aadc8760d88ca3522a015d72c17ec6f6545a` |
+| `assets/projects/relay/favicon-48.png` | `projects/relay/favicon-48.png` | `45ccba9737e7748a61f9beb78dd3dcd3fb05b6523088786f3dc969acd17f95ca` |
+| `assets/projects/relay/favicon.ico` | `projects/relay/favicon.ico` | `5758721525f31f0a918d79e82faa2ab4bcb33d4ee5166b17bdbd8ff362fd0cb7` |
+| `assets/projects/relay/favicon.svg` | `projects/relay/favicon.svg` | `c9b0418af054d027f4137b9b87d2b9ce17ec54fbd4bff3817eedd205cb960404` |
+| `assets/projects/relay/icon-forest.png` | `projects/relay/icon-forest.png` | `1120d7a0b2011590236b94d7d98225c5107851adc941d58fe0a3cf2962e1b2f1` |
+| `assets/projects/relay/icon-forest.svg` | `projects/relay/icon-forest.svg` | `ea9401718d9a35d680808fdb107755f61cf965fcbb13ac82327afaf22f2d4bd0` |
+| `assets/projects/relay/icon-sage.png` | `projects/relay/icon-sage.png` | `4e7466ad9966faa5dffe8c232b5d6247b9ca4b94af65a4fe92ecbea06e41d0d2` |
+| `assets/projects/relay/icon-sage.svg` | `projects/relay/icon-sage.svg` | `58b9106624f09e9cb8192cdf954232d8646b01d46f8172cede300bc885c0bcb9` |
+| `assets/projects/relay/logo-ink.png` | `projects/relay/logo-ink.png` | `dbb7bc6cbf264565f4b4c333ae809cfa90f38cbcd7437f0433f5ee5bc82cfbd3` |
+| `assets/projects/relay/logo-ink.svg` | `projects/relay/logo-ink.svg` | `932d0c3f41f94fc184aea7ef26fece195caa3b442e9ba23e8e1533283947b0fd` |
+| `assets/projects/relay/logo-paper.png` | `projects/relay/logo-paper.png` | `f5c7b9dc016b6c34dfd3b8e29d474542ccc23799583f6e676b317bf99fdcc5e1` |
+| `assets/projects/relay/logo-paper.svg` | `projects/relay/logo-paper.svg` | `5139b6d369232dfeec1386dcc55895f4766d82591d65a2aff168453fde3728c7` |
+| `assets/projects/relay/logo-primary.png` | `projects/relay/logo-primary.png` | `ea66bc96692c62410485130c64c6f3c97d2c98b886b55de4b3eace3f870355b0` |
+| `assets/projects/relay/logo-primary.svg` | `projects/relay/logo-primary.svg` | `6fe579ff9eba010318c29e7ade82e435c2ac5c35a00c1ead44e188dea986bb34` |
+| `assets/projects/relay/mark-ink.png` | `projects/relay/mark-ink.png` | `77abded528459558a922dd2e2777a150a3f12af9996a6aa618229b86b3621a46` |
+| `assets/projects/relay/mark-ink.svg` | `projects/relay/mark-ink.svg` | `07426f957f0d16589c1aee71f1e05953bff872ef1559ac1cd120698fe65aa2ae` |
+| `assets/projects/relay/mark-paper.png` | `projects/relay/mark-paper.png` | `660e6077de22a7183fe63b204b72abd1cf61d775f4a638e26cc56686212e0e13` |
+| `assets/projects/relay/mark-paper.svg` | `projects/relay/mark-paper.svg` | `cb37b90e8c65d6211378490cb37f80861dfea7384c75611abccc070ae54ee642` |
+| `assets/projects/relay/mark-sage.png` | `projects/relay/mark-sage.png` | `81296670d137698ed566fc86d30926aa75f3e890a272baa110cc9eabcca988b7` |
+| `assets/projects/relay/mark-sage.svg` | `projects/relay/mark-sage.svg` | `2df1b9f68797082dc2db8561918af777f914f39dc0978f19e60cf16550d3e366` |
+| `assets/projects/relay/site.webmanifest` | `projects/relay/site.webmanifest` | `203f9b472b4a276ff9c17c1d912cb038192901ef2e52d3728cbe5fa085054b02` |
+| `assets/projects/relay/social-card.png` | `projects/relay/social-card.png` | `be66979956965f9e88a158e849a2fe1d8616e1cce6c19507a87c821d49e47208` |
+| `assets/projects/relay/social-card.svg` | `projects/relay/social-card.svg` | `df80ed0c5b98bb91861a41dd9d0b74032f6e92ed6b4c30b627cb56247039a959` |
+
+| `assets/projects/chess/android-chrome-192.png` | `generated:chess-assets/android-chrome-192.png` | `6fb29c09c3b0877c3b4d14acb784ccc112e3159113f951596d87839934ab83cd` |
+| `assets/projects/chess/android-chrome-512.png` | `generated:chess-assets/android-chrome-512.png` | `c42bb494ec4630e53e30d17b75534141b2e0b758f565921a85e40b4ee92d6de1` |
+| `assets/projects/chess/apple-touch-icon.png` | `generated:chess-assets/apple-touch-icon.png` | `938192b358fafb6b1b76fbab54cf8098aae56239b5969c327897e9850d48a363` |
+| `assets/projects/chess/favicon-16.png` | `generated:chess-assets/favicon-16.png` | `4634f2f6bce1dda3cbbf456548af583e37bcba05cfa6eaab03dd98bfa4dfe1f0` |
+| `assets/projects/chess/favicon-24.png` | `generated:chess-assets/favicon-24.png` | `6b8358572f3b5d7fa06951c8977c397b12c01a7f6a9f6b263b036b31135b162c` |
+| `assets/projects/chess/favicon-32.png` | `generated:chess-assets/favicon-32.png` | `76cee1f5b18ff460424088eccf6b6edab8a86744f2dc287fbea9dd0e1b14533e` |
+| `assets/projects/chess/favicon-48.png` | `generated:chess-assets/favicon-48.png` | `1f70723f11094c517b517d4f631d931b87ccb2df31c59a4df03f52879b694292` |
+| `assets/projects/chess/favicon.ico` | `generated:chess-assets/favicon.ico` | `d71b7fe23c904568e9c7c9414dd635af6a41c44368fdff40d01a96ebf629181e` |
+| `assets/projects/chess/favicon.svg` | `generated:chess-assets/favicon.svg` | `28afc79f2819d6d3efe45bd184bef9bfbcabfa999952e63204fb3809022c6fdf` |
+| `assets/projects/chess/icon-forest.svg` | `generated:chess-assets/icon-forest.svg` | `7f078c8160b24280c73fcfca01e2d2bed9054cbb69a1ab7dd3dfad6ae9c2911c` |
+| `assets/projects/chess/icon-sage.svg` | `generated:chess-assets/icon-sage.svg` | `3f1b50b545446406f922e4b8db0e88858684153e77ee6f1bca548f0285b9e0ce` |
+| `assets/projects/chess/logo-ink.svg` | `generated:chess-assets/logo-ink.svg` | `3408f94beccdbd31b0585d70f5260586a50a318d9212fe2e6e4629eaf988ff15` |
+| `assets/projects/chess/logo-paper.svg` | `generated:chess-assets/logo-paper.svg` | `460af7810ed5605ad34b4afd2863a7265f4956ac550e92d5d10cec58002b7afb` |
+| `assets/projects/chess/logo-primary.svg` | `generated:chess-assets/logo-primary.svg` | `d63426412445e872c692be02fff39d0b9cf372d20f8fbc336965d3d2f27e8b21` |
+| `assets/projects/chess/mark-ink.svg` | `generated:chess-assets/mark-ink.svg` | `edd3368418df55e1bb75bcd72e11468511e84d2e59ed145fde8b2469239ab47b` |
+| `assets/projects/chess/mark-paper.svg` | `generated:chess-assets/mark-paper.svg` | `203152f1ebb538e77217b2b66f2d0b6971c8875e308a0ce839be11af2b193f07` |
+| `assets/projects/chess/mark-sage.svg` | `generated:chess-assets/mark-sage.svg` | `1f60c6eb70065fdfe2192f7038b2ee71d05605e08a3b326ce7c123edc5bb327c` |
+| `assets/projects/chess/site.webmanifest` | `generated:chess-assets/site.webmanifest` | `01b2aadf7837650b777c742c4a29bbcad9d94b590ec7a14a321446da585e03e4` |
+| `assets/projects/chess/social-card.png` | `generated:chess-assets/social-card.png` | `c7dc5947b4f96e2416075f363e39495edaf370434a12e4d2fd4fb17608e35c7e` |
+| `assets/projects/chess/social-card.svg` | `generated:chess-assets/social-card.svg` | `7d51571a2f4ae62b33f2264500646338cb782ec3cd7de0c9c8b75dfba197821d` |
+
+| `assets/projects/cli/editable/logo-ink.svg` | `projects/cli/editable/logo-ink.svg` | `866c68ccfb99b14fdbd088a2a1096e575c88fd42424bc0b9a05094448c769b0e` |
+| `assets/projects/cli/editable/logo-paper.svg` | `projects/cli/editable/logo-paper.svg` | `3dd5a215fed73c8f3e1f1573e9d328f16d6131ca3d23730c18e351cd13e3da8f` |
+| `assets/projects/cli/editable/logo-primary.svg` | `projects/cli/editable/logo-primary.svg` | `f18f75f9d530df5756854621656295b29a8701251530bdf1f8e355fc5bb3a01f` |
+| `assets/projects/ide/editable/logo-ink.svg` | `projects/ide/editable/logo-ink.svg` | `dee01c314ef22c22bc6635c07272fe08ec4c85df951f5cada813dfab5b177475` |
+| `assets/projects/ide/editable/logo-paper.svg` | `projects/ide/editable/logo-paper.svg` | `d1754a649b5a36a7615421da4a723ded252d61407d2322574cc76452d653eccf` |
+| `assets/projects/ide/editable/logo-primary.svg` | `projects/ide/editable/logo-primary.svg` | `807b72ff8ea0a1306165467b2f60954bbf8c6740a46c88561470bacea87402f0` |
+| `assets/projects/harness/editable/logo-ink.svg` | `projects/harness/editable/logo-ink.svg` | `0e9517ee04303c02fda641f5939de7bbcaa48b864ab51c2dc8c2dc16ca9c998d` |
+| `assets/projects/harness/editable/logo-paper.svg` | `projects/harness/editable/logo-paper.svg` | `4967a1581cf987a063cb7f0e00c4a8ea3be9ca492f8c9f49ae691c6bc71b3aaa` |
+| `assets/projects/harness/editable/logo-primary.svg` | `projects/harness/editable/logo-primary.svg` | `fce66025006bb6f62f57791a3a733a1076a853bf5770651062c388f52c6bf556` |
+| `assets/projects/family-dark.svg` | `projects/family-dark.svg` | `356be63cf734b66a63e5bcdf41872feba4618ca727f83c9a15937de0c4b48897` |
+| `assets/projects/family-dark.png` | `projects/family-dark.png` | `974a26aa2525faeca10c08429f70bcc25e4840ed6bf71ff2f6332965f5278564` |
+| `assets/projects/family-light.svg` | `projects/family-light.svg` | `c99fe75a78c2280fc128d7e7f2391e3291d67bd42fea9d1c1bfb7d0bd19c4d8f` |
+| `assets/projects/family-light.png` | `projects/family-light.png` | `3438098de98f2bad143a4cab98e8a5241933ee66760eee4bdaaaf99682153966` |
 
 ## Moved and then edited
 

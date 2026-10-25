@@ -17,10 +17,10 @@ tarball does not mean a release was published. Check
 source releases.
 
 The [shared standards](https://github.com/ejmlabs/.github) define human
-admission, review and source releases. Hosted enforcement requires reviewed
-workflow callers on main and verified repository settings. Source files
-alone do not establish that rollout or a successful hosted run. Gallery
-deployment and package registry publication need separate approval.
+admission, review and source releases. Follow
+[Contributing](CONTRIBUTING.md#human-admission-and-review) for the current
+review commands and required checks. Gallery deployment and package registry
+publication need separate approval.
 
 ## Requirements
 
@@ -58,20 +58,24 @@ trusted preparation workflow supports the metadata. UI does not need a
 self-reference or private harness token. A Git tree hash or an uncommitted
 working directory cannot serve as the dependency commit pin.
 
-Creating a hosted repository, pushing source, publishing npm packages and
-deploying the gallery each require the owner's approval. A source snapshot
-does not establish a successful install, build, native check or publication.
+A source snapshot does not prove a successful install, build, native check
+or hosted review.
 
-For an initial workflow installation, keep Actions paused until the repository
-settings are verified. The static review snapshot records the retained shared
-implementation only. A fresh admitted PR after installation must prove that the
-caller executes all required gates; source checks do not establish hosted
-acceptance.
+Native pages can prerender shared controls and layout parts from `@ejm/ui`.
+Import `@ejm/ui/styles.css` first. Add `@ejm/ui/styles-static.css` for
+`NativeCheckbox`, `Disclosure`, `ActionRows` and `DocumentContent`. Add
+`@ejm/ui/styles-terminal.css` for the `Terminal*` views. A page that uses both
+groups needs both partials. Products retain their authentication, transport,
+validation and command logic. Read
+[Native static pages](packages/ui/COMPONENTS.md#native-static-pages) for form
+behavior, public deep imports and safe transcript templates. These source APIs
+do not establish a deployed consumer or a published package.
 
 ## Development
 
 Read [AGENTS.md](AGENTS.md) before changing the owner or its public contracts.
-The repo uses npm workspaces.
+The repo uses npm workspaces. Feature and bugfix changes follow the OpenSpec
+workflow in `openspec/`: explore, propose, apply, sync specs, then archive.
 
 ### Stack
 

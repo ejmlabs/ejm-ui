@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
 import type { ViteDevServer } from 'vite';
 import { describe, expect, it, vi } from 'vitest';
 import { siteDefaults } from './head';
@@ -7,9 +8,10 @@ import { PROJECT_LIST, PROJECTS, assetPaths, otherSites, sourceLinks } from './p
 import { ejmSite, headTags, sharedFiles } from './vite.mjs';
 
 const require = createRequire(import.meta.url);
+const uiAssets = join(dirname(require.resolve('@ejm/tokens/theme.json')), 'assets', 'projects', 'ui');
 
 describe('project registry', () => {
-  it('has four sites, each on its own https host with a trailing-slash url and a token', () => {
+  it('keeps the four published discovery identities and their configured tokens unchanged', () => {
     expect(PROJECT_LIST.map(p => p.host)).toEqual(['ejmlabs.com', 'cli.ejmlabs.com', 'ide.ejmlabs.com', 'harness.ejmlabs.com']);
     for (const p of PROJECT_LIST) {
       expect(p.url).toBe(`https://${p.host}/`);
@@ -19,11 +21,37 @@ describe('project registry', () => {
     expect(new Set(PROJECT_LIST.map(p => p.analyticsToken)).size).toBe(4);
   });
 
-  it('links to the other sites as external and leaves out the current one', () => {
-    const links = otherSites('cli');
-    expect(links.map(l => l.label)).toEqual(['ejmlabs', 'ejm-ide', 'ejm-harness']);
-    expect(links.every(l => l.external && l.href.startsWith('https://'))).toBe(true);
-    expect(sourceLinks('ide')).toEqual([{ label: 'ejm-ide on GitHub', href: PROJECTS.ide.repo, external: true }]);
+  it.each(['ejmlabs', 'cli', 'ide', 'harness'] as const)('preserves the published external navigation for %s', id => {
+    const published = [PROJECTS.ejmlabs, PROJECTS.cli, PROJECTS.ide, PROJECTS.harness];
+    expect(otherSites(id)).toEqual(published.filter(p => p.id !== id).map(p => ({ label: p.name, href: p.url, external: true })));
+    expect(sourceLinks(id)).toEqual([{ label: `${PROJECTS[id].name} on GitHub`, href: PROJECTS[id].repo, external: true }]);
+  });
+
+  it('keeps chess buildable without advertising its unverified destinations or inventing a source repository', () => {
+    expect(PROJECTS.chess.discoverable).toBe(false);
+    expect(PROJECT_LIST.some(p => p.id === 'chess')).toBe(false);
+    expect(siteDefaults('chess').origin).toBe('https://chess.ejmlabs.com');
+    expect(PROJECTS.chess.guides).toEqual([
+      { label: 'Player guide', href: 'https://chess.ejmlabs.com/help/' },
+      { label: 'Developer guide', href: 'https://chess.ejmlabs.com/docs/developer-guide/' },
+    ]);
+    expect(sourceLinks('chess')).toEqual([]);
+    const files = sharedFiles(PROJECTS.chess);
+    expect(files['favicon.svg']).toContain('/assets/projects/chess/');
+    expect(JSON.parse(readFileSync(files['site.webmanifest']!, 'utf8')).name).toBe('Chess by ejmlabs');
+  });
+
+  it('registers the ejm-ui gallery outside discovery, and uses its brand files when present', () => {
+    expect(PROJECTS.ui.discoverable).toBe(false);
+    expect(PROJECT_LIST.some(p => p.id === 'ui')).toBe(false);
+    expect(siteDefaults('ui').origin).toBe('https://ui.ejmlabs.com');
+    expect(siteDefaults('ui').head.titleTemplate).toBe('%s | ejm-ui');
+    expect(sourceLinks('ui')).toEqual([{ label: 'ejm-ui on GitHub', href: 'https://github.com/ejmlabs/ejm-ui', external: true }]);
+    // Brand files land in the assets split; until then sharedFiles falls back to the ejmlabs set.
+    if (!existsSync(uiAssets)) return;
+    const files = sharedFiles(PROJECTS.ui);
+    for (const name of ['favicon.svg', 'apple-touch-icon.png', 'social-card.png']) expect(files[name], name).toContain('/assets/projects/ui/');
+    expect(JSON.parse(readFileSync(files['site.webmanifest']!, 'utf8')).name).toBe('ui by ejmlabs');
   });
 
   it('falls back to the ejmlabs brand files for a project without a folder', () => {
@@ -46,7 +74,7 @@ describe('project registry', () => {
   });
 
   it('every shared file the plugin serves exists in @ejm/ui and @ejm/tokens', () => {
-    for (const p of PROJECT_LIST) for (const [name, path] of Object.entries(sharedFiles(p))) expect(existsSync(path), `${p.id}: ${name}`).toBe(true);
+    for (const p of Object.values(PROJECTS)) for (const [name, path] of Object.entries(sharedFiles(p))) expect(existsSync(path), `${p.id}: ${name}`).toBe(true);
   });
 
   it('serves the original font notices as plain text for every project in development', () => {

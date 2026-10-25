@@ -1,4 +1,4 @@
-/* Imported by @ejm/ssg itself. Under 0.5 KB. */
+/* Imported by @ejm/ssg itself. */
 #ejm-announcer {
   position: absolute;
   width: 1px;
@@ -18,13 +18,20 @@ html[data-ejm-vt] [data-ejm-route] {
 }
 ::view-transition-old(ejm-page),
 ::view-transition-new(ejm-page) {
-  animation-duration: 0.18s;
+  animation-duration: var(--ejm-duration-slow, 320ms);
+  animation-timing-function: var(--ease-standard, cubic-bezier(0.2, 0.7, 0.3, 1));
+}
+/* Explicit theme switches crossfade the whole page; initial and system theme changes do not start a transition. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--ejm-duration-slow, 320ms);
+  animation-timing-function: var(--ease-standard, cubic-bezier(0.2, 0.7, 0.3, 1));
 }
 /* No View Transitions API: fade the new page in. Skipped on first load and under reduced motion. */
 @media (prefers-reduced-motion: no-preference) {
   @supports not (view-transition-name: none) {
     html[data-ejm-nav] [data-ejm-route] {
-      animation: ejm-in 0.18s ease-out;
+      animation: ejm-in var(--ejm-duration-slow, 320ms) var(--ease-enter, ease-out);
     }
   }
 }

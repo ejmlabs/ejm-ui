@@ -100,3 +100,27 @@ The render tests draw every component and state into a ratatui `TestBackend` at 
 ## Not in this crate
 
 The app-specific helpers of the old `ejm_tui.rs` (header, transcript blocks, diff styling, composer box, picker popup, tabs, progress bar, step lines) are not ported. Some are boxed, and the rest belong to ejm-cli's screens. They stay in `packages/tokens/rust/ejm_tui.rs` until ejm-cli has moved to this crate; then that file should be deleted.
+
+## Conversation workspace recipes
+
+`WorkspaceLayout` allocates the header, transcript, workers, activity, resource
+counts, notices, composer and controls. At supported sizes (at least 20 columns
+and 8 rows), it preserves one transcript row, a draft row and the grants footer.
+Notices are capped at four rows and the draft at six. Short windows hide the
+worker strip before reducing the composer.
+
+`SessionHeader` fits application identity and connection on one line and keeps
+the directory on a second line. Connection detail drops when space is tight;
+the host must offer full inspection. `ActivityLine` separates current work from
+`ResourceLine`, whose active and queued counts remain visible while idle.
+Counts use `A+Qq` for active plus queued work. Narrow rows truncate with an
+ellipsis; hosts must retain a full capacity view. Do not present unavailable
+usage as zero.
+
+`workspace_controls` keeps the effective grant mode first, warns for elevated
+grants and drops trailing hints. Hosts order hints by task and keep their
+bindings authoritative. `worker_line` uses the shared Row selection mark and
+reserves space for state before fitting a long title. These are compositions
+of existing primitives, with no per-host style or spacing options. Hosts supply
+sanitized text and bounded state. All recipes use the current theme and glyphs,
+including ASCII and NO_COLOR. No backend, timer or runtime dependency is added.

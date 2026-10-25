@@ -8,6 +8,8 @@ import type { DocsNavGroup } from './DocsSidebar';
 import { Heading } from './Heading';
 import type { PagerLink } from './Pager';
 import { ParamTable, type Param } from './ParamTable';
+import { DocTable } from './DocTable';
+import { Prose } from './Prose';
 
 type ParamLabels = NonNullable<Parameters<typeof ParamTable>[0]['labels']>;
 
@@ -18,12 +20,13 @@ type ParamLabels = NonNullable<Parameters<typeof ParamTable>[0]['labels']>;
  */
 export type Block =
   | { type: 'p'; children: ReactNode }
-  | { type: 'list'; items: readonly ReactNode[]; ordered?: boolean }
+  | { type: 'list'; items: readonly ReactNode[]; ordered?: boolean; start?: number }
   | { type: 'code'; code: string; lang?: string; label?: string }
   | { type: 'tabs'; label?: string; tabs: readonly CodeTab[] }
   | { type: 'callout'; kind: CalloutKind; children: ReactNode }
   | { type: 'params'; caption: string; rows: readonly Param[]; labels?: ParamLabels }
   | { type: 'h3'; id: string; title: string }
+  | { type: 'table'; caption: string; heads: readonly ReactNode[]; rows: readonly (readonly ReactNode[])[] }
   | { type: 'node'; children: ReactNode };
 
 export interface DocSection {
@@ -74,14 +77,14 @@ export function pagerFor(set: DocSet, page: DocPage): { prev: PagerLink | null; 
   return { prev: link(set.pages[i - 1]), next: link(set.pages[i + 1]) };
 }
 
-function BlockView({ block }: { block: Block }) {
+function BlockView({ block, compact }: { block: Block; compact?: boolean }) {
   switch (block.type) {
     case 'p':
-      return <p>{block.children}</p>;
+      return compact ? <span>{block.children}</span> : <p>{block.children}</p>;
     case 'list': {
       const List = block.ordered ? 'ol' : 'ul';
       return (
-        <List className={block.ordered ? 'list-decimal ps-6' : 'list-disc ps-6'}>
+        <List start={block.ordered ? block.start : undefined} className={block.ordered ? 'list-decimal ps-6' : 'list-disc ps-6'}>
           {block.items.map((item, i) => (
             <li key={i} className="mt-2 first:mt-0">
               {item}
@@ -96,6 +99,8 @@ function BlockView({ block }: { block: Block }) {
       return <CodeTabs label={block.label} tabs={block.tabs} />;
     case 'callout':
       return <Callout kind={block.kind}>{block.children}</Callout>;
+    case 'table':
+      return <DocTable caption={block.caption} heads={block.heads} rows={block.rows} />;
     case 'params':
       return <ParamTable caption={block.caption} rows={block.rows} labels={block.labels} />;
     case 'h3':
@@ -105,19 +110,22 @@ function BlockView({ block }: { block: Block }) {
   }
 }
 
+/** Blocks from the React content model. Compact keeps a list item's first paragraph inline. */
+export function DocBlocks({ blocks, compact = false }: { blocks: readonly Block[]; compact?: boolean }) {
+  return <>{blocks.map((block, i) => <BlockView key={i} block={block} compact={compact && i === 0} />)}</>;
+}
+
 /** The reading column: the page's sections as h2 with their blocks. The h1 and lead come from `DocHead`. */
 export function DocBody({ page }: { page: DocPage }) {
   return (
-    <div className="text-body [&_:not(pre)>code]:rounded-control [&_:not(pre)>code]:bg-tone [&_:not(pre)>code]:px-1.5 [&_:not(pre)>code]:py-0.5 [&_:not(pre)>code]:font-mono [&_:not(pre)>code]:text-[0.875em] [&_:not(pre)>code]:[overflow-wrap:anywhere] [&_li]:max-w-measure [&_p]:max-w-measure [&_p]:mt-4 [&_ul]:mt-4 [&_ol]:mt-4 [&_a]:link">
+    <Prose>
       {page.sections.map((s) => (
         <section key={s.id} aria-labelledby={s.id} className="mt-20 first:mt-0">
           <Heading id={s.id}>{s.title}</Heading>
-          {s.blocks.map((b, i) => (
-            <BlockView key={i} block={b} />
-          ))}
+          <DocBlocks blocks={s.blocks} />
         </section>
       ))}
-    </div>
+    </Prose>
   );
 }
 

@@ -4,7 +4,7 @@ import type { RowState, StatState } from '@ejm/core';
 import { Cli, Harness, Ide } from '../windows';
 
 // The layout showcase: the containerless language end to end, built only from layout components and the theme contract.
-// Words come from the ejmlabs project READMEs; the product windows are labelled "Simulated screen".
+// Words come from the ejmlabs project READMEs; the product images are real captures with provenance captions.
 
 const GITHUB = 'https://github.com/ejmlabs';
 
@@ -23,9 +23,10 @@ export default function Layout() {
       <Hero
         art={ripple}
         drawOn
-        eyebrow="ejmlabs / one-person lab"
-        title="Small experiments, useful things."
+        eyebrow="ejmlabs / open source"
+        title="Open source. Room to explore."
         aside={
+          // ejm-shots-allow: layout demonstration of ProductStage with real ProductShot children.
           <ProductStage>
             <Cli />
             <Ide />
@@ -39,7 +40,7 @@ export default function Layout() {
           </>
         }
       >
-        <p className="m-0">ejmlabs is a one-person lab for small experiments, useful software and open source tools. ejm-cli, ejm-ide and ejm-harness are open source under the MIT license.</p>
+        <p className="m-0">ejmlabs is a home for open source projects. ejm-cli, ejm-ide and ejm-harness are released under the MIT license. Read the source, report an issue or help shape what comes next.</p>
       </Hero>
 
       <Band id="projects" tone="sage" aria-labelledby="projects-title">
@@ -57,7 +58,7 @@ export default function Layout() {
         <SectionHead kicker="02 / States" title="Every state has a word." id="states-title">
           <p className="m-0">Status, rows and figures name their state in words and glyphs, never by color alone.</p>
         </SectionHead>
-        <div className="mt-16 grid gap-x-12 gap-y-16 lg:grid-cols-12">
+        <div className="mt-16 grid gap-x-12 gap-y-14 lg:grid-cols-12">
           <div className="lg:col-span-6">
             <Rule label="Status" />
             <ul className="m-0 mt-6 flex list-none flex-col gap-4 p-0">
@@ -80,7 +81,7 @@ export default function Layout() {
             <Rule label="Stat" className="mt-12" />
             <div className="mt-6 grid gap-x-8 gap-y-10 sm:grid-cols-2">
               {statStates.map(s => (
-                <Stat key={s} state={s} figure="42" label={`state: ${s}`} className="[&_.text-stat]:text-title" />
+                <Stat key={s} state={s} figure="42" label={`state: ${s}`} size="title" />
               ))}
             </div>
           </div>
@@ -91,14 +92,14 @@ export default function Layout() {
         <SectionHead kicker="03 / Engine" title="Agents share one governor." id="engine-title">
           <p className="m-0">Agents share a resource governor instead of creating a shell each. These are the default limits.</p>
         </SectionHead>
-        <div className="mt-16 grid gap-x-12 gap-y-16 lg:grid-cols-12">
+        <div className="mt-16 grid gap-x-12 gap-y-14 lg:grid-cols-12">
           <Facts className="lg:col-span-6 lg:self-start">
             <Fact label="license">MIT</Fact>
             <Fact label="written in">Rust, with TypeScript and Python SDKs</Fact>
             <Fact label="status">Source release, version 0.1.0</Fact>
             <Fact label="platform">macOS on Apple Silicon for ejm-ide</Fact>
           </Facts>
-          <div className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:col-span-6">
+          <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:col-span-6">
             <Stat figure="100" label="managed sessions" />
             <Stat figure="8" label="model requests" />
             <Stat figure="4" label="local jobs" />

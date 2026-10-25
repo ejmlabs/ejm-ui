@@ -10,7 +10,7 @@ export const checks: DocPage = {
       blocks: [
         {
           type: 'p',
-          children: <><code>QUALITY.md</code> walks nine dimensions: typography, rhythm, depth, imagery, motion, detail, responsiveness, accessibility and performance. The references are Anthropic, Stripe and OpenAI. ejmlabs learns from how they decide and never reproduces their layouts, imagery or words.</>,
+          children: <><code>QUALITY.md</code> covers content, visual design, access and performance. Use the fewest words that preserve meaning. Prefer a clear visual or omit redundant copy. Keep labels, accessible names, consent and security facts, honest state and recovery.</>,
         },
         {
           type: 'list',
@@ -19,7 +19,7 @@ export const checks: DocPage = {
             <>Build the page from <code>@ejm/ui</code> components, layouts and views.</>,
             <>Run <code>npm run check</code>, <code>npm run build</code> and the budget script.</>,
             <>Look at the page in light and dark with the matrix script.</>,
-            <>Walk the nine dimensions. Write down any exception.</>,
+            <>Walk the quality criteria. Record any exception.</>,
           ],
         },
       ],
@@ -34,8 +34,9 @@ export const checks: DocPage = {
           labels: { name: 'Gate', type: 'Command', description: 'Fails on' },
           rows: [
             { name: 'Text, types and tests', type: 'npm run check', description: 'Em dashes, stale generated files, changed brand assets, type errors and failing tests.' },
+            { name: 'Site design ownership', type: 'ejm-ssg build', description: 'Consumer CSS rules, visual classes, inline styles and unsupported shared overrides. The @ejm/site Vite check is mandatory, including unused source files.' },
             { name: 'Contrast', type: 'node packages/tokens/scripts/contrast.mjs --verbose', description: 'Text under 4.5:1, control borders or focus under 3:1, in both themes and on every band.' },
-            { name: 'Viewport matrix', type: 'node scripts/shoot.mjs <url>', description: 'Horizontal overflow from 320px to 5120px, and touch targets under 44px.' },
+            { name: 'Viewport matrix', type: 'node scripts/shoot.mjs <url>', description: 'Horizontal overflow from 320px to 5120px. It also reports touch targets under 44px.' },
             { name: 'Budgets', type: 'node scripts/size.mjs [dist]', description: 'HTML, CSS, JavaScript or font size over its budget.' },
             { name: 'Parity', type: 'node scripts/parity.mjs', description: 'A web, Ink or Rust target that lacks a component or a state from the contract.' },
           ],
@@ -54,6 +55,21 @@ export const checks: DocPage = {
           ],
         },
         { type: 'callout', kind: 'tip', children: <p>Use <code>--only iphone-mini,laptop,ultrawide-45</code> for a quick look, and <code>--full</code> to save the whole page.</p> },
+        { type: 'h3', id: 'application-layout', title: 'Check a complete application page' },
+        {
+          type: 'p',
+          children: <>The <a href="/application-layout/">application layout example</a> shows headings, fields, links, actions and table states in both densities. Capture it with the viewport matrix, then review spacing, alignment, table padding and keyboard navigation. These visual checks are manual; <code>npm run check</code> does not measure them.</>,
+        },
+        {
+          type: 'p',
+          children: <>Build and serve the gallery, then run the matrix in a second terminal. Use Google Chrome, or set <code>CHROME=/path/to/chrome</code> for another Chromium installation.</>,
+        },
+        { type: 'code', lang: 'sh', code: 'npm run build -w @ejm/gallery\nnpm run preview -w @ejm/gallery -- --port 4874' },
+        { type: 'code', lang: 'sh', code: 'node scripts/shoot.mjs http://localhost:4874/application-layout/ --theme light --out /tmp/ejm-layout-light\nnode scripts/shoot.mjs http://localhost:4874/application-layout/ --theme dark --out /tmp/ejm-layout-dark' },
+        {
+          type: 'p',
+          children: <>The matrix saves screenshots, fails on horizontal overflow and reports small touch targets. Product pages still need checks for their own content and conditional states.</>,
+        },
       ],
     },
     {
@@ -69,12 +85,12 @@ export const checks: DocPage = {
           caption: 'Performance budgets per route',
           labels: { name: 'Measure', type: 'Budget', description: 'Notes' },
           rows: [
-            { name: 'JavaScript', type: '95 KB', description: 'React and react-dom (about 71 KB, measured), the router (wouter), hydration, theme and header. A page whose own code does not fit hydrates after the first scripts, with its HTML already complete. The demo island (40 KB) and code highlighting (20 KB) load lazily.' },
-            { name: 'CSS', type: '14 KB', description: 'Only used utilities ship.' },
+            { name: 'JavaScript', type: '95 KB', description: 'React and react-dom (about 71 KB, measured), the router (wouter), hydration, theme and header. A page whose own code does not fit hydrates after the first scripts, with its HTML already complete. The page body starts loading immediately after the site entry, with controls disabled until ready. The byte gate excludes later dynamic chunks; it does not measure the full session download.' },
+            { name: 'CSS', type: '14 KB', description: 'Complete stylesheets are linked per route in the server HTML. The gate includes the native IDE styles on the Demos page.' },
             { name: 'Fonts', type: '70 KB', description: 'The two preloaded Latin subsets, with font-display swap and metric-matched fallbacks.' },
             { name: 'HTML', type: '30 KB', description: 'Per route, and every route reads correctly with scripts off.' },
-            { name: 'Largest Contentful Paint', type: '1.2 s', description: 'On a throttled mobile profile.' },
-            { name: 'Cumulative Layout Shift', type: '0.05', description: 'The theme script is external, synchronous and under 1 KB, so nothing flashes or moves.' },
+            { name: 'Largest Contentful Paint', type: '1.2 s', description: 'Target on a throttled mobile profile. The byte gate does not measure paint time.' },
+            { name: 'Cumulative Layout Shift', type: '0.05', description: 'Target for layout stability. The synchronous theme script reduces theme flashes; a browser measurement must verify the score.' },
           ],
         },
         { type: 'callout', kind: 'warning', children: <p>Change a budget in the design document, not in the script alone. The numbers are a starting point and are tuned from measurement.</p> },

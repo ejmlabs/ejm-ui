@@ -18,6 +18,8 @@ export interface CliFrame {
   title: string;
   sessionId: string;
   write: boolean;
+  /** Fixed launch grant in a recorded CLI session, when supplied by its source. */
+  shell?: boolean;
   agents: number;
   models: number;
   tools: number;

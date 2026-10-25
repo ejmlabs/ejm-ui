@@ -24,7 +24,7 @@ describe('defineSite', () => {
   it('strips the base from a pathname', () => {
     expect(stripBase(site, '/docs/about/')).toBe('/about/');
     expect(stripBase(site, '/docs')).toBe('/');
-    expect(stripBase(site, '/documents')).toBe('/documents');
+    expect(stripBase(site, '/documents')).toBe('~/documents');
   });
 
   it('resolves the head: template, canonical with base and declared slash, og defaults', () => {

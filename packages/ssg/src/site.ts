@@ -144,6 +144,15 @@ export const matchRoute = (site: Site, pathname: string): Route | undefined => {
   return site.routes.find(r => r.path === p);
 };
 
-/** `window.location.pathname` without the site base. */
-export const stripBase = (site: Site, pathname: string) =>
-  site.base && (pathname === site.base || pathname.startsWith(site.base + '/')) ? pathname.slice(site.base.length) || '/' : pathname;
+function decodePath(path: string) {
+  try { return decodeURI(path); } catch { return path; }
+}
+
+/** A decoded path relative to the site base. Outside paths keep Wouter's `~` prefix and cannot match a site route. */
+export function stripBase(site: Site, pathname: string) {
+  const path = decodePath(pathname);
+  const base = decodePath(site.base);
+  return !base || (path.toLowerCase() + '/').startsWith(base.toLowerCase() + '/')
+    ? path.slice(base.length) || '/'
+    : '~' + path;
+}

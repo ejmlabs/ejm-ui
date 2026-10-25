@@ -1,7 +1,7 @@
 // @vitest-environment node
 // Tests for scripts/perf.mjs: the pure parts, then a real run against the fixture in headless Chrome (skipped when Chrome is missing).
 import { execFileSync, spawnSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -115,6 +115,26 @@ describe('static server routing', () => {
       expect(missing.status).toBe(404);
       expect(await missing.text()).toContain('none');
     } finally { await s.close(); }
+  });
+});
+
+describe('Chrome startup diagnostics', () => {
+  it('reports an early exit with bounded stderr and removes its temporary profile', () => {
+    const work = mkdtempSync(join(tmpdir(), 'ejm-perf-error-'));
+    try {
+      const binary = join(work, 'chrome');
+      writeFileSync(binary, '#!/usr/bin/env node\nprocess.stderr.write("discarded-prefix\\n" + "x".repeat(16000) + "\\nstartup-failure-marker\\n", () => process.exit(7));\n');
+      chmodSync(binary, 0o755);
+      const result = spawnSync(process.execPath, [join(repo, 'scripts', 'perf.mjs'), 'http://127.0.0.1:9'], {
+        encoding: 'utf8', timeout: 5000, env: { ...process.env, CHROME: binary, TMPDIR: work },
+      });
+      expect(result.status, result.stderr).toBe(2);
+      expect(result.stderr).toContain('code 7');
+      expect(result.stderr).toContain('startup-failure-marker');
+      expect(result.stderr).not.toContain('discarded-prefix');
+      expect(Buffer.byteLength(result.stderr)).toBeLessThan(9 * KB);
+      expect(readdirSync(work).filter(name => name.startsWith('ejm-perf-'))).toEqual([]);
+    } finally { rmSync(work, { recursive: true, force: true }); }
   });
 });
 

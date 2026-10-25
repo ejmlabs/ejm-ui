@@ -8,4 +8,15 @@ export { Pager, type PagerLink } from './Pager';
 export { ParamTable, type Param } from './ParamTable';
 export { SidebarFilter } from './SidebarFilter';
 export { languageName, tokenize, type Role as TokenRole, type Run as TokenRun } from './highlight-all';
-export { DocBody, DocHead, navGroups, pageContents, pageHref, pagerFor, type Block as DocBlock, type DocPage, type DocSection, type DocSet } from './model';
+export { DocBody, DocHead, DocBlocks, navGroups, pageContents, pageHref, pagerFor, type Block as DocBlock, type DocPage, type DocSection, type DocSet } from './model';
+
+export { DocsPage, docNavigation, type DocsPageProps, type DocNavigationPage } from './DocsPage';
+export { DocProse } from './DocProse';
+export { DocDataBlock } from './DocDataBlock';
+export { DocCodeBlock } from './DocCodeBlock';
+export { CodeBlockFrame, CodeSource, type CodeBlockFrameProps } from './CodeBlockFrame';
+export { CodeHighlight } from './CodeHighlight';
+export { CodeTabsFrame, type CodeTabContent } from './CodeTabsFrame';
+export { Prose } from './Prose';
+export { DocTable } from './DocTable';
+export type { ClientDocPage, DocCode, DocCodeTabs, DocDataBlock as SerializedDocBlock, DocInline, DocMetadata, DocProseRun, FullDocPage, SerializedDocPage } from './data';

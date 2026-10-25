@@ -181,11 +181,30 @@ async function launch(bin) {
   profileDir = mkdtempSync(join(tmpdir(), 'ejm-perf-'));
   chrome = spawn(bin, ['--headless=new', '--remote-debugging-port=0', `--user-data-dir=${profileDir}`, '--no-first-run', '--no-default-browser-check', '--disable-extensions', '--disable-background-networking', '--hide-scrollbars', '--mute-audio', '--force-color-profile=srgb', '--disable-gpu', 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] });
   return await new Promise((resolve, reject) => {
-    let buf = '';
-    const timer = setTimeout(() => reject(new Error('Chrome did not report a debugging port in 20 s')), 20000);
-    chrome.on('error', e => { clearTimeout(timer); reject(new Error(`cannot start Chrome at ${bin}: ${e.message}`)); });
-    chrome.stderr.on('data', d => { buf += d; const m = buf.match(/DevTools listening on (ws:\/\/\S+)/); if (m) { clearTimeout(timer); resolve(m[1]); } });
-    chrome.on('exit', code => { clearTimeout(timer); reject(new Error(`Chrome exited early (${code})`)); });
+    let tail = Buffer.alloc(0), settled = false;
+    const failure = message => new Error(`${message}\nChrome stderr (last 8 KiB):\n${tail.length ? tail.toString('utf8').trimEnd() : '(no output)'}`);
+    const finish = (error, url) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      chrome.removeListener('error', onError);
+      chrome.removeListener('close', onClose);
+      chrome.stderr.removeListener('data', onData);
+      chrome.stderr.resume();
+      error ? reject(error) : resolve(url);
+    };
+    const onError = error => finish(failure(`cannot start Chrome at ${bin}: ${error.message}`));
+    const onClose = (code, signal) => finish(failure(`Chrome exited early (code ${code}, signal ${signal ?? 'none'})`));
+    const onData = data => {
+      const output = Buffer.concat([tail, data]);
+      const match = output.toString('utf8').match(/DevTools listening on (ws:\/\/\S+)/);
+      tail = Buffer.from(output.subarray(-8192));
+      if (match) finish(null, match[1]);
+    };
+    const timer = setTimeout(() => finish(failure('Chrome did not report a debugging port in 60 s')), 60000);
+    chrome.once('error', onError);
+    chrome.once('close', onClose);
+    chrome.stderr.on('data', onData);
   });
 }
 
@@ -355,4 +374,4 @@ export async function main(argv) {
   }
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) process.exit(await main(process.argv.slice(2)));
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) process.exitCode = await main(process.argv.slice(2));
