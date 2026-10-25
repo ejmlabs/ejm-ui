@@ -343,8 +343,8 @@ Retired social profile kits and ZIP archives are excluded from imports.
 | `assets/projects/ui/mark-sage.png` | `generated:ui-assets/mark-sage.png` | `385103ce279a59cbd7dc50cfc5700daf67c2d592c392c7602d589f79980cad35` |
 | `assets/projects/ui/mark-sage.svg` | `generated:ui-assets/mark-sage.svg` | `21e67810874ff6d83f95fca32066d3085e472bc32e31565b002c925b8b8961f4` |
 | `assets/projects/ui/site.webmanifest` | `generated:ui-assets/site.webmanifest` | `df2f6b7191f1305ade1aebd212088d5ebf02ac9064b65fcf702501fd552c7398` |
-| `assets/projects/ui/social-card.png` | `generated:ui-assets/social-card.png` | `9859dc8de7dd2aa175dbacb51c9a68f5fca3654e951ce31bf03f3057767c35fe` |
-| `assets/projects/ui/social-card.svg` | `generated:ui-assets/social-card.svg` | `68069f4f193b12f4349ce9e372a9d36abea04b0c3f636df36e0faf9ee9d9bb49` |
+| `assets/projects/ui/social-card.png` | `generated:ui-assets/social-card.png` | `818c7840b9f55badf389ec0a47a2cd1149b8ed1cd9b00754b18907ab158f73c3` |
+| `assets/projects/ui/social-card.svg` | `generated:ui-assets/social-card.svg` | `b96203de3dc4a6f5934263dabdacb8f33442a026b4e2f1ec6192770852503b8f` |
 
 ## Moved and then edited
 
