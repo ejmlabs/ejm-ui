@@ -10,7 +10,7 @@ export default function Demos() {
     <>
       <Band tone="paper" aria-labelledby="demos-title">
         <SectionHead purpose="page" kicker="Demos" title="Watch the three products." id="demos-title" as="h1">
-          <p className="m-0">Recorded product workflows. Pause, resume or restart each playback.</p>
+          <p className="m-0">Pause, resume or restart each recording.</p>
         </SectionHead>
       </Band>
       <Band id="cli" tone="mist" aria-labelledby="cli-title">

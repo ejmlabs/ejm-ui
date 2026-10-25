@@ -68,7 +68,7 @@ export const checks: DocPage = {
         { type: 'code', lang: 'sh', code: 'node scripts/shoot.mjs http://localhost:4874/application-layout/ --theme light --out /tmp/ejm-layout-light\nnode scripts/shoot.mjs http://localhost:4874/application-layout/ --theme dark --out /tmp/ejm-layout-dark' },
         {
           type: 'p',
-          children: <>The matrix saves screenshots, fails on horizontal overflow and reports small touch targets. Product pages still need checks for their own content and conditional states.</>,
+          children: <>Product pages still need checks for their own content and conditional states.</>,
         },
       ],
     },
@@ -93,7 +93,7 @@ export const checks: DocPage = {
             { name: 'Cumulative Layout Shift', type: '0.05', description: 'Target for layout stability. The synchronous theme script reduces theme flashes; a browser measurement must verify the score.' },
           ],
         },
-        { type: 'callout', kind: 'warning', children: <p>Change a budget in the design document, not in the script alone. The numbers are a starting point and are tuned from measurement.</p> },
+        { type: 'callout', kind: 'warning', children: <p>Change a budget in the design document, not only in the script. The numbers are a starting point, tuned from measurement.</p> },
       ],
     },
     {

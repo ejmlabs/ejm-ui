@@ -135,7 +135,7 @@ export function DocHead({ page }: { page: DocPage }) {
     <header>
       <p className="text-meta text-muted">{page.group}</p>
       <h1 className="mt-3 max-w-[18ch] text-title">{page.title}</h1>
-      <p className="mt-6 max-w-measure text-lead text-muted">{page.lead}</p>
+      <p className="mt-6 max-w-measure text-balance text-lead text-muted">{page.lead}</p>
     </header>
   );
 }

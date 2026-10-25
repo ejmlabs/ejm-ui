@@ -10,7 +10,7 @@ export const designLanguage: DocPage = {
       blocks: [
         {
           type: 'p',
-          children: <>There are no cards, panels, tiles or tonal boxes in ejm-ui. A group is made from a heading, whitespace and a hairline, and a section is made from a band with its own ground.</>,
+          children: <>ejm-ui has no cards, panels, tiles or tonal boxes. A group is a heading, whitespace and a hairline. A section is a band with its own ground.</>,
         },
         {
           type: 'list',
@@ -21,7 +21,7 @@ export const designLanguage: DocPage = {
             <>Code is an object, so it may have a flat tonal ground. It has no shadow and no radius.</>,
           ],
         },
-        { type: 'callout', kind: 'warning', children: <p>If you reach for a card, use a row or a band instead. The Tailwind palette, shadow and radius names are reset, so a color or shape outside the system does not compile.</p> },
+        { type: 'callout', kind: 'warning', children: <p>Instead of a card, use a row or a band. The Tailwind palette, shadow and radius names are reset, so a color or shape outside the system does not compile.</p> },
       ],
     },
     {
@@ -82,7 +82,7 @@ export const designLanguage: DocPage = {
         { type: 'h3', id: 'reduced-motion', title: 'Reduced motion and no script' },
         {
           type: 'p',
-          children: <>Every animation is wrapped so that under reduced motion nothing moves and every element is already in its final place. The same holds with scripts off: scroll reveal hides an element only while the script that will show it is running.</>,
+          children: <>Under reduced motion nothing moves and every element is already in its final place. The same holds with scripts off: scroll reveal hides an element only while the script that will show it is running.</>,
         },
         {
           type: 'tabs',

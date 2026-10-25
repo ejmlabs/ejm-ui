@@ -107,7 +107,7 @@ export default function HooksPage() {
       <div className="page py-rhythm-sm">
         <p className="text-meta text-muted">Hooks and motion</p>
         <h1 className="mt-4 max-w-lg text-display">Behavior, not boxes.</h1>
-        <p className="mt-6 max-w-measure text-lead text-muted">Every hook is safe to render on the server. Scroll down: each section reveals once as it arrives. Turn on reduced motion in the system and everything is simply there.</p>
+        <p className="mt-6 max-w-measure text-lead text-muted">Every hook is safe to render on the server. Scroll down and each section reveals once as it arrives. With reduced motion on, everything is simply there.</p>
 
         <div className="mt-16">
           <Demo name="useTheme" lead="Light, dark or system. Saved to the ejm-theme cookie on ejmlabs.com, localStorage on other hosts."><ThemeDemo /></Demo>

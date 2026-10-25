@@ -2,6 +2,17 @@ import { getShot } from '@ejm/shots';
 import { ProductShot } from '@ejm/ui/layout/ProductShot';
 
 // Real captures for the layout showcase. The interactive demos keep their own simulated views.
-export const Cli = () => <ProductShot shot={getShot('cli', 'tui-read-refused')} alt="ejm-cli reads a file and refuses a write without a grant." frame />;
-export const Ide = () => <ProductShot shot={getShot('ide', 'workspace-launch')} alt="The native ejm-ide project tree, source editor and assistant before a model is connected." />;
-export const Harness = () => <ProductShot shot={getShot('harness', 'journal')} alt="ejm-harness runs an offline replay session and prints the durable journal events." frame />;
+// In a stage the windows overlap, so each capture drops its own caption and StageCaptions lists them under the stage.
+const cli = getShot('cli', 'tui-read-refused');
+const ide = getShot('ide', 'workspace-launch');
+const harness = getShot('harness', 'journal');
+
+export const Cli = () => <ProductShot shot={cli} alt="ejm-cli reads a file and refuses a write without a grant." frame caption={false} />;
+export const Ide = () => <ProductShot shot={ide} alt="The native ejm-ide project tree, source editor and assistant before a model is connected." caption={false} />;
+export const Harness = () => <ProductShot shot={harness} alt="ejm-harness runs an offline replay session and prints the durable journal events." frame caption={false} />;
+
+export const StageCaptions = () => (
+  <ul className="text-meta m-0 mt-6 max-w-prose list-none border-t border-line p-0 pt-2 text-muted">
+    {[cli, ide, harness].map(s => <li key={s.caption} className="mt-1">{s.caption}</li>)}
+  </ul>
+);
