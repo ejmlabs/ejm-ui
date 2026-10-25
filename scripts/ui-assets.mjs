@@ -11,7 +11,6 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import sharp from 'sharp';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const tokens = join(root, 'packages/tokens');
@@ -22,6 +21,15 @@ const python = process.env.PYTHON || ['python3', '/usr/bin/python3'].find(candid
   try { execFileSync(candidate, ['-I', '-c', 'import fontTools, PIL'], { stdio: 'ignore' }); return true; } catch { return false; }
 });
 if (!python) throw new Error('fontTools and Pillow are required. Set PYTHON to a Python with both installed.');
+// sharp is loaded only when this script generates rasters. `scripts/assets.mjs` verifies committed
+// files without importing this module, so a tree without a root sharp dependency still checks clean.
+const loadSharp = async () => {
+  try {
+    return (await import('sharp')).default;
+  } catch (error) {
+    throw new Error('sharp is required to generate ui assets. Add it with the assets split lockfile, then retry.', { cause: error });
+  }
+};
 
 // The approved grid-e mark: one 36-unit ribbon winds out from a round cap into a rounded square and ends in the
 // lower-left flick. The filled path is the canonical artwork. Its ink spans 10.12 to 240 by 16 to 240.
@@ -80,7 +88,9 @@ const svg = (width, height, viewBox, label, content) => `<svg xmlns="http://www.
 const art = color => `<path fill="${color}" d="${mark.path}"/>`;
 const files = new Map();
 const add = (file, content) => files.set(file, Buffer.from(content));
+let sharp;
 const png = async (file, source, width, height, opaque) => {
+  if (!sharp) sharp = await loadSharp();
   const image = sharp(files.get(source), { density: 72 * width / Number(/width="([\d.]+)"/.exec(files.get(source).toString())[1]) }).resize(width, height);
   files.set(file, await (opaque ? image.removeAlpha() : image).png({ compressionLevel: 9 }).toBuffer());
 };
