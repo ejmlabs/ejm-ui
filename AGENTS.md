@@ -36,7 +36,7 @@ Leave the area you touch better than you found it, within the task's scope. Reco
 
 ## OpenSpec
 
-This repo has an `openspec/` directory. Feature and bugfix work follows that workflow: explore or clarify, propose, apply, update the plan when it changes, sync specs, then archive after verification. Do not implement a feature or bugfix directly from a plain request. The Codex workflow skills under `.agents/skills/` are the generated OpenSpec skills. Read the one that matches the step.
+This repo has an `openspec/` directory. Feature and bugfix work follows that workflow: explore or clarify, propose, apply, update the plan when it changes, sync specs, then archive after verification. Do not implement a feature or bugfix directly from a plain request. The generated OpenSpec skills are the `openspec-*` entries under `.agents/skills/` (Codex target). Other skills in that directory are repo-owned. Read the OpenSpec skill that matches the step.
 
 | Task | Skill |
 | --- | --- |
