@@ -1,4 +1,4 @@
-export type ProjectId = 'ejmlabs' | 'cli' | 'ide' | 'harness' | 'chess';
+export type ProjectId = 'ejmlabs' | 'cli' | 'ide' | 'harness' | 'chess' | 'ui';
 export interface ProjectGuide {
   label: string;
   /** Intended canonical guide URL. Verify publication before enabling project discovery. */

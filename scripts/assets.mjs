@@ -33,7 +33,8 @@ const MOVES = [
   ['projects/relay', 'assets/projects/relay'],
   ...['dark', 'light'].flatMap(theme => ['svg', 'png'].map(ext => [`projects/family-${theme}.${ext}`, `assets/projects/family-${theme}.${ext}`])),
 ];
-const GENERATED_DIRS = ['assets/projects/chess'];
+// [generated directory under packages/tokens, the script that writes it].
+const GENERATED_DIRS = [['assets/projects/chess', 'chess-assets'], ['assets/projects/ui', 'ui-assets']];
 const skipped = rel => rel.split(/[\\/]/).includes('editable') && !/^editable\/logo-(?:ink|paper|primary)\.svg$/.test(posix(rel));
 // This is the public production bundle. Review boards and editable sources stay in the kit.
 const relayFiles = new Set([
@@ -64,10 +65,10 @@ function plan(project) {
       rows.push({ local: posix(join(to, rel)), source, file });
     }
   }
-  if (!project) for (const directory of GENERATED_DIRS) {
+  if (!project) for (const [directory, generator] of GENERATED_DIRS) {
     const target = join(tokens, directory);
     if (!existsSync(target)) continue;
-    for (const file of walk(target)) rows.push({ local: posix(relative(tokens, file)), source: `generated:chess-assets/${relative(target, file)}`, file });
+    for (const file of walk(target)) rows.push({ local: posix(relative(tokens, file)), source: `generated:${generator}/${posix(relative(target, file))}`, file });
   }
   return rows;
 }
@@ -148,7 +149,7 @@ for (const r of rows) {
   }
 }
 // A file in assets/ that PROVENANCE.md does not list is also a failure.
-for (const to of [...MOVES.map(([, to]) => to), ...GENERATED_DIRS]) {
+for (const to of [...MOVES.map(([, to]) => to), ...GENERATED_DIRS.map(([directory]) => directory)]) {
   const dir = join(tokens, to);
   if (!existsSync(dir)) continue;
   for (const f of statSync(dir).isDirectory() ? walk(dir) : [dir]) {

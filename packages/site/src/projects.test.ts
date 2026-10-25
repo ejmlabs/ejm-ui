@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
 import type { ViteDevServer } from 'vite';
 import { describe, expect, it, vi } from 'vitest';
 import { siteDefaults } from './head';
@@ -7,6 +8,7 @@ import { PROJECT_LIST, PROJECTS, assetPaths, otherSites, sourceLinks } from './p
 import { ejmSite, headTags, sharedFiles } from './vite.mjs';
 
 const require = createRequire(import.meta.url);
+const uiAssets = join(dirname(require.resolve('@ejm/tokens/theme.json')), 'assets', 'projects', 'ui');
 
 describe('project registry', () => {
   it('keeps the four published discovery identities and their configured tokens unchanged', () => {
@@ -37,6 +39,19 @@ describe('project registry', () => {
     const files = sharedFiles(PROJECTS.chess);
     expect(files['favicon.svg']).toContain('/assets/projects/chess/');
     expect(JSON.parse(readFileSync(files['site.webmanifest']!, 'utf8')).name).toBe('Chess by ejmlabs');
+  });
+
+  it('registers the ejm-ui gallery outside discovery, and uses its brand files when present', () => {
+    expect(PROJECTS.ui.discoverable).toBe(false);
+    expect(PROJECT_LIST.some(p => p.id === 'ui')).toBe(false);
+    expect(siteDefaults('ui').origin).toBe('https://ui.ejmlabs.com');
+    expect(siteDefaults('ui').head.titleTemplate).toBe('%s | ejm-ui');
+    expect(sourceLinks('ui')).toEqual([{ label: 'ejm-ui on GitHub', href: 'https://github.com/ejmlabs/ejm-ui', external: true }]);
+    // Brand files land in the assets split; until then sharedFiles falls back to the ejmlabs set.
+    if (!existsSync(uiAssets)) return;
+    const files = sharedFiles(PROJECTS.ui);
+    for (const name of ['favicon.svg', 'apple-touch-icon.png', 'social-card.png']) expect(files[name], name).toContain('/assets/projects/ui/');
+    expect(JSON.parse(readFileSync(files['site.webmanifest']!, 'utf8')).name).toBe('ui by ejmlabs');
   });
 
   it('falls back to the ejmlabs brand files for a project without a folder', () => {
