@@ -155,6 +155,13 @@ describe('the build output', () => {
     expect(headers).not.toContain('cloudflareinsights');
   });
 
+  it('serves the ejm-ui icons, manifest and social card, not the ejmlabs set', () => {
+    const own = join(here, '..', '..', '..', 'packages', 'tokens', 'assets', 'projects', 'ui');
+    expect(readFileSync(join(dist, 'social-card.png'))).toEqual(readFileSync(join(own, 'social-card.png')));
+    expect(readFileSync(join(dist, 'apple-touch-icon.png'))).toEqual(readFileSync(join(own, 'apple-touch-icon.png')));
+    expect(JSON.parse(readFileSync(join(dist, 'site.webmanifest'), 'utf8')).name).toBe('ui by ejmlabs');
+  });
+
   it('keeps every route inside the budgets (JS 95 KB, CSS 14 KB, fonts 70 KB, HTML 30 KB gzip)', () => {
     const run = spawnSync('node', [ssgBin, 'budget'], { cwd: app, encoding: 'utf8' });
     expect(run.stdout).toContain('all routes within budget');

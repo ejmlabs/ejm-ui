@@ -1,6 +1,6 @@
 import { Link } from '@ejm/ssg';
-import symbolInk from '@ejm/tokens/assets/logos/symbol-ink.svg?url';
-import symbolPaper from '@ejm/tokens/assets/logos/symbol-paper.svg?url';
+import markInk from '@ejm/tokens/assets/projects/ui/mark-ink.svg?url';
+import markPaper from '@ejm/tokens/assets/projects/ui/mark-paper.svg?url';
 import { Contents, DocsLayout, DocsSidebar, ExternalLink, Header, Reveal, type HeaderProps } from '@ejm/ui';
 
 // Header, footer and layouts, shown the way a site uses them. The gallery's SiteLayout (src/frame.tsx) wraps this whole page. The previews
@@ -19,7 +19,7 @@ function Preview({ theme }: { theme: 'light' | 'dark' }) {
   return (
     <section data-theme={theme} aria-label={`Header preview, ${theme} theme`} className="band relative">
       <p className="page-inset pt-6 text-meta text-muted">{theme} theme</p>
-      <Header {...header} identity={{ name: 'ejm-ui', artwork: { src: symbolInk, darkSrc: symbolPaper, width: 418, height: 381 } }} />
+      <Header {...header} identity={{ name: 'ejm-ui', artwork: { src: markInk, darkSrc: markPaper, width: 256, height: 256 } }} />
     </section>
   );
 }

@@ -11,17 +11,14 @@ import productStyles from './styles-product.css?url';
 
 const styleLinks = (path: string) => [{ rel: 'stylesheet', href: path.startsWith('/docs/') || path === '/shell/' ? docsStyles : path === '/app/' || path === '/app-shell/' ? appStyles : path === '/demos/' ? demoStyles : path === '/product/' ? productStyles : baseStyles }];
 
-const description = 'ejm-ui is the ejmlabs design system: tokens, a Tailwind theme, components, hooks, layouts and views for every ejmlabs site and app.';
-const defaults = siteDefaults('ejmlabs', { titleTemplate: '%s | ejm-ui', description });
+const defaults = siteDefaults('ui');
 const shotLinks = import.meta.env.SSR
   ? (await import('@ejm/ui/layout/ProductShot')).shotPreloadLinks((await import('@ejm/shots')).getShot('cli', 'tui-read-refused'))
   : [];
 
 export default defineSite({
   ...defaults,
-  // The gallery is not in the project registry yet, so it names its own head; the origin is where it is planned to be served.
-  origin: 'https://ui.ejmlabs.com',
-  head: { ...defaults.head, title: 'ejm-ui, the ejmlabs design system', og: { ...defaults.head.og, siteName: 'ejm-ui' } },
+  head: { ...defaults.head, title: 'ejm-ui, the ejmlabs design system' },
   App,
   routes: [
     { path: '/', head: { links: styleLinks('/') }, load: () => import('./island').then(m => m.island(() => import('./routes/home'), 'Build with ejm-ui.')) },
