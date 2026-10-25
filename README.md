@@ -74,7 +74,8 @@ do not establish a deployed consumer or a published package.
 ## Development
 
 Read [AGENTS.md](AGENTS.md) before changing the owner or its public contracts.
-The repo uses npm workspaces.
+The repo uses npm workspaces. Feature and bugfix changes follow the OpenSpec
+workflow in `openspec/`: explore, propose, apply, sync specs, then archive.
 
 ### Stack
 
