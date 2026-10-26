@@ -12,4 +12,8 @@ Each repository has an independent [Semantic Version](https://semver.org/) in `V
 
 Setup creates no product tag or release. Source archives are not signed installers or a package registry publication. CLI/IDE archives need the exact harness revision recorded in `.github/harness-revision`; fetch that dependency separately. Native binaries need platform builds, code signing/notarization where relevant, and smoke tests. npm, PyPI, crates.io, and deployment publishing require separate scoped credentials and explicit release gates. Do not claim these artifacts exist until they have been built and verified.
 
+## npm packages
+
+`@ejm/tokens`, `@ejm/core`, `@ejm/ui` and `@ejm/ssg` publish together at the version in `VERSION`; every other workspace package stays private. The **Publish npm packages** workflow is run from `main` by a maintainer after the draft release is reviewed. It is disabled until the repository variable `NPM_SCOPE_CONFIRMED` is `true`, which the owner sets once the `@ejm` npm scope is owned and trusted publishing is configured for each package. Its build job checks, packs and proves the four tarballs with read-only access and no secrets; a separate job publishes those exact tarballs with provenance and runs no project code. Run `node scripts/pack-proof-publish.mjs` before changing a manifest, `files` or `exports` of the four packages. The tokens tarball must not carry reserved brand artwork. A published version cannot be replaced: fix it with a new version.
+
 Never move a released tag or replace its assets. Fix a bad release with a new version. For a withdrawn release, explain why in the release notes and issue a replacement. Shared workflow updates land through reviewed PRs that change the full commit pins in the consumers.
