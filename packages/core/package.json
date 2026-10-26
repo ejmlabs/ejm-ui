@@ -1,7 +1,6 @@
 {
   "name": "@ejm/core",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "description": "Framework-neutral ejmlabs UI logic: the component contract, state machines and formatting. No React, Ink or DOM.",
   "main": "./src/index.ts",
@@ -18,6 +17,10 @@
     "THIRD_PARTY_NOTICES.md"
   ],
   "license": "SEE LICENSE IN LICENSE",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ejmlabs/ejm-ui.git",

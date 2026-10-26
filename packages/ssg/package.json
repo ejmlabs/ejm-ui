@@ -1,7 +1,6 @@
 {
   "name": "@ejm/ssg",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "description": "A tiny prerender package: every route of a Vite and React SPA becomes static HTML at build time, then hydrates.",
   "main": "./src/index.ts",
@@ -37,6 +36,10 @@
     "wouter": "^3.13.0"
   },
   "license": "SEE LICENSE IN LICENSE",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ejmlabs/ejm-ui.git",

@@ -1,7 +1,6 @@
 {
   "name": "@ejm/tokens",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "description": "ejmlabs brand tokens: theme.json, brand assets and the generators for Tailwind, CSS, Rust, Monaco and terminal themes.",
   "main": "./src/index.ts",
@@ -29,12 +28,17 @@
     "rust",
     "theme.json",
     "README.md",
-    "assets",
-    "!assets/**/*.zip",
+    "assets/fonts",
+    "assets/brand",
+    "assets/icons",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md"
   ],
   "license": "SEE LICENSE IN LICENSE",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ejmlabs/ejm-ui.git",

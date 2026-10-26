@@ -21,9 +21,9 @@ Edit `theme.json`, run the build, commit the generated files. Names and behavior
 
 ## What the npm tarball holds
 
-The package includes the retained brand assets under `assets/`: SVGs, raster variants, editable sources, templates, original TTF and WOFF2 fonts and their notices. Provenance lists each import. ZIP archives stay out of the tarball; Studio assembles public downloads from these named inputs.
+The tarball holds the generated themes, `theme.json`, the Rust theme, the original TTF and WOFF2 fonts with their OFL notices (`assets/fonts`), the brand palette and token JSON (`assets/brand`) and the UI icons (`assets/icons`). It does not hold the ejmlabs logos, favicons, lockups, motifs, social cards, templates or project families: the owner reserves those (see `LICENSE`), and they stay in the repository and the brand kit. `npm run pack:check -w @ejm/tokens` fails if one is packed. Packages inside this repository still read the full `assets/` tree from the workspace.
 
-Use the public `@ejm/tokens/assets/*` export. Project families live in `assets/projects/<id>/`; ejmlabs uses the root sets. The npm file list includes every retained non-ZIP asset, subject to its license. `rust/ejm_tui.rs` and `rust/TUI.md` are included separately from brand assets.
+Use the public `@ejm/tokens/assets/*` export for the packed folders. `rust/ejm_tui.rs` and `rust/TUI.md` are included separately from brand assets.
 
 ## Asset maintenance and rights
 
@@ -87,17 +87,6 @@ Brand materials retain their owner's rights. Manrope and IBM Plex Mono retain th
 
 ## Public brand downloads
 
-The `@ejm/tokens/assets/*` export and package file list include the curated brand
-inputs used by Studio: named project logos and marks, editable SVG wordmarks,
-family artwork, raster variants, original font files/notices and templates.
-The retained provenance table records their hashes. ZIP archives are assembled
-by Studio and are not retained in this package. Public source access does not
-grant trademark rights; preserve the terms and original notices in LICENSE and
-THIRD_PARTY_NOTICES.md. Rebuild and check the intended archive against the actual
-package file list before publishing it.
+Studio assembles the brand downloads from the repository's `assets/` tree, not from the npm tarball. The tarball carries only the fonts, palette JSON and icons (see above). Public source access does not grant trademark rights; preserve the terms and original notices in LICENSE and THIRD_PARTY_NOTICES.md.
 
-Run `npm run pack:check -w @ejm/tokens` to check that every retained public asset
-is included by npm's package file list. Run `npm pack -w @ejm/tokens` and compare
-the actual tarball against the consumer's named download set before release.
-Retired social kits and Studio-owned swag masters are not restored by this
-contract. Active UI colors still come from `theme.json` and its generated files.
+Run `npm run pack:check -w @ejm/tokens` to check the tarball against that rule. Active UI colors still come from `theme.json` and its generated files.
