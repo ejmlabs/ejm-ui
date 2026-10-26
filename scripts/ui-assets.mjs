@@ -39,7 +39,7 @@ const mark = {
 };
 const name = 'ui';
 const title = `${name} by ejmlabs`;
-const tagline = 'A design system for every ejmlabs site and app.';
+const tagline = 'The ejmlabs design system for every site and app.';
 
 // Outline text runs with the owned fonts. Each run is { font, wght?, size, x, y, text }; the result is one path per run.
 // Manrope is variable, so it is instanced at the requested weight first.

@@ -59,7 +59,7 @@ export const theming: DocPage = {
         { type: 'code', lang: 'text', label: 'Cookie', code: 'ejm-theme=dark; Domain=.ejmlabs.com; Path=/; Max-Age=31536000; SameSite=Lax; Secure' },
         {
           type: 'p',
-          children: <><code>Secure</code> is added on https. Off an ejmlabs host the <code>Domain</code> attribute is left out, which makes the cookie host-only. The boot script only reads. The hook writes.</>,
+          children: <><code>Secure</code> is added on https. Off an ejmlabs host the <code>Domain</code> attribute is left out, so the cookie is host-only. The boot script only reads; the hook writes.</>,
         },
       ],
     },

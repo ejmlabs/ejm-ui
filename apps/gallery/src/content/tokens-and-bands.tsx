@@ -73,7 +73,7 @@ export const tokensAndBands: DocPage = {
       blocks: [
         {
           type: 'p',
-          children: <>Every band sets the same variables. Children say <code>text-fg</code>, <code>text-muted</code> and <code>border-line</code>, and they are right on every ground.</>,
+          children: <>Every band sets the same variables, so a child that uses <code>text-fg</code>, <code>text-muted</code> and <code>border-line</code> is right on every ground.</>,
         },
         {
           type: 'params',

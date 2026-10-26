@@ -1,7 +1,7 @@
 import ripple from '@ejm/ui/art/inline/divider-ripple.svg?raw';
 import { Band, Button, Fact, Facts, Hero, ProductStage, Row, Rows, Rule, SectionHead, Stat, Status, Text } from '@ejm/ui';
 import type { RowState, StatState } from '@ejm/core';
-import { Cli, Harness, Ide } from '../windows';
+import { Cli, Harness, Ide, StageCaptions } from '../windows';
 
 // The layout showcase: the containerless language end to end, built only from layout components and the theme contract.
 // Words come from the ejmlabs project READMEs; the product images are real captures with provenance captions.
@@ -27,11 +27,14 @@ export default function Layout() {
         title="Open source. Room to explore."
         aside={
           // ejm-shots-allow: layout demonstration of ProductStage with real ProductShot children.
-          <ProductStage>
-            <Cli />
-            <Ide />
-            <Harness />
-          </ProductStage>
+          <>
+            <ProductStage>
+              <Cli />
+              <Ide />
+              <Harness />
+            </ProductStage>
+            <StageCaptions />
+          </>
         }
         actions={
           <>
@@ -45,11 +48,11 @@ export default function Layout() {
 
       <Band id="projects" tone="sage" aria-labelledby="projects-title">
         <SectionHead kicker="01 / Projects" title="Three tools, one engine." id="projects-title">
-          <p className="m-0">ejm-harness is the engine. ejm-cli and ejm-ide are separate hosts that run on it, and all three are open source.</p>
+          <p className="m-0">ejm-harness is the engine. ejm-cli and ejm-ide are separate hosts that run on it.</p>
         </SectionHead>
         <Rows size="title" className="mt-16" aria-label="Projects">
           <Row title="ejm-cli" href={`${GITHUB}/ejm-cli`} external description="A Rust terminal coding agent built on ejm-harness. Offline replay needs no account or server." meta="Rust / terminal" />
-          <Row title="ejm-ide" href={`${GITHUB}/ejm-ide`} external description="An open-source desktop IDE for writing and understanding code, with an agent beside the editor." meta="Tauri / macOS" />
+          <Row title="ejm-ide" href={`${GITHUB}/ejm-ide`} external description="A desktop IDE for writing and understanding code, with an agent beside the editor." meta="Tauri / macOS" />
           <Row title="ejm-harness" href={`${GITHUB}/ejm-harness`} external description="A reusable Rust engine for coding agents, with one resource governor and a durable event journal." meta="Rust / engine" />
         </Rows>
       </Band>

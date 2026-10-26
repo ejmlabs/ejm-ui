@@ -65,7 +65,7 @@ export const PROJECTS = Object.freeze({
     name: 'ejm-ui',
     host: 'ui.ejmlabs.com',
     url: 'https://ui.ejmlabs.com/',
-    tagline: 'ejm-ui is the ejmlabs design system: tokens, a Tailwind theme, components, hooks, layouts and views for every ejmlabs site and app.',
+    tagline: 'The ejmlabs design system: tokens, a Tailwind theme, components, hooks, layouts and views for every site and app.',
     repo: 'https://github.com/ejmlabs/ejm-ui',
     analyticsToken: '',
     assetDir: 'projects/ui',

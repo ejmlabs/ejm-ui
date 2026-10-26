@@ -16,7 +16,7 @@ const ORIGIN = 'https://ui.ejmlabs.com';
 const SITE_TITLE = 'ejm-ui, the ejmlabs design system';
 
 const expected = [
-  { path: '/', title: SITE_TITLE, description: /ejm-ui is the ejmlabs design system/ },
+  { path: '/', title: SITE_TITLE, description: /The ejmlabs design system/ },
   ...[...pages, ...docRoutes].map(p => ({ path: p.path, title: `${p.title} | ejm-ui`, description: p.description })),
 ];
 const fileOf = (path: string) => (path === '/' ? 'index.html' : `${path.slice(1)}index.html`);
@@ -153,6 +153,13 @@ describe('the build output', () => {
     expect(headers).toBe(headersFile({ analytics: false }));
     expect(headers).not.toMatch(/script-src[^;\n]*unsafe-inline/);
     expect(headers).not.toContain('cloudflareinsights');
+  });
+
+  it('serves the ejm-ui icons, manifest and social card, not the ejmlabs set', () => {
+    const own = join(here, '..', '..', '..', 'packages', 'tokens', 'assets', 'projects', 'ui');
+    expect(readFileSync(join(dist, 'social-card.png'))).toEqual(readFileSync(join(own, 'social-card.png')));
+    expect(readFileSync(join(dist, 'apple-touch-icon.png'))).toEqual(readFileSync(join(own, 'apple-touch-icon.png')));
+    expect(JSON.parse(readFileSync(join(dist, 'site.webmanifest'), 'utf8')).name).toBe('ui by ejmlabs');
   });
 
   it('keeps every route inside the budgets (JS 95 KB, CSS 14 KB, fonts 70 KB, HTML 30 KB gzip)', () => {
