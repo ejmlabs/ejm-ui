@@ -1,0 +1,68 @@
+name: Publish npm packages
+# Disabled until the owner confirms the @ejm npm scope: set the repository variable NPM_SCOPE_CONFIRMED to true.
+# Dispatch from main with the version in VERSION. The build job runs project code with read-only contents and no secrets.
+# The publish job checks out nothing and runs no project code: it publishes the tarballs the build job proved.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: SemVer version matching VERSION
+        required: true
+        type: string
+permissions: {}
+jobs:
+  build:
+    if: ${{ github.ref == 'refs/heads/main' && vars.NPM_SCOPE_CONFIRMED == 'true' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+      - name: Check the version
+        env:
+          VERSION_INPUT: ${{ inputs.version }}
+        run: test "$VERSION_INPUT" = "$(cat VERSION)"
+      - run: npm ci --ignore-scripts
+      - run: npm rebuild node-pty --ignore-scripts=false
+      - run: npm run check
+      - name: Pack and prove the publish set
+        run: node scripts/pack-proof-publish.mjs --dir "$RUNNER_TEMP/proof"
+      - name: Checksums
+        working-directory: ${{ runner.temp }}/proof/tarballs
+        run: sha256sum ./*.tgz | tee SHA256SUMS
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: npm-tarballs
+          path: |
+            ${{ runner.temp }}/proof/tarballs/*.tgz
+            ${{ runner.temp }}/proof/tarballs/SHA256SUMS
+          if-no-files-found: error
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: npm-tarballs
+      - name: Verify checksums
+        run: sha256sum --check SHA256SUMS
+      - name: Publish in dependency order
+        env:
+          VERSION_INPUT: ${{ inputs.version }}
+        run: |
+          for name in tokens core ui ssg; do
+            npm publish "./ejm-$name-$VERSION_INPUT.tgz" --access public --provenance
+          done
