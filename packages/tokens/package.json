@@ -2,7 +2,7 @@
   "name": "@ejm/tokens",
   "version": "0.1.0",
   "type": "module",
-  "description": "ejmlabs brand tokens: theme.json, brand assets and the generators for Tailwind, CSS, Rust, Monaco and terminal themes.",
+  "description": "ejmlabs brand tokens: theme.json, fonts, the brand palette, icons and the generators for Tailwind, CSS, Rust, Monaco and terminal themes.",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {

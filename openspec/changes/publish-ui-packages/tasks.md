@@ -1,7 +1,7 @@
 ## 1. Manifests and tokens
 
 - [x] 1.1 Make tokens, core, ui and ssg publishable at 0.1.0 with publishConfig, repository, license, files
-- [x] 1.2 Narrow the tokens `files` list and the brand-pack check to the rule above; update the tokens README and LICENSE scope note
+- [x] 1.2 Narrow the tokens `files` list and the brand-pack check to the rule above; update the tokens README (the existing LICENSE reservation already covers the rule)
 
 ## 2. Proof
 

@@ -10,6 +10,7 @@ on:
         required: true
         type: string
 permissions: {}
+concurrency: publish-npm
 jobs:
   build:
     if: ${{ github.ref == 'refs/heads/main' && vars.NPM_SCOPE_CONFIRMED == 'true' }}
@@ -64,5 +65,5 @@ jobs:
           VERSION_INPUT: ${{ inputs.version }}
         run: |
           for name in tokens core ui ssg; do
-            npm publish "./ejm-$name-$VERSION_INPUT.tgz" --access public --provenance
+            npm publish "./ejm-$name-$VERSION_INPUT.tgz" --ignore-scripts --access public --provenance
           done
