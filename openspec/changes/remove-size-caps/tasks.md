@@ -25,7 +25,7 @@
 - [x] 4.1 Use Lighthouse's desktop profile as the normal connection and re-record the baseline
 - [x] 4.2 Remove the remaining byte-limit sentences in the demos README and the native HTML guide
 - [x] 4.3 Merge a partial `--update` into the baseline, exit 2 on a missing baseline file, use `picomatch` for ignore globs
-- [ ] 4.4 Move the shared gate pin in `.github/workflows/pr.yml` and the review-context snapshot once the shared `.github` gate drops `scripts/size.mjs` and `npm run size -w @ejm/demos` for ejm-ui. Not done here because that change lives in another repository
+- [x] 4.4 Move the shared workflow pins to the `.github` revision that dropped `scripts/size.mjs` and `npm run size -w @ejm/demos` from the ejm-ui gate, and remove the retired review-context snapshot
 
 ## 5. Follow-up (not in this change)
 
