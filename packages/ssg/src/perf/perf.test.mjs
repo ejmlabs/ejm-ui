@@ -80,6 +80,21 @@ describe('static server routing', () => {
 const chrome = findChrome();
 if (!chrome) console.warn('perf integration tests skipped: Chrome not found. Install Google Chrome or set CHROME to a Chrome or Chromium binary.');
 
+describe('perf.mjs baseline file', () => {
+  it('exits 2 when the baseline file is missing, so a mistyped path never passes', () => {
+    const work = mkdtempSync(join(tmpdir(), 'ejm-perf-missing-'));
+    try {
+      mkdirSync(join(work, 'dist'));
+      writeFileSync(join(work, 'dist', 'index.html'), '<!doctype html>');
+      const r = spawnSync('node', [join(repo, 'scripts', 'perf.mjs'), join(work, 'dist'), '--baseline', join(work, 'typo.json')], { encoding: 'utf8', timeout: 30_000 });
+      expect(r.status).toBe(2);
+      expect(r.stderr).toMatch(/no baseline/);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  });
+});
+
 describe.skipIf(!chrome)('perf.mjs on the ssg fixture', () => {
   // build.test.ts builds fixtures/basic in place, and two builds in one directory would clash, so build a copy that keeps node_modules reachable.
   const work = mkdtempSync(join(tmpdir(), 'ejm-perf-fixture-'));
@@ -124,11 +139,5 @@ describe.skipIf(!chrome)('perf.mjs on the ssg fixture', () => {
     const recorded = JSON.parse(readFileSync(baseline, 'utf8'));
     expect(recorded['/lazy/']).toBe(7);
     expect(recorded['/']).toBeGreaterThan(1);
-  }, 180_000);
-
-  it('exits 2 when the baseline file is missing, so a mistyped path never passes', () => {
-    const r = perf('--baseline', join(work, 'typo.json'));
-    expect(r.status).toBe(2);
-    expect(r.stderr).toMatch(/no baseline/);
   }, 180_000);
 });

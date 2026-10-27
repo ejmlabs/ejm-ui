@@ -41,7 +41,7 @@ export function compare(rows, baseline, threshold = THRESHOLD_MS) {
 }
 
 /** Whether a page is ignored. A glob is tried against the file path under dist (`brand/kit/index.html`) and the route without its leading slash (`brand/kit/`). */
-export const isIgnored = (ignore, rel, route) => ignore.map(g => picomatch(g.replace(/^\/+/, ''))).some(match => match(rel) || match(route.replace(/^\//, '')));
+export const isIgnored = (ignore, rel, route) => ignore.map(g => picomatch(g.replace(/^\/+/, ''), { dot: true })).some(match => match(rel) || match(route.replace(/^\//, '')));
 
 /** Route paths of every prerendered page under dist: '/', '/lazy/', '/404.html'. Pages matching an `ignore` glob are left out. */
 export function discoverRoutes(dist, ignore = []) {
@@ -164,7 +164,7 @@ export async function main(argv) {
       rows.push({ route, fcp: median(runs) });
     }
     if (o.update) {
-      const merged = { ...(hasBaseline ? JSON.parse(readFileSync(o.baseline, 'utf8')) : {}), ...Object.fromEntries(rows.map(r => [r.route, Math.round(r.fcp)])) };
+      const merged = { ...(hasBaseline && o.routes ? JSON.parse(readFileSync(o.baseline, 'utf8')) : {}), ...Object.fromEntries(rows.map(r => [r.route, Math.round(r.fcp)])) };
       writeFileSync(o.baseline, JSON.stringify(Object.fromEntries(Object.entries(merged).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))), null, 2) + '\n');
       console.log(`perf: recorded ${rows.length} baselines in ${o.baseline}`);
       return 0;

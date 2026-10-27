@@ -38,3 +38,13 @@ The check SHALL compare each route with `scripts/perf-baseline.json` and exit no
 
 - **WHEN** the check runs with `--update`
 - **THEN** it writes the medians to the baseline file and exits 0
+
+#### Scenario: Recording some routes
+
+- **WHEN** the check runs with `--update` and `--routes`
+- **THEN** it keeps the baseline entries of the other routes and replaces the listed ones
+
+#### Scenario: Missing baseline
+
+- **WHEN** the check runs without `--update` and the baseline file does not exist
+- **THEN** it exits 2 and says to run with `--update`
