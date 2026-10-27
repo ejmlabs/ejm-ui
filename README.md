@@ -152,6 +152,7 @@ package result.
   [Rust terminal components](crates/ejm-tui/README.md)
 - [Quality bar](QUALITY.md) and [browser performance checks](scripts/PERF.md)
 - [Source releases and version changes](RELEASING.md)
+- [Publishing the npm packages](PUBLISHING.md)
 
 These files are source documentation. Verify a gallery publication before
 claiming that the live site contains an update.

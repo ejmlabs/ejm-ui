@@ -23,4 +23,4 @@ None.
 
 ## Impact
 
-`packages/{tokens,core,ui,ssg}/package.json`, `packages/tokens/scripts/check-brand-pack.mjs`, `scripts/pack-proof.mjs` (copies the full tokens assets back for the lab-site proof), a new `scripts/pack-proof-publish.mjs`, `.github/workflows/publish.yml`, `RELEASING.md`, `CHANGELOG.md`.
+`packages/{tokens,core,ui,ssg}/package.json`, `packages/tokens/scripts/check-brand-pack.mjs`, `scripts/pack-proof.mjs` (copies the full tokens assets back for the lab-site proof), a new `scripts/pack-proof-publish.mjs`, `.github/workflows/publish.yml`, `PUBLISHING.md` (RELEASING.md stays identical to the shared template), `CHANGELOG.md`.

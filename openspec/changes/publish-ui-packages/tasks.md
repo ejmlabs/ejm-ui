@@ -11,7 +11,7 @@
 ## 3. Workflow and docs
 
 - [x] 3.1 Add `.github/workflows/publish.yml` (build job read-only, separate publish job, disabled by variable)
-- [x] 3.2 Update RELEASING.md and CHANGELOG.md; draft 0.1.0 notes and install line
+- [x] 3.2 Add PUBLISHING.md (RELEASING.md is a shared template and stays unchanged) and update CHANGELOG.md; draft 0.1.0 notes and install line
 
 ## 4. Artifacts
 
