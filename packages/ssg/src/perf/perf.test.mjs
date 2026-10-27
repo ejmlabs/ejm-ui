@@ -116,4 +116,19 @@ describe.skipIf(!chrome)('perf.mjs on the ssg fixture', () => {
     expect(r.status).toBe(1);
     expect(r.stdout).toMatch(/\/: first contentful paint is \d+ ms, \d+ ms above the -?\d+ ms baseline/);
   }, 180_000);
+
+  it('merges a partial --update into the existing baseline', () => {
+    writeFileSync(baseline, JSON.stringify({ '/': 1, '/lazy/': 7 }));
+    const r = perf('--update', '--routes', '/');
+    expect(r.status, r.stdout + r.stderr).toBe(0);
+    const recorded = JSON.parse(readFileSync(baseline, 'utf8'));
+    expect(recorded['/lazy/']).toBe(7);
+    expect(recorded['/']).toBeGreaterThan(1);
+  }, 180_000);
+
+  it('exits 2 when the baseline file is missing, so a mistyped path never passes', () => {
+    const r = perf('--baseline', join(work, 'typo.json'));
+    expect(r.status).toBe(2);
+    expect(r.stderr).toMatch(/no baseline/);
+  }, 180_000);
 });

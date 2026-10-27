@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Load-time check for a built site: first contentful paint per route, measured with Lighthouse on its default mobile profile
-// (simulated slow 4G, 4x CPU slowdown). It fails when a route's median is a whole second or more above its recorded baseline.
+// Load-time check for a built site: first contentful paint per route, measured with Lighthouse on its desktop profile
+// (simulated 10 Mbps, 40 ms round trip, no CPU slowdown: a normal connection). It fails when a route's median is a whole second or more above its recorded baseline.
 // See scripts/PERF.md.
 //
 //   node scripts/perf.mjs <dist-dir> [--routes /,/lazy/] [--ignore glob]... [--runs 1] [--baseline file.json] [--update] [--json]
@@ -14,6 +14,7 @@ import { dirname, extname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { Launcher, launch } from 'chrome-launcher';
+import picomatch from 'picomatch';
 
 export const THRESHOLD_MS = 1000; // a route this much slower than its baseline is a regression
 const DEFAULT_BASELINE = join(dirname(fileURLToPath(import.meta.url)), 'perf-baseline.json');
@@ -39,15 +40,8 @@ export function compare(rows, baseline, threshold = THRESHOLD_MS) {
   return { results, regressions };
 }
 
-/** A glob (`*` within a folder, `**` across folders, `?`) as a RegExp over a slash-separated path. */
-export function globToRegExp(glob) {
-  const body = glob.replace(/^\/+/, '').replace(/[.+^${}()|[\]\\]/g, '\\$&')
-    .replace(/\*\*\/?|\*|\?/g, m => (m === '*' ? '[^/]*' : m === '?' ? '[^/]' : m.length === 3 ? '(?:.*/)?' : '.*'));
-  return new RegExp(`^${body}$`);
-}
-
 /** Whether a page is ignored. A glob is tried against the file path under dist (`brand/kit/index.html`) and the route without its leading slash (`brand/kit/`). */
-export const isIgnored = (ignore, rel, route) => ignore.map(globToRegExp).some(re => re.test(rel) || re.test(route.replace(/^\//, '')));
+export const isIgnored = (ignore, rel, route) => ignore.map(g => picomatch(g.replace(/^\/+/, ''))).some(match => match(rel) || match(route.replace(/^\//, '')));
 
 /** Route paths of every prerendered page under dist: '/', '/lazy/', '/404.html'. Pages matching an `ignore` glob are left out. */
 export function discoverRoutes(dist, ignore = []) {
@@ -98,8 +92,8 @@ export function findChrome() {
 // ---- Lighthouse ----
 
 /** First contentful paint of one cold load of `url`, in ms. Lighthouse clears storage and the cache before each run. */
-async function fcpOnce(lighthouse, port, url) {
-  const result = await lighthouse(url, { port, output: 'json', logLevel: 'error', onlyCategories: ['performance'], onlyAudits: ['first-contentful-paint'] });
+async function fcpOnce(lighthouse, config, port, url) {
+  const result = await lighthouse(url, { port, output: 'json', logLevel: 'error', onlyCategories: ['performance'], onlyAudits: ['first-contentful-paint'] }, config);
   if (result.lhr.runtimeError) throw new Error(`${url}: ${result.lhr.runtimeError.message}`);
   const fcp = result.lhr.audits['first-contentful-paint'].numericValue;
   if (!Number.isFinite(fcp)) throw new Error(`${url}: first contentful paint was not measured`);
@@ -114,7 +108,7 @@ export function formatReport(results, regressions, runs) {
   const w = head.map((h, i) => Math.max(h.length, ...body.map(b => b[i].length)));
   const line = c => c.map((x, i) => (i ? x.padStart(w[i]) : x.padEnd(w[i]))).join('  ');
   return [
-    `ejm perf: first contentful paint, Lighthouse mobile profile (simulated slow 4G, 4x CPU), median of ${runs} run${runs === 1 ? '' : 's'}`,
+    `ejm perf: first contentful paint, Lighthouse desktop profile (simulated 10 Mbps, 40 ms round trip), median of ${runs} run${runs === 1 ? '' : 's'}`,
     line(head), ...body.map(line),
     regressions.length ? `\nSLOWER BY A SECOND OR MORE\n  ${regressions.join('\n  ')}` : `\nno route is ${THRESHOLD_MS} ms or more above its baseline`,
   ].join('\n');
@@ -158,20 +152,24 @@ export async function main(argv) {
     const routes = o.routes ? o.routes.map(asRoute) : discoverRoutes(dist, ignore);
     if (!routes.length) throw new Error(`no .html pages to measure under ${dist}`);
     const { default: lighthouse } = await import('lighthouse');
+    const { default: desktopConfig } = await import('lighthouse/core/config/desktop-config.js');
+    const hasBaseline = existsSync(o.baseline);
+    if (!o.update && !hasBaseline) throw new Error(`no baseline at ${o.baseline}. Run with --update to record one.`);
     server = await serve(dist);
     chrome = await launch({ chromePath, chromeFlags: ['--headless=new'] });
     const rows = [];
     for (const route of routes) {
       const runs = [];
-      for (let i = 0; i < o.runs; i++) runs.push(await fcpOnce(lighthouse, chrome.port, new URL(route, server.url).href));
+      for (let i = 0; i < o.runs; i++) runs.push(await fcpOnce(lighthouse, desktopConfig, chrome.port, new URL(route, server.url).href));
       rows.push({ route, fcp: median(runs) });
     }
     if (o.update) {
-      writeFileSync(o.baseline, JSON.stringify(Object.fromEntries(rows.map(r => [r.route, Math.round(r.fcp)])), null, 2) + '\n');
+      const merged = { ...(hasBaseline ? JSON.parse(readFileSync(o.baseline, 'utf8')) : {}), ...Object.fromEntries(rows.map(r => [r.route, Math.round(r.fcp)])) };
+      writeFileSync(o.baseline, JSON.stringify(Object.fromEntries(Object.entries(merged).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))), null, 2) + '\n');
       console.log(`perf: recorded ${rows.length} baselines in ${o.baseline}`);
       return 0;
     }
-    const baseline = existsSync(o.baseline) ? JSON.parse(readFileSync(o.baseline, 'utf8')) : {};
+    const baseline = JSON.parse(readFileSync(o.baseline, 'utf8'));
     const { results, regressions } = compare(rows, baseline);
     console.log(o.json ? JSON.stringify({ runs: o.runs, thresholdMs: THRESHOLD_MS, results, regressions }, null, 2) : formatReport(results, regressions, o.runs));
     return regressions.length ? 1 : 0;

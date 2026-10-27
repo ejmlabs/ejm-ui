@@ -75,7 +75,7 @@ The references are Anthropic, Stripe and OpenAI. ejmlabs learns from how they de
 
 Load time is the only performance bar. Bytes are not capped: use the maintained library that does the job, whatever it weighs, and measure what it costs a visitor.
 
-- `npm run perf` loads every prerendered route of the built gallery in Lighthouse on its default mobile profile (simulated slow 4G, 4x CPU slowdown) and prints first contentful paint per route. Run `npm run build` first.
+- `npm run perf` loads every prerendered route of the built gallery in Lighthouse on its desktop profile (a normal connection: simulated 10 Mbps, 40 ms round trip) and prints first contentful paint per route. Run `npm run build` first.
 - A route fails when its median first contentful paint is 1000 ms or more above its recorded baseline in `scripts/perf-baseline.json`. Anything that adds a whole second to first paint on a normal connection is a regression, whatever caused it. Fonts, scripts and stylesheets that block first paint are where a second usually comes from.
 - After an intended change, or on a new machine class, record the new numbers with `npm run perf -- --update` and commit the baseline with the change.
 - Fonts use `font-display: swap` and metric-matched fallbacks so the swap moves nothing.

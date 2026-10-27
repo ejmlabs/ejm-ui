@@ -82,7 +82,7 @@ export const checks: DocPage = {
         },
         {
           type: 'p',
-          children: <><code>npm run perf</code> loads each prerendered route in Lighthouse on its mobile profile (simulated slow 4G, 4x CPU slowdown) and reports first contentful paint. A route fails when it is a second or more above its recorded baseline. Prerendered HTML still reads correctly with scripts off, and the synchronous theme script avoids a flash of the wrong theme.</>,
+          children: <><code>npm run perf</code> loads each prerendered route in Lighthouse on its desktop profile (a normal connection: simulated 10 Mbps, 40 ms round trip) and reports first contentful paint. A route fails when it is a second or more above its recorded baseline. Prerendered HTML still reads correctly with scripts off, and the synchronous theme script avoids a flash of the wrong theme.</>,
         },
       ],
     },

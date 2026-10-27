@@ -221,8 +221,8 @@ The bundled CLI uses the recorded Unicode glyphs and colors. Public interactive
 views retain their plain and ASCII modes.
 
 A rejected module or recording keeps the server excerpt and announces that
-playback is unavailable. Reload retries the module. The 14 KiB initial-load and
-40 KiB island limits still apply, alongside each consuming site's normal gate.
+playback is unavailable. Reload retries the module. Load time is the bar, not
+bytes: check a consuming site with its `npm run perf` first-paint measurement.
 
 `ShowcaseFrame` supplies one nearby accessible disclosure. Its optional `note`
 replaces the default, so project-specific capture facts do not need a second

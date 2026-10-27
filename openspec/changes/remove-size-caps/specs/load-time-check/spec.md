@@ -12,7 +12,7 @@ The repository SHALL NOT enforce a limit on bundle bytes, transferred bytes, fil
 
 ### Requirement: First contentful paint is measured per route
 
-`npm run perf` SHALL serve a built site, load each route with Lighthouse on its default mobile profile with simulated slow 4G and 4x CPU slowdown, and print first contentful paint in milliseconds per route as the median of the runs.
+`npm run perf` SHALL serve a built site, load each route with Lighthouse on its desktop profile (a normal connection: simulated 10 Mbps, 40 ms round trip, no CPU slowdown), and print first contentful paint in milliseconds per route as the median of the runs.
 
 #### Scenario: Report for the gallery
 
