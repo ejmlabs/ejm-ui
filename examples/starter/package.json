@@ -7,7 +7,6 @@
   "scripts": {
     "dev": "ejm-ssg dev",
     "build": "ejm-ssg build",
-    "budget": "ejm-ssg budget",
     "typecheck": "tsc -p tsconfig.json --pretty false"
   },
   "dependencies": {

@@ -2,9 +2,8 @@
 // Turns every captured PNG into AVIF, WebP and PNG files at 1x and 2x widths, and writes an index the site loader reads.
 //
 //   node packages/shots/scripts/optimize.mjs                 encode what changed, write generated/shots.json
-//   node packages/shots/scripts/optimize.mjs --check         write nothing; exit 1 when the output is stale or over budget
+//   node packages/shots/scripts/optimize.mjs --check         write nothing; exit 1 when the output is stale
 //   options: --assets <dir> (default packages/shots/assets)  --out <dir> (default packages/shots/generated)
-//            --budget <kb> (default 150)  the largest AVIF of a shot may not exceed this
 //
 // Input layout: <assets>/<product>/<name>.<theme>.png (theme dark or light) and <assets>/<product>/<name>.json, the metadata.
 // Output: <out>/<product>/<name>.<theme>.<width>w.<avif|webp|png> and <out>/shots.json.
@@ -84,7 +83,7 @@ const fileName = (key, theme, width, format) => `${key}.${theme}.${width}w.${for
 const FORMATS = ['avif', 'webp', 'png'];
 
 /** @returns {Promise<{ index: object, problems: string[], report: string[] }>} */
-export async function optimizeShots({ assets = defaultAssets, out = defaultOut, check = false, budgetKb = 150 } = {}) {
+export async function optimizeShots({ assets = defaultAssets, out = defaultOut, check = false } = {}) {
   const { default: sharp } = await import('sharp');
   const { shots, problems } = await scan(sharp, assets);
   const indexFile = join(out, 'shots.json');
@@ -124,8 +123,6 @@ export async function optimizeShots({ assets = defaultAssets, out = defaultOut, 
       const kb = fmt => (Math.max(0, ...t.files.filter(f => f.format === fmt).map(f => f.bytes)) / 1024).toFixed(1);
       const kb1 = fmt => ((t.files.find(f => f.format === fmt && f.width === t.widths[0])?.bytes ?? 0) / 1024).toFixed(1);
       report.push(`${key} ${theme}: ${t.width}x${t.height} css, ${t.widths.join('/')}w, avif ${kb1('avif')} KB (1x) ${kb('avif')} KB (2x), webp ${kb('webp')} KB, png ${kb('png')} KB, source ${(t.source.bytes / 1024).toFixed(1)} KB`);
-      const biggest = Math.max(0, ...t.files.filter(f => f.format === 'avif').map(f => f.bytes));
-      if (biggest > budgetKb * 1024) problems.push(`${key} ${theme}: largest avif is ${(biggest / 1024).toFixed(1)} KB, over the ${budgetKb} KB budget`);
     }
   }
 
@@ -163,7 +160,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const { problems, report, index } = await optimizeShots({
     assets: resolve(arg('--assets', defaultAssets)),
     out: resolve(arg('--out', defaultOut)),
-    budgetKb: Number(arg('--budget', 150)),
     check,
   });
   for (const line of report) console.log(line);

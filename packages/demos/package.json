@@ -41,8 +41,7 @@
     "fixtures"
   ],
   "scripts": {
-    "honesty": "node scripts/check-demos-honesty.mjs",
-    "size": "node scripts/size-islands.mjs"
+    "honesty": "node scripts/check-demos-honesty.mjs"
   },
   "dependencies": {
     "@ejm/core": "0.1.0",

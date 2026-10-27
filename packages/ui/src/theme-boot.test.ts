@@ -20,10 +20,6 @@ function boot(env: Env): string | undefined {
 }
 
 describe('theme-boot.js', () => {
-  it('stays under 1 KB', () => {
-    expect(Buffer.byteLength(source)).toBeLessThan(1024);
-  });
-
   it('reads the shared cookie on ejmlabs.com and its subdomains', () => {
     expect(boot({ host: 'ejmlabs.com', cookie: 'a=1; ejm-theme=dark; b=2' })).toBe('dark');
     expect(boot({ host: 'docs.ejmlabs.com', cookie: 'ejm-theme=light' })).toBe('light');

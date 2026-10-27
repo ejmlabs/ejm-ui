@@ -112,8 +112,6 @@ npm ci --ignore-scripts
 npm rebuild node-pty --ignore-scripts=false
 npm run check
 npm run build
-node scripts/size.mjs
-npm run size -w @ejm/demos
 npm run check:rust
 node scripts/pack-proof.mjs
 ```
@@ -125,8 +123,8 @@ disabled. The pack proof uses the npm registry and checks six tarball-based
 interfaces. It does not publish packages.
 
 `npm run check` covers text, retained assets, generated themes, parity,
-workspace checks, types and tests. Size checks enforce the existing budgets;
-see [QUALITY.md](QUALITY.md). Browser acceptance, actual product captures and
+workspace checks, types and tests. Load time is the only performance bar, measured
+by `npm run perf`; see [QUALITY.md](QUALITY.md). Browser acceptance, actual product captures and
 demo honesty checks need their documented tools and immutable product inputs.
 A passing owner check does not prove those separate checks or deployment.
 

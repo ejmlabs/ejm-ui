@@ -99,9 +99,8 @@ import { tokenize } from '@ejm/ui/docs/highlight';
 import { Header } from '@ejm/ui/shell/Header';
 import { useReducedMotion } from '@ejm/ui/hooks/useReducedMotion';
 import { ejmSsg } from '@ejm/ssg/vite';
-import { checkBudget } from '@ejm/ssg/budget';
 import * as core from '@ejm/core';
-export const probe = [BANDS, THEMES, theme, cn, fontPreloads, Button, tokenize, Header, useReducedMotion, ejmSsg, checkBudget, core];
+export const probe = [BANDS, THEMES, theme, cn, fontPreloads, Button, tokenize, Header, useReducedMotion, ejmSsg, core];
 `);
 run('npm', ['install', '--no-audit', '--no-fund'], consumer);
 

@@ -44,7 +44,7 @@ Keep visible copy brief. Use no text where the layout or native state is clear; 
 
 See [Native HTML applications](../site/native-html.md) for the shell and form markup, fixed setup and one-column workspace recipes, compact connection details, asset copying, no-script forms, bounded output, motion and reduced-motion behavior. Setup and workspace-header h1 headings use a fixed 2rem size and weight 600; other native pages and React headings retain their current scale. It also documents the public `@ejm/site/native` build check for authored templates, DOM presentation hooks and finished route documents.
 
-Run `npm run build:static -w @ejm/ui` after shared recipe, token or font changes. The shared check rejects stale output and keeps the 14 KiB gzip CSS and 70 KiB combined font limits. This profile does not load theme-boot.js, analytics or a browser runtime and does not store a theme choice. Native privacy-sensitive pages can continue to use the system palette and ordinary same-origin forms.
+Run `npm run build:static -w @ejm/ui` after shared recipe, token or font changes. The shared check rejects stale output. This profile does not load theme-boot.js, analytics or a browser runtime and does not store a theme choice. Native privacy-sensitive pages can continue to use the system palette and ordinary same-origin forms.
 The terminal module lives in `src/terminal` and keeps the public import
 `@ejm/ui/components/TerminalWorkspace`. Its structural utilities belong to
 `styles-terminal.css`; products should compose the public components rather
@@ -289,4 +289,4 @@ Generated art lives in `packages/ui/src/art`. The inline files (`art/inline/*.sv
 
 ## Measured
 
-Gallery tokens route (4 bands, type scale, elevation, about 60 distinct utilities): built CSS 31.2 KB, 6.99 KB gzip, including Tailwind's reset, the full band and theme variables, the window colors (about 1.4 KB gzip) and all five `@font-face` rules. The 14 KB gzip budget is measured on this near-empty page and is re-measured when the components land (`node scripts/size.mjs`).
+Gallery tokens route (4 bands, type scale, elevation, about 60 distinct utilities): built CSS 31.2 KB, 6.99 KB gzip, including Tailwind's reset, the full band and theme variables, the window colors (about 1.4 KB gzip) and all five `@font-face` rules.

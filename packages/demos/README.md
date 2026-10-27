@@ -66,7 +66,7 @@ Targets are 44px on coarse pointers, inputs are 16px there, and the layout react
 
 ### Laziness
 
-`LazyCliDemo` (and `LazyDemo`) serve the static view, which is also what renders without scripts, and loads the island when the demo is within `rootMargin` (default 600px) of the viewport or when the visitor points at, focuses, types in or presses "Try the live demo". The three `import()` calls are separate chunks. `node packages/demos/scripts/size-islands.mjs` (also `npm run size -w @ejm/demos`) builds each island and a tiny page with `<LazyDemo />`, and exits 1 when an island with everything it imports is over 40 KB gzip (React excluded), when island code is in the page's initial chunks, or when the island is not a separate chunk. It also measures the first load each entry adds to an empty React page, and fails when a one-product page carries another product's view or adds more than 14 KB gzip (that figure includes `cn` and `ProductWindow`, which a site ships anyway). Measured: `LazyCliDemo` +11.0 KB, `LazyIdeDemo` +12.6 KB, `LazyHarnessDemo` +12.4 KB, `LazyDemo` +17.1 KB (so one product saves 4.5 to 6 KB); `ProductHeroStage` with `CliHeroWindow` +9.7 KB, `ProductHero` +14.3 KB. Each product has its own frame file (`src/views/frames/<product>.json`) so a one-product page does not ship the other frames. Do not import from `islands/*.tsx` or `parts.tsx` in code that must stay in the initial bundle: `islands/btn.tsx` exists because a static import of `parts.tsx` pulled the whole shell into the entry.
+`LazyCliDemo` (and `LazyDemo`) serve the static view, which is also what renders without scripts, and loads the island when the demo is within `rootMargin` (default 600px) of the viewport or when the visitor points at, focuses, types in or presses "Try the live demo". The three `import()` calls are separate chunks. Measured: `LazyCliDemo` adds about 11 KB gzip to an empty React page, `LazyIdeDemo` 12.6 KB, `LazyHarnessDemo` 12.4 KB and `LazyDemo` 17.1 KB (so one product saves 4.5 to 6 KB). These are informational, not limits. Each product has its own frame file (`src/views/frames/<product>.json`) so a one-product page does not ship the other frames. Do not import from `islands/*.tsx` or `parts.tsx` in code that must stay in the initial bundle: `islands/btn.tsx` exists because a static import of `parts.tsx` pulled the whole shell into the entry.
 
 ## Product hero
 
@@ -153,9 +153,8 @@ observed tool output. Never claim real execution from an unverified payload.
 A timeline has 1 to 256 beats, nondecreasing finite timestamps from zero through
 120,000 ms, at most 256 distinct transcript blocks and 512 lines per block. CLI
 recording JSON is limited to 262,144 UTF-16 code units. These are playback bounds,
-not a bundle allowance. The existing 14 KiB gzip initial-load and 40 KiB gzip
-island budgets still apply; the size gate also checks the caller's lazy-data
-boundary. Real product data needs its own normal site and budget checks.
+not a bundle allowance. Real product data needs its own normal site and
+load-time checks.
 
 `LazyHarnessShowcase` has the same source, options, lazy loading, motion and
 cleanup contract. Import it and `HarnessRecordingSource` from
@@ -222,8 +221,8 @@ The bundled CLI uses the recorded Unicode glyphs and colors. Public interactive
 views retain their plain and ASCII modes.
 
 A rejected module or recording keeps the server excerpt and announces that
-playback is unavailable. Reload retries the module. The 14 KiB initial-load and
-40 KiB island limits still apply, alongside each consuming site's normal gate.
+playback is unavailable. Reload retries the module. Load time is the bar, not
+bytes: check a consuming site with its `npm run perf` first-paint measurement.
 
 `ShowcaseFrame` supplies one nearby accessible disclosure. Its optional `note`
 replaces the default, so project-specific capture facts do not need a second

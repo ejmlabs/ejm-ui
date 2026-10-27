@@ -11,7 +11,6 @@ From the reviewed source commit, install the locked dependencies, then run:
 npm ci --ignore-scripts
 npm run check
 npm run build -w @ejm/gallery
-npm run budget -w @ejm/gallery
 ```
 
 The existing Cloudflare account must own the domain and the deploying identity

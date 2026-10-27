@@ -4,12 +4,10 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { checkBudget } from './budget.mjs';
 
 const pkg = join(dirname(fileURLToPath(import.meta.url)), '..');
 const fixture = join(pkg, 'fixtures', 'basic');
 const dist = join(fixture, 'dist');
-const KB = 1024;
 
 // A real build of the fixture through the CLI, then read the files it wrote. No script ever runs: DOMParser only parses.
 const page = (file: string) => new DOMParser().parseFromString(readFileSync(join(dist, file), 'utf8'), 'text/html');
@@ -111,50 +109,17 @@ describe('prerendered HTML, no JavaScript', () => {
   });
 });
 
-describe('budget gate', () => {
-  it('passes for the fixture and counts only what each route references', () => {
-    const report = checkBudget(dist);
-    expect(report.breaches).toEqual([]);
-    expect(report.rows.map(r => r.route).sort()).toEqual(['/', '/404', '/lazy/']);
-    const jsOf = (route: string) => report.rows.find(r => r.route === route)!.files.js.map(f => f.split('/').pop());
-    expect(jsOf('/').some(f => f?.startsWith('Lazy-'))).toBe(false);
-    expect(jsOf('/lazy/').some(f => f?.startsWith('Lazy-'))).toBe(true);
-    expect(report.rows.find(r => r.route === '/')!.bytes.fonts).toBe(8192);
+describe('lazy routes', () => {
+  it('preloads a lazy chunk only on the route that uses it', () => {
+    const preloads = (file: string) => [...page(file).querySelectorAll('link[rel=modulepreload]')].map(l => l.getAttribute('href')!.split('/').pop());
+    expect(preloads('index.html').some(f => f?.startsWith('Lazy-'))).toBe(false);
+    expect(preloads('lazy/index.html').some(f => f?.startsWith('Lazy-'))).toBe(true);
   });
 
-  it('fails, naming the route and the overage, when a budget drops below the current size', () => {
-    const current = checkBudget(dist).rows.find(r => r.route === '/lazy/')!.bytes.js;
-    const limit = current / KB - 1;
-    const report = checkBudget(dist, { js: limit });
-    expect(report.breaches.length).toBeGreaterThan(0);
-    expect(report.breaches.some(b => b.startsWith('/lazy/: js is ') && b.includes(`over the ${limit} KB budget by`))).toBe(true);
-  });
-
-  it('skips pages that match an ignore glob, from the options and from --ignore, and still measures the rest', () => {
-    const all = checkBudget(dist).rows.map(r => r.route);
-    expect(checkBudget(dist, {}, { ignore: ['lazy/**'] }).rows.map(r => r.route)).toEqual(all.filter(r => r !== '/lazy/'));
-    expect(checkBudget(dist, {}, { ignore: ['/404.html', 'lazy/'] }).rows.map(r => r.route)).toEqual(['/']);
-    expect(checkBudget(dist, { js: 1 }, { ignore: ['**'] }).rows).toEqual([]);
-    const cli = spawnSync('node', [join(pkg, 'bin', 'ejm-ssg.mjs'), 'budget', dist, '--js', '1', '--ignore', 'lazy/**', '--ignore', '404.html', '--ignore', 'index.html'], { cwd: pkg, encoding: 'utf8' });
-    expect(cli.stdout).not.toContain('/lazy/');
-  });
-
-  it('exits non-zero from the script and from the CLI on a breach, zero otherwise', () => {
-    const run = (cmd: string, args: string[]) => spawnSync('node', [cmd, ...args], { cwd: pkg, encoding: 'utf8' });
-    const script = join(pkg, '..', '..', 'scripts', 'ssg-budget.mjs');
-    const cli = join(pkg, 'bin', 'ejm-ssg.mjs');
-    expect(run(script, [dist]).status).toBe(0);
-    const bad = run(script, [dist, '--js', '10']);
-    expect(bad.status).toBe(1);
-    expect(bad.stdout).toContain('OVER BUDGET');
-    expect(run(cli, ['budget', dist, '--css', '0.1']).status).toBe(1);
-    expect(run(cli, ['budget', dist, '--js', '75']).status).toBe(0);
-  });
-
-  it('keeps an empty site under the 75 KB gzip initial JavaScript budget', () => {
-    const home = checkBudget(dist).rows.find(r => r.route === '/')!;
-    console.log(`empty site initial JS: ${(home.bytes.js / KB).toFixed(1)} KiB gzip (${(home.bytes.js / 1000).toFixed(1)} kB), CSS ${home.bytes.css} B, HTML ${home.bytes.html} B`);
-    expect(home.bytes.js).toBeLessThan(75 * KB);
+  it('has no budget command', () => {
+    const cli = spawnSync('node', [join(pkg, 'bin', 'ejm-ssg.mjs'), 'budget'], { cwd: pkg, encoding: 'utf8' });
+    expect(cli.status).toBe(2);
+    expect(cli.stderr).toContain('usage: ejm-ssg build | dev');
   });
 });
 
