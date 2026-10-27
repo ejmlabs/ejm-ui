@@ -10,7 +10,7 @@ their owning repositories.
 ## Status
 
 `0.1.0` is the source baseline in [VERSION](VERSION) and
-[CHANGELOG.md](CHANGELOG.md). All eight owned npm packages remain private,
+[CHANGELOG.md](CHANGELOG.md). Only `@ejm/tokens`, `@ejm/core`, `@ejm/ui` and `@ejm/ssg` are set up for npm and none is published yet; the other npm packages stay private,
 and `ejm-tui` is not published to crates.io. A dated changelog entry or local
 tarball does not mean a release was published. Check
 [GitHub releases](https://github.com/ejmlabs/ejm-ui/releases) for published
@@ -150,6 +150,7 @@ package result.
   [Rust terminal components](crates/ejm-tui/README.md)
 - [Quality bar](QUALITY.md) and [browser performance checks](scripts/PERF.md)
 - [Source releases and version changes](RELEASING.md)
+- [Publishing the npm packages](PUBLISHING.md)
 
 These files are source documentation. Verify a gallery publication before
 claiming that the live site contains an update.

@@ -1,7 +1,6 @@
 {
   "name": "@ejm/ui",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "description": "ejmlabs components, hooks, layouts, views, styles and art on React and Tailwind v4.",
   "main": "./src/index.ts",
@@ -101,6 +100,10 @@
     "vitest-axe": "^0.1.0"
   },
   "license": "SEE LICENSE IN LICENSE",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ejmlabs/ejm-ui.git",
