@@ -9,7 +9,8 @@
 // What it does, in order:
 //   1. builds examples/starter in the workspace (the reference output),
 //   2. `npm pack` for @ejm/tokens, core, ui, ssg, site and demos into <dir>/tarballs,
-//   3. copies examples/starter to <dir>/consumer and installs ONLY the six tarballs from disk (no workspace, no links),
+//   3. copies examples/starter to <dir>/consumer and installs ONLY the six tarballs from disk (no workspace, no links; the tokens assets
+//      the public tarball leaves out are copied back in, because site and demos are private),
 //   4. in the consumer runs `ejm-ssg build`, `ejm-ssg budget`, `ejm-site-headers dist/_headers --check` and `tsc`
 //      (the typecheck also compiles a probe file that imports every documented deep import of @ejm/ui),
 //   5. diffs the consumer's HTML against the workspace build (hashed asset names are folded; CSS and JS are compared by size).
@@ -108,6 +109,9 @@ export const probe = [fontPreloads, Hero, ProductWindow, NativeCheckbox, Disclos
   ShowcaseFrame, LazyCliPreview, LazyIdePreview, LazyHarnessPreview];
 `);
 run('npm', ['install', '--no-audit', '--no-fund'], consumer);
+// The published @ejm/tokens tarball leaves out reserved brand artwork (see scripts/pack-proof-publish.mjs), but the private site and demos
+// read it. Restore the repo's full assets tree so this proof keeps checking the lab's own sites; the public set is proven separately.
+cpSync(join(repo, 'packages', 'tokens', 'assets'), join(consumer, 'node_modules', '@ejm', 'tokens', 'assets'), { recursive: true });
 
 // 4. The checks, all through the installed bins.
 const bin = name => join(consumer, 'node_modules', '.bin', name);
