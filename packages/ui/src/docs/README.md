@@ -66,7 +66,7 @@ Product sites compile their Markdown with the Node-only `@ejm/site/docs` entry.
 It returns `SerializedDocPage`, a JSON model with nested lists, arbitrary tables,
 callouts, code labels and language tabs. `splitDoc` turns it into `FullDocPage`
 and `ClientDocPage`: prose stays in the server HTML, while code and navigation
-remain live. This keeps longer guides within their existing JavaScript budgets.
+remain live. This keeps the guide text out of the JavaScript.
 The compiler never enters a browser bundle.
 
 `DocsPage` owns the reading frame. It uses the same `DocsLayout`, `DocsSidebar`,

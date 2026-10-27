@@ -9,7 +9,7 @@ How the ejmlabs.com site, the cli, ide and harness sites and the IDE app move on
 | `@ejm/tokens` | Palette, fonts, brand files (favicon set, logos, social card), generated Tailwind theme, Monaco and terminal themes. |
 | `@ejm/ui` | Components, layouts, hooks, `styles.css` (the Tailwind v4 theme), `theme-boot.js`. |
 | `@ejm/core` | Framework-neutral logic that `@ejm/ui` uses. Installed with it. |
-| `@ejm/ssg` | Prerender plugin, `hydrateSite`, `Link`, the budget gate (`ejm-ssg`). Sites only. |
+| `@ejm/ssg` | Prerender plugin, `hydrateSite`, `Link`, the `ejm-ssg` build and dev commands. Sites only. |
 | `@ejm/site` | Project registry, analytics, shared head, theme boot and headers plugin (`ejm-site-headers`). Sites only. |
 | `@ejm/demos` | The simulated product screens (static views, lazy interactive demos, the product hero). Only a site that shows a product demo. |
 
@@ -88,7 +88,7 @@ for p in tokens core ui ssg site demos; do npm pack -w packages/$p --pack-destin
 
 In the consumer, use `"@ejm/core": "file:../tarballs/ejm-core-0.1.0.tgz"` and the same for the others (leave out `demos` if the site has no product demo), with the same React and tooling dependencies as above (no `dedupe` needed). To update, repack, delete `node_modules/@ejm` and `package-lock.json`, and install again (npm will not refresh a tarball of the same version otherwise). Commit the lockfile.
 
-Use `node scripts/pack-proof.mjs` to check the tarball route end to end. It packs the six packages, installs only the tarballs into a throwaway copy of `examples/starter` outside this repo (React, Vite, Tailwind and TypeScript come from the registry as the consumer's own dependencies), runs `ejm-ssg build`, `ejm-ssg budget`, `ejm-site-headers dist/_headers --check` and a typecheck, and diffs the HTML against the workspace build. **It needs network access to the npm registry, so it is not part of `npm run check`.** Run it after changing a `package.json`, a `files` or `exports` field, or one of the Vite plugins. Without `--dir`, the script creates a new temporary folder. To choose a folder, pass `--dir <folder>` outside the repo and reserve it for this tool: the script recursively deletes and recreates its `workspace-dist`, `tarballs` and `consumer` subfolders. It leaves the output folder in place for inspection. Results apply to the source and environment checked.
+Use `node scripts/pack-proof.mjs` to check the tarball route end to end. It packs the six packages, installs only the tarballs into a throwaway copy of `examples/starter` outside this repo (React, Vite, Tailwind and TypeScript come from the registry as the consumer's own dependencies), runs `ejm-ssg build`, `ejm-site-headers dist/_headers --check` and a typecheck, and diffs the HTML against the workspace build. **It needs network access to the npm registry, so it is not part of `npm run check`.** Run it after changing a `package.json`, a `files` or `exports` field, or one of the Vite plugins. Without `--dir`, the script creates a new temporary folder. To choose a folder, pass `--dir <folder>` outside the repo and reserve it for this tool: the script recursively deletes and recreates its `workspace-dist`, `tarballs` and `consumer` subfolders. It leaves the output folder in place for inspection. Results apply to the source and environment checked.
 
 What the tarballs hold (the `files` field of each package):
 
@@ -118,7 +118,7 @@ src/site.tsx          defineSite({ ...siteDefaults('cli'), App, routes, notFound
 src/shell.tsx         App: SiteLayout (Header, Footer, linkComponent={Link}) and <Analytics />
 ```
 
-`package.json` scripts: `"dev": "ejm-ssg dev"`, `"build": "ejm-ssg build"`, `"budget": "ejm-ssg budget"`.
+`package.json` scripts: `"dev": "ejm-ssg dev"`, `"build": "ejm-ssg build"`.
 
 Notes that cost time when missed:
 
@@ -129,19 +129,19 @@ Notes that cost time when missed:
   - `@ejm/ui/styles-static.css` for `NativeCheckbox`, `Disclosure`, `ActionRows` and `DocumentContent`.
   - `@ejm/ui/styles-terminal.css` for the `Terminal*` views.
 
-  A product demo site also adds `@import "@ejm/demos/styles.css";`. Measure the actual entries used by the consumer. Tailwind scans your project folder automatically. A source folder outside the project needs its own `@source "../other/src";` line in `src/styles.css`.
+  A product demo site also adds `@import "@ejm/demos/styles.css";`. Tailwind scans your project folder automatically. A source folder outside the project needs its own `@source "../other/src";` line in `src/styles.css`.
 
-- **Keep `dist` and `.ejm-ssg` in `.gitignore`.** Tailwind skips ignored paths. Without that line it reads the previous build's HTML, and the CSS grew from 13.1 KB to 14.2 KB in the proof, enough to breach the 14 KB budget on the second build.
+- **Keep `dist` and `.ejm-ssg` in `.gitignore`.** Tailwind skips ignored paths. Without that line it reads the previous build's HTML, and the stylesheet grows with every rebuild.
 - **`tsconfig.json`.** Types resolve through the package `exports`, so with installed packages (route B) no `paths` are needed. With linked packages (route A) the four `paths` for `react` and `react-dom` shown in route A are required. Inside the `ejm-ui` repo the starter extends `tsconfig.base.json`; outside it, copy the options listed above.
 - **Import deep or by name.** `@ejm/ui` has `sideEffects: ["*.css"]`, so `import { Band } from '@ejm/ui'` tree-shakes to the same bytes as `@ejm/ui/layout/Band` (`packages/ui/scripts/check-treeshake.mjs` checks it). A bare `@ejm/ui` in a module that runs in the first load is still worth avoiding when you only need one thing (`@ejm/ui/font-preloads`). `@ejm/site` and `@ejm/demos` never import the barrel.
 - **Vite config import order.** The ejm-ide site reported TypeScript 6.0.3 crashing with "parameter should have errors" when the `@ejm/*` imports in `vite.config.ts` came before the `vite` imports. A throwaway consumer with the ejm-ide `tsconfig` options and `@ejm/*` first typechecked cleanly on 6.0.3 and 5.9, and the plugin typings are plain `Plugin` returns, so this looks specific to that project's file set. If it happens, put the `vite`, `@tailwindcss/vite` and `@vitejs/plugin-react` imports first.
 - **Routes** are written the way Cloudflare serves them: `/about/` with the slash, so there is no redirect. One `h1` per route, and `head: { title, description }` on each.
 - **Links.** Internal links use `Link` from `@ejm/ssg` (give it to `SiteLayout` as `linkComponent`). Other sites use `otherSites('cli')` from `@ejm/site/projects` in the nav or footer, which renders `ExternalLink`, or `<Row external>`: both set `rel="external"`.
 - **Header.** `Header` puts the nav and then the theme control last in the tools group, at the far right. `themeControl` omitted or `undefined` keeps `ThemeToggle`; `null` suppresses it. A replacement stays in that final slot.
-- **Heavy features are lazy.** A route with a demo or code highlighting uses `load: () => import('./pages/Demo')`, so the initial JavaScript stays under 95 KB.
+- **Heavy features are lazy.** A route with a demo or code highlighting uses `load: () => import('./pages/Demo')`, so the first load only carries what the page shows.
 - **A product demo.** Add `@ejm/demos` and `@import "@ejm/demos/styles.css"` (or its `@ejm/demos/ide.css` entry for the current IDE views), and import the entry for the product you show, so you do not ship the views of the other two: `LazyCliDemo` from `@ejm/demos/islands/cli-lazy` (also `ide-lazy`, `harness-lazy`), or `ProductHeroStage` with `CliHeroWindow` from `@ejm/demos/hero`. `LazyDemo` and `ProductHero` take any product but carry all three views (about 5 KB gzip more). Details and measured sizes: `packages/demos/README.md`.
-- **Prose that needs no script.** A docs page keeps its text in the HTML with `<Static>` from `@ejm/ssg` (see `packages/ssg/README.md`), which keeps the guide text out of the JavaScript budget.
-- **Static pages that are not routes** (copied brand assets) are measured as routes by the budget gate. Skip them with `ignore: ['brand/assets/**']` in `defineSite`, or `ejm-ssg budget --ignore <glob>` and `node scripts/perf.mjs <dist> --ignore <glob>`.
+- **Prose that needs no script.** A docs page keeps its text in the HTML with `<Static>` from `@ejm/ssg` (see `packages/ssg/README.md`), which keeps the guide text out of the JavaScript.
+- **Static pages that are not routes** (copied brand assets) are measured as routes by the load-time check. Skip them with `ignore: ['brand/assets/**']` in `defineSite`, or `node scripts/perf.mjs <dist> --ignore <glob>`.
 
 ### Native product pages
 
@@ -193,7 +193,7 @@ documentation does not establish deployment or browser acceptance.
 
 ## 4. Per-site checklist
 
-For every site: delete the `sync-design-kit.sh` script and the copied `design-kit/` folder, the `<link>` and `<script>` tags that pointed at it and `analytics.js`; move static files that are not part of the design system (`robots.txt`, `sitemap.xml`, `license.txt`, product images) into `public/`; list the routes; set the budget; check the links; run the starter's checks against the new site (skip link first, one `h1` per route, toggle last in the header tools, no inline script, external links marked, `_headers` current).
+For every site: delete the `sync-design-kit.sh` script and the copied `design-kit/` folder, the `<link>` and `<script>` tags that pointed at it and `analytics.js`; move static files that are not part of the design system (`robots.txt`, `sitemap.xml`, `license.txt`, product images) into `public/`; list the routes; check the links; run the starter's checks against the new site (skip link first, one `h1` per route, toggle last in the header tools, no inline script, external links marked, `_headers` current).
 
 | Site | Registry id | Route list to build | Notes |
 | --- | --- | --- | --- |
@@ -202,7 +202,7 @@ For every site: delete the `sync-design-kit.sh` script and the copied `design-ki
 | ide | `ide` | `/`, `/docs/`, `/docs/user-guide/`, `/docs/developer-guide/` | Docs use `DocsLayout`. Keep `public/` files (`editor.webp`, `license.txt`, `notices.txt`, `robots.txt`, `sitemap.xml`). The `/api/` and `/downloads/` dev proxy moves into `server.proxy` in `vite.config.ts`. `website/scripts/check-docs.mjs` stays. |
 | harness | `harness` | the pages in `ejm-harness/site/public` today | Same shape as cli. |
 
-Set `budget` in `defineSite` only to raise a limit for a measured reason (defaults: JS 95, CSS 14, fonts 70, HTML 30 KB gzip). The starter measures 86.8 JS, 11.9 CSS and 33.7 fonts (it was 89.6, 13.1 and 33.7 before the slimmer `cn` and the opt-in docs and app CSS): write pages from the shared components and do not add CSS. Product demos add 1.7 KB of CSS, the docs partial about 1 KB.
+Sites have no size budget. Use the maintained library that does the job. Load time is the one bar: after `npm run build`, run `node scripts/perf.mjs <dist> --baseline perf-baseline.json --update` from a checkout of `ejm-ui` once to record first contentful paint per route, commit the file in the product repository, then run the same command without `--update` on later builds. It fails when a route is a second or more slower than its baseline. See `QUALITY.md` and `scripts/PERF.md`.
 
 Adopt and verify each consumer in its own repository.
 
@@ -223,7 +223,7 @@ The IDE's marketing site (`ide/website`) is a normal site (section 4).
 - Linked (route A): nothing to copy. Pull `ejm-ui`, run `npm install` there if its dependencies changed, then rebuild the product. There is no sync script to run and no copy to keep.
 - Tarballs (route B): run the `npm pack` loop above, delete `node_modules/@ejm` and the lockfile in the product, install, rebuild, and commit the lockfile. Do it when `ejm-ui` changes something the product needs, not on a schedule.
 - All packages currently declare `0.1.0` and remain private. Pin source by its full commit, and regenerate the consumer lockfile when that source changes. Standard source releases need the shared UI version validator and release workflow before a version tag can serve as a release reference. A future registry publication requires the owner's approval and a versioned package release.
-- After any update, the product's own check must pass: its budgets (`ejm-ssg budget`), its route list and the shared rules in section 4. Brand files come from `@ejm/tokens` only, so never edit a copy of them in a product repo.
+- After any update, the product's own check must pass: its load-time check (`node scripts/perf.mjs <dist> --baseline perf-baseline.json`), its route list and the shared rules in section 4. Brand files come from `@ejm/tokens` only, so never edit a copy of them in a product repo.
 
 ## Package notices and the IDE stylesheet entry
 

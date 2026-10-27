@@ -224,7 +224,7 @@ does not enter the client page data. Keep the full JSON import and the
 `DocProse` renderer behind a constant server/dev condition in the generated
 route. See the `@ejm/ui/docs` guide for the frame API. The static boundary must
 wrap prose runs and highlighted source only; sidebar filtering, contents, tabs, copy and pager links
-remain live. Measure the emitted route against its existing budget.
+remain live.
 
 ## Unreleased build identities
 

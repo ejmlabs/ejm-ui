@@ -7,7 +7,7 @@ The references are Anthropic, Stripe and OpenAI. ejmlabs learns from how they de
 ## How to use it
 
 1. Build the page from `@ejm/ui` components, layouts and views (`packages/ui/THEME.md` lists every token).
-2. Run `npm run check`, `npm run build`, `node scripts/size.mjs` and `node scripts/shoot.mjs <url>` in light and dark.
+2. Run `npm run check`, `npm run build`, `npm run perf` and `node scripts/shoot.mjs <url>` in light and dark.
 3. Walk the dimensions below. A page ships when every line holds, or when the exception is written down in the critique.
 
 ## Content
@@ -73,17 +73,16 @@ The references are Anthropic, Stripe and OpenAI. ejmlabs learns from how they de
 
 ## Performance
 
-Budgets per prerendered route, enforced by `node scripts/size.mjs` (a breach exits non-zero and fails the build). Sizes are gzip, except fonts, which are WOFF2.
+Load time is the only performance bar. Bytes are not capped: use the maintained library that does the job, whatever it weighs, and measure what it costs a visitor.
 
-- JavaScript at most 95 KB gzip for the first load: React and react-dom (about 71 KB, measured), router, hydration, theme and header. The demo island (40 KB) and code highlighting (20 KB) load lazily and are not part of it.
-- CSS at most 14 KB. `styles.css` scans the common components. Docs, app, static and terminal components have opt-in entries: `styles-docs.css`, `styles-app.css`, `styles-static.css` and `styles-terminal.css`. Import each required entry after `styles.css`. Measure the combined stylesheets for each route.
-- The two preloaded text fonts (Manrope and IBM Plex Mono, Latin subsets) at most 70 KB together, with `font-display: swap` and metric-matched fallbacks so the swap moves nothing.
-- HTML at most 30 KB per route.
-- On a throttled mobile profile, Largest Contentful Paint at or under 1.2 seconds and Cumulative Layout Shift under 0.05.
-- The theme script is external, synchronous and under 1 KB, so the page never flashes the wrong theme.
+- `npm run perf` loads every prerendered route of the built gallery in Lighthouse on its default mobile profile (simulated slow 4G, 4x CPU slowdown) and prints first contentful paint per route. Run `npm run build` first.
+- A route fails when its median first contentful paint is 1000 ms or more above its recorded baseline in `scripts/perf-baseline.json`. Anything that adds a whole second to first paint on a normal connection is a regression, whatever caused it. Fonts, scripts and stylesheets that block first paint are where a second usually comes from.
+- After an intended change, or on a new machine class, record the new numbers with `npm run perf -- --update` and commit the baseline with the change.
+- Fonts use `font-display: swap` and metric-matched fallbacks so the swap moves nothing.
+- The theme script is external and synchronous, so the page never flashes the wrong theme.
 - Every route is prerendered to static HTML that reads correctly with scripts off.
 
-The numbers are a starting point, tuned from measurement. A change to a budget is made in the design document, not in the script alone.
+`scripts/PERF.md` has the options and the noise to expect.
 
 ## Gates that enforce it
 
@@ -92,6 +91,6 @@ The numbers are a starting point, tuned from measurement. A change to a budget i
 | Text, stale files, types, tests | `npm run check` | Em dashes, stale generated files (tokens, art), changed brand assets, type errors, failing tests |
 | Contrast | `node packages/tokens/scripts/contrast.mjs --verbose` (also in `npm run check`) | Text under 4.5:1, control border or focus under 3:1, for both themes and every band |
 | Viewport matrix | `node scripts/shoot.mjs <url> [--theme dark]` | Horizontal overflow from 320px to 5120px, small touch targets |
-| Budgets | `node scripts/size.mjs [dist]` | HTML, CSS, JavaScript or font size over its budget |
+| Load time | `npm run perf` | A route whose first contentful paint is a second or more above its baseline |
 
 More gates are added with the components and the gallery: no card or panel classes, missing simulated labels, and a missing head, header or toggle on a route.

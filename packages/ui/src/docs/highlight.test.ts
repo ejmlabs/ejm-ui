@@ -5,7 +5,7 @@ import { tokenize } from './highlight-all';
 const samples: Record<string, string> = {
   ts: "import { cn } from '@ejm/ui';\nconst x: Band = f(1, 'a'); // note\n/* block */ export default async function Page() { return <Band tone=\"sage\" /> }",
   css: "@import \"@ejm/ui/styles.css\";\n.a { --x: #fff; margin: -0.5rem 2px; color: var(--ejm-fg); }\n/* c */ a:hover { }",
-  sh: "# install\nnpm i -w packages/ui && node scripts/size.mjs --json \"a b\"\n$HOME/bin | grep -v x",
+  sh: "# install\nnpm i -w packages/ui && node scripts/perf.mjs --json \"a b\"\n$HOME/bin | grep -v x",
   json: '{ "a": [1, 2.5, true, null], "b": "x" }',
   html: '<!-- c --><script src="/theme-boot.js"></script><a href="#x" class="y">t</a>',
   py: "import os\nfrom pathlib import Path\n@retry(3)\ndef run(x: int = 1) -> str:\n    \"\"\"doc\\nstring\"\"\"\n    return f\"{x}\" + 'a'  # note",

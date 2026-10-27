@@ -1,11 +1,8 @@
 #!/usr/bin/env node
-// ejm-ssg build | dev | budget [dist] [--js N --css N --fonts N --html N --json]
-import { main } from '../src/budget.mjs';
+// ejm-ssg build | dev
 
-const [cmd = 'build', ...rest] = process.argv.slice(2);
-if (cmd === 'budget') {
-  process.exitCode = main(rest);
-} else if (cmd === 'build' || cmd === 'dev') {
+const [cmd = 'build'] = process.argv.slice(2);
+if (cmd === 'build' || cmd === 'dev') {
   // The prerender is the ejmSsg() Vite plugin, so the build is a plain Vite build of the project in the current directory.
   const vite = await import('vite');
   if (cmd === 'build') {
@@ -17,6 +14,6 @@ if (cmd === 'budget') {
     server.printUrls();
   }
 } else {
-  console.error('usage: ejm-ssg build | dev | budget [dist] [--js N] [--css N] [--fonts N] [--html N] [--ignore glob]... [--json]');
+  console.error('usage: ejm-ssg build | dev');
   process.exitCode = 2;
 }

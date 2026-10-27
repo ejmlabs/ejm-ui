@@ -1,16 +1,15 @@
 // @vitest-environment node
-// Tests for scripts/perf.mjs: the pure parts, then a real run against the fixture in headless Chrome (skipped when Chrome is missing).
+// Tests for scripts/perf.mjs: the pure parts, then a real Lighthouse run against the fixture (skipped when Chrome is missing).
 import { execFileSync, spawnSync } from 'node:child_process';
-import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createTally, discoverRoutes, evaluate, findChrome, median, medianRun, resolveRoute, serve } from '../../../../scripts/perf.mjs';
+import { THRESHOLD_MS, compare, discoverRoutes, findChrome, median, resolveRoute, serve } from '../../../../scripts/perf.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repo = join(here, '..', '..', '..', '..');
-const KB = 1024;
 
 describe('median', () => {
   it('takes the middle, averages an even count, ignores missing values', () => {
@@ -21,57 +20,16 @@ describe('median', () => {
   });
 });
 
-describe('transfer tally', () => {
-  const ev = (id, url, type, bytes, finish = true) => [
-    ['Network.requestWillBeSent', { requestId: id, request: { url }, type }],
-    ['Network.responseReceived', { requestId: id, type }],
-    ...(finish ? [['Network.loadingFinished', { requestId: id, encodedDataLength: bytes }]] : []),
-  ];
-  it('groups bytes by resource type and counts requests', () => {
-    const t = createTally();
-    for (const [m, p] of [
-      ...ev('1', 'http://x/', 'Document', 800), ...ev('2', 'http://x/a.js', 'Script', 70000), ...ev('3', 'http://x/b.js', 'Script', 1000),
-      ...ev('4', 'http://x/a.css', 'Stylesheet', 600), ...ev('5', 'http://x/f.woff2', 'Font', 8000), ...ev('6', 'http://x/i.png', 'Image', 300),
-    ]) t.push(m, p);
-    expect(t.summary()).toEqual({ bytes: { html: 800, css: 600, js: 71000, fonts: 8000, other: 300 }, requests: 6 });
+describe('baseline comparison', () => {
+  const baseline = { '/': 1500, '/lazy/': 1600 };
+  it('flags a route a whole second or more above its baseline, naming both numbers', () => {
+    const { regressions } = compare([{ route: '/', fcp: 2500 }], baseline);
+    expect(regressions).toEqual(['/: first contentful paint is 2500 ms, 1000 ms above the 1500 ms baseline (limit 1000 ms)']);
   });
-  it('skips data urls, favicon, and requests that never finished; a redirect counts once', () => {
-    const t = createTally();
-    for (const [m, p] of [
-      ...ev('1', 'data:image/png;base64,AAAA', 'Image', 0), ...ev('2', 'http://x/favicon.ico', 'Other', 200), ...ev('3', 'http://x/slow.js', 'Script', 0, false),
-      ['Network.requestWillBeSent', { requestId: '4', request: { url: 'http://x/old' }, type: 'Document' }],
-      ['Network.requestWillBeSent', { requestId: '4', request: { url: 'http://x/new/' }, type: 'Document' }],
-      ['Network.loadingFinished', { requestId: '4', encodedDataLength: 500 }],
-    ]) t.push(m, p);
-    expect(t.summary()).toEqual({ bytes: { html: 500, css: 0, js: 0, fonts: 0, other: 0 }, requests: 1 });
-  });
-  it('medianRun takes the median per field', () => {
-    const run = (js, lcp) => ({ bytes: { html: 1, css: 1, js, fonts: 1, other: 0 }, requests: 3, fcp: 100, lcp, cls: 0, tbt: 0, longTasks: 0 });
-    const m = medianRun([run(10, 900), run(30, 700), run(20, 800)]);
-    expect([m.bytes.js, m.lcp]).toEqual([20, 800]);
-  });
-});
-
-describe('budget comparison', () => {
-  const row = (over = {}) => ({ route: '/lazy/', bytes: { html: 2 * KB, css: 3 * KB, js: 80 * KB, fonts: 10 * KB, other: 0 }, lcp: 900, cls: 0.01, ...over });
-  it('passes a route inside every limit', () => expect(evaluate([row()]).breaches).toEqual([]));
-  it('names route, metric and overage for each size breach, using the budget override', () => {
-    const { breaches, limits } = evaluate([row()], { budget: { js: 75, css: 2 } });
-    expect(limits).toMatchObject({ js: 75, css: 2, fonts: 70, html: 30 });
-    expect(breaches).toEqual([
-      '/lazy/: css is 3.0 KB transferred, over the 2 KB budget by 1.0 KB',
-      '/lazy/: js is 80.0 KB transferred, over the 75 KB budget by 5.0 KB',
-    ]);
-  });
-  it('allows LCP up to the target plus the tolerance, and no more', () => {
-    expect(evaluate([row({ lcp: 1380 })]).breaches).toEqual([]); // 1200 + 15% = 1380
-    const [b] = evaluate([row({ lcp: 1500 })]).breaches;
-    expect(b).toBe('/lazy/: LCP is 1500 ms, over the 1200 ms target (+15% tolerance = 1380 ms) by 120 ms');
-    expect(evaluate([row({ lcp: 1250 })], { tolerance: 0 }).breaches).toHaveLength(1);
-  });
-  it('CLS must be strictly under the target; a missing metric is a breach, not a pass', () => {
-    expect(evaluate([row({ cls: 0.05 })]).breaches[0]).toMatch(/CLS is 0.050, not under 0.05/);
-    expect(evaluate([row({ lcp: null })]).breaches).toEqual(['/lazy/: LCP was not measured']);
+  it('passes a route just under the threshold, a faster route and a route with no baseline', () => {
+    const { regressions, results } = compare([{ route: '/', fcp: 1500 + THRESHOLD_MS - 1 }, { route: '/lazy/', fcp: 900 }, { route: '/new/', fcp: 9000 }], baseline);
+    expect(regressions).toEqual([]);
+    expect(results.map(r => r.delta)).toEqual([999, -700, null]);
   });
 });
 
@@ -118,26 +76,6 @@ describe('static server routing', () => {
   });
 });
 
-describe('Chrome startup diagnostics', () => {
-  it('reports an early exit with bounded stderr and removes its temporary profile', () => {
-    const work = mkdtempSync(join(tmpdir(), 'ejm-perf-error-'));
-    try {
-      const binary = join(work, 'chrome');
-      writeFileSync(binary, '#!/usr/bin/env node\nprocess.stderr.write("discarded-prefix\\n" + "x".repeat(16000) + "\\nstartup-failure-marker\\n", () => process.exit(7));\n');
-      chmodSync(binary, 0o755);
-      const result = spawnSync(process.execPath, [join(repo, 'scripts', 'perf.mjs'), 'http://127.0.0.1:9'], {
-        encoding: 'utf8', timeout: 5000, env: { ...process.env, CHROME: binary, TMPDIR: work },
-      });
-      expect(result.status, result.stderr).toBe(2);
-      expect(result.stderr).toContain('code 7');
-      expect(result.stderr).toContain('startup-failure-marker');
-      expect(result.stderr).not.toContain('discarded-prefix');
-      expect(Buffer.byteLength(result.stderr)).toBeLessThan(9 * KB);
-      expect(readdirSync(work).filter(name => name.startsWith('ejm-perf-'))).toEqual([]);
-    } finally { rmSync(work, { recursive: true, force: true }); }
-  });
-});
-
 // ---- Integration: build the fixture and measure it in Chrome ----
 const chrome = findChrome();
 if (!chrome) console.warn('perf integration tests skipped: Chrome not found. Install Google Chrome or set CHROME to a Chrome or Chromium binary.');
@@ -146,7 +84,8 @@ describe.skipIf(!chrome)('perf.mjs on the ssg fixture', () => {
   // build.test.ts builds fixtures/basic in place, and two builds in one directory would clash, so build a copy that keeps node_modules reachable.
   const work = mkdtempSync(join(tmpdir(), 'ejm-perf-fixture-'));
   const dist = join(work, 'dist');
-  const perf = (...args) => spawnSync('node', [join(repo, 'scripts', 'perf.mjs'), dist, '--runs', '1', ...args], { encoding: 'utf8', timeout: 170_000 });
+  const baseline = join(work, 'baseline.json');
+  const perf = (...args) => spawnSync('node', [join(repo, 'scripts', 'perf.mjs'), dist, '--runs', '1', '--baseline', baseline, ...args], { encoding: 'utf8', timeout: 170_000 });
 
   beforeAll(() => {
     const fixture = join(repo, 'packages', 'ssg', 'fixtures', 'basic');
@@ -158,28 +97,23 @@ describe.skipIf(!chrome)('perf.mjs on the ssg fixture', () => {
   }, 180_000);
   afterAll(() => rmSync(work, { recursive: true, force: true }));
 
-  it('passes within the default budgets and reports every metric', () => {
+  it('records a baseline, then passes against it and reports every route', () => {
     expect(existsSync(join(dist, 'index.html'))).toBe(true);
+    const update = perf('--update');
+    expect(update.status, update.stdout + update.stderr).toBe(0);
+    const recorded = JSON.parse(readFileSync(baseline, 'utf8'));
+    expect(Object.keys(recorded)).toEqual(['/', '/404.html', '/lazy/']);
+    expect(recorded['/']).toBeGreaterThan(0);
     const r = perf('--json');
     expect(r.status, r.stdout + r.stderr).toBe(0);
-    const report = JSON.parse(r.stdout);
-    expect(report.breaches).toEqual([]);
-    expect(report.rows.map((x) => x.route)).toEqual(['/', '/404.html', '/lazy/']);
-    const home = report.rows[0];
-    expect(home.bytes.js).toBeGreaterThan(30 * KB); // React, transferred gzipped
-    expect(home.bytes.js).toBeLessThan(95 * KB);
-    expect(home.bytes.fonts).toBeGreaterThan(1000);
-    expect(home.lcp).toBeGreaterThan(0);
-    expect(home.noJs.lcp).toBeGreaterThan(0);
-    expect(home.cls).toBeLessThan(0.05);
-    expect(home.requests).toBeGreaterThanOrEqual(3);
+    expect(JSON.parse(r.stdout).results.map(x => x.route)).toEqual(['/', '/404.html', '/lazy/']);
   }, 180_000);
 
-  it('fails and names route, metric and overage when a budget is lowered below the measured size', () => {
-    const file = join(work, 'tight.json');
-    writeFileSync(file, JSON.stringify({ js: 50 }));
-    const r = perf('--routes', '/', '--budget-file', file);
+  it('fails and names the route when its baseline is a second faster than the measurement', () => {
+    const recorded = JSON.parse(readFileSync(baseline, 'utf8'));
+    writeFileSync(baseline, JSON.stringify({ '/': recorded['/'] - 2 * THRESHOLD_MS }));
+    const r = perf('--routes', '/');
     expect(r.status).toBe(1);
-    expect(r.stdout).toMatch(/OVER BUDGET\n\s+\/: js is \d+\.\d KB transferred, over the 50 KB budget by \d+\.\d KB/);
+    expect(r.stdout).toMatch(/\/: first contentful paint is \d+ ms, \d+ ms above the -?\d+ ms baseline/);
   }, 180_000);
 });

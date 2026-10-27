@@ -26,7 +26,7 @@ export const gettingStarted: DocPage = {
             { name: '@ejm/ui', description: 'Components, hooks, layouts, docs parts, styles and art for the web.' },
             { name: '@ejm/core', description: 'Framework-free logic: state machines, the component contract and formatting. It has no React in it.' },
             { name: '@ejm/demos', description: 'Scenario data and the demo engines for the product pages.' },
-            { name: '@ejm/ssg', description: 'The prerender package for Vite and React sites: static HTML for every route, hydration, links and the budget gate.' },
+            { name: '@ejm/ssg', description: 'The prerender package for Vite and React sites: static HTML for every route, hydration and links.' },
             { name: '@ejm/site', description: 'What every ejmlabs site shares: the project registry, analytics, the shared head and the security headers.' },
             { name: '@ejm/gallery', description: 'This site: the gallery and the docs, a prerendered Vite and React site built on @ejm/ssg and @ejm/site.' },
           ],
@@ -55,7 +55,7 @@ npm run build      # build every package and app; the gallery prerenders every p
 npm run check      # text checks, type check and tests`,
         },
         { type: 'p', children: <>Rebuild only <code>node-pty</code>, without repository, model or release credentials. Keep other dependency install scripts disabled.</> },
-        { type: 'p', children: <>Run <code>npm run check</code> before you commit. <a href="/docs/checks">Checks and budgets</a> lists what it protects.</> },
+        { type: 'p', children: <>Run <code>npm run check</code> before you commit. <a href="/docs/checks">Checks</a> lists what it protects.</> },
       ],
     },
     {

@@ -17,7 +17,7 @@ export const checks: DocPage = {
           ordered: true,
           items: [
             <>Build the page from <code>@ejm/ui</code> components, layouts and views.</>,
-            <>Run <code>npm run check</code>, <code>npm run build</code> and the budget script.</>,
+            <>Run <code>npm run check</code>, <code>npm run build</code> and <code>npm run perf</code>.</>,
             <>Look at the page in light and dark with the matrix script.</>,
             <>Walk the quality criteria. Record any exception.</>,
           ],
@@ -37,7 +37,7 @@ export const checks: DocPage = {
             { name: 'Site design ownership', type: 'ejm-ssg build', description: 'Consumer CSS rules, visual classes, inline styles and unsupported shared overrides. The @ejm/site Vite check is mandatory, including unused source files.' },
             { name: 'Contrast', type: 'node packages/tokens/scripts/contrast.mjs --verbose', description: 'Text under 4.5:1, control borders or focus under 3:1, in both themes and on every band.' },
             { name: 'Viewport matrix', type: 'node scripts/shoot.mjs <url>', description: 'Horizontal overflow from 320px to 5120px. It also reports touch targets under 44px.' },
-            { name: 'Budgets', type: 'node scripts/size.mjs [dist]', description: 'HTML, CSS, JavaScript or font size over its budget.' },
+            { name: 'Load time', type: 'npm run perf', description: 'A route whose first contentful paint is a second or more above its baseline.' },
             { name: 'Parity', type: 'node scripts/parity.mjs', description: 'A web, Ink or Rust target that lacks a component or a state from the contract.' },
           ],
         },
@@ -73,27 +73,17 @@ export const checks: DocPage = {
       ],
     },
     {
-      id: 'budgets',
-      title: 'Budgets',
+      id: 'load-time',
+      title: 'Load time',
       blocks: [
         {
           type: 'p',
-          children: <>Each prerendered route is measured on what it loads first. Sizes are gzip, except fonts, which are WOFF2. A breach exits non-zero and fails the build.</>,
+          children: <>Load time is the only performance bar. Nothing caps bytes: use the maintained library that does the job and measure what it costs a visitor.</>,
         },
         {
-          type: 'params',
-          caption: 'Performance budgets per route',
-          labels: { name: 'Measure', type: 'Budget', description: 'Notes' },
-          rows: [
-            { name: 'JavaScript', type: '95 KB', description: 'React and react-dom (about 71 KB, measured), the router (wouter), hydration, theme and header. A page whose own code does not fit hydrates after the first scripts, with its HTML already complete. The page body starts loading immediately after the site entry, with controls disabled until ready. The byte gate excludes later dynamic chunks; it does not measure the full session download.' },
-            { name: 'CSS', type: '14 KB', description: 'Complete stylesheets are linked per route in the server HTML. The gate includes the native IDE styles on the Demos page.' },
-            { name: 'Fonts', type: '70 KB', description: 'The two preloaded Latin subsets, with font-display swap and metric-matched fallbacks.' },
-            { name: 'HTML', type: '30 KB', description: 'Per route, and every route reads correctly with scripts off.' },
-            { name: 'Largest Contentful Paint', type: '1.2 s', description: 'Target on a throttled mobile profile. The byte gate does not measure paint time.' },
-            { name: 'Cumulative Layout Shift', type: '0.05', description: 'Target for layout stability. The synchronous theme script reduces theme flashes; a browser measurement must verify the score.' },
-          ],
+          type: 'p',
+          children: <><code>npm run perf</code> loads each prerendered route in Lighthouse on its mobile profile (simulated slow 4G, 4x CPU slowdown) and reports first contentful paint. A route fails when it is a second or more above its recorded baseline. Prerendered HTML still reads correctly with scripts off, and the synchronous theme script avoids a flash of the wrong theme.</>,
         },
-        { type: 'callout', kind: 'warning', children: <p>Change a budget in the design document, not only in the script. The numbers are a starting point, tuned from measurement.</p> },
       ],
     },
     {

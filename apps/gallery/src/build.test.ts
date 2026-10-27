@@ -1,4 +1,4 @@
-import { execFileSync, spawnSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -160,12 +160,5 @@ describe('the build output', () => {
     expect(readFileSync(join(dist, 'social-card.png'))).toEqual(readFileSync(join(own, 'social-card.png')));
     expect(readFileSync(join(dist, 'apple-touch-icon.png'))).toEqual(readFileSync(join(own, 'apple-touch-icon.png')));
     expect(JSON.parse(readFileSync(join(dist, 'site.webmanifest'), 'utf8')).name).toBe('ui by ejmlabs');
-  });
-
-  it('keeps every route inside the budgets (JS 95 KB, CSS 14 KB, fonts 70 KB, HTML 30 KB gzip)', () => {
-    const run = spawnSync('node', [ssgBin, 'budget'], { cwd: app, encoding: 'utf8' });
-    expect(run.stdout).toContain('all routes within budget');
-    expect(run.status).toBe(0);
-    for (const r of expected) expect(run.stdout, r.path).toContain(r.path === '/' ? '\n/ ' : `${r.path.replace(/\/$/, '')}`);
   });
 });

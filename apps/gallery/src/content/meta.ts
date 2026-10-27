@@ -10,7 +10,7 @@ export const docMeta = {
   'tokens-and-bands': { slug: 'tokens-and-bands', group: 'Foundations', title: 'Tokens and bands', lead: 'Components never hold color values. They use semantic names that a band and a theme resolve, so every child reads correctly on every ground.' },
   'theming': { slug: 'theming', group: 'Foundations', title: 'Theming and the cookie', lead: 'Light and dark follow the visitor, with no flash. One cookie carries the choice across every ejmlabs.com site.' },
   'components': { slug: 'components', group: 'Build', title: 'Components', lead: 'Check here before you build something new. Everything is exported from @ejm/ui, reads the theme contract, and follows the WAI-ARIA pattern for its role.' },
-  'checks': { slug: 'checks', group: 'Quality', title: 'Checks and budgets', lead: 'Every line of the quality bar is something a script, a screenshot or the keyboard can check. A page ships when each line holds.' },
+  'checks': { slug: 'checks', group: 'Quality', title: 'Checks', lead: 'Every line of the quality bar is something a script, a screenshot or the keyboard can check. A page ships when each line holds.' },
 } satisfies Record<string, Meta>;
 
 /** The page slugs in reading order. The first is the index at /docs. */

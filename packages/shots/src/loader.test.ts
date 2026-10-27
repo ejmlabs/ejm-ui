@@ -100,10 +100,9 @@ describe('optimize', () => {
     }
   }, 30_000);
 
-  it('fails a shot whose largest AVIF is over the budget, and a shot with no metadata file', async () => {
+  it('fails a shot with no metadata file', async () => {
     const { root: isolated, assets, out } = copyFixture();
     try {
-      expect((await optimizeShots({ assets, out, check: true, budgetKb: 0.001 })).problems.join()).toMatch(/over the 0.001 KB budget/);
       await png(join(assets, 'cli', 'nometa.dark.png'), '#fff');
       expect((await optimizeShots({ assets, out, check: true })).problems.join()).toMatch(/nometa.dark.png: no metadata file/);
     } finally {

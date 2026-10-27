@@ -36,7 +36,7 @@ import site from './site';
 void hydrateSite(site);
 ```
 
-`src/site.tsx` (the whole site config, read by the browser, the server build and the budget gate):
+`src/site.tsx` (the whole site config, read by the browser, the server build and the load-time check):
 
 ```tsx
 import { defineSite, Link } from '@ejm/ssg';
@@ -47,8 +47,7 @@ export default defineSite({
   origin: 'https://ejmlabs.com',
   head: { titleTemplate: '%s | ejmlabs', description: 'Default description.', og: { siteName: 'ejmlabs' } },
   fonts: [manrope],                                  // rel=preload as=font crossorigin on every route
-  budget: { js: 95, css: 14, fonts: 70, html: 30 },  // KB; these are the defaults
-  ignore: ['brand/assets/**'],                       // built pages the budget gate skips (static files that are not routes)
+  ignore: ['brand/assets/**'],                       // built pages the load-time check skips (static files that are not routes)
   App: ({ children }) => (<><Header /><main id="main">{children}</main><Footer /></>),
   routes: [
     { path: '/', component: Home, head: { title: 'Home', description: 'Home page.' } },
@@ -58,13 +57,13 @@ export default defineSite({
 });
 ```
 
-Scripts (they take no flags: use `vite` or `vite build` directly for those, the plugin does the work either way): `ejm-ssg build` (a Vite build; the plugin prerenders and then checks the budget, so a breach fails the build), `ejm-ssg dev` (Vite dev server, client render only), `ejm-ssg budget [dist]`.
+Scripts (they take no flags: use `vite` or `vite build` directly for those, the plugin does the work either way): `ejm-ssg build` (a Vite build; the plugin prerenders every route), `ejm-ssg dev` (Vite dev server, client render only).
 
 ## API
 
 ```ts
 defineSite(config: SiteConfig): Site
-// SiteConfig: { routes: RouteDef[]; notFound?; App?; head?: SiteHead; base?; origin?; fonts?: string[]; budget?: Partial<Budget>; ignore?: string[] }
+// SiteConfig: { routes: RouteDef[]; notFound?; App?; head?: SiteHead; base?; origin?; fonts?: string[]; ignore?: string[] }
 // RouteDef:   { path: string; head?: RouteHead } & ({ component } | { load: () => Promise<{ default: Component }> })
 // RouteHead:  { title?, description?, canonical?, robots?, og?: { title, description, image, type, url, siteName }, meta?: [{ name | property, content }], links?: [{ rel, href, ... }] }
 // SiteHead:   RouteHead & { titleTemplate?: '%s | Site' }
@@ -75,7 +74,6 @@ Static(props: { render?: () => ReactNode; className? })              // server-r
 useNavigate(): (to: string, opts?: { replace?: boolean }) => Promise<void>
 usePath(): string                                                    // current path without the base or a trailing slash (`/work`), same on the server and in the browser
 ejmSsg({ site }): VitePlugin                                         // from '@ejm/ssg/vite'
-checkBudget(dist, budget?, { base?, ignore? }) / formatReport / main         // from '@ejm/ssg/budget'
 ```
 
 Rules:
@@ -103,15 +101,14 @@ import docsStyles from './styles-docs.css?url';
 { path: '/docs/', component: Docs, head: { links: [{ rel: 'stylesheet', href: docsStyles }] } }
 ```
 
-The stylesheet is in the prerendered HTML and counts toward the route's CSS
-budget. Navigation keeps the painted sheet until all replacements load, reuses
+The stylesheet is in the prerendered HTML. Navigation keeps the painted sheet until all replacements load, reuses
 matching links in the destination's declared order, and ignores an older navigation's completion. A failed replacement
 leaves the prior sheet in place. Each complete Tailwind sheet must preserve its
 responsive utility order; appending a partial sheet can override earlier rules.
 
 ## Static parts
 
-`<Static>` marks a part of a page that nothing in the browser needs to change: prose, tables, a docs article. The server renders it in full, so it reads with scripts off. The browser keeps that markup and does not hydrate it, and the code behind it is not in the browser bundle. The ejm-harness site reported docs parts of about 9 KB gzip plus up to 8 KB of guide text per page, which does not fit the 95 KB budget as JavaScript; as Static HTML it costs no script.
+`<Static>` marks a part of a page that nothing in the browser needs to change: prose, tables, a docs article. The server renders it in full, so it reads with scripts off. The browser keeps that markup and does not hydrate it, and the code behind it is not in the browser bundle. As Static HTML the guide text costs no script.
 
 ```tsx
 import { Static } from '@ejm/ssg';
@@ -141,24 +138,15 @@ The build finds a route's chunk from its `import('...')` call in the server bund
 - After a route change focus moves to the page `h1` (first `#main h1`, else the first `h1`, else `#main`) with `tabindex="-1"`, `document.title` and the head tags are swapped, and the title is announced in `#ejm-announcer` (`role="status"`, `aria-live="polite"`). This also happens on back and forward. Give each page an `h1`.
 - Scroll goes to the top, or to the `#hash` target.
 - The route change runs in `document.startViewTransition` when it exists and the visitor has not asked for reduced motion; only the page area crossfades for 320 ms with the shared easing, and the header stays still. Skipped transitions are swallowed, and a transition that cannot start within 300 ms is skipped so the page never freezes. Without the API, a CSS fade-in runs after the first navigation. Under `prefers-reduced-motion: reduce` nothing is animated and the API is not called. The first load never animates.
-- `ssg.css` (under 1 KB) is imported by the package itself.
+- `ssg.css` is imported by the package itself.
 
-## Budget gate
+## Load time
 
-```
-ejm-ssg budget [dist] [--js 95] [--css 14] [--fonts 70] [--html 30] [--ignore glob]... [--json]
-node scripts/ssg-budget.mjs [dist] ...        # same, from the repo root
-```
-
-For every `.html` file the gate follows only the files that page references: `<script src>`, `modulepreload`, the static imports inside those scripts, `<link rel=stylesheet>` and `preload as=font`. Lazy chunks that are not preloaded are not counted. Sizes are gzip (level 9) per file and summed, in KB of 1024 bytes; fonts are raw size because WOFF2 is already compressed. Budgets come from `defineSite({ budget })`, saved to `.ejm-ssg/build.json` by the build, and `--flags` override them. Every `.html` file under `dist` is a route, so static pages you copy in (brand assets, a generated report) would be judged as routes. Skip them with `ignore` in `defineSite` (saved to `build.json`, so `ejm-ssg budget` and `scripts/perf.mjs` both read it) or with `--ignore <glob>`, repeatable. A glob (`*` inside a folder, `**` across folders, `?`) is tried against the file path under `dist` (`brand/assets/kit/index.html`) and against the route without its leading slash (`brand/assets/kit/`), so `brand/assets/**` skips the whole folder. `node scripts/perf.mjs <dist> --ignore <glob>` takes the same flag. It prints a table per route and exits 1 on a breach, naming the route and the overage:
-
-```
-/lazy/: js is 96.2 KB gzip, over the 95 KB budget by 1.2 KB
-```
+There is no size budget. `ejm-ssg budget`, the `budget` option of `defineSite` and `@ejm/ssg/budget` were removed. Load time is checked from the ejm-ui repository with `node scripts/perf.mjs <dist>`, which reports first contentful paint per route in Lighthouse and fails when a route is a second or more slower than its recorded baseline. It reads `ignore` from `.ejm-ssg/build.json`. See `scripts/PERF.md`.
 
 ## Notes for consumers
 
-- `@ejm/ssg/vite` (the plugin), `@ejm/ssg/budget` and the `ejm-ssg` bin are plain `.mjs` with `.d.mts` types, so Node loads them from `node_modules` (it refuses to strip types there). The client runtime (`SiteRoot`, `Link`, `hydrateSite`) and the server render code are TypeScript source that your Vite compiles: the plugin builds them with `ssr.noExternal: [/^@ejm\//]`. Works from an `npm pack` tarball, a `file:` link or the workspace (`scripts/pack-proof.mjs` checks the tarball route). Node 22 or newer.
+- `@ejm/ssg/vite` (the plugin) and the `ejm-ssg` bin are plain `.mjs` with `.d.mts` types, so Node loads them from `node_modules` (it refuses to strip types there). The client runtime (`SiteRoot`, `Link`, `hydrateSite`) and the server render code are TypeScript source that your Vite compiles: the plugin builds them with `ssr.noExternal: [/^@ejm\//]`. Works from an `npm pack` tarball, a `file:` link or the workspace (`scripts/pack-proof.mjs` checks the tarball route). Node 22 or newer.
 - The server build is written to `<root>/.ejm-ssg/` and removed after prerendering; only `build.json` stays. Ignore `.ejm-ssg` in git.
 - Set `NODE_ENV=production` for the build (`ejm-ssg build` does). A leaked `NODE_ENV=test` bundles React's development build.
 - Security headers: the package adds no inline scripts or styles.

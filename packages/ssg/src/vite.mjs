@@ -2,7 +2,6 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, posix, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { build } from 'vite';
-import { checkBudget, formatReport } from './budget.mjs';
 
 // Plain JavaScript with a .d.mts next to it: Vite loads this file through vite.config.ts, and Node refuses to strip types from
 // TypeScript under node_modules. server.ts is not loaded here, it is bundled by the server build below (Vite compiles it).
@@ -138,11 +137,7 @@ export function ejmSsg(options) {
       await rm(join(dist, '.vite'), { recursive: true, force: true });
       await rm(server, { recursive: true, force: true });
       await rm(entry, { force: true });
-      await writeFile(join(work, 'build.json'), JSON.stringify({ dist, base, budget: site.budget, ignore: site.ignore }, null, 2) + '\n');
-
-      const report = checkBudget(dist, site.budget, { base, ignore: site.ignore });
-      console.log(formatReport(report));
-      if (report.breaches.length) throw new Error(`ejm-ssg: budget breached\n  ${report.breaches.join('\n  ')}`);
+      await writeFile(join(work, 'build.json'), JSON.stringify({ dist, base, ignore: site.ignore }, null, 2) + '\n');
     },
   };
 }

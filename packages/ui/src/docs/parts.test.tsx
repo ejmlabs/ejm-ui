@@ -47,14 +47,14 @@ describe('ParamTable', () => {
         columns={[{ key: 'command', label: 'Command', mono: true }, { key: 'when', label: 'When it runs' }]}
         rows={[
           { name: <a href="/docs/contrast">Contrast</a>, key: 'contrast', cells: { command: 'node scripts/contrast.mjs', when: 'Before every release.' }, description: 'Text under 4.5:1.' },
-          { name: <a href="/docs/budgets">Budgets</a>, key: 'budgets', cells: { command: 'ejm-ssg budget', when: 'On every build.' }, description: 'A route over its size.' },
+          { name: <a href="/docs/load-time">Load time</a>, key: 'load-time', cells: { command: 'npm run perf', when: 'On every release.' }, description: 'A route a second slower.' },
         ]}
       />,
     );
     expect(screen.getByRole('rowheader', { name: 'Contrast' })).toContainElement(screen.getByRole('link', { name: 'Contrast' }));
     expect(screen.getAllByRole('columnheader').map((h) => h.textContent)).toEqual(['Gate', 'Command', 'When it runs', 'Fails on']);
     expect(screen.getByRole('cell', { name: 'node scripts/contrast.mjs' }).className).toContain('font-mono');
-    expect(screen.getByRole('cell', { name: 'On every build.' }).className).not.toContain('font-mono');
+    expect(screen.getByRole('cell', { name: 'On every release.' }).className).not.toContain('font-mono');
     await expectAccessible(container);
   });
   it('leaves out a column nobody uses', () => {
