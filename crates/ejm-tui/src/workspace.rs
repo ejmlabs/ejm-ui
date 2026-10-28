@@ -111,36 +111,74 @@ impl SessionHeader<'_> {
 }
 
 /// Current activity, separate from resource counters.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ActivityLine<'a> {
     /// Meaningful status text, including unavailable or stopping states.
     pub label: &'a str,
     /// True for active work or cancellation in progress.
     pub active: bool,
+    /// Muted facts after the label while active, such as the step, the elapsed time from
+    /// [`elapsed_text`] and the stop key: `["step 2", "14s", "Esc to stop"]`.
+    pub details: &'a [&'a str],
+    /// The spinner frame from [`Theme::spinner`]. The running mark when absent.
+    pub spin: Option<&'a str>,
 }
 
 impl ActivityLine<'_> {
-    /// A single bounded line. Active work carries a glyph as well as color.
+    /// A single bounded line: `⠋ Thinking… (step 2 · 14s · Esc to stop)` while active, the
+    /// muted label when idle. Active work carries a glyph and a word as well as color.
     #[must_use]
     pub fn line(&self, theme: &Theme, columns: u16) -> Line<'static> {
-        let mark = if self.active {
-            theme.glyphs.running
-        } else {
-            " "
-        };
-        let text = truncate(
-            &format!("{mark} {}", self.label),
-            usize::from(columns),
-            theme.glyphs.ellipsis,
-        );
-        Line::styled(
-            text,
-            if self.active {
-                theme.accent
-            } else {
-                theme.muted
-            },
-        )
+        let ell = theme.glyphs.ellipsis;
+        if !self.active {
+            return Line::styled(
+                truncate(&format!("  {}", self.label), usize::from(columns), ell),
+                theme.muted,
+            );
+        }
+        let mark = self.spin.unwrap_or(theme.glyphs.running);
+        let mut parts = vec![
+            (format!("{mark} "), theme.accent),
+            (
+                format!("{}{ell}", self.label),
+                theme.accent.add_modifier(ratatui::style::Modifier::BOLD),
+            ),
+        ];
+        let details: Vec<&str> = self
+            .details
+            .iter()
+            .copied()
+            .filter(|d| !d.is_empty())
+            .collect();
+        if !details.is_empty() {
+            let sep = format!(" {} ", theme.glyphs.separator);
+            parts.push((format!(" ({})", details.join(&sep)), theme.muted));
+        }
+        crate::fit::fit(parts, usize::from(columns), ell)
+    }
+}
+
+/// Elapsed seconds as `42s`, `3m 05s` or `1h 02m`.
+#[must_use]
+pub fn elapsed_text(seconds: u64) -> String {
+    match seconds {
+        0..60 => format!("{seconds}s"),
+        60..3600 => format!("{}m {:02}s", seconds / 60, seconds % 60),
+        _ => format!("{}h {:02}m", seconds / 3600, seconds % 3600 / 60),
+    }
+}
+
+/// A count such as tokens as `950`, `1.2k` or `3.4M`.
+#[must_use]
+pub fn compact_count(count: u64) -> String {
+    let tenths = |unit: u64| {
+        let scaled = (count * 10 + unit / 2) / unit;
+        format!("{}.{}", scaled / 10, scaled % 10)
+    };
+    match count {
+        0..1000 => count.to_string(),
+        1000..1_000_000 => format!("{}k", tenths(1000)),
+        _ => format!("{}M", tenths(1_000_000)),
     }
 }
 

@@ -8,13 +8,13 @@ license = "MIT"
 publish = false
 
 [dependencies]
-ansi_colours = { version = "1", default-features = false }
 pulldown-cmark = { version = "0.13", default-features = false }
 ratatui = { version = "0.30", default-features = false }
 strum = { version = "0.28", features = ["derive"] }
 textwrap = { version = "0.16", default-features = false, features = ["unicode-width"] }
 unicode-segmentation = "1"
-unicode-truncate = "3"
+# The series ratatui 0.30 uses, so consumers build one copy.
+unicode-truncate = "2"
 unicode-width = "0.2"
 
 [dev-dependencies]

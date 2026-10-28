@@ -15,7 +15,7 @@ npm run check -w @ejm/tokens   # contrast gates, and fail on any stale generated
 | `generated/theme.css` | The ui roles as plain `--ejm-ui-*` variables, dark by default, for the IDE and other non-Tailwind apps. |
 | `generated/monaco/*.json` | Monaco editor themes. |
 | `generated/terminal/*` | Color schemes for iTerm, Warp, Alacritty, kitty, Ghostty and Windows Terminal. |
-| `rust/ejm_theme.rs` | The ratatui palette. `rust/ejm_tui.rs` and `rust/TUI.md` sit beside it, hand written. |
+| `rust/ejm_theme.rs` | The ratatui palette. `crates/ejm-tui` copies it with `scripts/sync-rust-theme.mjs`. `rust/TUI.md`, the terminal app guide, sits beside it, hand written. |
 
 Edit `theme.json`, run the build, commit the generated files. Names and behavior of the web theme are documented in `packages/ui/THEME.md`.
 
@@ -23,7 +23,7 @@ Edit `theme.json`, run the build, commit the generated files. Names and behavior
 
 The tarball holds the generated themes, `theme.json`, the Rust theme, the original TTF and WOFF2 fonts with their OFL notices (`assets/fonts`), the brand palette and token JSON (`assets/brand`) and the UI icons (`assets/icons`). It does not hold the ejmlabs logos, favicons, lockups, motifs, social cards, templates or project families: the owner reserves those (see `LICENSE`), and they stay in the repository and the brand kit. `npm run pack:check -w @ejm/tokens` fails if one is packed. Packages inside this repository still read the full `assets/` tree from the workspace.
 
-Use the public `@ejm/tokens/assets/*` export for the packed folders. `rust/ejm_tui.rs` and `rust/TUI.md` are included separately from brand assets.
+Use the public `@ejm/tokens/assets/*` export for the packed folders. `rust/ejm_theme.rs` and `rust/TUI.md` are included separately from brand assets. Terminal components live in the `ejm-tui` crate, not in this package.
 
 ## Asset maintenance and rights
 

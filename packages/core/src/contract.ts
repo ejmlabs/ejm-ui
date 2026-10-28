@@ -42,6 +42,9 @@ export interface Contract {
     quote: GlyphPair;
     separator: GlyphPair;
     spinner: { unicode: string[]; ascii: string[] };
+    message: { about: string } & Record<MessageKind, GlyphPair & { label: string }>;
+    toolCall: { about: string } & Record<ToolCallState, GlyphPair & { label: string }>;
+    elbow: GlyphPair;
   };
   /** Default words used when the caller gives no message. */
   text: {
@@ -49,6 +52,8 @@ export interface Contract {
     stat: { loading: string; error: string; empty: string };
     table: { empty: string; loading: string; error: string };
     prompt: { busy: string };
+    toolCall: { queued: string; running: string; empty: string; more: string; expand: string };
+    commandMenu: { empty: string };
   };
   components: Record<ComponentName, ComponentSpec>;
 }
@@ -61,6 +66,9 @@ export type TableState = "default" | "empty" | "loading" | "error";
 export type PromptState = "idle" | "busy" | "error";
 export type CalloutKind = "note" | "tip" | "warning";
 export type StateBlockKind = "empty" | "loading" | "error";
+export type MessageKind = "user" | "assistant" | "notice" | "error";
+export type ToolCallState = "queued" | "running" | "done" | "failed";
+export type CommandMenuState = "default" | "empty";
 
 export type ComponentName =
   | "Text"
@@ -73,7 +81,10 @@ export type ComponentName =
   | "KeyHints"
   | "Callout"
   | "Markdown"
-  | "StateBlock";
+  | "StateBlock"
+  | "Message"
+  | "ToolCall"
+  | "CommandMenu";
 
 export const contract = contractJson as Contract;
 

@@ -19,6 +19,9 @@ Everything is containerless. Groups are separated by space and a single hairline
 | `Callout` | note, tip, warning | Left rule, a kind or override label, wrapped text |
 | `Markdown` | `default` (Rust only) | CommonMark as terminal text: headings, lists, emphasis, fences, diffs |
 | `StateBlock` | empty, loading, error | Glyph and word, one sentence, at most one action |
+| `Message` | user, assistant, notice, error | Gutter glyph (`›` `●` `!` `✗`), text under a hanging indent; assistant text as Markdown |
+| `ToolCall` | queued, running, done, failed | State glyph, bold name, muted argument; output preview under `└`, `+N lines (key to expand)` |
+| `CommandMenu` | default, empty | Usage and description in aligned columns, `›` on the selection, scrolls to keep it visible |
 
 Each is a ratatui `Widget`. Components that wrap also have `height(width)` and `lines(width)`, so a layout can measure before it draws.
 
@@ -110,7 +113,11 @@ The render tests draw every component and state into a ratatui `TestBackend` at 
 
 ## Not in this crate
 
-Product transcript state, command handling, framed overlays and terminal lifecycle stay in the host. Shared Markdown, diff presentation, workspace layout and identity belong to this crate. Consumers adopt these APIs through their reviewed dependency pins. The retained `packages/tokens/rust/ejm_tui.rs` is a legacy migration reference, not the active component authority.
+Product transcript state, command handling and terminal lifecycle stay in the host. Shared Markdown, diff presentation, conversation blocks, workspace layout and identity belong to this crate. Consumers adopt these APIs through their reviewed dependency pins. Boxed helpers such as a composer box or a picker popup are left out on purpose, and so are tabs, the progress bar and step lines. This crate replaces the hand-written terminal helper file that `@ejm/tokens` and the design kit used to ship. `packages/tokens/rust/TUI.md` is the terminal app guide built on these components.
+
+## Conversation blocks
+
+`Message`, `ToolCall` and `CommandMenu` are the blocks a terminal agent's transcript is made of. They are contract components with the same output in Ink (`@ejm/ink`), checked by the shared cases in `packages/core/terminal-fixtures.json`, so a Rust CLI and a JavaScript CLI show a conversation the same way. Assistant `Message`s draw their text with `Markdown` under the gutter; `Markdown` is Rust-only, so Ink assistant text uses Ink's own lighter Markdown. Hosts pass sanitized text; control characters are removed again before drawing. `ToolCall` takes the host's expand key and spinner frame, and never reflows tool output: long lines are cut with an ellipsis. `elapsed_text` and `compact_count` format the times and token counts hosts show beside them.
 
 ## Conversation workspace recipes
 
@@ -121,7 +128,8 @@ Notices are capped at four rows and the draft at six. Short windows hide the
 worker strip before reducing the composer.
 
 `SessionHeader` fits application identity and connection on one line and keeps
-the directory on a second line. Connection detail drops when space is tight;
+the directory on a second line. `ActivityLine` takes optional details and a
+spinner frame and draws `⠋ Thinking… (step 2 · 14s · Esc to stop)` while active. Connection detail drops when space is tight;
 the host must offer full inspection. `ActivityLine` separates current work from
 `ResourceLine`, whose active and queued counts remain visible while idle.
 Counts use `A+Qq` for active plus queued work. Narrow rows truncate with an

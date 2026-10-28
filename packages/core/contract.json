@@ -125,6 +125,56 @@
     "separator": {
       "unicode": "·",
       "ascii": "-"
+    },
+    "message": {
+      "about": "The gutter glyph that starts each conversation message, so the role reads without color.",
+      "user": {
+        "unicode": "›",
+        "ascii": ">",
+        "label": "you"
+      },
+      "assistant": {
+        "unicode": "●",
+        "ascii": "*",
+        "label": "assistant"
+      },
+      "notice": {
+        "unicode": "!",
+        "ascii": "!",
+        "label": "notice"
+      },
+      "error": {
+        "unicode": "✗",
+        "ascii": "x",
+        "label": "error"
+      }
+    },
+    "toolCall": {
+      "about": "The state glyph that starts a tool call. Running uses the spinner frame the host passes, or the running mark.",
+      "queued": {
+        "unicode": "○",
+        "ascii": "o",
+        "label": "queued"
+      },
+      "running": {
+        "unicode": "●",
+        "ascii": "*",
+        "label": "running"
+      },
+      "done": {
+        "unicode": "✓",
+        "ascii": "+",
+        "label": "done"
+      },
+      "failed": {
+        "unicode": "✗",
+        "ascii": "x",
+        "label": "failed"
+      }
+    },
+    "elbow": {
+      "unicode": "└",
+      "ascii": "`-"
     }
   },
   "components": {
@@ -468,6 +518,130 @@
         "ink",
         "rust"
       ]
+    },
+    "Message": {
+      "summary": "One conversation message: a gutter glyph on the first line, then text wrapped under a two-column hanging indent. The kind picks the glyph and color. Assistant text is drawn with Markdown; the other kinds are plain. A notice may carry a short title before its text.",
+      "props": [
+        {
+          "name": "kind",
+          "type": "MessageKind",
+          "required": true,
+          "values": [
+            "user",
+            "assistant",
+            "notice",
+            "error"
+          ]
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": false
+        }
+      ],
+      "states": [
+        "user",
+        "assistant",
+        "notice",
+        "error"
+      ],
+      "targets": [
+        "ink",
+        "rust"
+      ]
+    },
+    "ToolCall": {
+      "summary": "One tool call: a state glyph, the tool name in bold and its most telling argument muted. Finished calls show a preview of the output under an elbow, cut to four lines (eight when failed) with a count of the rest and the host's expand key. Expanded shows every line. Output lines are cut, never reflowed. Diff lines keep their colors.",
+      "props": [
+        {
+          "name": "state",
+          "type": "ToolCallState",
+          "required": true,
+          "values": [
+            "queued",
+            "running",
+            "done",
+            "failed"
+          ]
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "output",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "expanded",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "expandKey",
+          "type": "string",
+          "required": false
+        }
+      ],
+      "states": [
+        "queued",
+        "running",
+        "done",
+        "failed"
+      ],
+      "targets": [
+        "ink",
+        "rust"
+      ]
+    },
+    "CommandMenu": {
+      "summary": "Completion choices under an input: usage in the accent color padded to one column, description muted. The selected row carries the selection mark and bold text. Rows that do not fit scroll to keep the selection visible. Empty shows one sentence.",
+      "props": [
+        {
+          "name": "items",
+          "type": "{ usage: string; description: string }[]",
+          "required": true
+        },
+        {
+          "name": "selected",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "state",
+          "type": "CommandMenuState",
+          "required": false,
+          "values": [
+            "default",
+            "empty"
+          ]
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": false
+        }
+      ],
+      "states": [
+        "default",
+        "empty"
+      ],
+      "targets": [
+        "ink",
+        "rust"
+      ]
     }
   },
   "text": {
@@ -487,6 +661,16 @@
     },
     "prompt": {
       "busy": "working"
+    },
+    "toolCall": {
+      "queued": "waiting for capacity",
+      "running": "running",
+      "empty": "no output",
+      "more": "+{count} lines",
+      "expand": "{key} to expand"
+    },
+    "commandMenu": {
+      "empty": "No matching commands."
     }
   }
 }

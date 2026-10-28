@@ -27,7 +27,6 @@ const MOVES = [
   ['logos', 'assets/logos'], ['favicon', 'assets/favicon'], ['icons', 'assets/icons'], ['motifs', 'assets/motifs'],
   ['social', 'assets/social'], ['lockups', 'assets/lockups'], ['templates', 'assets/templates'], ['fonts', 'assets/fonts'],
   ['tokens/palette.json', 'assets/brand/palette.json'], ['tokens/design-tokens.json', 'assets/brand/design-tokens.json'],
-  ['ui/rust/ejm_tui.rs', 'rust/ejm_tui.rs'], ['ui/TUI.md', 'rust/TUI.md'],
   // Public project families include approved editable CLI/IDE/Harness logos.
   ['projects/cli', 'assets/projects/cli'], ['projects/ide', 'assets/projects/ide'], ['projects/harness', 'assets/projects/harness'],
   ['projects/relay', 'assets/projects/relay'],

@@ -47,5 +47,21 @@
     "empty",
     "loading",
     "error"
+  ],
+  "Message": [
+    "user",
+    "assistant",
+    "notice",
+    "error"
+  ],
+  "ToolCall": [
+    "queued",
+    "running",
+    "done",
+    "failed"
+  ],
+  "CommandMenu": [
+    "default",
+    "empty"
   ]
 }

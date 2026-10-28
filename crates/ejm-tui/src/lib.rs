@@ -19,6 +19,10 @@
 //! | [`Callout`] | note, tip, warning |
 //! | [`Markdown`] | `default` (Rust only) |
 //! | [`StateBlock`] | empty, loading, error |
+//! | [`Message`] | user, assistant, notice, error |
+//! | [`ToolCall`] | queued, running, done, failed |
+//! | [`Markdown`] | `default` |
+//! | [`CommandMenu`] | default, empty |
 //!
 //! Build a [`Theme`] once, then borrow it in each widget:
 //!
@@ -41,6 +45,7 @@
 
 mod callout;
 mod code;
+mod conversation;
 mod fit;
 mod hints;
 mod markdown;
@@ -60,6 +65,9 @@ pub mod theme;
 
 pub use callout::{Callout, CalloutKind};
 pub use code::{CodeLanguage, code_lines};
+pub use conversation::{
+    CommandMenu, CommandMenuState, Message, MessageKind, ToolCall, ToolCallState,
+};
 pub use fit::{pad_left, pad_right, truncate, truncate_start, width};
 pub use hints::KeyHints;
 pub use markdown::Markdown;
@@ -69,14 +77,15 @@ pub use stat::{Stat, StatState};
 pub use state::{Action, StateBlock, StateKind};
 pub use status::{Status, StatusLevel};
 pub use style::{
-    ASCII_MARKS, Appearance, ColorDepth, Marks, SyntaxStyles, Theme, UNICODE_MARKS, color_depth,
-    glyph_set, glyphs_from_env, is_ascii, is_light, is_utf8_locale, pick_locale, spinner_frame,
+    ASCII_MARKS, Appearance, ColorDepth, Marks, SyntaxStyles, Theme, UNICODE_MARKS, ansi256,
+    color_depth, glyph_set, glyphs_from_env, is_ascii, is_light, is_utf8_locale, pick_locale,
+    spinner_frame,
 };
 pub use table::{Align, Column, Table, TableState};
 pub use text::{Rule, Text, TextVariant};
 pub use workspace::{
-    ActivityLine, ResourceCount, ResourceLine, SessionHeader, WorkspaceLayout, worker_line,
-    workspace_controls,
+    ActivityLine, ResourceCount, ResourceLine, SessionHeader, WorkspaceLayout, compact_count,
+    elapsed_text, worker_line, workspace_controls,
 };
 
 use std::collections::BTreeMap;
@@ -104,5 +113,8 @@ pub fn catalog() -> BTreeMap<&'static str, Vec<&'static str>> {
         ("Callout", names::<CalloutKind>()),
         ("Markdown", vec!["default"]),
         ("StateBlock", names::<StateKind>()),
+        ("Message", names::<MessageKind>()),
+        ("ToolCall", names::<ToolCallState>()),
+        ("CommandMenu", names::<CommandMenuState>()),
     ])
 }

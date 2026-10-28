@@ -2,7 +2,7 @@
 import type { ReactElement } from "react";
 import { describe, expect, it } from "vitest";
 import { displayWidth } from "@ejm/core";
-import { Callout, KeyHints, Prompt, Row, Rule, Stat, StateBlock, Status, Table, Text, componentStates } from "./index";
+import { Callout, CommandMenu, KeyHints, Message, Prompt, Row, Rule, Stat, StateBlock, Status, Table, Text, ToolCall, componentStates } from "./index";
 import { ANSI, show, stripAnsi } from "./support";
 
 const cols = [
@@ -46,6 +46,16 @@ const cases: Record<string, ReactElement> = {
   "StateBlock/empty": <StateBlock kind="empty" message="No sessions yet." action={{ key: "n", label: "New session" }} />,
   "StateBlock/loading": <StateBlock kind="loading" message="Fetching sessions." />,
   "StateBlock/error": <StateBlock kind="error" message="Could not reach the server. Check your network." action={{ key: "r", label: "Retry" }} />,
+  "Message/user": <Message kind="user" text="Fix the parser" />,
+  "Message/assistant": <Message kind="assistant" text="Fix the parser" />,
+  "Message/notice": <Message kind="notice" text="Fix the parser" />,
+  "Message/error": <Message kind="error" text="Fix the parser" />,
+  "ToolCall/queued": <ToolCall state="queued" name="read_file" detail="src/args.rs" output="1: use std;" />,
+  "ToolCall/running": <ToolCall state="running" name="read_file" detail="src/args.rs" output="1: use std;" />,
+  "ToolCall/done": <ToolCall state="done" name="read_file" detail="src/args.rs" output="1: use std;" />,
+  "ToolCall/failed": <ToolCall state="failed" name="read_file" detail="src/args.rs" output="1: use std;" />,
+  "CommandMenu/default": <CommandMenu items={[{ usage: "/help", description: "Show commands" }]} />,
+  "CommandMenu/empty": <CommandMenu items={[{ usage: "/help", description: "Show commands" }]} state="empty" />,
 };
 
 describe("every primitive and state renders", () => {
@@ -123,6 +133,11 @@ describe("layout at 40, 80 and 200 columns", () => {
     <Text key="tx">{long + " " + long}</Text>,
     <Callout key="c" kind="warning">{long}</Callout>,
     <StateBlock key="sb" kind="error" message={long} action={{ key: "r", label: long }} />,
+    <Message key="m" kind="user" text={`${long} ${long} 界界界界界界`} />,
+    <Message key="m2" kind="assistant" text={`# ${long}\n- ${long}\n> ${long}\n\`\`\`\n${long}\n\`\`\`\n| ${long} |\n---`} />,
+    <ToolCall key="tc" state="done" name={long} detail={long} output={`${long}\n${long}\n${long}\n${long}\n${long}`} expandKey={long} />,
+    <ToolCall key="tc2" state="running" name="x" detail={long} />,
+    <CommandMenu key="cm" items={[{ usage: long, description: long }, { usage: "/a", description: long }]} selected={1} />,
   ];
 
   it.each([40, 80, 200])("never exceeds %s columns", (columns) => {
