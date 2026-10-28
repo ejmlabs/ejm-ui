@@ -175,6 +175,10 @@
     "elbow": {
       "unicode": "└",
       "ascii": "`-"
+    },
+    "bullet": {
+      "unicode": "•",
+      "ascii": "-"
     }
   },
   "components": {
@@ -469,7 +473,7 @@
       ]
     },
     "Markdown": {
-      "summary": "CommonMark as terminal text: headings without source markers, lists, emphasis, inline code, fenced code with a language tag and syntax colors, and unified diffs. Registered for the rust target only.",
+      "summary": "GitHub flavored Markdown as terminal text: headings without source markers, bullet, numbered and task lists, emphasis and strikethrough, inline code, fenced code with a language tag and syntax colors, unified diffs, and pipe tables whose cells wrap inside their columns or print as Header: value lines when too narrow. Line breaks inside a paragraph are kept. Registered for the rust target only.",
       "props": [
         {
           "name": "source",
@@ -607,7 +611,7 @@
       ]
     },
     "CommandMenu": {
-      "summary": "Completion choices under an input: usage in the accent color padded to one column, description muted. The selected row carries the selection mark and bold text. Rows that do not fit scroll to keep the selection visible. Empty shows one sentence.",
+      "summary": "Completion choices under an input: usage in the accent color padded to one column sized for usages of at most 24 columns, description muted. A longer usage keeps up to half the width and shortens only its own description. The selected row carries the selection mark and bold text. Rows that do not fit scroll to keep the selection visible. Empty shows one sentence.",
       "props": [
         {
           "name": "items",

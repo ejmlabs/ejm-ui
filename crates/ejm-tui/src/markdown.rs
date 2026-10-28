@@ -7,10 +7,13 @@
 //! executed.
 
 use crate::{
-    CodeLanguage, Column, Rule, Table, Theme, code_lines,
+    CodeLanguage, Rule, Theme, code_lines,
     fit::{clean, push_span, take_cols, width, wrap_columns, wrap_styled},
 };
 use pulldown_cmark::{Alignment, CodeBlockKind, Event, Options, Parser, Tag, TagEnd};
+
+/// Columns between table columns.
+const TABLE_GAP: usize = 2;
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
@@ -175,6 +178,8 @@ impl<'a> Renderer<'a> {
         let source = owned.as_deref().unwrap_or(source);
         let mut options = Options::empty();
         options.insert(Options::ENABLE_TABLES);
+        options.insert(Options::ENABLE_STRIKETHROUGH);
+        options.insert(Options::ENABLE_TASKLISTS);
         for event in Parser::new_ext(source, options) {
             match event {
                 Event::Start(tag) => self.start(tag),
@@ -195,14 +200,8 @@ impl<'a> Renderer<'a> {
                         push_span(&mut self.spans, &text, style);
                     }
                 }
-                Event::SoftBreak => {
-                    if !self.push_table_text(" ") {
-                        self.push_link_text(" ");
-                        let style = self.style();
-                        push_span(&mut self.spans, " ", style);
-                    }
-                }
-                Event::HardBreak => {
+                // Chat text keeps its line breaks, as GitHub comments do.
+                Event::SoftBreak | Event::HardBreak => {
                     if !self.push_table_text(" ") {
                         self.push_link_text(" ");
                         self.flush(false);
@@ -225,7 +224,17 @@ impl<'a> Renderer<'a> {
                     self.gap();
                     self.lines.push(Rule::new(self.theme).line(self.columns));
                 }
-                Event::FootnoteReference(_) | Event::TaskListMarker(_) => {}
+                Event::TaskListMarker(done) => {
+                    if let Some(item) = self.items.last_mut().filter(|item| item.fresh) {
+                        let glyph = if done {
+                            self.theme.glyphs.ok
+                        } else {
+                            self.theme.glyphs.idle
+                        };
+                        glyph.clone_into(&mut item.marker);
+                    }
+                }
+                Event::FootnoteReference(_) => {}
             }
         }
         self.flush(false);
@@ -261,7 +270,7 @@ impl<'a> Renderer<'a> {
                         *number = number.saturating_add(1);
                         value
                     }
-                    _ => "-".into(),
+                    _ => self.theme.marks.bullet.to_owned(),
                 };
                 self.items.push(Item {
                     marker,
@@ -295,6 +304,9 @@ impl<'a> Renderer<'a> {
             Tag::Emphasis => self
                 .styles
                 .push(self.style().add_modifier(Modifier::ITALIC)),
+            Tag::Strikethrough => self
+                .styles
+                .push(self.style().add_modifier(Modifier::CROSSED_OUT)),
             Tag::Link { dest_url, .. } | Tag::Image { dest_url, .. } => {
                 self.links.push((dest_url.into_string(), String::new()));
             }
@@ -338,7 +350,7 @@ impl<'a> Renderer<'a> {
                 self.flush(false);
                 self.styles.pop();
             }
-            TagEnd::Strong | TagEnd::Emphasis => {
+            TagEnd::Strong | TagEnd::Emphasis | TagEnd::Strikethrough => {
                 self.styles.pop();
             }
             TagEnd::CodeBlock => {
@@ -415,6 +427,8 @@ impl<'a> Renderer<'a> {
         true
     }
 
+    /// Cells wrap inside their columns, so no text is cut. Without room for every column's
+    /// longest word, each row prints as `Header: value` lines instead.
     fn flush_table(&mut self) {
         let Some(built) = self.table.take() else {
             return;
@@ -422,29 +436,128 @@ impl<'a> Renderer<'a> {
         if built.header.is_empty() && built.rows.is_empty() {
             return;
         }
-        let columns: Vec<Column<'_>> = built
-            .header
+        let (first, rest) = self.prefixes();
+        let room = usize::from(self.columns).saturating_sub(width(&rest));
+        let rows: Vec<&Vec<String>> = std::iter::once(&built.header).chain(&built.rows).collect();
+        let count = rows.iter().map(|row| row.len()).max().unwrap_or(0);
+        let measure = |of: fn(&str) -> usize| -> Vec<usize> {
+            (0..count)
+                .map(|column| {
+                    rows.iter()
+                        .map(|row| of(cell(row, column)))
+                        .max()
+                        .unwrap_or(0)
+                        .max(1)
+                })
+                .collect()
+        };
+        let gaps = TABLE_GAP * count.saturating_sub(1);
+        let words = measure(longest_word);
+        if words.iter().sum::<usize>() + gaps > room {
+            self.stacked_table(&built);
+            return;
+        }
+        let mut widths = measure(width);
+        // The widest column that can still narrow gives up a column at a time, which keeps the
+        // columns balanced.
+        while widths.iter().sum::<usize>() + gaps > room {
+            let Some(widest) = (0..count)
+                .filter(|column| widths[*column] > words[*column])
+                .max_by_key(|column| (widths[*column], std::cmp::Reverse(*column)))
+            else {
+                break;
+            };
+            widths[widest] -= 1;
+        }
+        let wrapped: Vec<Vec<Vec<Line<'static>>>> = rows
             .iter()
             .enumerate()
-            .map(|(index, label)| {
-                let column = Column::new(label);
-                if built.alignments.get(index) == Some(&Alignment::Right) {
-                    column.right()
+            .map(|(index, row)| {
+                let style = if index == 0 {
+                    self.theme.strong
                 } else {
-                    column
-                }
+                    self.theme.text
+                };
+                (0..count)
+                    .map(|column| {
+                        let text = cell(row, column);
+                        if text.is_empty() {
+                            vec![Line::default()]
+                        } else {
+                            wrap_styled(&Line::styled(text.to_owned(), style), widths[column])
+                        }
+                    })
+                    .collect()
             })
             .collect();
-        let rows: Vec<Vec<&str>> = built
-            .rows
+        let tall = wrapped
             .iter()
-            .map(|row| row.iter().map(String::as_str).collect())
-            .collect();
-        self.lines.extend(
-            Table::new(self.theme, &columns)
-                .rows(&rows)
-                .lines(self.columns),
-        );
+            .skip(1)
+            .any(|row| row.iter().any(|lines| lines.len() > 1));
+        let mut lines = Vec::new();
+        for (index, row) in wrapped.iter().enumerate() {
+            if index > 1 && tall {
+                lines.push(Line::default());
+            }
+            for line in 0..row.iter().map(Vec::len).max().unwrap_or(1) {
+                let mut spans = Vec::new();
+                for (column, cell) in row.iter().enumerate() {
+                    let content = cell
+                        .get(line)
+                        .map(|row| row.spans.clone())
+                        .unwrap_or_default();
+                    let used: usize = content.iter().map(|span| width(&span.content)).sum();
+                    let free = widths[column].saturating_sub(used);
+                    let left = match built.alignments.get(column) {
+                        Some(Alignment::Right) => free,
+                        Some(Alignment::Center) => free / 2,
+                        _ => 0,
+                    };
+                    if column > 0 {
+                        spans.push(Span::raw(" ".repeat(TABLE_GAP)));
+                    }
+                    spans.push(Span::raw(" ".repeat(left)));
+                    spans.extend(content);
+                    spans.push(Span::raw(" ".repeat(free - left)));
+                }
+                lines.push(trim_end(spans));
+            }
+            if index == 0 {
+                let rule = self
+                    .theme
+                    .marks
+                    .rule
+                    .repeat(widths.iter().sum::<usize>() + gaps);
+                lines.push(Line::styled(rule, self.theme.rule));
+            }
+        }
+        self.append(lines, &first, &rest);
+    }
+
+    /// A narrow table: each body row as `Header: value` lines, rows apart by a blank row.
+    fn stacked_table(&mut self, built: &TableBuild) {
+        if built.rows.is_empty() {
+            let header = built.header.join(&" ".repeat(TABLE_GAP));
+            push_span(&mut self.spans, &header, self.theme.strong);
+            self.flush(false);
+            return;
+        }
+        for (index, row) in built.rows.iter().enumerate() {
+            if index > 0 {
+                self.lines.push(Line::default());
+            }
+            for (column, value) in row.iter().enumerate() {
+                let label = built.header.get(column).map_or("", String::as_str);
+                let mut spans = vec![Span::styled(format!("{label}:"), self.theme.strong)];
+                if !value.is_empty() {
+                    spans.push(Span::styled(format!(" {value}"), self.theme.text));
+                }
+                let (first, rest) = self.prefixes();
+                let rest = format!("{rest}  ");
+                let columns = usize::from(self.columns).saturating_sub(width(&rest));
+                self.append(wrap_styled(&Line::from(spans), columns), &first, &rest);
+            }
+        }
     }
 
     fn push_link_text(&mut self, text: &str) {
@@ -537,6 +650,29 @@ impl<'a> Renderer<'a> {
     }
 }
 
+/// One cell of a table row, empty past its end.
+fn cell(row: &[String], column: usize) -> &str {
+    row.get(column).map_or("", String::as_str)
+}
+
+/// Columns of the longest run of non-space text in a cell.
+fn longest_word(text: &str) -> usize {
+    text.split(' ').map(width).max().unwrap_or(0)
+}
+
+/// A table row without trailing spaces.
+fn trim_end(mut spans: Vec<Span<'static>>) -> Line<'static> {
+    while let Some(last) = spans.last_mut() {
+        let kept = last.content.trim_end().len();
+        if kept > 0 {
+            last.content.to_mut().truncate(kept);
+            break;
+        }
+        spans.pop();
+    }
+    Line::from(spans)
+}
+
 fn reference_definitions(body: &str) -> String {
     body.lines()
         .filter(|line| {
@@ -594,7 +730,7 @@ mod tests {
     fn an_empty_parent_list_item_precedes_its_nested_children() {
         assert_eq!(
             rows(&Markdown::new(&Theme::no_color(), "-\n  - child").lines(40)),
-            ["-", "  - child"]
+            ["\u{2022}", "  \u{2022} child"]
         );
     }
 
@@ -652,7 +788,7 @@ mod tests {
     fn tight_lists_keep_items_separate() {
         let theme = Theme::no_color();
         for (body, expected) in [
-            ("- one\n- two", vec!["- one", "- two"]),
+            ("- one\n- two", vec!["\u{2022} one", "\u{2022} two"]),
             ("1. first\n2. second", vec!["1. first", "2. second"]),
         ] {
             assert_eq!(rows(&Markdown::new(&theme, body).lines(40)), expected);
@@ -690,7 +826,7 @@ mod tests {
                 .filter(|line| !line.is_empty())
                 .cloned()
                 .collect::<Vec<_>>(),
-            ["Head", "- one", "  - nested", "After"]
+            ["Head", "\u{2022} one", "  \u{2022} nested", "After"]
         );
         let hard = Markdown::new(&theme, "one  \ntwo").lines(40);
         assert_eq!(rows(&hard), ["one", "two"]);
@@ -779,7 +915,7 @@ mod tests {
     }
 
     #[test]
-    fn gfm_tables_use_the_table_widget() {
+    fn gfm_tables_align_columns_under_one_hairline() {
         let theme = Theme::no_color();
         let body = "| Name | Count |\n| --- | ---: |\n| alpha | 2 |\n| beta | 10 |";
         let text = rows(&Markdown::new(&theme, body).lines(40));
@@ -815,13 +951,54 @@ mod tests {
     }
 
     #[test]
-    fn narrow_gfm_tables_drop_trailing_columns() {
+    fn narrow_gfm_tables_stack_rows_instead_of_cutting() {
         let theme = Theme::no_color();
-        let body = "| Session | Model | Cost |\n| --- | --- | --- |\n| one | two | three |";
-        let text = rows(&Markdown::new(&theme, body).lines(12));
-        assert!(text.iter().all(|line| width(line) <= 12), "{text:?}");
-        assert!(text.iter().any(|line| line.contains("Se")), "{text:?}");
-        assert!(!text.iter().any(|line| line.contains("Cost")), "{text:?}");
-        assert!(!text.iter().any(|line| line.contains("three")), "{text:?}");
+        let body = "| Session | Model | Cost |\n| --- | --- | --- |\n| one | two | three |\n| four | five | six |";
+        let text = rows(&Markdown::new(&theme, body).lines(20));
+        assert_eq!(
+            text,
+            [
+                "Session: one",
+                "Model: two",
+                "Cost: three",
+                "",
+                "Session: four",
+                "Model: five",
+                "Cost: six"
+            ]
+        );
+    }
+
+    #[test]
+    fn long_table_cells_wrap_inside_their_column() {
+        let theme = Theme::no_color();
+        let body = "| Flag | Effect |\n| --- | --- |\n| `--allow-shell` | Runs commands as the current user |\n| `--max-steps` | Caps steps |";
+        let text = rows(&Markdown::new(&theme, body).lines(36));
+        assert_eq!(
+            text,
+            [
+                "Flag           Effect".into(),
+                "\u{2500}".repeat(36),
+                "--allow-shell  Runs commands as the".into(),
+                "               current user".into(),
+                String::new(),
+                "--max-steps    Caps steps".into()
+            ]
+        );
+    }
+
+    #[test]
+    fn task_items_and_strikethrough_read_without_markup() {
+        let theme = Theme::no_color();
+        let lines = Markdown::new(&theme, "- [x] done\n- [ ] open\n\n~~old~~\nnew").lines(30);
+        assert_eq!(
+            rows(&lines),
+            ["\u{2713} done", "\u{25cb} open", "", "old", "new"]
+        );
+        let old = lines[3]
+            .spans
+            .iter()
+            .find(|span| span.content.contains("old"));
+        assert!(old.is_some_and(|span| span.style.add_modifier.contains(Modifier::CROSSED_OUT)));
     }
 }

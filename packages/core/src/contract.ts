@@ -45,6 +45,7 @@ export interface Contract {
     message: { about: string } & Record<MessageKind, GlyphPair & { label: string }>;
     toolCall: { about: string } & Record<ToolCallState, GlyphPair & { label: string }>;
     elbow: GlyphPair;
+    bullet: GlyphPair;
   };
   /** Default words used when the caller gives no message. */
   text: {
