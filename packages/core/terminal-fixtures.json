@@ -1,0 +1,359 @@
+{
+  "about": "Shared conversation block fixtures. Each case lists its inputs and the plain lines every terminal target must print with no color. crates/ejm-tui/tests/fixtures.rs writes `expected` with EJM_WRITE_FIXTURES=1; the Rust and Ink tests both compare against it. Markdown and assistant messages are left out: Markdown is Rust-only in the contract, and Ink's lighter Markdown prints differently.",
+  "cases": [
+    {
+      "component": "Message",
+      "expected": [
+        "› The test reads the wall clock, so I",
+        "  will inject one.",
+        "  Second line."
+      ],
+      "glyphs": "unicode",
+      "kind": "user",
+      "text": "The test reads the wall clock, so I will inject one.\nSecond line.",
+      "title": null,
+      "width": 40
+    },
+    {
+      "component": "Message",
+      "expected": [
+        "! queued: The test reads the wall clock,",
+        "  so I will inject one.",
+        "  Second line."
+      ],
+      "glyphs": "unicode",
+      "kind": "notice",
+      "text": "The test reads the wall clock, so I will inject one.\nSecond line.",
+      "title": "queued",
+      "width": 40
+    },
+    {
+      "component": "Message",
+      "expected": [
+        "✗ The test reads the wall clock, so I",
+        "  will inject one.",
+        "  Second line."
+      ],
+      "glyphs": "unicode",
+      "kind": "error",
+      "text": "The test reads the wall clock, so I will inject one.\nSecond line.",
+      "title": null,
+      "width": 40
+    },
+    {
+      "component": "ToolCall",
+      "detail": "src/args.rs",
+      "expandKey": "Ctrl+O",
+      "expanded": false,
+      "expected": [
+        "○ read_file  src/args.rs  waiting for",
+        "  capacity"
+      ],
+      "glyphs": "unicode",
+      "name": "read_file",
+      "output": "1: use std::path::PathBuf;\n2:\n3: use anyhow::Result;\n4: fn main() {}\n5: }\n6: // end",
+      "state": "queued",
+      "width": 40
+    },
+    {
+      "component": "ToolCall",
+      "detail": "src/args.rs",
+      "expandKey": "Ctrl+O",
+      "expanded": false,
+      "expected": [
+        "● read_file  src/args.rs  running…"
+      ],
+      "glyphs": "unicode",
+      "name": "read_file",
+      "output": "1: use std::path::PathBuf;\n2:\n3: use anyhow::Result;\n4: fn main() {}\n5: }\n6: // end",
+      "state": "running",
+      "width": 40
+    },
+    {
+      "component": "ToolCall",
+      "detail": "src/args.rs",
+      "expandKey": "Ctrl+O",
+      "expanded": false,
+      "expected": [
+        "✓ read_file  src/args.rs",
+        "  └ 1: use std::path::PathBuf;",
+        "    2:",
+        "    3: use anyhow::Result;",
+        "    4: fn main() {}",
+        "    … +2 lines (Ctrl+O to expand)"
+      ],
+      "glyphs": "unicode",
+      "name": "read_file",
+      "output": "1: use std::path::PathBuf;\n2:\n3: use anyhow::Result;\n4: fn main() {}\n5: }\n6: // end",
+      "state": "done",
+      "width": 40
+    },
+    {
+      "component": "ToolCall",
+      "detail": "src/args.rs",
+      "expandKey": "Ctrl+O",
+      "expanded": false,
+      "expected": [
+        "✗ read_file  src/args.rs",
+        "  └ 1: use std::path::PathBuf;",
+        "    2:",
+        "    3: use anyhow::Result;",
+        "    4: fn main() {}",
+        "    5: }",
+        "    6: // end"
+      ],
+      "glyphs": "unicode",
+      "name": "read_file",
+      "output": "1: use std::path::PathBuf;\n2:\n3: use anyhow::Result;\n4: fn main() {}\n5: }\n6: // end",
+      "state": "failed",
+      "width": 40
+    },
+    {
+      "component": "ToolCall",
+      "detail": "",
+      "expandKey": "Ctrl+O",
+      "expanded": false,
+      "expected": [
+        "✓ search",
+        "  └ no output"
+      ],
+      "glyphs": "unicode",
+      "name": "search",
+      "output": "",
+      "state": "done",
+      "width": 40
+    },
+    {
+      "component": "ToolCall",
+      "detail": "src/args.rs",
+      "expandKey": "Ctrl+O",
+      "expanded": true,
+      "expected": [
+        "✓ read_file  src/args.rs",
+        "  └ 1: use std::path::PathBuf;",
+        "    2:",
+        "    3: use anyhow::Result;",
+        "    4: fn main() {}",
+        "    5: }",
+        "    6: // end"
+      ],
+      "glyphs": "unicode",
+      "name": "read_file",
+      "output": "1: use std::path::PathBuf;\n2:\n3: use anyhow::Result;\n4: fn main() {}\n5: }\n6: // end",
+      "state": "done",
+      "width": 40
+    },
+    {
+      "component": "CommandMenu",
+      "expected": [
+        "  /help       Show commands and keyboar…",
+        "› /status     Show the connection, gran…",
+        "  /resume ID  Open a session by its ID …"
+      ],
+      "glyphs": "unicode",
+      "items": [
+        [
+          "/help",
+          "Show commands and keyboard shortcuts"
+        ],
+        [
+          "/status",
+          "Show the connection, grants and concurrency"
+        ],
+        [
+          "/resume ID",
+          "Open a session by its ID or unique prefix"
+        ]
+      ],
+      "selected": 1,
+      "width": 40
+    },
+    {
+      "component": "CommandMenu",
+      "expected": [
+        "  No matching commands."
+      ],
+      "glyphs": "unicode",
+      "items": [],
+      "selected": 0,
+      "width": 40
+    },
+    {
+      "component": "Message",
+      "expected": [
+        "> The test reads the wall clock, so I",
+        "  will inject one.",
+        "  Second line."
+      ],
+      "glyphs": "ascii",
+      "kind": "user",
+      "text": "The test reads the wall clock, so I will inject one.\nSecond line.",
+      "title": null,
+      "width": 40
+    },
+    {
+      "component": "Message",
+      "expected": [
+        "! queued: The test reads the wall clock,",
+        "  so I will inject one.",
+        "  Second line."
+      ],
+      "glyphs": "ascii",
+      "kind": "notice",
+      "text": "The test reads the wall clock, so I will inject one.\nSecond line.",
+      "title": "queued",
+      "width": 40
+    },
+    {
+      "component": "Message",
+      "expected": [
+        "x The test reads the wall clock, so I",
+        "  will inject one.",
+        "  Second line."
+      ],
+      "glyphs": "ascii",
+      "kind": "error",
+      "text": "The test reads the wall clock, so I will inject one.\nSecond line.",
+      "title": null,
+      "width": 40
+    },
+    {
+      "component": "ToolCall",
+      "detail": "src/args.rs",
+      "expandKey": "Ctrl+O",
+      "expanded": false,
+      "expected": [
+        "o read_file  src/args.rs  waiting for",
+        "  capacity"
+      ],
+      "glyphs": "ascii",
+      "name": "read_file",
+      "output": "1: use std::path::PathBuf;\n2:\n3: use anyhow::Result;\n4: fn main() {}\n5: }\n6: // end",
+      "state": "queued",
+      "width": 40
+    },
+    {
+      "component": "ToolCall",
+      "detail": "src/args.rs",
+      "expandKey": "Ctrl+O",
+      "expanded": false,
+      "expected": [
+        "* read_file  src/args.rs  running..."
+      ],
+      "glyphs": "ascii",
+      "name": "read_file",
+      "output": "1: use std::path::PathBuf;\n2:\n3: use anyhow::Result;\n4: fn main() {}\n5: }\n6: // end",
+      "state": "running",
+      "width": 40
+    },
+    {
+      "component": "ToolCall",
+      "detail": "src/args.rs",
+      "expandKey": "Ctrl+O",
+      "expanded": false,
+      "expected": [
+        "+ read_file  src/args.rs",
+        "  `- 1: use std::path::PathBuf;",
+        "     2:",
+        "     3: use anyhow::Result;",
+        "     4: fn main() {}",
+        "     ... +2 lines (Ctrl+O to expand)"
+      ],
+      "glyphs": "ascii",
+      "name": "read_file",
+      "output": "1: use std::path::PathBuf;\n2:\n3: use anyhow::Result;\n4: fn main() {}\n5: }\n6: // end",
+      "state": "done",
+      "width": 40
+    },
+    {
+      "component": "ToolCall",
+      "detail": "src/args.rs",
+      "expandKey": "Ctrl+O",
+      "expanded": false,
+      "expected": [
+        "x read_file  src/args.rs",
+        "  `- 1: use std::path::PathBuf;",
+        "     2:",
+        "     3: use anyhow::Result;",
+        "     4: fn main() {}",
+        "     5: }",
+        "     6: // end"
+      ],
+      "glyphs": "ascii",
+      "name": "read_file",
+      "output": "1: use std::path::PathBuf;\n2:\n3: use anyhow::Result;\n4: fn main() {}\n5: }\n6: // end",
+      "state": "failed",
+      "width": 40
+    },
+    {
+      "component": "ToolCall",
+      "detail": "",
+      "expandKey": "Ctrl+O",
+      "expanded": false,
+      "expected": [
+        "+ search",
+        "  `- no output"
+      ],
+      "glyphs": "ascii",
+      "name": "search",
+      "output": "",
+      "state": "done",
+      "width": 40
+    },
+    {
+      "component": "ToolCall",
+      "detail": "src/args.rs",
+      "expandKey": "Ctrl+O",
+      "expanded": true,
+      "expected": [
+        "+ read_file  src/args.rs",
+        "  `- 1: use std::path::PathBuf;",
+        "     2:",
+        "     3: use anyhow::Result;",
+        "     4: fn main() {}",
+        "     5: }",
+        "     6: // end"
+      ],
+      "glyphs": "ascii",
+      "name": "read_file",
+      "output": "1: use std::path::PathBuf;\n2:\n3: use anyhow::Result;\n4: fn main() {}\n5: }\n6: // end",
+      "state": "done",
+      "width": 40
+    },
+    {
+      "component": "CommandMenu",
+      "expected": [
+        "  /help       Show commands and keybo...",
+        "> /status     Show the connection, gr...",
+        "  /resume ID  Open a session by its I..."
+      ],
+      "glyphs": "ascii",
+      "items": [
+        [
+          "/help",
+          "Show commands and keyboard shortcuts"
+        ],
+        [
+          "/status",
+          "Show the connection, grants and concurrency"
+        ],
+        [
+          "/resume ID",
+          "Open a session by its ID or unique prefix"
+        ]
+      ],
+      "selected": 1,
+      "width": 40
+    },
+    {
+      "component": "CommandMenu",
+      "expected": [
+        "  No matching commands."
+      ],
+      "glyphs": "ascii",
+      "items": [],
+      "selected": 0,
+      "width": 40
+    }
+  ]
+}

@@ -63,6 +63,8 @@ fn recipes_fit_and_remain_meaningful_without_color() {
         let activity = ActivityLine {
             label: "Stopping",
             active: true,
+            details: &["step 2", "14s", "Esc to stop"],
+            spin: None,
         }
         .line(&theme, columns);
         let count = resources.line(&theme, columns);

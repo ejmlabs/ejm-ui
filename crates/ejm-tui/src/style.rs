@@ -56,6 +56,8 @@ pub struct Marks {
     pub empty: &'static str,
     /// The glyph of an info status.
     pub info: &'static str,
+    /// Leads the first output line of a tool call.
+    pub elbow: &'static str,
 }
 
 /// Marks for UTF-8 terminals.
@@ -65,6 +67,7 @@ pub const UNICODE_MARKS: Marks = Marks {
     focused: "\u{25b8}",
     empty: "\u{2013}",
     info: "i",
+    elbow: "\u{2514}",
 };
 /// Marks for ASCII-only output.
 pub const ASCII_MARKS: Marks = Marks {
@@ -73,6 +76,7 @@ pub const ASCII_MARKS: Marks = Marks {
     focused: "*",
     empty: "-",
     info: "i",
+    elbow: "`-",
 };
 
 /// A style for every syntax role of generated code highlighting. Filled from the generated
@@ -340,11 +344,32 @@ impl Theme {
 /// Map a palette color to the terminal's depth. Only the 256-color depth changes anything.
 fn paint(depth: ColorDepth, color: Color) -> Color {
     match (depth, color) {
-        (ColorDepth::Ansi256, Color::Rgb(r, g, b)) => {
-            Color::Indexed(ansi_colours::ansi256_from_rgb((r, g, b)))
-        }
+        (ColorDepth::Ansi256, Color::Rgb(r, g, b)) => Color::Indexed(ansi256(r, g, b)),
         _ => color,
     }
+}
+
+/// The nearest xterm 256-color index: the gray ramp for near-neutral colors, otherwise the 6x6x6
+/// cube. The same rule as `toAnsi256` in `@ejm/ink`, so both terminal targets pick one index.
+#[must_use]
+pub fn ansi256(r: u8, g: u8, b: u8) -> u8 {
+    let (r, g, b) = (f64::from(r), f64::from(g), f64::from(b));
+    if r.max(g).max(b) - r.min(g).min(b) < 8.0 {
+        let gray = (((r + g + b) / 3.0 - 8.0) / 10.0).round();
+        return if gray < 0.0 {
+            16
+        } else if gray > 23.0 {
+            231
+        } else {
+            // In 0..=23 here, so the cast cannot truncate.
+            #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+            let step = gray as u8;
+            232 + step
+        };
+    }
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    let cube = |v: f64| (v / 255.0 * 5.0).round() as u8;
+    16 + 36 * cube(r) + 6 * cube(g) + cube(b)
 }
 
 /// The color depth for these inputs. `NO_COLOR`, `--no-color` or `TERM=dumb` give [`ColorDepth::None`].
@@ -429,6 +454,28 @@ pub fn spinner_frame(g: &Glyphs, elapsed_ms: u64, reduced_motion: bool) -> &'sta
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn ansi256_matches_the_ink_target() {
+        // Expected indexes from `toAnsi256` in packages/ink/src/theme.ts.
+        for (hex, index) in [
+            (0x00b8_c6aa_u32, 187),
+            (0x0084_9682, 145),
+            (0x00d7_b87c, 186),
+            (0x00ee_a0a0, 217),
+            (0x0093_ba8b, 151),
+            (0x0029_443b, 59),
+            (0x0013_1614, 233),
+            (0x00f6_f5ef, 231),
+            (0x0000_0000, 16),
+            (0x00ff_ffff, 231),
+            (0x007f_7f7f, 244),
+        ] {
+            let [_, r, g, b] = hex.to_be_bytes();
+            assert_eq!(super::ansi256(r, g, b), index, "{hex:06x}");
+        }
+    }
+
     use super::*;
 
     const TRUECOLOR: Option<&str> = Some("truecolor");

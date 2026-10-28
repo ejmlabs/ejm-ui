@@ -15,6 +15,7 @@ import {
   type TableState,
   type TextVariant,
 } from "@ejm/core";
+import { conversationStates } from "./conversation";
 import { fitSegs, shrinkParts, type Seg } from "./layout";
 import { DEFAULT_COLUMNS, useEjm, type Role } from "./theme";
 
@@ -338,6 +339,7 @@ export const componentStates = {
   KeyHints: ["default"],
   Callout: Object.keys(CALLOUT),
   StateBlock: Object.keys(BLOCK),
+  ...conversationStates,
 } as const satisfies Record<
   // Markdown is rust-only; Ink does not claim it.
   Exclude<keyof typeof contract.components, "Markdown">,

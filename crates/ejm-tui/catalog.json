@@ -4,11 +4,21 @@
     "tip",
     "warning"
   ],
+  "CommandMenu": [
+    "default",
+    "empty"
+  ],
   "KeyHints": [
     "default"
   ],
   "Markdown": [
     "default"
+  ],
+  "Message": [
+    "user",
+    "assistant",
+    "notice",
+    "error"
   ],
   "Prompt": [
     "idle",
@@ -50,5 +60,11 @@
   ],
   "Text": [
     "default"
+  ],
+  "ToolCall": [
+    "queued",
+    "running",
+    "done",
+    "failed"
   ]
 }

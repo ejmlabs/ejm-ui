@@ -5,9 +5,10 @@
 use std::collections::{BTreeSet, HashSet};
 
 use ejm_tui::{
-    Action, Callout, CalloutKind, ColorDepth, Column, KeyHints, Markdown, Prompt, PromptState, Row,
-    RowState, Rule, Stat, StatState, StateBlock, StateKind, Status, StatusLevel, Table, TableState,
-    Text, TextVariant, Theme, catalog, theme,
+    Action, Callout, CalloutKind, ColorDepth, Column, CommandMenu, CommandMenuState, KeyHints,
+    Markdown, Message, MessageKind, Prompt, PromptState, Row, RowState, Rule, Stat, StatState,
+    StateBlock, StateKind, Status, StatusLevel, Table, TableState, Text, TextVariant, Theme,
+    ToolCall, ToolCallState, catalog, theme,
 };
 use ratatui::Terminal;
 use ratatui::backend::TestBackend;
@@ -21,6 +22,13 @@ use strum::IntoEnumIterator;
 const WIDTHS: [u16; 3] = [40, 80, 200];
 const LONG: &str =
     "a-very-long-name-that-has-to-be-cut-to-fit-the-line \u{4e16}\u{754c}\u{4e16}\u{754c}";
+const TOOL_OUTPUT: &str =
+    "1: use std::path::PathBuf;\n2:\n3: use anyhow::Result;\n4: fn main() {}\n5: }\n6: // end";
+const COMMANDS: &[(&str, &str)] = &[
+    ("/help", "Show commands and keyboard shortcuts"),
+    ("/status", "Show the connection, grants and concurrency"),
+    ("/resume ID", "Open a session by its ID or unique prefix"),
+];
 const SENTENCE: &str = "Sessions you start are listed here, and this sentence is long enough to wrap on a narrow terminal.";
 
 fn contract() -> Value {
@@ -95,6 +103,18 @@ fn draw(t: &Theme, component: &str, state: &str, area: Rect, buf: &mut Buffer) {
         .render(area, buf),
         "StateBlock" => StateBlock::new(t, pick::<StateKind>(state), SENTENCE)
             .action(Action::new("New session").key("Enter"))
+            .render(area, buf),
+        "Message" => Message::new(t, pick::<MessageKind>(state), SENTENCE)
+            .title("queued")
+            .render(area, buf),
+        "ToolCall" => ToolCall::new(t, pick::<ToolCallState>(state), "read_file")
+            .detail(LONG)
+            .output(TOOL_OUTPUT)
+            .expand_key("Ctrl+O")
+            .render(area, buf),
+        "CommandMenu" => CommandMenu::new(t, COMMANDS)
+            .state(pick::<CommandMenuState>(state))
+            .selected(1)
             .render(area, buf),
         other => panic!("no render case for component {other}"),
     }
@@ -286,6 +306,43 @@ fn glyphs_and_words_match_the_contract() {
 }
 
 #[test]
+fn conversation_glyphs_match_the_contract() {
+    let c = contract();
+    let g = &c["glyphs"];
+    for (mode, t) in [
+        ("unicode", Theme::new(ColorDepth::None, false)),
+        (
+            "ascii",
+            Theme::new(ColorDepth::None, false).with_glyphs(&theme::ASCII),
+        ),
+    ] {
+        let s = |v: &Value| v[mode].as_str().expect("glyph").to_string();
+        for kind in MessageKind::iter() {
+            let name: &str = kind.into();
+            assert!(
+                line_of(Message::new(&t, kind, "hi"))
+                    .starts_with(&format!("{} ", s(&g["message"][name]))),
+                "message {name} in {mode}"
+            );
+        }
+        for state in ToolCallState::iter() {
+            let name: &str = state.into();
+            assert!(
+                line_of(ToolCall::new(&t, state, "tool"))
+                    .starts_with(&format!("{} tool", s(&g["toolCall"][name]))),
+                "tool call {name} in {mode}"
+            );
+        }
+        let elbow = format!("  {} out", s(&g["elbow"]));
+        let call = ToolCall::new(&t, ToolCallState::Done, "tool")
+            .output("out")
+            .lines(40);
+        let second: String = call[1].spans.iter().map(|sp| sp.content.as_ref()).collect();
+        assert_eq!(second, elbow, "elbow in {mode}");
+    }
+}
+
+#[test]
 fn default_words_match_the_contract() {
     let c = contract();
     let words = &c["text"];
@@ -322,6 +379,31 @@ fn default_words_match_the_contract() {
             "table {key}: {out}"
         );
     }
+    let tool = &words["toolCall"];
+    let word = |key: &str| tool[key].as_str().expect("word").to_string();
+    assert!(shown(ToolCall::new(&t, ToolCallState::Queued, "a"), 60, 1).ends_with(&word("queued")));
+    assert!(
+        shown(ToolCall::new(&t, ToolCallState::Running, "a"), 60, 1).contains(&word("running"))
+    );
+    assert!(shown(ToolCall::new(&t, ToolCallState::Done, "a"), 60, 2).ends_with(&word("empty")));
+    let more = shown(
+        ToolCall::new(&t, ToolCallState::Done, "a")
+            .output(TOOL_OUTPUT)
+            .expand_key("Ctrl+O"),
+        60,
+        6,
+    );
+    let expected = format!(
+        "{} ({})",
+        word("more").replace("{count}", "2"),
+        word("expand").replace("{key}", "Ctrl+O")
+    );
+    assert!(more.contains(&expected), "{more}");
+    let empty = shown(CommandMenu::new(&t, &[]), 60, 1);
+    assert!(
+        empty.contains(words["commandMenu"]["empty"].as_str().expect("word")),
+        "{empty}"
+    );
     let busy = shown(Prompt::new(&t, "x").state(PromptState::Busy), 60, 1);
     assert!(
         busy.ends_with(words["prompt"]["busy"].as_str().expect("word")),
