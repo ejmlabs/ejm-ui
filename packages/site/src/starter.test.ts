@@ -82,10 +82,4 @@ describe('the starter build', () => {
     expect(headers).not.toMatch(/script-src[^;\n]*unsafe-inline/);
     expect(spawnSync('node', [headersBin, join(dist, '_headers'), '--check']).status).toBe(0);
   });
-
-  it('keeps every route inside the budgets', () => {
-    const run = spawnSync('node', [ssgBin, 'budget'], { cwd: starter, encoding: 'utf8' });
-    expect(run.stdout).toContain('all routes within budget');
-    expect(run.status).toBe(0);
-  });
 });

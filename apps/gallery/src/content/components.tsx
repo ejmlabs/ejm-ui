@@ -12,7 +12,7 @@ export const components: DocPage = {
           type: 'p',
           children: (
             <>
-              Controls are shadcn/ui source copied in and edited here, on React 19. Where a native element replaces a primitive, the component uses the native element: <code>Dialog</code> is the browser's <code>dialog</code>, <code>Select</code> is a native <code>select</code>, and the mobile menus are <code>details</code>. Radix is used where it earns its weight, in menus, tooltips, switches and checkboxes.
+              Controls are shadcn/ui source copied in and edited here, on React 19. Where a native element can replace a primitive, the component uses it: <code>Dialog</code> is the browser's <code>dialog</code>, <code>Select</code> is a native <code>select</code>, and the mobile menus are <code>details</code>. Radix is used where it earns its weight, in menus, tooltips, switches and checkboxes.
             </>
           ),
         },
@@ -107,7 +107,7 @@ export const components: DocPage = {
             { name: 'KeyHints', type: 'default', description: 'Key and label pairs in one line of mono text.' },
           ],
         },
-        { type: 'callout', kind: 'note', children: <p>Callout has three states, note, tip and warning, and each one is named by a word first. The docs parts below are web only.</p> },
+        { type: 'callout', kind: 'note', children: <p>Callout has three states, note, tip and warning, each named by a word first. The docs parts below are web only.</p> },
       ],
     },
     {

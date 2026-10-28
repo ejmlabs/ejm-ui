@@ -5,7 +5,7 @@ The shared build and design boundary for every ejmlabs site: the project registr
 | Entry | What it is |
 | --- | --- |
 | `@ejm/site` | Re-exports `Analytics`, the analytics helpers, `siteDefaults`, `siteFonts` and the registry. |
-| `@ejm/site/projects` | The four sites: `PROJECTS`, `PROJECT_LIST`, `otherSites(id)`, `sourceLinks(id)`, `assetPaths`. |
+| `@ejm/site/projects` | The four published sites and the unreleased build identities: `PROJECTS`, `PROJECT_LIST`, `otherSites(id)`, `sourceLinks(id)`, `assetPaths`. |
 | `@ejm/site/analytics` | The `Analytics` component and `analyticsToken`, `loadAnalytics`, `optedOut`. |
 | `@ejm/site/head` | `siteDefaults(id)` for `defineSite`, and `siteFonts()`. |
 | `@ejm/site/headers` | `headersFile`, `csp`, `directives`: the policy as a typed generator. |
@@ -116,7 +116,7 @@ asset serving, privacy-sensitive themes, no-script forms and checks.
 
 One registry feeds the analytics host map, the headers, the nav and the footers. Each entry has `id`, `name` (`ejm-cli`), `host`, `url`, `tagline`, `repo`, `analyticsToken` and `assetDir`. `otherSites(id)` returns the other three as `{ label, href, external: true }`, ready for the `nav` and footer `links` of `@ejm/ui`, which render them with `ExternalLink` (`rel="external noopener"`). `sourceLinks(id)` is the repo link.
 
-Brand files: ejmlabs uses the root sets of `@ejm/tokens/assets` (`favicon/`, `logos/`, `social/`). cli, ide and harness each have their own family in `@ejm/tokens/assets/projects/<id>/` (marks, logos, icons, the favicon set, `apple-touch-icon.png`, `android-chrome-*`, `site.webmanifest`, `social-card`), imported from `design-kit/projects/` with sha256 in `assets/PROVENANCE.md`. The studio favicon family is generated in `@ejm/tokens`; its symbol geometry matches the studio logo. `assetPaths(project, exists)` points at that folder when it exists and falls back to the ejmlabs files otherwise; `ejmSite` serves the project's favicon set, manifest and social card at the site root.
+Brand files: ejmlabs uses the root sets of `@ejm/tokens/assets` (`favicon/`, `logos/`, `social/`). cli, ide and harness each have their own family in `@ejm/tokens/assets/projects/<id>/` (marks, logos, icons, the favicon set, `apple-touch-icon.png`, `android-chrome-*`, `site.webmanifest`, `social-card`), imported from `design-kit/projects/` with sha256 in `assets/PROVENANCE.md`. chess and ui have the same family, generated in this repository by `scripts/chess-assets.mjs` and `scripts/ui-assets.mjs`. The studio favicon family is generated in `@ejm/tokens`; its symbol geometry matches the studio logo. `assetPaths(project, exists)` points at that folder when it exists and falls back to the ejmlabs files otherwise; `ejmSite` serves the project's favicon set, manifest and social card at the site root.
 
 ## analytics
 
@@ -224,7 +224,7 @@ does not enter the client page data. Keep the full JSON import and the
 `DocProse` renderer behind a constant server/dev condition in the generated
 route. See the `@ejm/ui/docs` guide for the frame API. The static boundary must
 wrap prose runs and highlighted source only; sidebar filtering, contents, tabs, copy and pager links
-remain live. Measure the emitted route against its existing budget.
+remain live.
 
 ## Unreleased build identities
 
@@ -235,5 +235,8 @@ unconfigured. The source helper returns no link for an empty repository.
 Chess uses this contract while its public service and guide destinations
 remain unverified. Original brand artwork supplies its local head metadata
 and favicons without adding Chess to other sites' navigation.
+The ejm-ui gallery (`ui`) uses it too until `ui.ejmlabs.com` is published and
+verified. It builds with its own mark, favicons and social card, and other
+sites' navigation is unchanged.
 
 The plugin also distributes the original font notices from the public `@ejm/ui/fonts/Manrope-OFL.txt` and `@ejm/ui/fonts/IBMPlexMono-OFL.txt` exports. Every build includes their exact bytes at `/Manrope-OFL.txt` and `/IBMPlexMono-OFL.txt`, alongside the bundled font assets. Development serves the same paths as `text/plain; charset=utf-8`. Their stable names stay outside `/assets/*` and keep the default revalidation policy described above. Keep both notices with any deployed site that distributes these fonts.

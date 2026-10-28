@@ -5,12 +5,12 @@ import type { DocPage } from '@ejm/ui';
 type Meta = Pick<DocPage, 'slug' | 'group' | 'title' | 'lead'>;
 
 export const docMeta = {
-  'getting-started': { slug: 'getting-started', group: 'Start', title: 'Getting started', lead: 'ejm-ui is the design system behind every ejmlabs site and app. Install the workspace, import one stylesheet, and build a page from bands and components.' },
-  'design-language': { slug: 'design-language', group: 'Foundations', title: 'Design language', lead: 'Containerless editorial. Structure comes from type, space, hairlines and full-bleed bands. A few firm rules keep every ejmlabs surface calm and recognisable.' },
-  'tokens-and-bands': { slug: 'tokens-and-bands', group: 'Foundations', title: 'Tokens and bands', lead: 'Colors never appear as literals in a component. They come from semantic names that a band and a theme resolve, so a child is right on every ground.' },
+  'getting-started': { slug: 'getting-started', group: 'Start', title: 'Getting started', lead: 'Install the workspace, import one stylesheet and build a page from bands and components.' },
+  'design-language': { slug: 'design-language', group: 'Foundations', title: 'Design language', lead: 'Structure comes from type, space, hairlines and full-bleed bands, not boxes. A few firm rules keep every ejmlabs surface consistent.' },
+  'tokens-and-bands': { slug: 'tokens-and-bands', group: 'Foundations', title: 'Tokens and bands', lead: 'Components never hold color values. They use semantic names that a band and a theme resolve, so every child reads correctly on every ground.' },
   'theming': { slug: 'theming', group: 'Foundations', title: 'Theming and the cookie', lead: 'Light and dark follow the visitor, with no flash. One cookie carries the choice across every ejmlabs.com site.' },
   'components': { slug: 'components', group: 'Build', title: 'Components', lead: 'Check here before you build something new. Everything is exported from @ejm/ui, reads the theme contract, and follows the WAI-ARIA pattern for its role.' },
-  'checks': { slug: 'checks', group: 'Quality', title: 'Checks and budgets', lead: 'Every line of the quality bar is something a script, a screenshot or the keyboard can check. A page ships when each line holds.' },
+  'checks': { slug: 'checks', group: 'Quality', title: 'Checks', lead: 'Every line of the quality bar is something a script, a screenshot or the keyboard can check. A page ships when each line holds.' },
 } satisfies Record<string, Meta>;
 
 /** The page slugs in reading order. The first is the index at /docs. */

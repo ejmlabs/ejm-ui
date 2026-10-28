@@ -28,15 +28,6 @@ export type PageModule = { default: ComponentType };
 type Page = { component: ComponentType; load?: never } | { load: () => Promise<PageModule>; component?: never };
 export type RouteDef = { path: string; head?: RouteHead } & Page;
 
-/** Sizes in KB (1 KB = 1024 bytes). Images and other files are not counted. */
-export interface Budget {
-  js: number;
-  css: number;
-  /** Fonts the HTML preloads, raw size (WOFF2 is already compressed). */
-  fonts: number;
-  html: number;
-}
-
 export interface SiteConfig {
   /** Every route is prerendered to `dist/<path>/index.html`. Paths are exact; the site has no params. */
   routes: RouteDef[];
@@ -51,9 +42,7 @@ export interface SiteConfig {
   origin?: string;
   /** URLs of fonts to preload on every route (`rel=preload as=font crossorigin`). Use `import url from './x.woff2?url'`. */
   fonts?: string[];
-  /** Overrides of the default budgets, which `ejm-ssg budget` and the build enforce. */
-  budget?: Partial<Budget>;
-  /** Globs of built pages the budget gate skips: static pages that are not routes (copied brand assets). Matched against the file path under dist or the route, for example `brand/kit/**`. */
+  /** Globs of built pages the load-time check skips: static pages that are not routes (copied brand assets). Matched against the file path under dist or the route, for example `brand/kit/**`. */
   ignore?: string[];
 }
 
@@ -80,7 +69,6 @@ export interface Site {
   base: string;
   origin?: string;
   fonts: string[];
-  budget: Partial<Budget>;
   ignore: string[];
 }
 
@@ -134,7 +122,6 @@ export function defineSite(config: SiteConfig): Site {
     base,
     origin: config.origin?.replace(/\/+$/, ''),
     fonts: config.fonts ?? [],
-    budget: config.budget ?? {},
     ignore: config.ignore ?? [],
   };
 }

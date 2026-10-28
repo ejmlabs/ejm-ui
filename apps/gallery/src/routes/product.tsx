@@ -23,7 +23,7 @@ export default function Product() {
           </>
         }
       >
-        <p className="m-0">ejm-cli, ejm-ide and ejm-harness are open source. These are real captures of the terminal tools and the desktop app. Each caption records its source and capture date.</p>
+        <p className="m-0">Real captures of the terminal tools and the desktop app. Each caption records its source and capture date.</p>
       </Hero>
 
       <Band id="cli" tone="sage" aria-labelledby="cli-title">

@@ -63,7 +63,7 @@ export default function Home() {
       </Band>
 
       <Band tone="mist" aria-labelledby="system-title">
-        <SectionHead kicker="03 / System" title="Tokens and budgets." id="system-title" />
+        <SectionHead kicker="03 / System" title="Tokens and checks." id="system-title" />
         <SectionBody>
           <Facts>
             <Fact label="fonts">Manrope and IBM Plex Mono</Fact>
@@ -76,15 +76,15 @@ export default function Home() {
           <MetricGrid>
             <Stat figure="4" label="bands" />
             <Stat figure="2" label="themes" />
-            <Stat figure="95" label="KB gzip script budget" />
-            <Stat figure="14" label="KB gzip CSS budget" />
+            <Stat figure="2" label="fonts" />
+            <Stat figure="1" label="runtime" />
           </MetricGrid>
         </SectionBody>
       </Band>
 
       <Band tone="ink" aria-labelledby="checks-title">
         <SectionHead kicker="04 / Checks" title="Check your build." id="checks-title">
-          <Button asChild arrow><Link href="/docs/checks/">Checks and budgets</Link></Button>
+          <Button asChild arrow><Link href="/docs/checks/">Checks</Link></Button>
         </SectionHead>
       </Band>
     </>

@@ -61,7 +61,7 @@ export function Tokens() {
     <>
       <Band tone="paper" aria-labelledby="tokens-title">
         <SectionHead purpose="page" kicker="ejm-ui / tokens" title="Four bands, one type scale." as="h1" id="tokens-title">
-          <p className="m-0">Every band, the type scale, elevation and motion, drawn with only the utilities that the theme defines.</p>
+          <p className="m-0">The bands, type scale, elevation and motion, drawn with only the utilities the theme defines.</p>
         </SectionHead>
       </Band>
       {BANDS.map(b => <BandSample key={b} band={b} />)}

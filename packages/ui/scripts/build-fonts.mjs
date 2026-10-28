@@ -4,7 +4,7 @@
 // otherwise `uv run --with fonttools --with brotli pyftsubset`.
 //   node packages/ui/scripts/build-fonts.mjs
 // The output is committed (packages/ui/src/fonts). It is not byte-checked, because font tools do not promise identical
-// bytes across versions; `scripts/size.mjs` and the font test guard the sizes instead.
+// bytes across versions.
 import { execFileSync, spawnSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';

@@ -59,12 +59,24 @@ export const PROJECTS = Object.freeze({
       { label: 'Developer guide', href: 'https://chess.ejmlabs.com/docs/developer-guide/' },
     ],
   },
+  // The design system and its gallery. It stays out of discovery until the gallery host is published and verified.
+  ui: {
+    id: 'ui',
+    name: 'ejm-ui',
+    host: 'ui.ejmlabs.com',
+    url: 'https://ui.ejmlabs.com/',
+    tagline: 'The ejmlabs design system: tokens, a Tailwind theme, components, hooks, layouts and views for every site and app.',
+    repo: 'https://github.com/ejmlabs/ejm-ui',
+    analyticsToken: '',
+    assetDir: 'projects/ui',
+    discoverable: false,
+  },
 });
 
 /** Public discovery only. Keep unlaunched projects out of unrelated consumer rebuilds. */
 export const PROJECT_LIST = Object.freeze(Object.values(PROJECTS).filter(p => p.discoverable !== false));
 
-/** Where a project's brand files are inside @ejm/tokens/assets. cli, ide and harness have their own set in `projects/<id>/`;
+/** Where a project's brand files are inside @ejm/tokens/assets. Product projects have their own set in `projects/<id>/`;
  *  ejmlabs uses the root files (`favicon/`, `logos/`, `social/`). `exists` lets the caller say which directories are really there,
  *  and a project without a folder falls back to the ejmlabs files. */
 export function assetPaths(project, exists = () => false) {

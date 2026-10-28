@@ -29,17 +29,17 @@ export interface GalleryPage {
 }
 
 export const pages: GalleryPage[] = [
-  { path: '/components/', label: 'Components', title: 'Components', description: 'Every component and every state, drawn in light and dark.', meta: 'Buttons, forms, menus, tables', group: 'Kits', nav: true, deferred: true, load: () => import('./routes/components') },
+  { path: '/components/', label: 'Components', title: 'Components', description: 'Each component and state, drawn in light and dark.', meta: 'Buttons, forms, menus, tables', group: 'Kits', nav: true, deferred: true, load: () => import('./routes/components') },
   { path: '/layout/', label: 'Layout', title: 'Layout', description: 'The containerless language end to end: hero, bands, rows, facts, stats and product windows.', meta: 'Bands and rows', group: 'Kits', nav: true, deferred: true, load: () => import('./routes/layout') },
-  { path: '/docs/', label: 'Docs', title: 'Docs', description: 'Getting started, the design language, tokens and bands, theming, components, and the checks.', meta: `${docSlugs.length} pages`, group: 'Foundations', nav: true, deferred: true, load: () => import('./routes/docs') },
-  { path: '/app/', label: 'App', title: 'App kit', description: 'A dashboard, three chart types and every empty, loading and error state, with sample data.', meta: 'Dashboard and charts', group: 'Kits', nav: true, deferred: true, load: () => import('./routes/app') },
-  { path: '/application-layout/', label: 'Application layout', title: 'Application layout', description: 'Compact page spacing, grouped form fields and every table state in both densities.', meta: 'Page and field spacing', group: 'Kits', load: () => import('./routes/application-layout') },
-  { path: '/product/', label: 'Product', title: 'Product views', description: 'Real captures of ejm-cli, ejm-ide and ejm-harness, with source versions and capture dates.', meta: 'Real product captures', group: 'Kits', nav: true, deferred: true, load: () => import('./routes/product') },
-  { path: '/demos/', label: 'Demos', title: 'Demos', description: 'Three read-only local playbacks of recorded product workflows, with pause and restart controls.', meta: 'Recorded workflows', group: 'Kits', deferred: true, load: () => import('./routes/demos') },
-  { path: '/tokens/', label: 'Tokens', title: 'Tokens', description: 'Every band, the type scale, elevation and motion that the theme defines.', meta: 'Colors, type, depth', group: 'Foundations', load: () => import('./routes/tokens') },
+  { path: '/docs/', label: 'Docs', title: 'Docs', description: 'Start here, then the design language, tokens, theming, components and checks.', meta: `${docSlugs.length} pages`, group: 'Foundations', nav: true, deferred: true, load: () => import('./routes/docs') },
+  { path: '/app/', label: 'App', title: 'App kit', description: 'A dashboard, three chart types and the empty, loading and error states, on sample data.', meta: 'Dashboard and charts', group: 'Kits', nav: true, deferred: true, load: () => import('./routes/app') },
+  { path: '/application-layout/', label: 'Application layout', title: 'Application layout', description: 'Compact page spacing, grouped form fields and every table state in both densities.', meta: 'Compact forms and tables', group: 'Kits', load: () => import('./routes/application-layout') },
+  { path: '/product/', label: 'Product', title: 'Product views', description: 'Captures of ejm-cli, ejm-ide and ejm-harness, with source versions and capture dates.', meta: 'Real captures', group: 'Kits', nav: true, deferred: true, load: () => import('./routes/product') },
+  { path: '/demos/', label: 'Demos', title: 'Demos', description: 'Three recorded product workflows, played back locally with pause and restart.', meta: 'Playbacks', group: 'Kits', deferred: true, load: () => import('./routes/demos') },
+  { path: '/tokens/', label: 'Tokens', title: 'Tokens', description: 'The bands, type scale, elevation and motion the theme defines.', meta: 'Colors, type, depth', group: 'Foundations', load: () => import('./routes/tokens') },
   { path: '/hooks/', label: 'Hooks', title: 'Hooks and motion', description: 'Live demos of the hooks and motion primitives, each safe to render on the server.', meta: 'Theme, media, motion', group: 'Foundations', load: () => import('./routes/hooks') },
   { path: '/shell/', label: 'Shell', title: 'Shell', description: 'The header, footer and layouts that frame a site, in both themes.', meta: 'Header, footer, docs', group: 'Foundations', load: () => import('./routes/shell') },
-  { path: '/app-shell/', label: 'App shell', title: 'App shell', description: 'The application frame: a top bar, a side nav and content.', meta: 'Top bar and side nav', group: 'Kits', bare: true, load: () => import('./routes/app-shell') },
+  { path: '/app-shell/', label: 'App shell', title: 'App shell', description: 'The frame an application page sits in, with its own header and skip link.', meta: 'Top bar and side nav', group: 'Kits', bare: true, load: () => import('./routes/app-shell') },
 ];
 
 /** The docs pages after the index, which is `/docs/` above. They share one chunk with it. */

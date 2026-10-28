@@ -9,8 +9,9 @@
 // What it does, in order:
 //   1. builds examples/starter in the workspace (the reference output),
 //   2. `npm pack` for @ejm/tokens, core, ui, ssg, site and demos into <dir>/tarballs,
-//   3. copies examples/starter to <dir>/consumer and installs ONLY the six tarballs from disk (no workspace, no links),
-//   4. in the consumer runs `ejm-ssg build`, `ejm-ssg budget`, `ejm-site-headers dist/_headers --check` and `tsc`
+//   3. copies examples/starter to <dir>/consumer and installs ONLY the six tarballs from disk (no workspace, no links; the tokens assets
+//      the public tarball leaves out are copied back in, because site and demos are private),
+//   4. in the consumer runs `ejm-ssg build`, `ejm-site-headers dist/_headers --check` and `tsc`
 //      (the typecheck also compiles a probe file that imports every documented deep import of @ejm/ui),
 //   5. diffs the consumer's HTML against the workspace build (hashed asset names are folded; CSS and JS are compared by size).
 // Exit code 0 only if every step passed and the HTML is identical. The folder is never deleted, so you can look at it (without --dir it is a new folder under the system temp directory).
@@ -65,7 +66,7 @@ writeFileSync(join(consumer, 'package.json'), JSON.stringify({
   version: '0.0.0',
   private: true,
   type: 'module',
-  scripts: { build: 'ejm-ssg build', budget: 'ejm-ssg budget', typecheck: 'tsc -p tsconfig.json --pretty false' },
+  scripts: { build: 'ejm-ssg build', typecheck: 'tsc -p tsconfig.json --pretty false' },
   dependencies: { ...ejm, react: range('react'), 'react-dom': range('react-dom') },
   devDependencies: Object.fromEntries(['@tailwindcss/vite', '@types/node', '@types/react', '@types/react-dom', '@vitejs/plugin-react', 'tailwindcss', 'typescript', 'vite'].map(n => [n, range(n)])),
 }, null, 2) + '\n');
@@ -94,7 +95,6 @@ import { useTheme } from '@ejm/ui/hooks/useTheme';
 import { tokenize } from '@ejm/ui/docs/highlight';
 import ripple from '@ejm/ui/art/inline/divider-ripple.svg?raw';
 import { ejmSsg } from '@ejm/ssg/vite';
-import { checkBudget } from '@ejm/ssg/budget';
 import { PROJECTS } from '@ejm/site/projects';
 import { CliHeroWindow, ProductHeroStage } from '@ejm/demos/hero';
 import { LazyCliDemo } from '@ejm/demos/islands/cli-lazy';
@@ -104,17 +104,18 @@ import { LazyIdePreview } from '@ejm/demos/islands/ide-preview';
 import { LazyHarnessPreview } from '@ejm/demos/islands/harness-preview';
 export const probe = [fontPreloads, Hero, ProductWindow, NativeCheckbox, Disclosure, Header, AppShell, ActionRows, ActionRow, DocumentContent,
   TerminalWorkspace, TerminalHeader, TerminalLink, TerminalOutput, TerminalPairing, TerminalLog, TerminalEntry, TerminalStatus, TerminalComposer, TerminalTextarea, TerminalSelect,
-  useInView, useReducedMotion, useTheme, tokenize, ripple, ejmSsg, checkBudget, PROJECTS, CliHeroWindow, ProductHeroStage, LazyCliDemo,
+  useInView, useReducedMotion, useTheme, tokenize, ripple, ejmSsg, PROJECTS, CliHeroWindow, ProductHeroStage, LazyCliDemo,
   ShowcaseFrame, LazyCliPreview, LazyIdePreview, LazyHarnessPreview];
 `);
 run('npm', ['install', '--no-audit', '--no-fund'], consumer);
+// The published @ejm/tokens tarball leaves out reserved brand artwork (see scripts/pack-proof-publish.mjs), but the private site and demos
+// read it. Restore the repo's full assets tree so this proof keeps checking the lab's own sites; the public set is proven separately.
+cpSync(join(repo, 'packages', 'tokens', 'assets'), join(consumer, 'node_modules', '@ejm', 'tokens', 'assets'), { recursive: true });
 
 // 4. The checks, all through the installed bins.
 const bin = name => join(consumer, 'node_modules', '.bin', name);
 step('ejm-ssg build');
 run(bin('ejm-ssg'), ['build'], consumer);
-step('ejm-ssg budget');
-run(bin('ejm-ssg'), ['budget'], consumer);
 step('ejm-site-headers --check');
 run(bin('ejm-site-headers'), ['dist/_headers', '--check'], consumer);
 step('typecheck');
@@ -161,7 +162,7 @@ if (problems.length) {
   console.error(`\npack-proof FAILED\n  ${problems.join('\n  ')}\nkept: ${dir}`);
   process.exit(1);
 }
-// Compile optional CSS independently, preserving the starter's real route budget and output comparison.
+// Compile optional CSS independently, preserving the starter's real output comparison.
 step('installed opt-in CSS exports');
 const cssProbe = join(consumer, 'css-entry-proof.mjs');
 writeFileSync(cssProbe, `

@@ -14,7 +14,7 @@ export default function ApplicationLayoutPage() {
     <Page variant="application" data-application-layout>
       <SectionHead purpose="application" as="h1" id="application-title" title="Application layout">
         <Text as="p" data-layout-description>
-          A compact page with related fields, readable links and clear table states. These are simulated examples; the form saves only in this page preview.
+          A compact page with related fields, readable links and clear table states. These are simulated examples, and the form saves only in this preview.
         </Text>
       </SectionHead>
 

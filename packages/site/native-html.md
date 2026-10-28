@@ -28,9 +28,8 @@ analytics, cookies or browser storage. An application may apply a temporary
 Privacy-sensitive consumers can keep the system setting as their only choice.
 
 Regenerate shared CSS with `npm run build:static -w @ejm/ui` in ejm-ui after a
-shared recipe or token change. `npm run check -w @ejm/ui` rejects a stale artifact
-and enforces the existing 14 KiB gzip CSS and 70 KiB combined font limits.
-Those are transfer limits, not latency measurements.
+shared recipe or token change. `npm run check -w @ejm/ui` rejects a stale artifact.
+Load time is the performance bar, measured by `npm run perf`; nothing caps bytes.
 
 ## Compose the shell
 

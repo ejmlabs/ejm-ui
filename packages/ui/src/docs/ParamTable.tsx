@@ -86,7 +86,7 @@ export function ParamTable({
                   {r.cells?.[c.key]}
                 </td>
               ))}
-              <td className="min-w-[14rem] py-4 align-baseline text-fg">{r.description}</td>
+              <td className="sm:min-w-[14rem] py-4 align-baseline text-fg">{r.description}</td>
             </tr>
           ))}
         </tbody>

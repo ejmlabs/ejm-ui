@@ -100,7 +100,7 @@ dependencies = [
  "strum",
  "textwrap",
  "unicode-segmentation",
- "unicode-truncate",
+ "unicode-truncate 3.0.0",
  "unicode-width",
 ]
 
@@ -171,6 +171,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "itertools"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8b4baf93f58d4425749ca49a51c50ebab072c5df6994d08fed93541c331481dc"
+dependencies = [
+ "either",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -221,9 +230,9 @@ dependencies = [
 
 [[package]]
 name = "pulldown-cmark"
-version = "0.13.4"
+version = "0.13.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e9f068eba8e7071c5f9511831b44f32c740d5adf574e990f946ddb53db2f314e"
+checksum = "278e9268c93b9e498a2da46c34d90ba93a3255eb99009646398f34bc73ab36eb"
 dependencies = [
  "bitflags",
  "memchr",
@@ -259,13 +268,13 @@ dependencies = [
  "bitflags",
  "compact_str",
  "hashbrown",
- "itertools",
+ "itertools 0.14.0",
  "kasuari",
  "lru",
  "strum",
  "thiserror",
  "unicode-segmentation",
- "unicode-truncate",
+ "unicode-truncate 2.0.1",
  "unicode-width",
 ]
 
@@ -279,7 +288,7 @@ dependencies = [
  "hashbrown",
  "indoc",
  "instability",
- "itertools",
+ "itertools 0.14.0",
  "line-clipping",
  "ratatui-core",
  "strum",
@@ -449,7 +458,18 @@ version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "16b380a1238663e5f8a691f9039c73e1cdae598a30e9855f541d29b08b53e9a5"
 dependencies = [
- "itertools",
+ "itertools 0.14.0",
+ "unicode-segmentation",
+ "unicode-width",
+]
+
+[[package]]
+name = "unicode-truncate"
+version = "3.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f5dde200aa133f5b6d9cc616878815ffaa45ad9529ef4a2f04d86bab91d63984"
+dependencies = [
+ "itertools 0.15.0",
  "unicode-segmentation",
  "unicode-width",
 ]
