@@ -6,7 +6,7 @@
 //   generated/theme.css      the ui roles as plain --ejm-ui-* variables (dark by default), for the IDE and other non-Tailwind apps
 //   generated/monaco/*.json  Monaco editor themes
 //   generated/terminal/*     iTerm, Warp, Alacritty, kitty, Ghostty and Windows Terminal color schemes
-//   rust/ejm_theme.rs        the ratatui palette (ejm_tui.rs sits next to it, hand written)
+//   rust/ejm_theme.rs        the ratatui palette, copied into crates/ejm-tui by scripts/sync-rust-theme.mjs
 // Usage: node scripts/build-ui.mjs [--check]
 //   --check verifies the contrast gates (scripts/contrast.mjs) and that every generated file is current; it exits 1
 //   and names each stale file.

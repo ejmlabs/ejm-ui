@@ -22,4 +22,4 @@ None.
 
 ## Impact
 
-Adds contract entries, Rust and Ink components, tests and docs. `ActivityLine` struct literals need `..ActivityLine::default()`. ejm-cli moves onto `ejm-tui` in its own change. The web target does not claim the new components. Retiring `packages/tokens/rust/ejm_tui.rs` and the design kit's copy is left for a follow-up.
+Adds contract entries, Rust and Ink components, tests and docs. `ActivityLine` struct literals need `..ActivityLine::default()`. ejm-cli moves onto `ejm-tui` in its own change. The web target does not claim the new components. Once ejm-cli has moved, the hand-written `packages/tokens/rust/ejm_tui.rs` is deleted and `rust/TUI.md` is rewritten to point at the crate and the contract. The design kit's copy is retired in its own repo.

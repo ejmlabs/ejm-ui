@@ -165,8 +165,6 @@ Retired social profile kits and ZIP archives are excluded from imports.
 | `assets/fonts/Manrope-Variable.woff2` | `fonts/Manrope-Variable.woff2` | `19331f90effd1b9cd435afef48ef43af014e4c343605f3781b23107a53e18b6b` |
 | `assets/brand/palette.json` | `tokens/palette.json` | `98acd445439554f0f5166ee3d521483db403836455f37f27dda7af442ccb0790` |
 | `assets/brand/design-tokens.json` | `tokens/design-tokens.json` | `8e324782894b3481e0b3e18c45b9a5d4392ff37667aa22c34a1577f02d9d33e2` |
-| `rust/ejm_tui.rs` | `ui/rust/ejm_tui.rs` | `b2e027211845aa90f9a7bf24a1c95f8e45a2b6fd0527a07ebc2802d9aad36fa5` |
-| `rust/TUI.md` | `ui/TUI.md` | `e70fb145e930be3ca75564fbe99d759fbbe80ecdeb3ceb808864016baaac6815` |
 | `assets/projects/cli/android-chrome-192.png` | `projects/cli/android-chrome-192.png` | `7a597e3375a46d2e212fc63e3e513ee42ab5917ef1dec2a60656208a67d7101d` |
 | `assets/projects/cli/android-chrome-512.png` | `projects/cli/android-chrome-512.png` | `770aaa4f87a818f8d935ca030ab0818cc107de86578b0c78e3498ff7dd485378` |
 | `assets/projects/cli/apple-touch-icon.png` | `projects/cli/apple-touch-icon.png` | `c89bcc25b125d5d232287179e329856e90b1d1dc01410d60454b52bc42c85af2` |

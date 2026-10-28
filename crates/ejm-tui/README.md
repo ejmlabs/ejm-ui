@@ -113,7 +113,7 @@ The render tests draw every component and state into a ratatui `TestBackend` at 
 
 ## Not in this crate
 
-Product transcript state, command handling and terminal lifecycle stay in the host. Shared Markdown, diff presentation, conversation blocks, workspace layout and identity belong to this crate. Consumers adopt these APIs through their reviewed dependency pins. The retained `packages/tokens/rust/ejm_tui.rs` is a legacy migration reference, not the active component authority.
+Product transcript state, command handling and terminal lifecycle stay in the host. Shared Markdown, diff presentation, conversation blocks, workspace layout and identity belong to this crate. Consumers adopt these APIs through their reviewed dependency pins. Boxed helpers such as a composer box or a picker popup are left out on purpose, and so are tabs, the progress bar and step lines. This crate replaces the hand-written terminal helper file that `@ejm/tokens` and the design kit used to ship. `packages/tokens/rust/TUI.md` is the terminal app guide built on these components.
 
 ## Conversation blocks
 

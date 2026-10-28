@@ -16,6 +16,10 @@
 
   - Passed: parity for web, Ink and Rust; 101 test files, 979 tests (two skipped); crate tests, Clippy and rustfmt. Shared fixtures in `packages/core/terminal-fixtures.json` hold Rust and Ink to the same lines. `ansi_colours` (LGPL-3.0) was replaced by `ansi256`, a port of Ink's `toAnsi256`, and `unicode-truncate` follows ratatui's 2.x series so consumers build one copy.
 
+## 4. Retire the old helper
+
+- [x] 4.1 Delete `packages/tokens/rust/ejm_tui.rs` and stop importing it and `rust/TUI.md` from the design kit (`scripts/assets.mjs`, `PROVENANCE.md`). Rewrite `rust/TUI.md` around `crates/ejm-tui` and the contract; keep `rust/ejm_theme.rs` generation for `scripts/sync-rust-theme.mjs`. The design kit's copy and guide are retired in the ejmlabs repo. Verify with `npm run check` and `npm run check:rust`.
+
 ## Workflow follow-up
 
-- Retire `packages/tokens/rust/ejm_tui.rs` and the design kit copy, then sync and archive this change.
+- Sync and archive this change.
