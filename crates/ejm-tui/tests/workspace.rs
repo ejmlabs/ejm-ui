@@ -7,6 +7,11 @@ use ratatui::{layout::Rect, style::Color};
 
 #[test]
 fn workspace_keeps_input_and_transcript_with_bounded_chrome() {
+    for (height, worker_rows) in [(13, 0), (14, 1)] {
+        let layout = WorkspaceLayout::new(Rect::new(0, 0, 40, height), 6, true, true, 0);
+        assert_eq!(layout.composer.height, 7, "preserve all six draft rows");
+        assert_eq!(layout.workers.height, worker_rows);
+    }
     for height in [8, 9, 12, 24, 40] {
         for active in [false, true] {
             let area = Rect::new(3, 2, 40, height);

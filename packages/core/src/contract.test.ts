@@ -3,9 +3,9 @@ import { describe, expect, it } from "vitest";
 import { contract } from "./index";
 
 describe("component contract", () => {
-  it("lists the ten primitives, each with states and a target claim", () => {
+  it("lists the catalog primitives, each with states and a target claim", () => {
     expect(Object.keys(contract.components).sort()).toEqual(
-      ["Callout", "KeyHints", "Prompt", "Row", "Rule", "Stat", "StateBlock", "Status", "Table", "Text"],
+      ["Callout", "KeyHints", "Markdown", "Prompt", "Row", "Rule", "Stat", "StateBlock", "Status", "Table", "Text"],
     );
     for (const [name, c] of Object.entries(contract.components)) {
       expect(c.states.length, name).toBeGreaterThan(0);

@@ -7,6 +7,9 @@
   "KeyHints": [
     "default"
   ],
+  "Markdown": [
+    "default"
+  ],
   "Prompt": [
     "idle",
     "busy",

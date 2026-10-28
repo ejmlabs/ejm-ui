@@ -37,13 +37,11 @@ impl WorkspaceLayout {
         activity: bool,
         notices: usize,
     ) -> Self {
-        let workers = workers && area.height >= 9;
+        let requested_draft = u16::try_from(draft_rows).unwrap_or(u16::MAX).clamp(1, 6);
+        let workers = workers && area.height >= 7 + u16::from(activity) + requested_draft;
         let fixed = 7 + u16::from(workers) + u16::from(activity);
         let available = area.height.saturating_sub(fixed);
-        let draft = u16::try_from(draft_rows)
-            .unwrap_or(u16::MAX)
-            .clamp(1, 6)
-            .min(available.saturating_add(1));
+        let draft = requested_draft.min(available.saturating_add(1));
         let notices = u16::try_from(notices)
             .unwrap_or(4)
             .min(4)

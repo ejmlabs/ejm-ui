@@ -5,9 +5,9 @@
 use std::collections::{BTreeSet, HashSet};
 
 use ejm_tui::{
-    Action, Callout, CalloutKind, ColorDepth, Column, KeyHints, Prompt, PromptState, Row, RowState,
-    Rule, Stat, StatState, StateBlock, StateKind, Status, StatusLevel, Table, TableState, Text,
-    TextVariant, Theme, catalog, theme,
+    Action, Callout, CalloutKind, ColorDepth, Column, KeyHints, Markdown, Prompt, PromptState, Row,
+    RowState, Rule, Stat, StatState, StateBlock, StateKind, Status, StatusLevel, Table, TableState,
+    Text, TextVariant, Theme, catalog, theme,
 };
 use ratatui::Terminal;
 use ratatui::backend::TestBackend;
@@ -88,6 +88,11 @@ fn draw(t: &Theme, component: &str, state: &str, area: Rect, buf: &mut Buffer) {
         )
         .render(area, buf),
         "Callout" => Callout::new(t, pick::<CalloutKind>(state), SENTENCE).render(area, buf),
+        "Markdown" => Markdown::new(
+            t,
+            "# Head\n\nUse **bold** and `code`.\n\n- one\n\n```rust\nfn f() {}\n```\n",
+        )
+        .render(area, buf),
         "StateBlock" => StateBlock::new(t, pick::<StateKind>(state), SENTENCE)
             .action(Action::new("New session").key("Enter"))
             .render(area, buf),
@@ -417,6 +422,20 @@ fn colors_come_only_from_the_generated_theme_and_no_background_is_painted() {
                 p.text_muted,
                 p.line,
                 p.hues[0],
+                p.syntax.comment,
+                p.syntax.keyword,
+                p.syntax.string,
+                p.syntax.number,
+                p.syntax.ty,
+                p.syntax.type_parameter,
+                p.syntax.function,
+                p.syntax.mac,
+                p.syntax.parameter,
+                p.syntax.property,
+                p.syntax.constant,
+                p.syntax.namespace,
+                p.syntax.identifier,
+                p.syntax.delimiter,
             ]
         })
         .collect();
@@ -620,4 +639,115 @@ fn control_characters_never_reach_the_buffer() {
             .all(|c| !c.symbol().chars().any(char::is_control)),
         "a control character reached the buffer"
     );
+}
+
+#[test]
+fn code_rows_keep_content_and_fit_terminal_columns() {
+    use ejm_tui::{CodeLanguage, code_lines, width};
+    for columns in [2, 3, 40, 80, 200] {
+        for (language, source) in [
+            (CodeLanguage::Rust, "let s = \"界🦀e\u{301}\"; // result"),
+            (CodeLanguage::Script, "const n = 42;"),
+            (CodeLanguage::Python, "print(\"text\") # comment"),
+            (CodeLanguage::Json, "{\"long-key\": false}"),
+            (CodeLanguage::Shell, "echo $# \u{24}{#name} # count"),
+            (CodeLanguage::Config, "url: https://example.com # link"),
+            (CodeLanguage::Plain, "abcdefg 👨‍👩‍👧‍👦"),
+            (CodeLanguage::Diff, "+added text with a long continuation"),
+        ] {
+            for (_, theme) in themes() {
+                let lines = code_lines(&theme, language, source, columns);
+                assert_eq!(
+                    lines.iter().map(ToString::to_string).collect::<String>(),
+                    source
+                );
+                assert!(
+                    lines
+                        .iter()
+                        .all(|line| width(&line.to_string()) <= usize::from(columns))
+                );
+            }
+        }
+    }
+    let lines = code_lines(&Theme::no_color(), CodeLanguage::Plain, "界🦀", 1);
+    assert_eq!(
+        lines.iter().map(ToString::to_string).collect::<Vec<_>>(),
+        ["?", "?"]
+    );
+    let theme = Theme::new(ColorDepth::TrueColor, false);
+    for columns in [40, 80, 200] {
+        for (tag, source, token, style) in [
+            ("rust", "fn f() {}", "fn", theme.syntax.keyword),
+            ("tsx", "const n = 42;", "const", theme.syntax.keyword),
+            ("python", "def f():", "def", theme.syntax.keyword),
+            ("json", "{\"a\": 1}", "\"a\"", theme.syntax.string),
+            ("bash", "if true; then", "if", theme.syntax.keyword),
+            ("toml", "enabled = true", "true", theme.syntax.keyword),
+        ] {
+            let lines = code_lines(&theme, CodeLanguage::from_tag(tag), source, columns);
+            assert!(
+                lines
+                    .iter()
+                    .flat_map(|line| &line.spans)
+                    .any(|span| span.content == token && span.style == style),
+                "{tag} at {columns}"
+            );
+            assert!(
+                lines
+                    .iter()
+                    .all(|line| width(&line.to_string()) <= usize::from(columns))
+            );
+        }
+    }
+    let theme = Theme::no_color();
+    let line = code_lines(&theme, CodeLanguage::Rust, "let s = \"x\";", 80)
+        .into_iter()
+        .next()
+        .expect("one line");
+    assert!(
+        line.spans
+            .iter()
+            .all(|span| span.style.fg.is_none() && span.style.bg.is_none())
+    );
+}
+
+#[test]
+fn markdown_never_paints_outside_its_area_or_emits_controls() {
+    use ejm_tui::{Markdown, theme::ASCII};
+    let source = "# Heading\n\nUse **bold** and \u{60}code\u{60}.\n\n- 界界 and 🦀\n  - nested\n\n> a quote\n\n\u{60}\u{60}\u{60}rust\nlet\tx = \"a\";\x1b[0m\n\n// line two\n\u{60}\u{60}\u{60}\n";
+    let sentinel = Cell::new("#");
+    for (mode, theme) in themes() {
+        for theme in [theme, theme.with_glyphs(&ASCII)] {
+            for columns in (0..=12).chain(WIDTHS) {
+                let outside = Rect::new(0, 0, columns + 4, 40);
+                let area = Rect::new(2, 1, columns, 38);
+                let mut buffer = Buffer::filled(outside, sentinel.clone());
+                let markdown = Markdown::new(&theme, source);
+                let lines = markdown.lines(columns);
+                assert!(
+                    lines
+                        .iter()
+                        .all(|line| line.width() <= usize::from(columns))
+                );
+                assert!(
+                    lines
+                        .iter()
+                        .all(|line| !line.to_string().chars().any(char::is_control))
+                );
+                markdown.render(area, &mut buffer);
+                for y in 0..outside.height {
+                    for x in 0..outside.width {
+                        let cell = &buffer[(x, y)];
+                        if !area.contains((x, y).into()) {
+                            assert_eq!(cell, &sentinel, "{mode}, {columns}, ({x}, {y})");
+                        } else if mode == "no_color" {
+                            assert_eq!((cell.fg, cell.bg), (Color::Reset, Color::Reset));
+                        } else {
+                            assert_eq!(cell.bg, Color::Reset);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

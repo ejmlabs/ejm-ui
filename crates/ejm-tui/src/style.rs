@@ -75,6 +75,42 @@ pub const ASCII_MARKS: Marks = Marks {
     info: "i",
 };
 
+/// A style for every syntax role of generated code highlighting. Filled from the generated
+/// palette at truecolor and 256-color depth; at 16-color and no-color depth the roles collapse
+/// to strong (keywords, types, macros), muted (comments) and plain (everything else), so code
+/// still shows structure without a color the terminal cannot draw.
+#[derive(Clone, Copy, Debug)]
+pub struct SyntaxStyles {
+    /// Comments.
+    pub comment: Style,
+    /// Keywords.
+    pub keyword: Style,
+    /// String literals.
+    pub string: Style,
+    /// Numeric literals.
+    pub number: Style,
+    /// Type names.
+    pub ty: Style,
+    /// Generic type parameters.
+    pub type_parameter: Style,
+    /// Function names.
+    pub function: Style,
+    /// Macro invocations.
+    pub mac: Style,
+    /// Function parameters.
+    pub parameter: Style,
+    /// Object properties.
+    pub property: Style,
+    /// Constants.
+    pub constant: Style,
+    /// Module and namespace paths.
+    pub namespace: Style,
+    /// Plain identifiers.
+    pub identifier: Style,
+    /// Punctuation and delimiters.
+    pub delimiter: Style,
+}
+
 /// A style for every role, plus the glyph set the widgets print.
 ///
 /// Build one with [`Theme::detect`] or [`Theme::from_env`], or pick a mode directly with
@@ -103,6 +139,8 @@ pub struct Theme {
     pub pending: Style,
     /// The hairline rule and the callout rule.
     pub rule: Style,
+    /// Code highlighting roles, matching the generated palette's `syntax` set.
+    pub syntax: SyntaxStyles,
     /// Symbols: unicode or ASCII.
     pub glyphs: &'static Glyphs,
     /// More symbols, matching `glyphs`.
@@ -119,6 +157,50 @@ struct Roles {
     info: Style,
     pending: Style,
     rule: Style,
+    syntax: SyntaxStyles,
+}
+
+/// The collapsed syntax set for depths without enough colors: comments muted, keywords, types
+/// and macros strong, everything else plain.
+fn plain_syntax(muted: Style, strong: Style) -> SyntaxStyles {
+    SyntaxStyles {
+        comment: muted,
+        keyword: strong,
+        string: Style::default(),
+        number: Style::default(),
+        ty: strong,
+        type_parameter: strong,
+        function: Style::default(),
+        mac: strong,
+        parameter: Style::default(),
+        property: Style::default(),
+        constant: Style::default(),
+        namespace: Style::default(),
+        identifier: Style::default(),
+        delimiter: Style::default(),
+    }
+}
+
+/// The generated palette's syntax set, mapped to the terminal's depth.
+fn palette_syntax(depth: ColorDepth, p: &Palette) -> SyntaxStyles {
+    let fg = |c: Color| Style::default().fg(paint(depth, c));
+    let s = &p.syntax;
+    SyntaxStyles {
+        comment: fg(s.comment),
+        keyword: fg(s.keyword),
+        string: fg(s.string),
+        number: fg(s.number),
+        ty: fg(s.ty),
+        type_parameter: fg(s.type_parameter),
+        function: fg(s.function),
+        mac: fg(s.mac),
+        parameter: fg(s.parameter),
+        property: fg(s.property),
+        constant: fg(s.constant),
+        namespace: fg(s.namespace),
+        identifier: fg(s.identifier),
+        delimiter: fg(s.delimiter),
+    }
 }
 
 impl Theme {
@@ -140,6 +222,7 @@ impl Theme {
                     info: plain,
                     pending: plain,
                     rule: plain,
+                    syntax: plain_syntax(plain, bold),
                 }
             }
             ColorDepth::Basic => {
@@ -154,6 +237,11 @@ impl Theme {
                     info: fg(if light { Color::Cyan } else { Color::Blue }),
                     pending: fg(b.dim),
                     rule: fg(b.dim),
+                    // The spec keeps syntax to plain and bold at 16 colors: no extra color noise.
+                    syntax: plain_syntax(
+                        Style::default(),
+                        Style::default().add_modifier(Modifier::BOLD),
+                    ),
                 }
             }
             ColorDepth::Ansi256 | ColorDepth::TrueColor => {
@@ -169,6 +257,7 @@ impl Theme {
                     info: fg(p.hues[0]),
                     pending: fg(p.dim),
                     rule: fg(p.line),
+                    syntax: palette_syntax(depth, p),
                 }
             }
         };
@@ -184,6 +273,7 @@ impl Theme {
             info: roles.info,
             pending: roles.pending,
             rule: roles.rule,
+            syntax: roles.syntax,
             glyphs: &UNICODE,
             marks: &UNICODE_MARKS,
         }
@@ -365,6 +455,51 @@ mod tests {
             assert!(t.error.add_modifier.contains(Modifier::BOLD));
             assert!(!t.ok.add_modifier.contains(Modifier::BOLD));
         }
+    }
+
+    #[test]
+    fn syntax_roles_resolve_per_depth_and_collapse_to_bold_and_plain() {
+        let count = |styles: &[Style]| styles.iter().filter(|s| s.fg.is_some()).count();
+        // Truecolor: every one of the 14 roles carries its generated palette color.
+        let truecolor = Theme::new(ColorDepth::TrueColor, false);
+        assert_eq!(count(&syntax_styles(&truecolor.syntax)), 14);
+        assert_eq!(truecolor.syntax.comment.fg, Some(DARK.syntax.comment));
+        assert_eq!(
+            Theme::new(ColorDepth::TrueColor, true).syntax.string.fg,
+            Some(LIGHT.syntax.string)
+        );
+        // 256 colors: the same palette mapped to indexes.
+        let ansi = Theme::new(ColorDepth::Ansi256, false);
+        assert!(matches!(ansi.syntax.keyword.fg, Some(Color::Indexed(_))));
+        // 16 colors and no color: no foregrounds, keywords and types bold, comments muted by role.
+        for depth in [ColorDepth::Basic, ColorDepth::None] {
+            let t = Theme::new(depth, false);
+            assert_eq!(count(&syntax_styles(&t.syntax)), 0, "depth {depth:?}");
+            assert!(t.syntax.keyword.add_modifier.contains(Modifier::BOLD));
+            assert!(t.syntax.ty.add_modifier.contains(Modifier::BOLD));
+            assert!(t.syntax.mac.add_modifier.contains(Modifier::BOLD));
+            assert!(!t.syntax.string.add_modifier.contains(Modifier::BOLD));
+        }
+        assert!(Theme::no_color().syntax.comment.fg.is_none());
+    }
+
+    fn syntax_styles(s: &SyntaxStyles) -> [Style; 14] {
+        [
+            s.comment,
+            s.keyword,
+            s.string,
+            s.number,
+            s.ty,
+            s.type_parameter,
+            s.function,
+            s.mac,
+            s.parameter,
+            s.property,
+            s.constant,
+            s.namespace,
+            s.identifier,
+            s.delimiter,
+        ]
     }
 
     #[test]
