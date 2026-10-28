@@ -354,6 +354,66 @@
       "items": [],
       "selected": 0,
       "width": 40
+    },
+    {
+      "component": "ToolCall",
+      "detail": "",
+      "expandKey": "",
+      "expanded": false,
+      "expected": [
+        "✓ read_file",
+        "  └ 1: a",
+        "    2: b",
+        "    3: c",
+        "    4: d",
+        "    … +2 lines"
+      ],
+      "glyphs": "unicode",
+      "name": "read_file",
+      "output": "1: a\n2: b\n3: c\n4: d\n5: e\n6: f",
+      "state": "done",
+      "width": 40
+    },
+    {
+      "component": "Message",
+      "expected": [
+        "› A title is only for notices."
+      ],
+      "glyphs": "unicode",
+      "kind": "user",
+      "text": "A title is only for notices.",
+      "title": "queued",
+      "width": 40
+    },
+    {
+      "component": "ToolCall",
+      "detail": "",
+      "expandKey": "",
+      "expanded": false,
+      "expected": [
+        "+ read_file",
+        "  `- 1: a",
+        "     2: b",
+        "     3: c",
+        "     4: d",
+        "     ... +2 lines"
+      ],
+      "glyphs": "ascii",
+      "name": "read_file",
+      "output": "1: a\n2: b\n3: c\n4: d\n5: e\n6: f",
+      "state": "done",
+      "width": 40
+    },
+    {
+      "component": "Message",
+      "expected": [
+        "> A title is only for notices."
+      ],
+      "glyphs": "ascii",
+      "kind": "user",
+      "text": "A title is only for notices.",
+      "title": "queued",
+      "width": 40
     }
   ]
 }

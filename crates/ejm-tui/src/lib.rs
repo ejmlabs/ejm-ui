@@ -115,7 +115,6 @@ pub fn catalog() -> BTreeMap<&'static str, Vec<&'static str>> {
         ("StateBlock", names::<StateKind>()),
         ("Message", names::<MessageKind>()),
         ("ToolCall", names::<ToolCallState>()),
-        ("Markdown", vec!["default"]),
         ("CommandMenu", names::<CommandMenuState>()),
     ])
 }

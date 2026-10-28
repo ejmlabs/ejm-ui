@@ -206,10 +206,10 @@ impl<'a> ToolCall<'a> {
         self
     }
 
-    /// The host's key that expands output, named after the hidden line count.
+    /// The host's key that expands output, named after the hidden line count. Empty means none.
     #[must_use]
     pub fn expand_key(mut self, key: &'a str) -> Self {
-        self.expand_key = Some(key);
+        self.expand_key = Some(key).filter(|key| !key.is_empty());
         self
     }
 

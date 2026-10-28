@@ -223,7 +223,8 @@ export function messageLines(theme: EjmTheme, kind: MessageKind, text: string, w
   const spec = MESSAGE[kind];
   const gutter: Span[] = [{ text: `${theme.glyph(G.message[kind])} `, role: spec.glyph }];
   if (kind === "assistant") return markdownLines(theme, text, width, gutter);
-  const body = clean(title ? `${title}: ${text}` : text);
+  // Only notices carry a title, as in the contract and the Rust target.
+  const body = clean(title && kind === "notice" ? `${title}: ${text}` : text);
   const out: Lines = [];
   body.split("\n").forEach((line, i) => {
     out.push(...wrapSpans([{ text: line, role: spec.text }], i === 0 ? gutter : [{ text: spaces(GUTTER) }], [{ text: spaces(GUTTER) }], width));
