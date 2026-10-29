@@ -833,3 +833,22 @@ fn markdown_never_paints_outside_its_area_or_emits_controls() {
         }
     }
 }
+
+#[test]
+fn one_long_usage_moves_only_its_own_description() {
+    let t = Theme::no_color();
+    let items = [
+        ("/help", "Show commands"),
+        (
+            "/remote share [view|control]|status|stop",
+            "Share this session",
+        ),
+        ("/resume ID", "Open a session"),
+    ];
+    let rows = shown(CommandMenu::new(&t, &items), 100, 3);
+    let rows: Vec<&str> = rows.lines().collect();
+    // The mark, "/resume ID" and a gap of two set the column for the short rows.
+    assert_eq!(end_col(rows[0], "Show"), 18, "{rows:?}");
+    assert_eq!(end_col(rows[2], "Open"), 18, "{rows:?}");
+    assert!(rows[1].contains("/remote share [view|control]|status|stop  Share"));
+}

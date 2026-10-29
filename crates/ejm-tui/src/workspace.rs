@@ -9,21 +9,19 @@ use ratatui::{
 /// Regions of a conversation workspace, in reading order.
 #[derive(Clone, Copy, Debug)]
 pub struct WorkspaceLayout {
-    /// Compact application, connection and directory identity.
+    /// One line of application, connection and directory identity, followed by a blank row.
     pub header: Rect,
     /// Remaining space for the conversation.
     pub transcript: Rect,
     /// Optional bounded worker strip.
     pub workers: Rect,
-    /// Current work, stopping or scrollback state.
+    /// Current work, stopping or scrollback state. Hosts right-align [`ResourceLine`] here.
     pub activity: Rect,
-    /// Resource counts, including idle counts.
-    pub resources: Rect,
     /// Optional host notices, at most four rows.
     pub notices: Rect,
     /// Draft and its hairline rule.
     pub composer: Rect,
-    /// Effective grants and contextual controls.
+    /// Effective grants and contextual controls, after a blank row.
     pub controls: Rect,
 }
 
@@ -39,6 +37,8 @@ impl WorkspaceLayout {
     ) -> Self {
         let requested_draft = u16::try_from(draft_rows).unwrap_or(u16::MAX).clamp(1, 6);
         let workers = workers && area.height >= 7 + u16::from(activity) + requested_draft;
+        // Header, its blank row, a transcript row, the rule, a draft row, the blank row above
+        // the controls and the controls.
         let fixed = 7 + u16::from(workers) + u16::from(activity);
         let available = area.height.saturating_sub(fixed);
         let draft = requested_draft.min(available.saturating_add(1));
@@ -48,21 +48,23 @@ impl WorkspaceLayout {
             .min(available.saturating_sub(draft.saturating_sub(1)));
         let [
             header,
+            _,
             transcript,
             workers,
             activity,
-            resources,
             notices,
             composer,
+            _,
             controls,
         ] = Layout::vertical([
-            Constraint::Length(2),
+            Constraint::Length(1),
+            Constraint::Length(1),
             Constraint::Min(1),
             Constraint::Length(u16::from(workers)),
             Constraint::Length(u16::from(activity)),
-            Constraint::Length(1),
             Constraint::Length(notices),
             Constraint::Length(draft + 1),
+            Constraint::Length(1),
             Constraint::Length(1),
         ])
         .areas(area);
@@ -71,7 +73,6 @@ impl WorkspaceLayout {
             transcript,
             workers,
             activity,
-            resources,
             notices,
             composer,
             controls,
@@ -79,7 +80,7 @@ impl WorkspaceLayout {
     }
 }
 
-/// A two-line identity. Full connection details remain the host's inspectable state.
+/// A one-line identity. Full connection details remain the host's inspectable state.
 #[derive(Clone, Copy, Debug)]
 pub struct SessionHeader<'a> {
     /// Product name or short mark and name.
@@ -93,20 +94,35 @@ pub struct SessionHeader<'a> {
 }
 
 impl SessionHeader<'_> {
-    /// Identity lines fitted to terminal columns without splitting graphemes.
+    /// `name version  connection` from the first column, with the directory at the right edge,
+    /// cut from its start so the part that matters stays. The directory drops first, then the
+    /// connection is cut.
     #[must_use]
-    pub fn lines(&self, theme: &Theme, columns: u16) -> [Line<'static>; 2] {
-        if columns < 2 {
-            return [Line::default(), Line::default()];
+    pub fn line(&self, theme: &Theme, columns: u16) -> Line<'static> {
+        let ell = theme.glyphs.ellipsis;
+        let name = truncate(self.name, usize::from(columns), ell);
+        let mut room = usize::from(columns) - width(&name);
+        let mut spans = vec![Span::styled(name, theme.strong)];
+        for (text, gap, style) in [
+            (self.version, 1, theme.muted),
+            (self.connection, 2, theme.text),
+        ] {
+            if text.is_empty() || room <= gap {
+                continue;
+            }
+            let text = truncate(text, room - gap, ell);
+            room -= gap + width(&text);
+            spans.push(Span::styled(format!("{}{text}", " ".repeat(gap)), style));
         }
-        let label = format!("{} {}", self.name, self.version);
-        let first = Row::new(theme, &label).meta(self.connection).line(columns);
-        let directory = truncate_start(
-            self.directory,
-            usize::from(columns).saturating_sub(2),
-            theme.glyphs.ellipsis,
-        );
-        [first, Line::styled(format!("  {directory}"), theme.muted)]
+        // Too little room for a useful part of the path drops it.
+        if room >= 2 + 8 {
+            let directory = truncate_start(self.directory, room - 2, ell);
+            spans.push(Span::styled(
+                format!("{}{directory}", " ".repeat(room - width(&directory))),
+                theme.muted,
+            ));
+        }
+        Line::from(spans)
     }
 }
 
@@ -191,7 +207,8 @@ pub struct ResourceCount {
     pub queued: usize,
 }
 
-/// Separate agent, model and tool counts. No engine types are required.
+/// Separate agent, model and tool counts. No engine types are required. Draws nothing while every
+/// count is zero, so an idle screen stays quiet.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct ResourceLine {
     /// Active agents.
@@ -203,17 +220,35 @@ pub struct ResourceLine {
 }
 
 impl ResourceLine {
-    /// Keep all three named resources when they fit; compact labels at narrow sizes.
+    /// True when nothing is active or queued.
+    #[must_use]
+    pub fn is_idle(&self) -> bool {
+        self.agents == 0
+            && self.models.active + self.models.queued + self.tools.active + self.tools.queued == 0
+    }
+
+    /// `2 agents · 1 model call, 3 waiting · 0 tools` when it fits; compact `A+Qq` counts at
+    /// narrow sizes. Empty when idle.
     #[must_use]
     pub fn line(&self, theme: &Theme, columns: u16) -> Line<'static> {
+        if self.is_idle() {
+            return Line::default();
+        }
         let sep = theme.glyphs.separator;
+        let count = |n: usize, noun: &str, waiting: usize| {
+            let plural = if n == 1 { "" } else { "s" };
+            let waiting = if waiting > 0 {
+                format!(", {waiting} waiting")
+            } else {
+                String::new()
+            };
+            format!("{n} {noun}{plural}{waiting}")
+        };
         let normal = format!(
-            "{} agents {sep} models {}+{}q {sep} tools {}+{}q",
-            self.agents,
-            self.models.active,
-            self.models.queued,
-            self.tools.active,
-            self.tools.queued
+            "{} {sep} {} {sep} {}",
+            count(self.agents, "agent", 0),
+            count(self.models.active, "model call", self.models.queued),
+            count(self.tools.active, "tool", self.tools.queued),
         );
         let text = if width(&normal) <= usize::from(columns) {
             normal
@@ -234,7 +269,7 @@ impl ResourceLine {
     }
 }
 
-/// Effective grant mode followed by controls in priority order.
+/// Effective grant mode at the left, controls in priority order at the right edge.
 #[must_use]
 pub fn workspace_controls(
     theme: &Theme,
@@ -244,15 +279,17 @@ pub fn workspace_controls(
     columns: u16,
 ) -> Line<'static> {
     let mode = truncate(mode, usize::from(columns), theme.glyphs.ellipsis);
-    let sep = format!(" {} ", theme.glyphs.separator);
-    let available = usize::from(columns).saturating_sub(width(&mode) + width(&sep));
+    let mode_width = width(&mode);
+    // At least a separator's width stays between the mode and the hints.
+    let available = usize::from(columns).saturating_sub(mode_width + 3);
     let hints = KeyHints::new(theme, hints).line(u16::try_from(available).unwrap_or(u16::MAX));
     let mut spans = vec![Span::styled(
         mode,
         if elevated { theme.warn } else { theme.muted },
     )];
     if hints.width() > 0 {
-        spans.push(Span::styled(sep, theme.muted));
+        let gap = usize::from(columns).saturating_sub(mode_width + hints.width());
+        spans.push(Span::raw(" ".repeat(gap)));
         spans.extend(hints.spans);
     }
     Line::from(spans)

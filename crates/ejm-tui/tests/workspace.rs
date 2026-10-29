@@ -19,14 +19,17 @@ fn workspace_keeps_input_and_transcript_with_bounded_chrome() {
             assert!(layout.transcript.height >= 1);
             assert!(layout.composer.height >= 2);
             assert_eq!(layout.controls.height, 1);
-            assert_eq!(layout.resources.height, 1);
+            assert_eq!(layout.header.height, 1);
+            // A blank row separates the header from the conversation.
+            assert_eq!(layout.transcript.y, layout.header.bottom() + 1);
+            // And another sets the controls apart from the draft.
+            assert_eq!(layout.controls.y, layout.composer.bottom() + 1);
             assert!(layout.notices.height <= 4);
             let regions = [
                 layout.header,
                 layout.transcript,
                 layout.workers,
                 layout.activity,
-                layout.resources,
                 layout.notices,
                 layout.composer,
                 layout.controls,
@@ -59,7 +62,7 @@ fn recipes_fit_and_remain_meaningful_without_color() {
             connection: "Provider / model",
             directory: "/long/directory/世界",
         }
-        .lines(&theme, columns);
+        .line(&theme, columns);
         let activity = ActivityLine {
             label: "Stopping",
             active: true,
@@ -82,7 +85,7 @@ fn recipes_fit_and_remain_meaningful_without_color() {
             true,
             columns,
         );
-        for line in header.iter().chain([&activity, &count, &controls, &worker]) {
+        for line in [&header, &activity, &count, &controls, &worker] {
             assert!(line.width() <= usize::from(columns), "{columns}: {line}");
             assert!(
                 line.spans
@@ -90,14 +93,48 @@ fn recipes_fit_and_remain_meaningful_without_color() {
                     .all(|s| s.style.fg.is_none_or(|fg| fg == Color::Reset))
             );
         }
-        if columns >= 40 {
-            let text = count.to_string();
-            assert!(
-                text.contains("12") && text.contains("models 2+3q") && text.contains("tools 0+0q")
+        if columns >= 50 {
+            assert_eq!(
+                count.to_string(),
+                "12 agents · 2 model calls, 3 waiting · 0 tools"
             );
+        } else if columns >= 40 {
+            assert!(count.to_string().contains("models 2+3q"));
+        }
+        if columns >= 80 {
+            let text = header.to_string();
+            assert!(
+                text.starts_with("ejm-cli 0.1.0  Provider / model"),
+                "{text}"
+            );
+            assert!(text.ends_with("/long/directory/世界"), "{text}");
+        }
+        if columns >= 40 {
             assert!(worker.to_string().contains("failed"));
             assert!(controls.to_string().contains("write"));
             assert!(controls.to_string().contains("Ctrl+C stop"));
+            assert!(controls.to_string().starts_with("write "));
+            assert!(controls.to_string().ends_with("Ctrl+K steer"), "{controls}");
+            assert_eq!(controls.width(), usize::from(columns));
         }
     }
+}
+
+#[test]
+fn idle_resources_draw_nothing() {
+    let idle = ResourceLine::default();
+    assert!(idle.is_idle());
+    assert_eq!(idle.line(&Theme::no_color(), 80).width(), 0);
+    let queued = ResourceLine {
+        tools: ResourceCount {
+            active: 0,
+            queued: 1,
+        },
+        ..ResourceLine::default()
+    };
+    assert!(!queued.is_idle());
+    assert_eq!(
+        queued.line(&Theme::no_color(), 80).to_string(),
+        "0 agents · 0 model calls · 0 tools, 1 waiting"
+    );
 }
