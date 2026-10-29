@@ -5,6 +5,8 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Emit optional Vitest results for the shared CI flake detector and compare repeated Rust test runs without hiding failures.
+
 - Replace the ejm-ui mark with the u and block: a ribbon u that starts as a tapered tip, holding one rounded-square component. `scripts/ui-assets.mjs` regenerates the whole family in `@ejm/tokens/assets/projects/ui/` (marks, logos, icons, favicons, manifest and social card), so the gallery picks it up on its next build. Sites that keep their own copy of the ui mark need to refresh it.
 
 - List every family site from every site. `otherSites` now returns the published build identities, then the new `LINKED_PROJECTS` (ejm-calm and gerry, which are not built with `@ejm/site` and get no analytics or shared head). The ejm-ui gallery is published at ui.ejmlabs.com, so `ui` joins discovery; it has no analytics token, and `ANALYTICS_SITES` leaves out tokenless hosts. Consumers that pin a newer ejm-ui gain ejm-ui, ejm-calm and gerry in their footers. The `ejmlabs` tagline and the gallery's layout example describe open source projects and commercial products.
