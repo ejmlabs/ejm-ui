@@ -58,6 +58,8 @@ pub struct Marks {
     pub info: &'static str,
     /// Leads the first output line of a tool call.
     pub elbow: &'static str,
+    /// Starts a Markdown list item.
+    pub bullet: &'static str,
 }
 
 /// Marks for UTF-8 terminals.
@@ -68,6 +70,7 @@ pub const UNICODE_MARKS: Marks = Marks {
     empty: "\u{2013}",
     info: "i",
     elbow: "\u{2514}",
+    bullet: "\u{2022}",
 };
 /// Marks for ASCII-only output.
 pub const ASCII_MARKS: Marks = Marks {
@@ -77,6 +80,7 @@ pub const ASCII_MARKS: Marks = Marks {
     empty: "-",
     info: "i",
     elbow: "`-",
+    bullet: "-",
 };
 
 /// A style for every syntax role of generated code highlighting. Filled from the generated

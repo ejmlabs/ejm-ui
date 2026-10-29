@@ -3,6 +3,7 @@
 use ratatui::buffer::Buffer;
 use ratatui::layout::Rect;
 use ratatui::style::Style;
+use ratatui::text::Line;
 use ratatui::widgets::Widget;
 use strum::{EnumIter, IntoStaticStr};
 
@@ -62,21 +63,23 @@ impl<'a> Status<'a> {
             StatusLevel::Pending => (t.glyphs.idle, t.pending),
         }
     }
+
+    /// The status as one line of at most `columns`, for hosts that add spans after it.
+    #[must_use]
+    pub fn line(&self, columns: u16) -> Line<'static> {
+        let (glyph, style) = self.parts();
+        let word: &str = self.label.unwrap_or_else(|| self.level.into());
+        let text = format!("{glyph} {}", crate::fit::clean(word, false));
+        fit(
+            vec![(text, style)],
+            usize::from(columns),
+            self.theme.glyphs.ellipsis,
+        )
+    }
 }
 
 impl Widget for Status<'_> {
     fn render(self, area: Rect, buf: &mut Buffer) {
-        let (glyph, style) = self.parts();
-        let word: &str = self.label.unwrap_or_else(|| self.level.into());
-        let text = format!("{glyph} {}", crate::fit::clean(word, false));
-        put_lines(
-            buf,
-            area,
-            &[fit(
-                vec![(text, style)],
-                usize::from(area.width),
-                self.theme.glyphs.ellipsis,
-            )],
-        );
+        put_lines(buf, area, &[self.line(area.width)]);
     }
 }

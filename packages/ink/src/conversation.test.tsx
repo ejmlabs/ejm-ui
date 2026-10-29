@@ -30,7 +30,7 @@ describe("ToolCall", () => {
 describe("Markdown", () => {
   it("draws structure without its markup", () => {
     const out = show(<Markdown text={"## Plan\n\nUse **clap** and `args.rs`.\n- first item\n1. step one\n```rust\nfn main() {}\n```"} />).split("\n");
-    expect(out).toEqual(["Plan", "", "Use clap and args.rs.", "- first item", "1. step one", "  fn main() {}"]);
+    expect(out).toEqual(["Plan", "", "Use clap and args.rs.", "• first item", "1. step one", "  fn main() {}"]);
   });
 
   it("leaves unclosed markup literal while streaming", () => {
@@ -58,6 +58,20 @@ describe("CommandMenu", () => {
   it("aligns usage and marks the selection", () => {
     const out = show(<CommandMenu items={[{ usage: "/help", description: "Show commands" }, { usage: "/steer MESSAGE", description: "Direct the run" }]} selected={1} />);
     expect(out.split("\n")).toEqual(["  /help           Show commands", "› /steer MESSAGE  Direct the run"]);
+  });
+
+  it("lets one long usage move only its own description", () => {
+    const items = [
+      { usage: "/help", description: "Show commands" },
+      { usage: "/remote share [view|control]|status|stop", description: "Share this session" },
+      { usage: "/resume ID", description: "Open a session" },
+    ];
+    const out = show(<CommandMenu items={items} />, { columns: 100 });
+    expect(out.split("\n")).toEqual([
+      "› /help       Show commands",
+      "  /remote share [view|control]|status|stop  Share this session",
+      "  /resume ID  Open a session",
+    ]);
   });
 
   it("scrolls to keep the selection visible", () => {
