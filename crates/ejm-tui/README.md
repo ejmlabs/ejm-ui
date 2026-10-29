@@ -17,7 +17,7 @@ Everything is containerless. Groups are separated by space and a single hairline
 | `Prompt` | idle, busy, error | `›` and the typed value; spinner and `working`; message under the line |
 | `KeyHints` | `default` | `Enter send · Ctrl+C stop`, dropped from the end |
 | `Callout` | note, tip, warning | Left rule, a kind or override label, wrapped text |
-| `Markdown` | `default` (Rust only) | CommonMark as terminal text: headings, lists, emphasis, fences, diffs |
+| `Markdown` | `default` (Rust only) | GitHub flavored Markdown as terminal text: headings, lists, tasks, emphasis, tables, fences, diffs |
 | `StateBlock` | empty, loading, error | Glyph and word, one sentence, at most one action |
 | `Message` | user, assistant, notice, error | Gutter glyph (`›` `●` `!` `✗`), text under a hanging indent; assistant text as Markdown |
 | `ToolCall` | queued, running, done, failed | State glyph, bold name, muted argument; output preview under `└`, `+N lines (key to expand)` |
@@ -75,11 +75,11 @@ Do not draw boxes around groups. Use a blank row and a `Rule`. A `Callout` has a
 
 ## Markdown and code
 
-`Markdown::new(&theme, source).lines(width)` renders CommonMark headings, lists, bold, italic, inline code, quotes, links, code fences and GFM pipe tables as terminal text. It also implements `Widget` and `height(width)`. Headings omit `#`. Fences show a language tag without ticks, then highlighted source. Pipe tables use the shared `Table` widget: a header, a hairline, then rows that never wrap. Trailing columns drop when the area is too narrow. Right-aligned columns stay right-aligned; center alignment renders as left. Cell emphasis flattens to plain text. The widget is registered for the `rust` target only; web and Ink can claim it later. The CLI still uses its local widget file until that migration lands.
+`Markdown::new(&theme, source).lines(width)` renders CommonMark headings, lists, bold, italic, strikethrough, inline code, quotes, links, code fences, GFM task lists and pipe tables as terminal text. It also implements `Widget` and `height(width)`. Headings omit `#`. Fences show a language tag without ticks, then highlighted source. Pipe tables draw like `Table`: a bold header, one hairline, then rows, with left, center and right alignment. Long cells wrap inside their column instead of being cut, and wrapped rows are set apart by a blank row. When the columns cannot each hold their longest word, each row prints as `Header: value` lines. Cell emphasis flattens to plain text. Line breaks inside a paragraph are kept, as in GitHub comments. Bullets use the contract's `bullet` glyph and task items its `ok` and `pending` status glyphs. The widget is registered for the `rust` target only; web and Ink can claim it later. The CLI still uses its local widget file until that migration lands.
 
 `code_lines(&theme, CodeLanguage::from_tag("rust"), source_line, width)` highlights and column-wraps one source line without losing its continuation. Tags cover Rust, JavaScript/TypeScript, Python, JSON, shell, TOML/YAML and unified diffs; unknown tags stay plain. Highlighting is intentionally line-local and does not understand multiline comments or full language grammars. The 14 syntax styles come from generated tokens in truecolor and 256-color terminals, and collapse to plain and bold at 16 colors and under `NO_COLOR`.
 
-Fenced code preserves blank lines, tabs become four spaces, and a fence still being streamed renders as code. Raw patches are recognized conservatively by a `diff --git` line or adjacent `---`/`+++` file headers with a hunk header. Diff file headers stay muted, added and removed lines retain their signs and success/error roles, and hunk headers use the existing information role. Bare lists are not treated as patches. Links retain their destination in text, without executing it; HTML is literal text, not markup. GFM tables are enabled. Task lists stay off.
+Fenced code preserves blank lines, tabs become four spaces, and a fence still being streamed renders as code. Raw patches are recognized conservatively by a `diff --git` line or adjacent `---`/`+++` file headers with a hunk header. Diff file headers stay muted, added and removed lines retain their signs and success/error roles, and hunk headers use the existing information role. Bare lists are not treated as patches. Links retain their destination in text, without executing it; HTML is literal text, not markup. GFM tables, strikethrough and task lists are enabled.
 
 Prose wrapping uses the existing `textwrap` dependency, with a byte-range mapping back to styled spans. Code wraps by terminal columns on grapheme boundaries. A zero-width area renders nothing; a grapheme wider than the entire area becomes `?` so a one-column view never hangs. ASCII mode changes UI glyphs, not user-authored Unicode text. The renderer allocates in proportion to its input and output; hosts remain responsible for bounding retained messages and view caches.
 
@@ -121,22 +121,25 @@ Product transcript state, command handling and terminal lifecycle stay in the ho
 
 ## Conversation workspace recipes
 
-`WorkspaceLayout` allocates the header, transcript, workers, activity, resource
-counts, notices, composer and controls. At supported sizes (at least 20 columns
+`WorkspaceLayout` allocates the header and a blank row, the transcript, workers,
+activity, notices, composer, a blank row and controls. Hosts inset the whole area by
+the same margin on both sides, so every region shares one left edge. At supported sizes (at least 20 columns
 and 8 rows), it preserves one transcript row, a draft row and the grants footer.
 Notices are capped at four rows and the draft at six. Short windows hide the
 worker strip before reducing the composer.
 
-`SessionHeader` fits application identity and connection on one line and keeps
-the directory on a second line. `ActivityLine` takes optional details and a
+`SessionHeader` fits application identity, connection and directory on one
+line, starting at its first column. The directory sits at the right edge, cut from
+its start, and drops first. `ActivityLine` takes optional details and a
 spinner frame and draws `⠋ Thinking… (step 2 · 14s · Esc to stop)` while active. Connection detail drops when space is tight;
 the host must offer full inspection. `ActivityLine` separates current work from
-`ResourceLine`, whose active and queued counts remain visible while idle.
+`ResourceLine`, which shares the activity row, right aligned, and draws nothing
+while every count is zero. It reads `2 agents · 1 model call, 3 waiting · 0 tools`.
 Counts use `A+Qq` for active plus queued work. Narrow rows truncate with an
 ellipsis; hosts must retain a full capacity view. Do not present unavailable
 usage as zero.
 
-`workspace_controls` keeps the effective grant mode first, warns for elevated
+`workspace_controls` keeps the effective grant mode first and the hints at the right edge, warns for elevated
 grants and drops trailing hints. Hosts order hints by task and keep their
 bindings authoritative. `worker_line` uses the shared Row selection mark and
 reserves space for state before fitting a long title. These are compositions
