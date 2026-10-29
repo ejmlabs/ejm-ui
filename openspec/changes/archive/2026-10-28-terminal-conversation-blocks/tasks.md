@@ -22,4 +22,4 @@
 
 ## Workflow follow-up
 
-- Sync and archive this change.
+- Synced into `openspec/specs/terminal-conversation-blocks` and archived on 2026-10-28.

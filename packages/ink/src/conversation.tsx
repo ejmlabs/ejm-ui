@@ -191,7 +191,7 @@ export function markdownLines(theme: EjmTheme, text: string, width: number, gutt
     } else if (isRule(trimmed)) {
       out.push([...lead, { text: theme.glyph(G.rule).repeat(Math.min(40, Math.max(0, width - indentWidth))), role: "dim" }]);
     } else if ((m = trimmed.match(/^[-*+] (.*)$/))) {
-      const bullet = `${pad}- `;
+      const bullet = `${pad}${theme.glyph(G.bullet)} `;
       out.push(...wrapSpans(inline(m[1]!, {}), [...lead, { text: bullet }], [{ text: spaces(indentWidth + displayWidth(bullet)) }], width));
     } else if ((m = trimmed.match(/^(\d{1,3}[.)]) (.*)$/))) {
       const marker = `${pad}${m[1]} `;
@@ -294,6 +294,9 @@ export function toolCallLines(theme: EjmTheme, props: ToolCallProps, width: numb
 
 const MENU: Record<CommandMenuState, true> = { default: true, empty: true };
 
+/** The widest usage that sets the CommandMenu column. Longer usages take their own width. */
+const USAGE_COLUMNS = 24;
+
 export interface CommandMenuItem {
   usage: string;
   description: string;
@@ -309,15 +312,19 @@ export function commandMenuLines(
   if (props.state === "empty" || items.length === 0) {
     return [[{ text: truncate(`  ${props.message ?? T.commandMenu.empty}`, width, ell), role: "dim" }]];
   }
-  const column = Math.max(8, Math.min(Math.floor(width / 2), Math.max(...items.map((i) => displayWidth(clean(i.usage))))));
+  // Size the column for ordinary usages so one long usage moves only its own description.
+  const half = Math.floor(width / 2);
+  const ordinary = items.map((i) => displayWidth(clean(i.usage))).filter((w) => w <= USAGE_COLUMNS);
+  const column = Math.max(8, Math.min(half, ordinary.length > 0 ? Math.max(...ordinary) : USAGE_COLUMNS));
   const rows = Math.max(1, props.rows ?? items.length);
   // Scroll so the selection stays visible.
   const start = Math.min(Math.max(0, selected - rows + 1), Math.max(0, items.length - rows));
   return items.slice(start, start + rows).map((item, offset) => {
     const chosen = start + offset === selected;
     const mark = `${chosen ? theme.glyph(G.selected) : " "} `;
-    const usage = truncate(clean(item.usage), column, ell);
-    const lead = mark + usage + spaces(column - displayWidth(usage)) + "  ";
+    const own = Math.max(column, Math.min(half, displayWidth(clean(item.usage))));
+    const usage = truncate(clean(item.usage), own, ell);
+    const lead = mark + usage + spaces(own - displayWidth(usage)) + "  ";
     const leadFit = truncate(lead, width, ell);
     const line: Span[] = [
       { text: mark, role: "accent", bold: chosen },
