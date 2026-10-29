@@ -2,6 +2,7 @@
 """Compare independent nextest reports without turning a failure green."""
 
 import json
+import re
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
@@ -70,20 +71,47 @@ def mixed_tests(first: Path, second: Path) -> list[tuple[str, str]]:
     if a.keys() != b.keys():
         raise ValueError("the two runs did not report the same tests")
     if any(
-        a[key] == "error" or b[key] == "error" or (a[key] == "skipped") != (b[key] == "skipped")
+        a[key] in ("error", "skipped") or b[key] in ("error", "skipped")
         for key in a
     ):
         raise ValueError("test execution or skip status is incomplete")
     return sorted(key for key in a if {a[key], b[key]} == {"passed", "failure"})
 
 
-def run(command: list[str], log: Path) -> int | None:
+def inventory(path: Path) -> set[tuple[str, str]]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    try:
+        tests = set()
+        for suite_name, suite in data["rust-suites"].items():
+            if suite["status"] != "listed":
+                raise ValueError("nextest did not list every suite")
+            for name, case in suite["testcases"].items():
+                if case["ignored"] is not False or case["filter-match"]["status"] != "matches":
+                    raise ValueError("nextest skipped a test")
+                tests.add((suite_name, name))
+        if not tests or data["test-count"] != len(tests):
+            raise ValueError("nextest inventory is incomplete")
+        return tests
+    except (KeyError, TypeError, AttributeError) as error:
+        raise ValueError("invalid nextest inventory") from error
+
+
+def check_cargo_log(path: Path) -> None:
+    summaries = re.findall(
+        r"^test result: (?:ok|FAILED)\. \d+ passed; \d+ failed; (\d+) ignored; "
+        r"\d+ measured; (\d+) filtered out;", path.read_text(encoding="utf-8"), re.MULTILINE
+    )
+    if not summaries or any(int(ignored) or int(filtered) for ignored, filtered in summaries):
+        raise ValueError("Cargo test evidence is missing or contains skipped tests")
+
+
+def run(command: list[str], log: Path, *, separate_stderr: bool = False) -> int | None:
     with log.open("w", encoding="utf-8") as stream:
         try:
             process = subprocess.Popen(
                 command,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
+                stderr=None if separate_stderr else subprocess.STDOUT,
                 text=True,
                 encoding="utf-8",
                 errors="replace",
@@ -106,6 +134,7 @@ def main() -> int:
     output.mkdir()
     baseline = []
     attempts = []
+    listings = []
     for number in (1, 2):
         baseline.append(
             run(
@@ -120,6 +149,14 @@ def main() -> int:
             + json.dumps(str(report))
             + '\nstore-failure-output = false\n',
             encoding="utf-8",
+        )
+        listings.append(
+            run(
+                ["cargo", "nextest", "list", "--locked", "--workspace", "--message-format", "json",
+                 "--profile", "ci", "--config-file", str(config), "--user-config-file", "none"],
+                output / f"inventory-{number}.json",
+                separate_stderr=True,
+            )
         )
         attempts.append(
             run(
@@ -151,11 +188,19 @@ def main() -> int:
     )
     mixed = []
     try:
+        for number, code in enumerate(baseline, 1):
+            if code == 0:
+                check_cargo_log(output / f"cargo-test-{number}.log")
         if any(code not in (0, 100) for code in attempts):
             raise ValueError("nextest did not complete both test runs")
+        if any(code != 0 for code in listings):
+            raise ValueError("nextest did not list both test runs")
         mixed = mixed_tests(output / "attempt-1.xml", output / "attempt-2.xml")
         for number, code in enumerate(attempts, 1):
-            has_failures = "failure" in outcomes(output / f"attempt-{number}.xml").values()
+            results = outcomes(output / f"attempt-{number}.xml")
+            if inventory(output / f"inventory-{number}.json") != results.keys():
+                raise ValueError("nextest report does not contain every listed test")
+            has_failures = "failure" in results.values()
             if has_failures != (code == 100):
                 raise ValueError("nextest exit code does not match its report")
     except (OSError, ET.ParseError, ValueError) as error:
@@ -169,6 +214,7 @@ def main() -> int:
         "cargo_test_exit_codes": baseline,
         "cargo_test_inconsistent": baseline_differed,
         "exit_codes": attempts,
+        "list_exit_codes": listings,
         "mixed": mixed,
         "incomplete": incomplete,
     }

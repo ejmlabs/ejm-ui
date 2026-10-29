@@ -13,5 +13,5 @@ keeps the Actions log. Nextest runs each test in a separate process, so the
 ordinary Cargo runs remain necessary to catch shared-process interference.
 
 Nextest 0.9.124 omits ignored tests from its JUnit reports. Tests reported in
-only one attempt make the comparison incomplete; tests omitted from both
-are not classified or counted as passes.
+either attempt must match its complete test inventory. Ignored or filtered tests,
+including doctests reported by Cargo, make the evidence incomplete.

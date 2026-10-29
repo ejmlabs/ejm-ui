@@ -47,10 +47,10 @@ class FlakeCheckTests(unittest.TestCase):
     def test_skips_errors_missing_and_duplicate_tests_are_not_flakes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            good = report([("x", ""), ("ignored", "<skipped/>")])
+            good = report([("x", ""), ("other", "")])
             for other in [
-                report([("x", "<skipped/>"), ("ignored", "<skipped/>")]),
-                report([("x", "<error/>"), ("ignored", "<skipped/>")]),
+                report([("x", "<skipped/>"), ("other", "")]),
+                report([("x", "<error/>"), ("other", "")]),
                 report([("x", "<failure/>")]),
                 report([("x", ""), ("x", "<failure/>")]),
                 good.replace('tests="2"', 'tests="3"', 1),
@@ -60,6 +60,10 @@ class FlakeCheckTests(unittest.TestCase):
                 paths = self.write_reports(root, good, other)
                 with self.assertRaises((ValueError, ET.ParseError)):
                     mixed_tests(*paths)
+
+            skipped = report([("x", "<skipped/>")])
+            with self.assertRaises(ValueError):
+                mixed_tests(*self.write_reports(root, skipped, skipped))
 
     def test_captured_output_cannot_spoof_a_test_result(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -77,9 +81,14 @@ class FlakeCheckTests(unittest.TestCase):
             cargo = root / "cargo"
             cargo.write_text(
                 """#!/usr/bin/env python3
-import sys, tomllib
+import json, sys, tomllib
 from pathlib import Path
 if sys.argv[1] == "nextest":
+    if sys.argv[2] == "list":
+        print(json.dumps({"test-count": 1, "rust-suites": {"pkg::suite": {
+            "status": "listed", "testcases": {"write": {"ignored": False,
+            "filter-match": {"status": "matches"}}}}}}))
+        raise SystemExit(0)
     marker = Path("ran")
     first = not marker.exists()
     marker.touch()
@@ -92,6 +101,8 @@ if sys.argv[1] == "nextest":
                       + "><testcase classname='pkg::suite' name='write'>" + state
                       + "</testcase></testsuite></testsuites>")
     raise SystemExit(100 if first else 0)
+print("test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s")
+print("test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s")
 raise SystemExit(0)
 """,
                 encoding="utf-8",
@@ -119,9 +130,14 @@ raise SystemExit(0)
             cargo = root / "cargo"
             cargo.write_text(
                 """#!/usr/bin/env python3
-import sys, tomllib
+import json, sys, tomllib
 from pathlib import Path
 if sys.argv[1] == "nextest":
+    if sys.argv[2] == "list":
+        print(json.dumps({"test-count": 1, "rust-suites": {"pkg::suite": {
+            "status": "listed", "testcases": {"write": {"ignored": False,
+            "filter-match": {"status": "matches"}}}}}}))
+        raise SystemExit(0)
     config = Path(sys.argv[sys.argv.index("--config-file") + 1])
     output = Path(tomllib.loads(config.read_text())["profile"]["ci"]["junit"]["path"])
     attrs = " tests='1' failures='0' errors='0' skipped='0'"
@@ -129,6 +145,7 @@ if sys.argv[1] == "nextest":
                       + "><testcase classname='pkg::suite' name='write'/></testsuite></testsuites>")
     raise SystemExit(0)
 marker = Path("cargo-ran")
+print("test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s")
 if not marker.exists():
     marker.touch()
     print("shared-process test failed")
@@ -186,6 +203,61 @@ if not marker.exists():
             self.assertNotEqual(result.returncode, 0)
             self.assertTrue(summary["incomplete"])
             self.assertEqual(summary["mixed"], [])
+
+    def test_reliability_requires_complete_evidence_including_doctests(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            cargo = root / "cargo"
+            cargo.write_text(
+                '''#!/usr/bin/env python3
+import json, os, sys, tomllib
+from pathlib import Path
+
+scenario = os.environ["SCENARIO"]
+if sys.argv[1] == "nextest":
+    if sys.argv[2] == "list":
+        cases = {"write": {"ignored": False, "filter-match": {"status": "matches"}}}
+        if scenario == "omitted":
+            cases["missing"] = {"ignored": False, "filter-match": {"status": "matches"}}
+        if scenario == "ignored":
+            cases["missing"] = {"ignored": True, "filter-match": {"status": "mismatch", "reason": "ignored"}}
+        if scenario == "filtered":
+            cases["missing"] = {"ignored": False, "filter-match": {"status": "mismatch", "reason": "expression"}}
+        print(json.dumps({"test-count": len(cases), "rust-suites": {
+            "pkg::suite": {"status": "listed", "testcases": cases}}}))
+        raise SystemExit(0)
+    config = Path(sys.argv[sys.argv.index("--config-file") + 1])
+    output = Path(tomllib.loads(config.read_text())["profile"]["ci"]["junit"]["path"])
+    skipped = scenario == "skipped"
+    attrs = " tests='1' failures='0' errors='0' skipped='" + str(int(skipped)) + "'"
+    output.write_text("<testsuites" + attrs + "><testsuite name='pkg::suite'" + attrs
+                      + "><testcase classname='pkg::suite' name='write'>"
+                      + ("<skipped/>" if skipped else "")
+                      + "</testcase></testsuite></testsuites>")
+    raise SystemExit(0)
+if any(arg in sys.argv for arg in ("--doc", "--lib", "--bins", "--tests", "--examples", "--all-targets", "--no-run")):
+    raise SystemExit(2)
+print("     Running unittests src/lib.rs (target/debug/deps/pkg)")
+print("test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s")
+print("   Doc-tests pkg")
+ignored = int(scenario == "ignored_doctest")
+print(f"test result: ok. {1 - ignored} passed; 0 failed; {ignored} ignored; 0 measured; 0 filtered out; finished in 0.00s")
+''',
+                encoding="utf-8",
+            )
+            cargo.chmod(0o755)
+            for scenario in ("clean", "skipped", "omitted", "ignored", "filtered", "ignored_doctest"):
+                with self.subTest(scenario=scenario):
+                    env = {**os.environ, "PATH": str(root) + os.pathsep + os.environ.get("PATH", ""), "SCENARIO": scenario}
+                    evidence = root / scenario
+                    result = subprocess.run(
+                        [sys.executable, str(Path(__file__).with_name("flake_check.py")), str(evidence)],
+                        cwd=root, env=env, capture_output=True, text=True,
+                    )
+                    summary = json.loads((evidence / "summary.json").read_text())
+                    self.assertEqual(result.returncode, 0 if scenario == "clean" else 1, result.stderr)
+                    self.assertEqual(summary["incomplete"], scenario != "clean")
+                    self.assertIn("Doc-tests pkg", (evidence / "cargo-test-1.log").read_text())
 
 
     def test_old_nextest_missing_skipped_counts_requires_no_skipped_cases(self) -> None:
