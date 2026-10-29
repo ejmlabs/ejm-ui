@@ -55,7 +55,7 @@ export default function Home() {
         <SectionHead kicker="02 / Surfaces" title="In use." id="surfaces-title" />
         <SectionBody>
           <Rows aria-label="ejmlabs surfaces">
-            {PROJECT_LIST.filter(p => p.id !== 'ejmlabs').map(p => (
+            {PROJECT_LIST.filter(p => p.id !== 'ejmlabs' && p.id !== 'ui').map(p => (
               <Row key={p.id} title={p.name} description={p.tagline} meta={p.host} href={p.url} external />
             ))}
           </Rows>

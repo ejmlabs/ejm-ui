@@ -64,9 +64,9 @@ describe.each(ROUTES)('%s', file => {
 });
 
 describe('the starter build', () => {
-  it('the home page links to the other three ejmlabs sites as external', () => {
+  it('the home page links to the other published ejmlabs sites as external', () => {
     const hrefs = [...page('index.html').querySelectorAll('main a[rel~=external]')].map(a => a.getAttribute('href'));
-    expect(hrefs).toEqual(['https://cli.ejmlabs.com/', 'https://ide.ejmlabs.com/', 'https://harness.ejmlabs.com/']);
+    expect(hrefs).toEqual(['https://cli.ejmlabs.com/', 'https://ide.ejmlabs.com/', 'https://harness.ejmlabs.com/', 'https://ui.ejmlabs.com/']);
   });
 
   it('writes the shared files at the site root, and no Vite manifest', () => {
