@@ -1,0 +1,83 @@
+---
+name: ejm-ui-packages
+description: Use before you add, move, rename or remove a file, export, deep import, dependency, files entry or package.json field in an @ejm/* package, add a workspace, or change a Vite plugin or bin. Covers public and private packages, pack proofs and the reviewed packing hashes.
+---
+
+# Packages and public exports
+
+A package's `exports` field is its public API. Every consumer pins this repository, so a changed
+export, file list or manifest is a contract change: prove it from tarballs and say who must move.
+
+## The packages
+
+| Package | Visibility | Holds |
+| --- | --- | --- |
+| `@ejm/tokens` | public | `theme.json`, generated themes, fonts, brand palette, icons |
+| `@ejm/core` | public | Framework-neutral state, `contract.json` |
+| `@ejm/ui` | public | Components, hooks, layouts, styles, art, `theme-boot.js` |
+| `@ejm/ssg` | public | Prerender plugin, `hydrateSite`, `Link`, `ejm-ssg` |
+| `@ejm/site` | private | Project registry, analytics, head, headers plugin |
+| `@ejm/demos` | private | Simulated product screens and lazy islands |
+| `@ejm/ink` | private | Ink terminal components |
+| `@ejm/shots` | private | Product capture metadata and images |
+
+"Public" means set up for npm, not published. See [publishing](../../../PUBLISHING.md).
+
+## Rules for every package
+
+- Anything not in a package's `exports` is private. Never document, test from outside, or tell a
+  consumer to use a path that is not exported.
+- Code that Node loads from a package (Vite plugins, bins such as `ejm-ssg` and
+  `ejm-site-headers`) ships as `.mjs` with `.d.mts` types. Everything Vite bundles ships as
+  TypeScript source.
+- `@ejm/ui` keeps `sideEffects: ["*.css"]` so the barrel tree-shakes to the deep-import cost
+  (`check-treeshake.mjs`). `@ejm/site` and `@ejm/demos` never import the `@ejm/ui` barrel.
+- A dependency on another `@ejm/*` package names the shared version exactly (`0.1.0` today), as
+  `@ejm/ui`, `@ejm/site` and `@ejm/demos` do. Consumers list `@ejm/core` and `@ejm/tokens` too.
+- One React: `react` and `react-dom` are peer dependencies of every package that renders React,
+  never dependencies. `tailwindcss` is a peer dependency of `@ejm/ui`.
+- Never copy private sibling source into a package. Product behavior stays in its repository.
+- When code moves, the old export path re-exports it until no consumer pin uses it.
+- Every package keeps its `LICENSE` (the scoped ejm-ui license) and `THIRD_PARTY_NOTICES.md`,
+  and its `repository` field names `ejmlabs/ejm-ui` with its directory.
+- `@ejm/tokens` must not pack reserved brand artwork (logos, favicons, lockups, motifs, social
+  cards, templates, project families). `npm run pack:check -w @ejm/tokens` fails if it does.
+
+## The reviewed packing hashes
+
+The Repository standards check in `ejmlabs/.github` (`scripts/standards.py`) holds a SHA-256 of
+the packing fields (`name`, `files`, `main`, `types`, `exports`, `bin` and the other fields that
+decide what npm packs) and lifecycle scripts of each public package. It also fixes the package
+inventory under `packages/` and the hash of `.github/workflows/publish.yml`.
+
+- Before you change a packing field of `@ejm/tokens`, `@ejm/core`, `@ejm/ui` or `@ejm/ssg`, add
+  a package, remove one, or edit `publish.yml`, land the new reviewed values in `ejmlabs/.github`
+  first. Then move the full commit pins in `.github/workflows/pr.yml` and `release.yml` here, in
+  the same PR as the manifest change.
+- Never add a `prepare`, `prepack`, `postinstall` or other lifecycle script to a package. It
+  changes the reviewed hash and runs code when npm packs or installs the package.
+- Private packages keep `"private": true`. Only the four public packages carry `publishConfig`
+  with `access: public` and `provenance: true`.
+
+## Proving a change
+
+- Run `node scripts/pack-proof-publish.mjs` after changing the manifest, `files` or `exports` of
+  a public package. It packs the four, installs only those tarballs into a throwaway consumer and
+  builds it.
+- Run `node scripts/pack-proof.mjs` after changing any `package.json`, `files`, `exports` or Vite
+  plugin. It packs six packages, builds a copy of `examples/starter` from them, checks headers
+  and types, and diffs the HTML against the workspace build.
+- Both need the npm registry, so they are not part of `npm run check`. Pass `--dir` only with a
+  folder outside the repo reserved for the tool; it deletes and recreates subfolders there.
+- Update the owning guide in the same change: [THEME.md](../../../packages/ui/THEME.md) for
+  stylesheet entries, [COMPONENTS.md](../../../packages/ui/COMPONENTS.md) for components and
+  deep imports, the package README for its other exports, and the deep import list in
+  [the adoption guide](../../../ADOPTION.md) when it changes.
+
+## Consumer impact
+
+- Name the consumers that import a removed or renamed path (search the ejmlabs, ejm-cli, ejm-ide
+  and ejm-harness repositories) and list the pin moves they need in the PR.
+- Add a `CHANGELOG.md` line under the unreleased section. Mark a break with **Breaking** and say
+  how to upgrade.
+- Run the affected consumer checks in that consumer's repository after its pin moves, not here.

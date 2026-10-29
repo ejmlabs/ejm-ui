@@ -19,8 +19,8 @@ source releases.
 The [shared standards](https://github.com/ejmlabs/.github) define human
 admission, review and source releases. Follow
 [Contributing](CONTRIBUTING.md#human-admission-and-review) for the current
-review commands and required checks. Gallery deployment and package registry
-publication need separate approval.
+review commands and required checks. The gallery deploys from merged main;
+package registry publication needs separate approval.
 
 ## Requirements
 
