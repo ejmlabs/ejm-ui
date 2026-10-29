@@ -64,9 +64,11 @@ import.meta.resolve('@ejm/tokens/assets/projects/relay/favicon.svg');
 
 ejm-ui's own family lives in `assets/projects/ui/`, in the same format as CLI,
 IDE and Harness: marks, outlined and editable logos, square icons, browser icons,
-a manifest and social cards. The mark is the approved grid-e artwork, the ejmlabs
-e squared onto the 256 grid with one 36-unit ribbon and a lower-left flick. The
-ejmlabs symbol in `assets/logos/` stays the company mark.
+a manifest and social cards. The mark is the approved u and block, selected on
+29 October 2026: a 36-unit ribbon u on the 256 grid that starts as a tapered tip,
+like the CLI, IDE, Harness and gerry marks, holding one rounded-square component.
+It replaces the earlier grid-e mark. The ejmlabs symbol in `assets/logos/` stays
+the company mark.
 
 The files are generated, not imported. `scripts/ui-assets.mjs` holds the mark
 path and calls `scripts/family-assets.mjs`, which outlines text from the fonts in
