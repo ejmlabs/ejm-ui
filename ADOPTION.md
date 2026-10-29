@@ -1,6 +1,6 @@
 # Adopting ejm-ui
 
-How the ejmlabs.com site, the cli, ide and harness sites and the IDE app move onto ejm-ui. Use `examples/starter` as the reference consumer and check each source revision before adopting it. Sibling links and local tarballs do not require registry publication. Creating a remote, publishing a package and deploying each need the owner's approval.
+How the ejmlabs.com site, the cli, ide and harness sites and the IDE app move onto ejm-ui. Use `examples/starter` as the reference consumer and check each source revision before adopting it. Sibling links and local tarballs do not require registry publication. Creating a remote and publishing a package each need the owner's approval; deploys follow merged main.
 
 ## What you depend on
 
