@@ -1,6 +1,6 @@
 # Provenance
 
-Imported rows retain the old `design-kit/` bytes. Rows marked `generated:chess-assets` and `generated:ui-assets` identify the Chess and ejm-ui brand families written by `scripts/chess-assets.mjs` and `scripts/ui-assets.mjs`; their hashes verify the retained output.
+Imported rows retain the old `design-kit/` bytes. Rows marked `generated:chess-assets`, `generated:ui-assets` and `generated:gerry-assets` identify the Chess, ejm-ui and gerry brand families written by `scripts/chess-assets.mjs`, `scripts/ui-assets.mjs` and `scripts/gerry-assets.mjs`; their hashes verify the retained output.
 Do not edit this table by hand. `node scripts/assets.mjs` re-hashes every file here and, when the design-kit is present, every source.
 Paths are relative to `packages/tokens/` here and to `design-kit/` at the source.
 Retired social profile kits and ZIP archives are excluded from imports.
@@ -343,6 +343,37 @@ Retired social profile kits and ZIP archives are excluded from imports.
 | `assets/projects/ui/site.webmanifest` | `generated:ui-assets/site.webmanifest` | `df2f6b7191f1305ade1aebd212088d5ebf02ac9064b65fcf702501fd552c7398` |
 | `assets/projects/ui/social-card.png` | `generated:ui-assets/social-card.png` | `818c7840b9f55badf389ec0a47a2cd1149b8ed1cd9b00754b18907ab158f73c3` |
 | `assets/projects/ui/social-card.svg` | `generated:ui-assets/social-card.svg` | `b96203de3dc4a6f5934263dabdacb8f33442a026b4e2f1ec6192770852503b8f` |
+| `assets/projects/gerry/android-chrome-192.png` | `generated:gerry-assets/android-chrome-192.png` | `49006edacd344a28e06299abdc462dbccc72b238fa5d382ebcda6a18ff2655d9` |
+| `assets/projects/gerry/android-chrome-512.png` | `generated:gerry-assets/android-chrome-512.png` | `298d1cfeba345e3d91d7a15d40a06475efd5a9bb4fa321bbc6bdbc210a570445` |
+| `assets/projects/gerry/apple-touch-icon.png` | `generated:gerry-assets/apple-touch-icon.png` | `fb9cd10a466c41342285f96498524211309aaa9d08504d16f703de5950c3adda` |
+| `assets/projects/gerry/editable/logo-ink.svg` | `generated:gerry-assets/editable/logo-ink.svg` | `147712401df94b0f379a0cf9f13426400c57d8890c5bf7335b25982feada0273` |
+| `assets/projects/gerry/editable/logo-paper.svg` | `generated:gerry-assets/editable/logo-paper.svg` | `6eb1616bb69fc76405ebb383a7afcb255d0d260abdac61f162ec0e486b411a24` |
+| `assets/projects/gerry/editable/logo-primary.svg` | `generated:gerry-assets/editable/logo-primary.svg` | `bc111f08986a1a79a91e51fd7c79ae48b9eb4a3585b3a9f96f314678d254b12c` |
+| `assets/projects/gerry/favicon-16.png` | `generated:gerry-assets/favicon-16.png` | `8bb2dbd24137755e4b76960e91f25659472b4ec20264f8ac88bcf797fa6482d1` |
+| `assets/projects/gerry/favicon-24.png` | `generated:gerry-assets/favicon-24.png` | `28da88d890c6fbd6c71f77ed2a858477a53c0d5e445cb373d9823c48fe8cd2fb` |
+| `assets/projects/gerry/favicon-32.png` | `generated:gerry-assets/favicon-32.png` | `505bda94c999c1beefa04a3ba50867baf194809b27afc3bd2d0bc59cd152cc85` |
+| `assets/projects/gerry/favicon-48.png` | `generated:gerry-assets/favicon-48.png` | `f3e6c2fc7fb7b0e4b06b23d76e5398407253d0ff4059ed3d7abd78d6fd99ea2d` |
+| `assets/projects/gerry/favicon.ico` | `generated:gerry-assets/favicon.ico` | `6ed45c009d5913d819781974b962b7af7d0437232ab20b0e9334ef57cf201496` |
+| `assets/projects/gerry/favicon.svg` | `generated:gerry-assets/favicon.svg` | `0b8ee355da30370b3534b54006b09097f1a71909a0e77a05565f58d1cf3f6487` |
+| `assets/projects/gerry/icon-forest.png` | `generated:gerry-assets/icon-forest.png` | `bc0c9bd94cda880a7890a84fed118fefaa082890e759f0b6c06ed20199b8e4d0` |
+| `assets/projects/gerry/icon-forest.svg` | `generated:gerry-assets/icon-forest.svg` | `49f3f12560f73cd0ccea3a5fdb54d9e61c57ccd5cd16f0fe766fdc7291dad24f` |
+| `assets/projects/gerry/icon-sage.png` | `generated:gerry-assets/icon-sage.png` | `92a38978f30026ca44f7960d3095017736d0b6cafdf4cb429106bba46f9cf00f` |
+| `assets/projects/gerry/icon-sage.svg` | `generated:gerry-assets/icon-sage.svg` | `497c8330f4a9a4e467254ade7bee9a7ea38087ff76793e6d8f2249cd4b40f77e` |
+| `assets/projects/gerry/logo-ink.png` | `generated:gerry-assets/logo-ink.png` | `d0ea484781415eacbc23e5636bbd16b2ee41fa16581954c2c5cf18bf35ee2c32` |
+| `assets/projects/gerry/logo-ink.svg` | `generated:gerry-assets/logo-ink.svg` | `5b2851ec6be00118d9b0b2d81a566265a198790783079001bd13d942c74a5938` |
+| `assets/projects/gerry/logo-paper.png` | `generated:gerry-assets/logo-paper.png` | `1e26c7238975236bd91c92a20dcbf7806100aabb861428f53b71c00840464693` |
+| `assets/projects/gerry/logo-paper.svg` | `generated:gerry-assets/logo-paper.svg` | `31043721ab5e3c4af072199618e92514411e396f7478b664d4b27ce44e16acfd` |
+| `assets/projects/gerry/logo-primary.png` | `generated:gerry-assets/logo-primary.png` | `c3d179b4bf42bd51fd69435344b9de223a09e8a5ac13f6857db91fa54d9f80d6` |
+| `assets/projects/gerry/logo-primary.svg` | `generated:gerry-assets/logo-primary.svg` | `985fff72ad0ba6341bbad22da00ed15355dba0f0be1b9e34bc360403c315599b` |
+| `assets/projects/gerry/mark-ink.png` | `generated:gerry-assets/mark-ink.png` | `d065203423aa0fcffcab1974a4926baedf4b9ef5250ca481dcbe916c5077cdfc` |
+| `assets/projects/gerry/mark-ink.svg` | `generated:gerry-assets/mark-ink.svg` | `1af38d902e1eaa601de5d619d1ebbe2bbf8417da0ad5a0d9ff860372e45fad2a` |
+| `assets/projects/gerry/mark-paper.png` | `generated:gerry-assets/mark-paper.png` | `3f1d34865417f4bee8ddd226ea805cb88b1d4516197b82b0974a4d794082cc25` |
+| `assets/projects/gerry/mark-paper.svg` | `generated:gerry-assets/mark-paper.svg` | `afba1c3cb03ba7bec4eaee116e710e4581aec09a149263852c731a9540dac7ed` |
+| `assets/projects/gerry/mark-sage.png` | `generated:gerry-assets/mark-sage.png` | `26ec387f51ee0cee05941153309e7fda7d52c36504e9a9e56e726d0ce7197429` |
+| `assets/projects/gerry/mark-sage.svg` | `generated:gerry-assets/mark-sage.svg` | `4185d6d7ce6dcef72a082e8c53355f34d468eaf115b494ede4db247e8cce7533` |
+| `assets/projects/gerry/site.webmanifest` | `generated:gerry-assets/site.webmanifest` | `47dde27a17b4f21cb8d2786ebfcc4b196405361e9c042e12091edfb862849784` |
+| `assets/projects/gerry/social-card.png` | `generated:gerry-assets/social-card.png` | `2c626a82a202bfbd4b5271efd9361a8b7dacab5f9ad41de9de1981fc69fb2f60` |
+| `assets/projects/gerry/social-card.svg` | `generated:gerry-assets/social-card.svg` | `98f8328697fceeac516e02ccadc710bbac897912aecb40da8ffc504bd26cda2b` |
 
 ## Moved and then edited
 

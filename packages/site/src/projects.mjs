@@ -8,7 +8,7 @@ export const PROJECTS = Object.freeze({
     name: 'ejmlabs',
     host: 'ejmlabs.com',
     url: 'https://ejmlabs.com/',
-    tagline: 'Open source projects and experiments. Explore the code, try the tools, and help improve them.',
+    tagline: 'Open source projects, experiments and commercial products. Explore the code, try the tools, and help improve them.',
     repo: 'https://github.com/ejmlabs',
     // Cloudflare Web Analytics site tokens are public by design (see ANALYTICS in the old design kit).
     analyticsToken: '1ccb35c8ea484d13beb469e289e0adb8',
@@ -59,7 +59,7 @@ export const PROJECTS = Object.freeze({
       { label: 'Developer guide', href: 'https://chess.ejmlabs.com/docs/developer-guide/' },
     ],
   },
-  // The design system and its gallery. It stays out of discovery until the gallery host is published and verified.
+  // The design system and its gallery, published at ui.ejmlabs.com. The gallery has no analytics, so its token is empty and no beacon loads.
   ui: {
     id: 'ui',
     name: 'ejm-ui',
@@ -69,7 +69,6 @@ export const PROJECTS = Object.freeze({
     repo: 'https://github.com/ejmlabs/ejm-ui',
     analyticsToken: '',
     assetDir: 'projects/ui',
-    discoverable: false,
   },
 });
 
@@ -89,9 +88,18 @@ export function assetPaths(project, exists = () => false) {
   };
 }
 
-/** The other sites as nav or footer items. They are another origin, so they are marked external; the current site is left out. */
+/** Family sites that are not built with @ejm/site. They get no shared head, icons or analytics, only a link from the other
+ *  sites. gerry is the commercial product and has no public repository. */
+/** @type {readonly import('./projects.d.mts').LinkedProject[]} */
+export const LINKED_PROJECTS = Object.freeze([
+  { id: 'calm', name: 'ejm-calm', url: 'https://calm.ejmlabs.com/', repo: 'https://github.com/ejmlabs/ejm-calm' },
+  { id: 'gerry', name: 'gerry', url: 'https://meetgerry.ai/', repo: '' },
+]);
+
+/** The other sites as nav or footer items: the published build identities, then the linked family sites. They are another
+ *  origin, so they are marked external; the current site is left out. */
 export function otherSites(currentId) {
-  return PROJECT_LIST.filter(p => p.id !== currentId).map(p => ({ label: p.name, href: p.url, external: true }));
+  return [...PROJECT_LIST, ...LINKED_PROJECTS].filter(p => p.id !== currentId).map(p => ({ label: p.name, href: p.url, external: true }));
 }
 
 /** Source links for the footer (all external). */

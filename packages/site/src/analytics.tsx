@@ -5,8 +5,8 @@ import { PROJECT_LIST } from './projects.mjs';
  *  send Do Not Track or Global Privacy Control and on any host that is not an ejmlabs site (localhost, previews, workers.dev). */
 export const BEACON_SRC = 'https://static.cloudflareinsights.com/beacon.min.js';
 
-/** Hostname to site token, from the project registry. */
-export const ANALYTICS_SITES: Readonly<Record<string, string>> = Object.fromEntries(PROJECT_LIST.map(p => [p.host, p.analyticsToken]));
+/** Hostname to site token, from the project registry. A published site without a token (the ejm-ui gallery) is left out. */
+export const ANALYTICS_SITES: Readonly<Record<string, string>> = Object.fromEntries(PROJECT_LIST.filter(p => p.analyticsToken).map(p => [p.host, p.analyticsToken]));
 
 /** What the gate reads. Defaults come from the browser; tests pass their own. */
 export interface Env {
