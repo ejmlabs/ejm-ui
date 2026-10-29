@@ -33,7 +33,7 @@ const MOVES = [
   ...['dark', 'light'].flatMap(theme => ['svg', 'png'].map(ext => [`projects/family-${theme}.${ext}`, `assets/projects/family-${theme}.${ext}`])),
 ];
 // [generated directory under packages/tokens, the script that writes it].
-const GENERATED_DIRS = [['assets/projects/chess', 'chess-assets'], ['assets/projects/ui', 'ui-assets']];
+const GENERATED_DIRS = [['assets/projects/chess', 'chess-assets'], ['assets/projects/ui', 'ui-assets'], ['assets/projects/gerry', 'gerry-assets']];
 const skipped = rel => rel.split(/[\\/]/).includes('editable') && !/^editable\/logo-(?:ink|paper|primary)\.svg$/.test(posix(rel));
 // This is the public production bundle. Review boards and editable sources stay in the kit.
 const relayFiles = new Set([

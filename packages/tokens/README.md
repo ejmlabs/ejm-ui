@@ -69,13 +69,30 @@ e squared onto the 256 grid with one 36-unit ribbon and a lower-left flick. The
 ejmlabs symbol in `assets/logos/` stays the company mark.
 
 The files are generated, not imported. `scripts/ui-assets.mjs` holds the mark
-path, outlines text from the fonts in `assets/fonts/` with Python fontTools,
-renders rasters with sharp and the ICO with Pillow, and rewrites the
-`generated:ui-assets` provenance rows. From the repository root:
+path and calls `scripts/family-assets.mjs`, which outlines text from the fonts in
+`assets/fonts/` with Python fontTools, renders rasters with sharp and the ICO with
+Pillow, and rewrites the `generated:ui-assets` provenance rows. From the
+repository root:
 
 ```sh
 node scripts/ui-assets.mjs          # write the files and their provenance rows
 node scripts/ui-assets.mjs --check  # fail if any file or row would change
+```
+
+### gerry assets
+
+gerry, the commercial product, has the same family in `assets/projects/gerry/`.
+The mark is the approved standing G, selected by the owner on 28 October 2026: a
+ribbon G that starts as a tapered tip, like the CLI, IDE and Harness marks, with
+a 36-unit crossbar. It replaces gerry's pixel mascot everywhere. gerry is not
+built with `@ejm/site`, so it has no build identity in the project registry; the
+files are here so ejmlabs sites and the gerry repository use one source.
+`scripts/gerry-assets.mjs` holds the mark path and calls the same family
+generator:
+
+```sh
+node scripts/gerry-assets.mjs          # write the files and their provenance rows
+node scripts/gerry-assets.mjs --check  # fail if any file or row would change
 ```
 
 The family sheets (`assets/projects/family-*.svg`) present the three tools, CLI,

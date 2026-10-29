@@ -23,8 +23,8 @@ export default function Layout() {
       <Hero
         art={ripple}
         drawOn
-        eyebrow="ejmlabs / open source"
-        title="Open source. Room to explore."
+        eyebrow="ejmlabs / open source and commercial"
+        title="Open source tools. Products for business."
         aside={
           // ejm-shots-allow: layout demonstration of ProductStage with real ProductShot children.
           <>
@@ -43,7 +43,7 @@ export default function Layout() {
           </>
         }
       >
-        <p className="m-0">ejmlabs is a home for open source projects. ejm-cli, ejm-ide and ejm-harness are released under the MIT license. Read the source, report an issue or help shape what comes next.</p>
+        <p className="m-0">ejmlabs builds open source projects and commercial products. ejm-cli, ejm-ide and ejm-harness are released under the MIT license. Read the source, report an issue or help shape what comes next.</p>
       </Hero>
 
       <Band id="projects" tone="sage" aria-labelledby="projects-title">

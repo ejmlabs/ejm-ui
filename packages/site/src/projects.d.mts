@@ -38,6 +38,18 @@ export interface ProjectAssets {
 export const PROJECTS: Readonly<Record<ProjectId, Project>>;
 /** Discoverable projects only. Use PROJECTS[id] directly for an unreleased build identity. */
 export const PROJECT_LIST: readonly Project[];
+export type LinkedProjectId = 'calm' | 'gerry';
+/** A family site built without @ejm/site: linked from the other sites, with no build identity of its own. */
+export interface LinkedProject {
+  id: LinkedProjectId;
+  name: string;
+  /** Canonical origin with a trailing slash. */
+  url: string;
+  /** Repository URL, or an empty string for a product with no public repository. */
+  repo: string;
+}
+/** Linked family sites, after the build identities in `otherSites`. */
+export const LINKED_PROJECTS: readonly LinkedProject[];
 export function assetPaths(project: Project, exists?: (dir: string) => boolean): ProjectAssets;
 export function otherSites(currentId: ProjectId): SiteLink[];
 export function sourceLinks(currentId: ProjectId): SiteLink[];
