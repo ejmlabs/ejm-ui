@@ -10,7 +10,7 @@ export const UI_ROOT = resolve(here, '../..');
 export const TOOL_VERSION = JSON.parse(readFileSync(join(here, 'package.json'), 'utf8')).version;
 
 /**
- * The clean exports of the products: `git archive HEAD` of each repo plus its release build, made by scripts/clean-build.mjs.
+ * The clean exports of the products: `git archive` of the CLI commit and its pinned harness commit plus their release builds, made by scripts/clean-build.mjs.
  * Shots are only captured from here. Override the folder with EJM_SHOTS_EXPORT.
  */
 export const EXPORT_ROOT = resolve(process.env.EJM_SHOTS_EXPORT || join(tmpdir(), 'ejm-shots-export'));
