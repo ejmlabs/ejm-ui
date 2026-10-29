@@ -176,13 +176,16 @@ documentation does not establish deployment or browser acceptance.
 
 ## 3. Deploy configuration (Cloudflare Workers static assets)
 
-`wrangler.jsonc` next to `package.json`. The account and the routes are the ones the sites already use; change `name` and the pattern per site:
+`wrangler.jsonc` next to `package.json`, with `wrangler` pinned as an exact devDependency of that package. The account and the routes are the ones the sites already use; change `name` and the pattern per site:
 
 ```jsonc
 {
+  "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "ejmlabs-cli",
   "account_id": "478a0db3a110d8503c16abbc1db27af4",
   "compatibility_date": "2026-10-18",
+  "workers_dev": false,
+  "preview_urls": false,
   "assets": {
     "directory": "./dist",
     "not_found_handling": "404-page"
