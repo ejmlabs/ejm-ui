@@ -1,0 +1,50 @@
+name: Frontend test reliability
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '12 12 * * *'
+permissions:
+  contents: read
+jobs:
+  reliability:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.22.1'
+      - name: Install locked dependencies
+        timeout-minutes: 8
+        run: |
+          npm ci --ignore-scripts
+          npm rebuild node-pty --ignore-scripts=false
+      - name: Check browser and image prerequisites
+        timeout-minutes: 5
+        run: |
+          set -euo pipefail
+          if ! python3 -I -c 'import PIL'; then
+            sudo apt-get update
+            sudo apt-get install -y python3-pil
+          fi
+          chrome="$(command -v google-chrome)"
+          "$chrome" --version
+          python3 -I -c 'import PIL; print(PIL.__version__)'
+          echo "CHROME=$chrome" >> "$GITHUB_ENV"
+      - name: Test the comparator
+        timeout-minutes: 3
+        run: python3 -B -m unittest discover -s scripts -p 'test_frontend_flake_check.py'
+      - name: Compare two frontend runs
+        timeout-minutes: 20
+        run: python3 -B scripts/frontend_flake_check.py "$RUNNER_TEMP/ui-frontend-flakes"
+      - name: Preserve frontend evidence
+        if: ${{ always() }}
+        timeout-minutes: 5
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-frontend-test-reliability
+          path: ${{ runner.temp }}/ui-frontend-flakes/
+          if-no-files-found: warn

@@ -124,6 +124,7 @@ def run(command: list[str], log: Path, *, separate_stderr: bool = False) -> int 
             sys.stdout.write(line)
             sys.stdout.flush()
             stream.write(line)
+            stream.flush()
         return process.wait()
 
 
