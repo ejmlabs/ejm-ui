@@ -5,7 +5,7 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
-- Emit optional Vitest results for the shared CI flake detector and compare repeated Rust test runs without hiding failures.
+- Compare repeated frontend and Rust test runs on main and daily without hiding failures. Vitest can also emit optional JSON results.
 
 - Replace the ejm-ui mark with the u and block: a ribbon u that starts as a tapered tip, holding one rounded-square component. `scripts/ui-assets.mjs` regenerates the whole family in `@ejm/tokens/assets/projects/ui/` (marks, logos, icons, favicons, manifest and social card), so the gallery picks it up on its next build. Sites that keep their own copy of the ui mark need to refresh it.
 
