@@ -3,7 +3,7 @@
 The Rust reliability workflow runs on main and daily. It runs the ejm-tui tests
 twice through Cargo and twice through cargo-nextest 0.9.124. It names any test
 with both a pass and a failure and fails if any run fails or evidence is
-incomplete. It runs doctests separately. The human-admitted PR gate is unchanged.
+incomplete. The Cargo runs include doctests. The human-admitted PR gate is unchanged.
 
 To reproduce, install the pinned runner with
 `cargo install --locked --version 0.9.124 cargo-nextest`, then from

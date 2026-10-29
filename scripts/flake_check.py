@@ -106,7 +106,6 @@ def main() -> int:
     output.mkdir()
     baseline = []
     attempts = []
-    docs = []
     for number in (1, 2):
         baseline.append(
             run(
@@ -147,17 +146,8 @@ def main() -> int:
                 output / f"attempt-{number}.log",
             )
         )
-        # nextest does not run doctests; keep their logs and exit codes separately.
-        docs.append(
-            run(
-                ["cargo", "test", "--locked", "--workspace", "--doc", "--color", "never"],
-                output / f"doctest-{number}.log",
-            )
-        )
-    incomplete = (
-        any(code is None for code in baseline)
-        or any(code not in (0, 100) for code in attempts)
-        or any(code is None for code in docs)
+    incomplete = any(code is None for code in baseline) or any(
+        code not in (0, 100) for code in attempts
     )
     mixed = []
     try:
@@ -175,13 +165,10 @@ def main() -> int:
     baseline_differed = all(code is not None for code in baseline) and (baseline[0] == 0) != (
         baseline[1] == 0
     )
-    docs_differed = all(code is not None for code in docs) and (docs[0] == 0) != (docs[1] == 0)
     summary = {
         "cargo_test_exit_codes": baseline,
         "cargo_test_inconsistent": baseline_differed,
         "exit_codes": attempts,
-        "doctest_exit_codes": docs,
-        "doctest_inconsistent": docs_differed,
         "mixed": mixed,
         "incomplete": incomplete,
     }
@@ -190,10 +177,8 @@ def main() -> int:
         print(f"Flaky test: {suite} :: {name}", file=sys.stderr)
     if baseline_differed:
         print("Cargo test suite outcomes differed; inspect cargo-test logs.", file=sys.stderr)
-    if docs_differed:
-        print("Doctest suite outcomes differed; inspect doctest logs.", file=sys.stderr)
     print(f"Test evidence: {output}")
-    return int(incomplete or any(code != 0 for code in baseline + attempts + docs))
+    return int(incomplete or any(code != 0 for code in baseline + attempts))
 
 
 if __name__ == "__main__":

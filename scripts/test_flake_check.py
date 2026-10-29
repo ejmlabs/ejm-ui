@@ -110,7 +110,6 @@ raise SystemExit(0)
             self.assertEqual(result.returncode, 1)
             self.assertEqual(summary["cargo_test_exit_codes"], [0, 0])
             self.assertEqual(summary["exit_codes"], [100, 0])
-            self.assertEqual(summary["doctest_exit_codes"], [0, 0])
             self.assertFalse(summary["incomplete"])
             self.assertEqual(summary["mixed"], [["pkg::suite", "write"]])
 
@@ -129,12 +128,11 @@ if sys.argv[1] == "nextest":
     output.write_text("<testsuites" + attrs + "><testsuite name='pkg::suite'" + attrs
                       + "><testcase classname='pkg::suite' name='write'/></testsuite></testsuites>")
     raise SystemExit(0)
-if "--doc" not in sys.argv:
-    marker = Path("cargo-ran")
-    if not marker.exists():
-        marker.touch()
-        print("shared-process test failed")
-        raise SystemExit(101)
+marker = Path("cargo-ran")
+if not marker.exists():
+    marker.touch()
+    print("shared-process test failed")
+    raise SystemExit(101)
 """,
                 encoding="utf-8",
             )
