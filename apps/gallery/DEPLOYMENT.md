@@ -14,10 +14,18 @@ npm run build -w @ejm/gallery
 ```
 
 The existing Cloudflare account must own the domain and the deploying identity
-must have Worker/custom-domain rights. Review a Wrangler dry run against
-`apps/gallery/wrangler.jsonc`, then deploy that exact built directory with the
-approved account. The repository's protected source review gates apply before
-publication. A local build or source PR does not publish the site.
+must have Worker/custom-domain rights. `wrangler.jsonc` names that account, and
+`@ejm/gallery` pins Wrangler. From `apps/gallery`, review a dry run, then deploy
+that exact built directory. `--env ""` names production; the config also
+defines `staging`:
+
+```sh
+npx wrangler deploy --config wrangler.jsonc --env "" --dry-run
+npx wrangler deploy --config wrangler.jsonc --env ""
+```
+
+The repository's protected source review gates apply before publication. A
+local build or source PR does not publish the site.
 
 After publication, verify the canonical host, shared headers, fonts and original
 OFL notices, 404 handling, complete no-script docs, keyboard navigation and

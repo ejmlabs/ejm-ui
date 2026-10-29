@@ -16,5 +16,8 @@
     "@ejm/ssg": "0.1.0",
     "@ejm/tokens": "0.1.0",
     "@ejm/ui": "0.1.0"
+  },
+  "devDependencies": {
+    "wrangler": "4.151.3"
   }
 }
