@@ -51,12 +51,12 @@ Each capture checks its own text and fails if a check fails. The result is in th
 
 ## Reproduce
 
-A shot is only ever captured from a clean build of a product's last commit, never from a working tree with uncommitted changes (the commit would not identify the code that ran). The capture tool refuses a product directory with uncommitted changes.
+A shot is only ever captured from clean builds of the CLI commit and its pinned harness commit, never from a working tree with uncommitted changes (the commit would not identify the code that ran). The capture tool refuses a product directory with uncommitted changes.
 
 Prerequisites: Node 22.12 or later, the [locked dependency setup](../../README.md#development), Google Chrome (or `CHROME=/path/to/chrome`), the Rust toolchain the products pin (`cargo`, offline registry cache), and `python3` 3.11 or later for the Python shot. On Linux, complete the explicit `node-pty` rebuild from that setup. On macOS, node-pty 1.1.0 ships its `spawn-helper` without the execute bit, so `src/session.mjs` restores it before the first spawn. The sibling checkouts `../ejm-cli` and `../ejm-harness` are only read.
 
 ```sh
-# 1. Export HEAD of both repos with `git archive` and build the release binaries from the exports.
+# 1. Export CLI HEAD and its committed harness pin with `git archive`, then build both release binaries.
 node packages/shots/scripts/clean-build.mjs                  # export folder: $EJM_SHOTS_EXPORT, else <tmp>/ejm-shots-export
 # 2. Capture every shot, dark and light, from those builds.
 node scripts/capture-terminal.mjs all
@@ -73,7 +73,8 @@ What `clean-build.mjs` does, so it can be done by hand:
 EXPORT=${EJM_SHOTS_EXPORT:-$TMPDIR/ejm-shots-export}
 mkdir -p $EXPORT/ejm-cli $EXPORT/ejm-harness
 git -C ../ejm-cli archive HEAD | tar -x -C $EXPORT/ejm-cli
-git -C ../ejm-harness archive HEAD | tar -x -C $EXPORT/ejm-harness
+HARNESS_PIN=$(git -C ../ejm-cli show HEAD:.github/harness-revision)
+git -C ../ejm-harness archive "$HARNESS_PIN" | tar -x -C $EXPORT/ejm-harness
 # ejm-cli depends on the harness through the path `../ejm-harness/crates/...`; the two exports sit side by side so it resolves.
 (cd $EXPORT/ejm-cli && CARGO_TARGET_DIR=$EXPORT/target-cli cargo build --release --offline --locked -p ejm-cli)
 (cd $EXPORT/ejm-harness && CARGO_TARGET_DIR=$EXPORT/target-harness cargo build --release --offline --locked -p ejm-harness-worker)
@@ -81,7 +82,7 @@ git -C ../ejm-harness archive HEAD | tar -x -C $EXPORT/ejm-harness
 
 - Each export also gets `.ejm-export.json` (repo, commit, method, build note). `src/meta.mjs` reads it, so the metadata records `gitCommit` as the exported commit, `workingTreeChanges` as 0, and `build` as "Built from a clean `git archive` export of <hash>".
 - The binaries are `target-cli/release/ejm-cli` and `target-harness/release/ejm-harness-worker`, outside the exports like any `CARGO_TARGET_DIR`. Their path in the metadata starts with `<clean-export>/`, so no home directory leaks. Override with `EJM_CLI_BINARY` and `EJM_HARNESS_BINARY`.
-- ejm-cli has no committed pin of the harness revision (`.github/harness-revision` was untracked when this was set up), so the harness HEAD is used for the cli build. The cli's harness crates were byte identical between that file's revision `4a751c6` and the harness HEAD `a96c992` (`git diff` over `crates`, `sdk`, `examples`, `Cargo.toml` and `Cargo.lock` was empty). The cli JSON records the harness commit in `build`.
+- The CLI commit selects its harness through its committed `.github/harness-revision`. The script requires that full commit to exist in the sibling harness repository and exports it regardless of the harness checkout's HEAD or either working tree. Fetch a missing commit deliberately before retrying. The CLI metadata records the harness commit in `build`.
 - The harness SDKs come from the export too: `sdk/typescript/dist` is a committed file (not rebuilt), the Python SDK is put on `PYTHONPATH` from `sdk/python`, and the SDKs find the worker through the `PATH` entry the tool prepares (`ejm-harness-worker` is a symlink to the clean binary).
 - `clean-build.mjs` clones the repo's own `target/release` into an empty target directory first (`cp -cR`, an APFS copy-on-write clone) to skip a cold build; cargo still rebuilds every crate whose path changed. `--no-seed` turns that off. If a build fails, nothing falls back to the working tree: fix the cause or stop.
 - Other folders: `--dest dir` or `EJM_SHOTS_EXPORT=dir` for the export, `EJM_CLI_REPO` and `EJM_HARNESS_REPO` for the repos, `EJM_CLI_DIR` and `EJM_HARNESS_DIR` for the exports used by the capture tool.
