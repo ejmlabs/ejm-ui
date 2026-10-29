@@ -11,8 +11,7 @@ from collections.abc import Iterable
 from pathlib import Path
 
 
-def outcomes(path: Path) -> dict[tuple[str, str], str]:
-    """Return per-test results from a complete nextest JUnit report."""
+def report_results(path: Path) -> tuple[dict[tuple[str, str], str], bool]:
     # shortcut: Reports over 50 MiB are refused; raise this bound if suites exceed it.
     if path.stat().st_size > 50 * 1024 * 1024:
         raise ValueError("test report exceeds 50 MiB")
@@ -20,29 +19,49 @@ def outcomes(path: Path) -> dict[tuple[str, str], str]:
     if root.tag != "testsuites":
         raise ValueError("not a nextest JUnit report")
     results = {}
+    invalid = set()
+    incomplete = False
+    all_results = []
     for suite in root.findall("testsuite"):
         suite_name = suite.get("name")
         if not suite_name:
-            raise ValueError("test suite has no name")
+            incomplete = True
+            invalid.update(
+                (case.get("classname"), case.get("name")) for case in suite.findall("testcase")
+            )
+            continue
         suite_results = []
         for case in suite.findall("testcase"):
             name = case.get("name")
-            if not name or case.get("classname") != suite_name:
-                raise ValueError("test case has no matching identity")
-            key = (suite_name, name)
-            if key in results:
-                raise ValueError(f"duplicate test result: {key}")
             states = [child.tag for child in case if child.tag in ("failure", "error", "skipped")]
-            if len(states) > 1 or any(child.tag.startswith(("flaky", "rerun")) for child in case):
-                raise ValueError(f"ambiguous test result: {key}")
             status = states[0] if states else "passed"
-            results[key] = status
             suite_results.append(status)
-        check_counts(suite, suite_results)
+            all_results.append(status)
+            if not name:
+                incomplete = True
+                continue
+            key = (suite_name, name)
+            if case.get("classname") != suite_name:
+                invalid.add((case.get("classname"), name))
+                invalid.add(key)
+            if key in results or len(states) > 1 or any(
+                child.tag.startswith(("flaky", "rerun")) for child in case
+            ):
+                invalid.add(key)
+            results[key] = status
+        try:
+            check_counts(suite, suite_results)
+        except ValueError:
+            incomplete = True
     if not results:
-        raise ValueError("report contains no tests")
-    check_counts(root, results.values())
-    return results
+        incomplete = True
+    try:
+        check_counts(root, all_results)
+    except ValueError:
+        incomplete = True
+    for key in invalid:
+        results.pop(key, None)
+    return results, incomplete or bool(invalid)
 
 
 def check_counts(element: ET.Element, statuses: Iterable[str]) -> None:
@@ -65,33 +84,33 @@ def check_counts(element: ET.Element, statuses: Iterable[str]) -> None:
             raise ValueError(f"{key} count does not match reported tests")
 
 
-def mixed_tests(first: Path, second: Path) -> list[tuple[str, str]]:
-    """Compare complete reports; missing, skipped and execution errors are not passes."""
-    a, b = outcomes(first), outcomes(second)
-    if a.keys() != b.keys():
-        raise ValueError("the two runs did not report the same tests")
-    if any(
-        a[key] in ("error", "skipped") or b[key] in ("error", "skipped")
-        for key in a
-    ):
-        raise ValueError("test execution or skip status is incomplete")
-    return sorted(key for key in a if {a[key], b[key]} == {"passed", "failure"})
-
-
-def inventory(path: Path) -> set[tuple[str, str]]:
+def inventory(path: Path) -> tuple[set[tuple[str, str]], set[tuple[str, str]], bool]:
     data = json.loads(path.read_text(encoding="utf-8"))
     try:
         tests = set()
+        skipped = set()
+        incomplete = False
         for suite_name, suite in data["rust-suites"].items():
-            if suite["status"] != "listed":
-                raise ValueError("nextest did not list every suite")
-            for name, case in suite["testcases"].items():
-                if case["ignored"] is not False or case["filter-match"]["status"] != "matches":
-                    raise ValueError("nextest skipped a test")
-                tests.add((suite_name, name))
+            try:
+                listed = suite["status"] == "listed"
+                cases = suite["testcases"].items()
+            except (KeyError, TypeError, AttributeError):
+                incomplete = True
+                continue
+            incomplete |= not listed
+            for name, case in cases:
+                key = (suite_name, name)
+                tests.add(key)
+                try:
+                    matches = case["ignored"] is False and case["filter-match"]["status"] == "matches"
+                except (KeyError, TypeError):
+                    matches = False
+                if not listed or not matches:
+                    skipped.add(key)
+                    incomplete = True
         if not tests or data["test-count"] != len(tests):
-            raise ValueError("nextest inventory is incomplete")
-        return tests
+            incomplete = True
+        return tests, skipped, incomplete
     except (KeyError, TypeError, AttributeError) as error:
         raise ValueError("invalid nextest inventory") from error
 
@@ -186,28 +205,39 @@ def main() -> int:
         )
     incomplete = any(code is None for code in baseline) or any(
         code not in (0, 100) for code in attempts
-    )
-    mixed = []
-    try:
-        for number, code in enumerate(baseline, 1):
+    ) or any(code != 0 for code in listings)
+    results = []
+    excluded = set()
+    for number, code in enumerate(baseline, 1):
+        try:
             if code == 0:
                 check_cargo_log(output / f"cargo-test-{number}.log")
-        if any(code not in (0, 100) for code in attempts):
-            raise ValueError("nextest did not complete both test runs")
-        if any(code != 0 for code in listings):
-            raise ValueError("nextest did not list both test runs")
-        mixed = mixed_tests(output / "attempt-1.xml", output / "attempt-2.xml")
-        for number, code in enumerate(attempts, 1):
-            results = outcomes(output / f"attempt-{number}.xml")
-            if inventory(output / f"inventory-{number}.json") != results.keys():
-                raise ValueError("nextest report does not contain every listed test")
-            has_failures = "failure" in results.values()
-            if has_failures != (code == 100):
-                raise ValueError("nextest exit code does not match its report")
-    except (OSError, ET.ParseError, ValueError) as error:
-        print(f"Cannot compare test results: {error}", file=sys.stderr)
-        incomplete = True
-        mixed = []
+        except (OSError, ValueError) as error:
+            print(f"Incomplete Cargo evidence: {error}", file=sys.stderr)
+            incomplete = True
+    for number, code in enumerate(attempts, 1):
+        try:
+            current, report_incomplete = report_results(output / f"attempt-{number}.xml")
+            incomplete |= report_incomplete or any(status in ("error", "skipped") for status in current.values())
+            incomplete |= ("failure" in current.values()) != (code == 100)
+        except (OSError, ET.ParseError, ValueError) as error:
+            print(f"Cannot read test report: {error}", file=sys.stderr)
+            current = {}
+            incomplete = True
+        results.append(current)
+        try:
+            listed, skipped, inventory_incomplete = inventory(output / f"inventory-{number}.json")
+            excluded.update(skipped)
+            incomplete |= inventory_incomplete or listed != current.keys()
+        except (OSError, ValueError) as error:
+            print(f"Cannot read test inventory: {error}", file=sys.stderr)
+            incomplete = True
+    first, second = results
+    incomplete |= first.keys() != second.keys()
+    mixed = sorted(
+        key for key in first.keys() & second.keys() - excluded
+        if {first[key], second[key]} == {"passed", "failure"}
+    )
     baseline_differed = all(code is not None for code in baseline) and (baseline[0] == 0) != (
         baseline[1] == 0
     )
