@@ -97,22 +97,22 @@ A conversation screen is built from `WorkspaceLayout` and the workspace recipes 
 
 | Region | Height | Content |
 | --- | --- | --- |
-| Header | 2 rows | `SessionHeader`: name and version with the connection on the right, then the directory, cut from the start |
+| Header | 1 row, then 1 blank | `SessionHeader`: name, version and connection, with the directory at the right edge, cut from the start |
 | Transcript | fills, at least 1 row | `Message`, `ToolCall` and `Markdown` blocks separated by one blank row |
 | Workers | 0 or 1 row | `worker_line` rows, hidden first on short windows |
-| Activity | 0 or 1 row | `ActivityLine`: spinner, label and muted details while active |
-| Resources | 1 row | `ResourceLine`: agents, models and tools as `active+queued`, shown while idle too |
+| Activity | 0 or 1 row | `ActivityLine`: spinner, label and muted details while active, with `ResourceLine` right aligned while any count is nonzero |
 | Notices | 0 to 4 rows | Host notices |
 | Composer | 2 to 7 rows | One `Rule`, then a `Prompt` of one to six draft rows |
-| Controls | 1 row | `workspace_controls`: effective grant mode first, then `KeyHints` |
+| Controls | 1 blank, then 1 row | `workspace_controls`: effective grant mode at the left, `KeyHints` at the right edge |
+
+Hosts inset the whole screen by one margin on both sides, so every region shares a left and a right edge.
 
 The supported size is at least 20 columns and 8 rows. Below that, show one sentence asking the reader to enlarge the terminal.
 
-The real output at 64 columns under `NO_COLOR`:
+The real output at 80 columns under `NO_COLOR`:
 
 ```text
-  ejm-cli 0.1.0                         deepseek / deepseek-chat
-  ~/src/ejm-cli
+ejm-cli 0.1.0  deepseek / deepseek-chat                            ~/src/ejm-cli
 
 › Fix the flaky retry test.
 
@@ -126,15 +126,15 @@ The real output at 64 columns under `NO_COLOR`:
     … +2 lines (Ctrl+O to expand)
 ⠹ run_tests  cargo test retry  running…
 
-⠹ Running tests… (step 2 · 14s · Esc to stop)
-2 agents · models 1+0q · tools 1+0q
-────────────────────────────────────────────────────────────────
+⠹ Running tests… (step 2 · 14s · Esc to stop)   2 agents · 1 model call · 1 tool
+────────────────────────────────────────────────────────────────────────────────
 › ▌Describe a task
-grants: write · Enter queue · Ctrl+K steer · Esc stop
+
+grants: write                              Esc stop · Ctrl+K steer · Enter queue
 ```
 
 - **Grants.** The controls row names the effective mode in words and turns it warning when write or shell access is on.
-- **Counts.** Never show unavailable usage as zero. Narrow rows truncate, so the host keeps a full view of connection and capacity it can open on request.
+- **Counts.** `ResourceLine` draws nothing while idle, so a quiet screen stays quiet. Never show unavailable usage as zero. Narrow rows truncate, so the host keeps a full view of connection and capacity it can open on request.
 - **Completion.** `CommandMenu` draws completion choices as plain rows by the draft, never in a popup.
 
 ## Keys

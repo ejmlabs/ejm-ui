@@ -21,6 +21,8 @@ const GUTTER: usize = 2;
 const PREVIEW_LINES: usize = 4;
 /// Output lines a failed tool call shows, because the error is usually the point.
 const ERROR_LINES: usize = 8;
+/// The widest usage that sets the [`CommandMenu`] column. Longer usages take their own width.
+const USAGE_COLUMNS: usize = 24;
 
 /// Who a [`Message`] is from.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, EnumIter, IntoStaticStr)]
@@ -400,13 +402,16 @@ impl<'a> CommandMenu<'a> {
                 t.muted,
             )];
         }
+        // Size the column for ordinary usages so one long usage moves only its own description.
+        let half = w / 2;
         let column = self
             .items
             .iter()
             .map(|(usage, _)| width(&clean(usage, false)))
+            .filter(|columns| *columns <= USAGE_COLUMNS)
             .max()
-            .unwrap_or(0)
-            .min(w / 2)
+            .unwrap_or(USAGE_COLUMNS)
+            .min(half)
             .max(8);
         self.items
             .iter()
@@ -423,7 +428,8 @@ impl<'a> CommandMenu<'a> {
                     (" ", t.accent, t.muted)
                 };
                 let lead = format!("{mark} ");
-                let usage = pad_right(&truncate(usage, column, ell), column);
+                let own = width(&clean(usage, false)).min(half).max(column);
+                let usage = pad_right(&truncate(usage, own, ell), own);
                 let usage = truncate(&usage, w.saturating_sub(width(&lead)), ell);
                 let rest = w.saturating_sub(width(&lead) + width(&usage) + 2);
                 let mut spans = vec![
