@@ -4,27 +4,39 @@ import { dirname, join } from 'node:path';
 import type { ViteDevServer } from 'vite';
 import { describe, expect, it, vi } from 'vitest';
 import { siteDefaults } from './head';
-import { PROJECT_LIST, PROJECTS, assetPaths, otherSites, sourceLinks } from './projects.mjs';
+import { LINKED_PROJECTS, PROJECT_LIST, PROJECTS, assetPaths, otherSites, sourceLinks } from './projects.mjs';
+import { analyticsToken } from './analytics';
 import { ejmSite, headTags, sharedFiles } from './vite.mjs';
 
 const require = createRequire(import.meta.url);
 const uiAssets = join(dirname(require.resolve('@ejm/tokens/theme.json')), 'assets', 'projects', 'ui');
 
 describe('project registry', () => {
-  it('keeps the four published discovery identities and their configured tokens unchanged', () => {
-    expect(PROJECT_LIST.map(p => p.host)).toEqual(['ejmlabs.com', 'cli.ejmlabs.com', 'ide.ejmlabs.com', 'harness.ejmlabs.com']);
+  it('keeps the published discovery identities and their configured tokens unchanged', () => {
+    expect(PROJECT_LIST.map(p => p.host)).toEqual(['ejmlabs.com', 'cli.ejmlabs.com', 'ide.ejmlabs.com', 'harness.ejmlabs.com', 'ui.ejmlabs.com']);
     for (const p of PROJECT_LIST) {
       expect(p.url).toBe(`https://${p.host}/`);
-      expect(p.analyticsToken).toMatch(/^[0-9a-f]{32}$/);
+      // The gallery has no analytics; every other published site keeps its own token.
+      expect(p.analyticsToken).toMatch(p.id === 'ui' ? /^$/ : /^[0-9a-f]{32}$/);
       expect(p.repo).toMatch(/^https:\/\/github\.com\/ejmlabs/);
     }
-    expect(new Set(PROJECT_LIST.map(p => p.analyticsToken)).size).toBe(4);
+    expect(new Set(PROJECT_LIST.map(p => p.analyticsToken).filter(Boolean)).size).toBe(4);
   });
 
-  it.each(['ejmlabs', 'cli', 'ide', 'harness'] as const)('preserves the published external navigation for %s', id => {
-    const published = [PROJECTS.ejmlabs, PROJECTS.cli, PROJECTS.ide, PROJECTS.harness];
-    expect(otherSites(id)).toEqual(published.filter(p => p.id !== id).map(p => ({ label: p.name, href: p.url, external: true })));
+  it.each(['ejmlabs', 'cli', 'ide', 'harness', 'ui'] as const)('links every other family site from %s, build identities first', id => {
+    const family = [PROJECTS.ejmlabs, PROJECTS.cli, PROJECTS.ide, PROJECTS.harness, PROJECTS.ui, ...LINKED_PROJECTS];
+    expect(otherSites(id)).toEqual(family.filter(p => p.id !== id).map(p => ({ label: p.name, href: p.url, external: true })));
     expect(sourceLinks(id)).toEqual([{ label: `${PROJECTS[id].name} on GitHub`, href: PROJECTS[id].repo, external: true }]);
+  });
+
+  it('links calm and gerry without a build identity, analytics or an invented gerry repository', () => {
+    expect(LINKED_PROJECTS).toEqual([
+      { id: 'calm', name: 'ejm-calm', url: 'https://calm.ejmlabs.com/', repo: 'https://github.com/ejmlabs/ejm-calm' },
+      { id: 'gerry', name: 'gerry', url: 'https://meetgerry.ai/', repo: '' },
+    ]);
+    for (const p of LINKED_PROJECTS) expect(Object.hasOwn(PROJECTS, p.id), p.id).toBe(false);
+    expect(analyticsToken({ location: { hostname: 'meetgerry.ai' } })).toBeUndefined();
+    expect(analyticsToken({ location: { hostname: 'calm.ejmlabs.com' } })).toBeUndefined();
   });
 
   it('keeps chess buildable without advertising its unverified destinations or inventing a source repository', () => {
@@ -41,9 +53,9 @@ describe('project registry', () => {
     expect(JSON.parse(readFileSync(files['site.webmanifest']!, 'utf8')).name).toBe('Chess by ejmlabs');
   });
 
-  it('registers the ejm-ui gallery outside discovery, and uses its brand files when present', () => {
-    expect(PROJECTS.ui.discoverable).toBe(false);
-    expect(PROJECT_LIST.some(p => p.id === 'ui')).toBe(false);
+  it('publishes the ejm-ui gallery without analytics, and uses its brand files when present', () => {
+    expect(PROJECT_LIST.some(p => p.id === 'ui')).toBe(true);
+    expect(analyticsToken({ location: { hostname: 'ui.ejmlabs.com' } })).toBeFalsy();
     expect(siteDefaults('ui').origin).toBe('https://ui.ejmlabs.com');
     expect(siteDefaults('ui').head.titleTemplate).toBe('%s | ejm-ui');
     expect(sourceLinks('ui')).toEqual([{ label: 'ejm-ui on GitHub', href: 'https://github.com/ejmlabs/ejm-ui', external: true }]);
