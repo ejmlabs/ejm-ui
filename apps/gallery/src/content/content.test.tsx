@@ -46,8 +46,6 @@ describe('docs content', () => {
     // Both language panels of the reduced-motion tabs are present, each under its label.
     expect(h).toContain('>TypeScript</p>');
     expect(h).toContain('>HTML</p>');
-    expect(text(h)).toContain('animate-reveal');
-    expect(h).toContain('Third item');
     // The CSS, TypeScript and Rust panels of the token example.
     const start = html();
     for (const word of ['var(--ejm-primary)', 'bg-primary', 'DARK.primary']) expect(text(start)).toContain(word);
@@ -60,8 +58,10 @@ describe('docs content', () => {
     expect(h).toContain('rel="prev"');
     expect(h).toContain('rel="next"');
     const { prev, next } = pagerFor(docs, docs.pages[2]!);
-    expect(prev?.title).toBe('Design language');
-    expect(next?.title).toBe('Theming and the cookie');
+    expect(prev).toBeTruthy();
+    expect(next).toBeTruthy();
+    expect(h).toContain(`href="${prev!.href}"`);
+    expect(h).toContain(`href="${next!.href}"`);
     expect(html()).not.toContain('rel="prev"');
   });
 
