@@ -9,6 +9,12 @@ ejm-ui owns the design that `ejmlabs-design` summarizes for consumers. Load `ejm
 the shared rules (brand, layout, themes, motion, accessibility, copy). This skill says how to
 change the owner so every consumer gets the change from one place.
 
+## Principles
+
+KISS, YAGNI, DRY and Clean Code: the simplest code that solves the whole problem, only what a
+task needs now, one authoritative home for each rule, and clear names, small functions and
+structure.
+
 ## Before you start
 
 - Read [the quality bar](../../../QUALITY.md), [the theme contract](../../../packages/ui/THEME.md)
