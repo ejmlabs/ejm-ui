@@ -1,8 +1,10 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createRef } from 'react';
+import { renderToString } from 'react-dom/server';
 import { afterEach, expect, it, vi } from 'vitest';
-import { AppActions, AppField, AppFieldset, AppForm, AppHeading, AppSection, GameWorkspace, MoveHistory, MovePairs } from './Application';
+import { Chessboard } from '../components/Chessboard';
+import { AppActions, AppField, AppFieldset, AppForm, AppHeading, AppSection, BoardPlaceholder, GameWorkspace, MoveHistory, MovePairs } from './Application';
 
 afterEach(cleanup);
 
@@ -27,6 +29,30 @@ it('keeps form submission, labels, fieldset state and programmatic heading focus
   expect(screen.getByRole('navigation', { name: 'Account links' })).toContainElement(screen.getByRole('link', { name: 'Play' }));
   heading.current?.focus();
   expect(heading.current).toHaveFocus();
+});
+
+it('follows the latest move inside the move list until the reader scrolls up', () => {
+  const { rerender } = render(<MovePairs moves={[{ number: 1, white: 'e4' }]} />);
+  const list = screen.getByRole('list', { name: 'Moves' });
+  Object.defineProperty(list, 'scrollHeight', { configurable: true, value: 480 });
+  Object.defineProperty(list, 'clientHeight', { configurable: true, value: 100 });
+  rerender(<MovePairs moves={[{ number: 1, white: 'e4', black: 'e5' }]} />);
+  expect(list.scrollTop).toBe(480);
+  list.scrollTop = 100;
+  fireEvent.scroll(list);
+  rerender(<MovePairs moves={[{ number: 1, white: 'e4', black: 'e5' }, { number: 2, white: 'Nf3' }]} />);
+  expect(list.scrollTop).toBe(100);
+  list.scrollTop = 380;
+  fireEvent.scroll(list);
+  rerender(<MovePairs moves={[{ number: 1, white: 'e4', black: 'e5' }, { number: 2, white: 'Nf3', black: 'Nc6' }]} />);
+  expect(list.scrollTop).toBe(480);
+});
+
+it('fills the board placeholder with the Chessboard loading fill, so the swap does not flash', () => {
+  const { container } = render(<BoardPlaceholder>Opening the chessboard.</BoardPlaceholder>);
+  const loading = renderToString(<Chessboard fen="8/8/8/8/8/8/8/8 w - - 0 1" color="w" enabled={false} onMove={() => {}} />);
+  expect(container.firstElementChild).toHaveClass('bg-tone');
+  expect(loading).toContain('bg-tone');
 });
 
 it('retains game keyboard handling, named details and content after the board', () => {

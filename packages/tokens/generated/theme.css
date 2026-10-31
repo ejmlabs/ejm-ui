@@ -29,6 +29,9 @@
   --ejm-ui-special: #b7a6e8;
   --ejm-ui-info: #8cb5eb;
   --ejm-ui-control-border: #6a7c6c;
+  --ejm-ui-board-light: #849682;
+  --ejm-ui-board-dark: #57665b;
+  --ejm-ui-board-mark: #ffffff;
   --ejm-ui-diff-add: #93ba8b;
   --ejm-ui-diff-del: #eea0a0;
   --ejm-ui-diff-add-bg: #2f392f;
@@ -100,6 +103,9 @@
   --ejm-ui-special: #5b4a96;
   --ejm-ui-info: #2563a8;
   --ejm-ui-control-border: #7d877f;
+  --ejm-ui-board-light: #e8ede3;
+  --ejm-ui-board-dark: #8a9a7b;
+  --ejm-ui-board-mark: #29443b;
   --ejm-ui-diff-add: #2f6b3a;
   --ejm-ui-diff-del: #a63a3a;
   --ejm-ui-diff-add-bg: #dae2d7;
@@ -172,6 +178,9 @@
     --ejm-ui-special: #5b4a96;
     --ejm-ui-info: #2563a8;
     --ejm-ui-control-border: #7d877f;
+    --ejm-ui-board-light: #e8ede3;
+    --ejm-ui-board-dark: #8a9a7b;
+    --ejm-ui-board-mark: #29443b;
     --ejm-ui-diff-add: #2f6b3a;
     --ejm-ui-diff-del: #a63a3a;
     --ejm-ui-diff-add-bg: #dae2d7;

@@ -1,6 +1,6 @@
-import { act } from 'react';
+import { act, useEffect } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { defineSite, hydrateSite, matchRoute, usePath } from './index';
+import { defineSite, hydrateSite, Link, matchRoute, usePath, useSearch } from './index';
 import { renderRoute } from './server';
 import site from '../fixtures/basic/src/site';
 
@@ -80,6 +80,57 @@ describe('usePath', () => {
     });
     expect(errors).not.toHaveBeenCalled();
     expect(document.getElementById('at')?.textContent).toBe('/lazy');
+  });
+});
+
+describe('useSearch', () => {
+  const mounted = vi.fn();
+  const Session = () => (useEffect(() => mounted(), []), null);
+  // Like a page that remounts its state for each query, and rewrites its own URL while it runs.
+  const App = ({ children }: { children: React.ReactNode }) => {
+    const search = useSearch();
+    return (
+      <>
+        <p id="search">{search}</p>
+        <Session key={search} />
+        <Link href="/?b=2">Next</Link>
+        {children}
+      </>
+    );
+  };
+  const own = defineSite({ App, base: '', routes: [{ path: '/', component: () => <h1>Page</h1> }] });
+  const shown = () => document.getElementById('search')?.textContent;
+  async function bootWithQuery() {
+    history.replaceState(null, '', '/?a=1');
+    const { html } = await renderRoute(own, own.routes[0]!);
+    expect(html).toContain('<p id="search"></p>'); // the prerender never reads the browser's URL
+    document.body.innerHTML = `<div id="root">${html}</div>`;
+    mounted.mockClear();
+    await act(async () => {
+      root = await hydrateSite(own);
+    });
+  }
+
+  it('hydrates without a mismatch, then follows a router push and back', async () => {
+    await bootWithQuery();
+    expect(errors).not.toHaveBeenCalled();
+    expect(shown()).toBe('?a=1');
+    await click(link('Next'));
+    await settled();
+    expect(shown()).toBe('?b=2');
+    await act(async () => {
+      history.back();
+      await new Promise(r => setTimeout(r, 10));
+    });
+    expect(shown()).toBe('?a=1');
+  });
+
+  it('ignores replaceState, so a page can rewrite its own URL without remounting', async () => {
+    await bootWithQuery();
+    const before = mounted.mock.calls.length;
+    await act(async () => void history.replaceState(null, '', '/?game=x'));
+    expect(shown()).toBe('?a=1');
+    expect(mounted.mock.calls.length).toBe(before);
   });
 });
 
