@@ -13,10 +13,11 @@ pieces lets ejm-chess build against `main`.
 - `@ejm/ssg` exports `useSearch()`. It returns the live query string after hydration, follows
   router pushes and back navigation, ignores `replaceState`, and returns `''` during prerender and
   hydration so the static HTML never depends on a browser URL.
-- `@ejm/tokens` gains the `board-light`, `board-dark` and `board-mark` ui roles in both themes,
-  generated as `--ejm-ui-board-*`. A new `checkBoard` contrast check fails when the pure black piece
-  art falls under 3:1 on either square, the mark falls under 3:1 on either square, or the two
-  squares fall under 1.4:1 apart.
+- `@ejm/tokens` gains the `board-light`, `board-dark`, `board-on-light`, `board-on-dark` and
+  `board-mark` ui roles in both themes, generated as `--ejm-ui-board-*`. A new `checkBoard`
+  contrast check fails when the pure black piece art falls under 3:1 on either square, a coordinate
+  label color falls under 4.5:1 on its own square, the mark falls under 3:1 on either square, or
+  the two squares fall under 1.4:1 apart.
 - `@ejm/ui` gains the public `components/Chessboard` leaf. It renders a labelled loading square on
   the server and loads the maintained cm-chessboard renderer after mount. The host supplies FEN,
   orientation, accepted moves and optional legal destinations; the kit holds no chess rules. It

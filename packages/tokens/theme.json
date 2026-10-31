@@ -35,6 +35,8 @@
         "control-border": "6A7C6C",
         "board-light": "849682",
         "board-dark": "57665B",
+        "board-on-light": "131614",
+        "board-on-dark": "F6F5EF",
         "board-mark": "FFFFFF"
       },
       "hues": ["87AFF7", "BA9CE4", "80BAA6", "D7B67C", "D3959C", "8DBDC8"],
@@ -92,6 +94,8 @@
         "control-border": "7D877F",
         "board-light": "E8EDE3",
         "board-dark": "8A9A7B",
+        "board-on-light": "29443B",
+        "board-on-dark": "202721",
         "board-mark": "29443B"
       },
       "hues": ["2F5D8F", "6B4AA3", "2F7A60", "8A6516", "A24A58", "2C6F80"],
@@ -127,13 +131,14 @@
     "syntaxMin": 4.5,
     "subtleMin": 3,
     "board": {
-      "note": "The chessboard follows the page theme, never a band. Its pieces are fixed art: black pieces and the outline of every piece are pure black. pieces: black against each square, so every outline and black piece shows. mark: coordinates and move markers against each square. squares: the two squares against each other, so the checkerboard reads without the labels.",
+      "note": "The chessboard follows the page theme, never a band. Its pieces are fixed art: black pieces and the outline of every piece are pure black. pieces: black against each square, so every outline and black piece shows. labels: the coordinate letters and numbers against the square each sits on (board-on-light on board-light, board-on-dark on board-dark), as small text. mark: move markers and the keyboard focus frame against each square. squares: the two squares against each other, so the checkerboard reads without the labels.",
       "pieces": 3,
+      "labels": 4.5,
       "mark": 3,
       "squares": 1.4
     },
     "web": {
-      "note": "Gates for every web band (Paper, Mist, Sage, Ink) in both themes. text: fg, muted, link, status and on-colors on their grounds. large: link-large, for display type only. control: control borders against the ground and the field. focus: the focus ring. graphic: the six hues, as chart marks. line: hairlines only need to be visible, they do not carry meaning alone, so they are held to 1.4 and not 3.",
+      "note": "Gates for every web band (Paper, Mist, Sage, Ink) in both themes. text: fg, muted, link, status and on-colors on their grounds, and the danger fill as the Button hover draws it (85 percent over the ground). large: link-large, for display type only. control: control borders against the ground and the field. focus: the focus ring. graphic: the six hues, as chart marks. line: hairlines only need to be visible, they do not carry meaning alone, so they are held to 1.4 and not 3.",
       "text": 4.5,
       "large": 3,
       "control": 3,
@@ -166,7 +171,7 @@
           "tone": "brand.mist", "field": "brand.white", "link": "brand.forest", "linkLarge": "brand.forest", "control": "light.control-border", "focus": "brand.forest",
           "primary": "brand.sage", "onPrimary": "brand.ink", "primaryHover": "brand.forest", "onPrimaryHover": "brand.paper",
           "code": "brand.forest", "onCode": "brand.paper",
-          "success": "light.success", "warn": "light.warning", "danger": "light.error", "onDanger": "brand.paper", "info": "light.info", "hues": "light"
+          "success": "light.success", "warn": "light.warning", "danger": "mix(light.error,brand.ink,92)", "onDanger": "brand.paper", "info": "light.info", "hues": "light"
         },
         "dark": {
           "scheme": "dark", "ground": "dark.ground", "fg": "dark.text", "muted": "dark.text-muted", "line": "dark.line-strong",
@@ -182,7 +187,7 @@
           "tone": "brand.paper", "field": "brand.white", "link": "brand.forest", "linkLarge": "brand.forest", "control": "light.control-border", "focus": "brand.forest",
           "primary": "brand.sage", "onPrimary": "brand.ink", "primaryHover": "brand.forest", "onPrimaryHover": "brand.paper",
           "code": "brand.forest", "onCode": "brand.paper",
-          "success": "light.success", "warn": "light.warning", "danger": "light.error", "onDanger": "brand.paper", "info": "light.info", "hues": "light"
+          "success": "light.success", "warn": "light.warning", "danger": "mix(light.error,brand.ink,92)", "onDanger": "brand.paper", "info": "light.info", "hues": "light"
         },
         "dark": {
           "scheme": "dark", "ground": "dark.editor", "fg": "dark.text", "muted": "dark.text-muted", "line": "dark.line-strong",
