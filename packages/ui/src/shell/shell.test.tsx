@@ -17,6 +17,7 @@ import { Collapse } from './Collapse';
 import { ExternalLink } from './ExternalLink';
 import { Footer } from './Footer';
 import { Header } from './Header';
+import { InlineLink } from '../layout/InlineLink';
 import type { LinkComponent } from './link';
 import { SiteLayout } from './SiteLayout';
 import { SkipLink } from './SkipLink';
@@ -60,9 +61,25 @@ describe('ExternalLink', () => {
     expect(a.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
   });
 
-  it('always has the link style, which thickens its underline on hover', () => {
+  it('has the link style, which thickens its underline on hover', () => {
     render(<ExternalLink href="https://example.com">Example</ExternalLink>);
     expect(screen.getByRole('link')).toHaveClass('link');
+  });
+
+  it('takes the button recipe inside Button asChild, as InlineLink does, and keeps rel and the arrow', () => {
+    render(
+      <>
+        <Button asChild><ExternalLink href="https://example.com/docs">Read the docs</ExternalLink></Button>
+        <Button asChild variant="secondary"><InlineLink href="/start/">Start</InlineLink></Button>
+      </>,
+    );
+    const external = screen.getByRole('link', { name: 'Read the docs, opens another site' });
+    expect(external).toHaveClass('rounded-pill', 'bg-primary', 'min-h-11');
+    expect(external).not.toHaveClass('link');
+    expect(external).toHaveAttribute('rel', 'external noopener');
+    const internal = screen.getByRole('link', { name: 'Start' });
+    expect(internal).toHaveClass('rounded-pill', 'border-control');
+    expect(internal).not.toHaveClass('link');
   });
 
   it('keeps the arrow with the last word of a text label, so it never wraps alone', () => {
@@ -214,6 +231,39 @@ describe('Header', () => {
     expect(container.querySelector('nav > ul')).toHaveClass('hidden', '@3xl:flex');
     expect(container.querySelector('details')).toHaveClass('@3xl:hidden');
     expect(container.innerHTML).not.toMatch(/(^|[\s"])(sm|md|lg|xl):(hidden|flex)/);
+  });
+
+  it('folds a longer nav at a wider width, so the list never overflows the bar, and always swaps list and menu at the same width', () => {
+    const sections = ['Try it', 'What it does', 'Keys', 'Languages', 'Limits', 'Models', 'Downloads'];
+    const long = sections.map(label => ({ label, href: `/#${label}` }));
+    const mark = { src: '/mark.svg', width: 32, height: 32 };
+    const fold = (props: Parameters<typeof Header>[0]) => {
+      cleanup();
+      const { container } = render(<Header {...props} />);
+      const list = [...container.querySelector('nav > ul')!.classList].find(c => c.endsWith(':flex'));
+      const menu = [...container.querySelector('details')!.classList].find(c => c.endsWith(':hidden'));
+      expect(list!.replace(':flex', '')).toBe(menu!.replace(':hidden', ''));
+      return list;
+    };
+    expect(fold(header)).toBe('@3xl:flex');
+    expect(fold({ identity: { name: 'ejm-ide', artwork: mark }, nav: long.slice(0, 5) })).toBe('@4xl:flex');
+    expect(fold({ identity: { name: 'ejm-ide', artwork: mark }, nav: long })).toBe('@6xl:flex');
+  });
+
+  it('measures the bar against the page column, which is at most 75rem wide, not the whole header', () => {
+    // About 1250px of links and brand: within an 80rem header, but over the 75rem column the bar lines up with.
+    const eight = ['Overview', 'Install', 'Guides', 'Reference', 'Examples', 'Changelog', 'Community', 'Download'].map(label => ({ label, href: `/${label}/` }));
+    const { container } = render(<Header identity={{ name: 'ejmlabs', artwork: { src: '/m.svg', width: 32, height: 32 } }} nav={eight} />);
+    expect(container.querySelector('nav > ul')!.className).not.toMatch(/@7xl:flex/);
+    expect(container.querySelector('details')!.className).not.toMatch(/@7xl:hidden/);
+  });
+
+  it('keeps the menu at every width when the nav is too long for the widest fold', () => {
+    const many = Array.from({ length: 14 }, (_, i) => ({ label: `Section number ${i + 1}`, href: `/#s${i}` }));
+    const { container } = render(<Header identity={{ name: 'ejm-ide' }} nav={many} />);
+    expect(container.querySelector('nav > ul')!.className).not.toMatch(/:flex/);
+    expect(container.querySelector('nav > ul')).toHaveClass('hidden');
+    expect(container.querySelector('details')!.className).not.toMatch(/:hidden/);
   });
 
   it('shows the current page with weight 600 and an underline, not color alone', () => {

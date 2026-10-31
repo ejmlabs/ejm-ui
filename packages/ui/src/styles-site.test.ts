@@ -38,3 +38,16 @@ it.each(['styles.css', 'ide.css'])('ships responsive product windows through the
     '--ejm-window-text': 'clamp(0.8125rem, 1.9cqw, 1.75rem)',
   });
 });
+
+it('draws one line where a labelled Rule meets a list, styles keys once, and folds a long nav at a wider container', async () => {
+  const compiler = await compile('@import "@ejm/ui/styles.css";', { base: fileURLToPath(new URL('./', import.meta.url)), onDependency() {} });
+  const css = compiler.build(['hairline-t', '@6xl:flex', '@6xl:hidden']);
+  // A list that opens with a hairline drops it right after a labelled Rule, whose own line is the only one.
+  expect(css).toMatch(/\.hairline-t\s*\{\s*border-block-start:[^;]+;\s*\[data-rule\]\s*\+\s*&\s*\{\s*border-block-start-width:\s*0/);
+  // A key is an outlined cap in the mono face; a combination is a kbd of kbds and only the inner keys are outlined.
+  expect(css).toMatch(/:where\(kbd\):not\(:has\(kbd\)\)\s*\{[^}]*border:\s*1px solid var\(--ejm-line\)/);
+  // The size steps down once: a key inside a combination is the same size as a key on its own.
+  expect(css).toMatch(/:where\(kbd kbd\)\s*\{\s*font-size:\s*1em/);
+  // The Header's widest folds are generated.
+  expect(css).toMatch(/@container \(width >= 72rem\)\s*\{\s*\.\\@6xl\\:flex/);
+});

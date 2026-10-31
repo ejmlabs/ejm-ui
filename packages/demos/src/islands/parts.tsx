@@ -1,5 +1,6 @@
 import { ProductWindow } from '@ejm/ui/layout/ProductWindow';
-import { useId, useRef, type KeyboardEvent, type ReactNode, type RefObject } from 'react';
+import { useContext, useId, useRef, type KeyboardEvent, type ReactNode, type RefObject } from 'react';
+import { InShowcaseFrame } from '../ShowcaseFrame';
 import { cx } from '../views/cx';
 import { Btn } from './btn';
 import { useLiveLines } from './liveLog';
@@ -33,7 +34,7 @@ export interface ShellProps {
   label: string;
   /** What to try. */
   caption: string;
-  /** The honesty sentence. Always visible. */
+  /** The honesty sentence. Always visible: below the island, or as the note of the ShowcaseFrame around it. */
   note: string;
   /** Pins the window theme, for the demo's own Toggle theme command. */
   theme?: 'light' | 'dark';
@@ -48,12 +49,14 @@ export interface ShellProps {
 
 /**
  * The frame every island shares: a live window with a visible "Simulated" badge, Pause and Reset, the caption and the honesty
- * note beneath it, a skip link before it, and a polite log that announces one sentence per finished step.
+ * note beneath it (inside a ShowcaseFrame the frame's note is the one disclosure, so the island leaves its own out), a skip link
+ * before it, and a polite log that announces one sentence per finished step.
  */
 export function Shell({ name, meta, label, caption, note, theme, paused, onPause, onReset, live, host, children }: ShellProps) {
   const end = useId();
   const win = useRef<HTMLDivElement>(null);
   const lines = useLiveLines(live);
+  const framed = useContext(InShowcaseFrame);
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Escape' && !e.defaultPrevented) win.current?.focus();
   };
@@ -75,7 +78,7 @@ export function Shell({ name, meta, label, caption, note, theme, paused, onPause
         </ProductWindow>
       </div>
       <p className="text-meta mt-4 mb-0 max-w-measure">{caption}</p>
-      <p className="text-meta mt-1 mb-0 max-w-measure text-muted">{note}</p>
+      {!framed && <p className="text-meta mt-1 mb-0 max-w-measure text-muted">{note}</p>}
       <div role="log" aria-live="polite" aria-label={`${name} demo announcements`} className="sr-only">
         {lines.map((l) => (
           <p key={l.id}>{l.text}</p>
