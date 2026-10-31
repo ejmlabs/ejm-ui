@@ -7,4 +7,4 @@ jobs:
   warm:
     permissions:
       contents: read
-    uses: ejmlabs/.github/.github/workflows/warm-cache.yml@1111111111111111111111111111111111111111
+    uses: ejmlabs/.github/.github/workflows/warm-cache.yml@ed70e0e2b28dc3d4ef6ada01905e0046278dcb21
