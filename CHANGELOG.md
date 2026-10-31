@@ -7,6 +7,14 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 - Fix `scripts/pack-proof.mjs` and `scripts/pack-proof-publish.mjs` under npm 12 (bundled with Node 24.22.1), whose `npm pack --json` prints an object keyed by package name instead of an array. Both proofs now read either shape.
 
+- Add the public `@ejm/ui/components/Chessboard` leaf. It renders a labelled loading square on the server and loads the maintained cm-chessboard renderer after mount. The host supplies FEN, orientation, accepted moves and optional legal destinations; the kit holds no chess rules, and a move is a proposal until the host returns a new FEN. It stays out of the `@ejm/ui` barrel, so its renderer and CSS reach only pages that import it. `@ejm/ui` gains the dependency `cm-chessboard` 8.15.4 (MIT); its piece sprite is CC BY-SA 3.0, recorded in `THIRD_PARTY_NOTICES.md`.
+
+- Add `useSearch` to `@ejm/ssg`. It returns the query string, empty while prerendering and hydrating, and follows back, forward and router pushes but not `replaceState`, so a page can rewrite its own query without remounting.
+
+- Add the `ui-board-light`, `ui-board-dark` and `ui-board-mark` roles in both themes, which the Chessboard draws its squares, markers and keyboard focus frame with. A new contrast gate holds black pieces and marks at 3:1 on both squares, and the squares 1.4:1 apart, in both themes.
+
+- Centre the `GameWorkspace` board column and size it to the viewport so both player strips fit, with the details to its right from 64rem. `MovePairs` follows the latest move unless the reader scrolled up, and its move numbers no longer wrap from move 10. `BoardPlaceholder` used `bg-surface`, which is not a theme color, so it painted nothing; it now uses `tone`, like the Chessboard loading square. Props are unchanged.
+
 - Replace the ejm-ui mark with the u and block: a ribbon u that starts as a tapered tip, holding one rounded-square component. `scripts/ui-assets.mjs` regenerates the whole family in `@ejm/tokens/assets/projects/ui/` (marks, logos, icons, favicons, manifest and social card), so the gallery picks it up on its next build. Sites that keep their own copy of the ui mark need to refresh it.
 
 - List every family site from every site. `otherSites` now returns the published build identities, then the new `LINKED_PROJECTS` (ejm-calm and gerry, which are not built with `@ejm/site` and get no analytics or shared head). The ejm-ui gallery is published at ui.ejmlabs.com, so `ui` joins discovery; it has no analytics token, and `ANALYTICS_SITES` leaves out tokenless hosts. Consumers that pin a newer ejm-ui gain ejm-ui, ejm-calm and gerry in their footers. The `ejmlabs` tagline and the gallery's layout example describe open source projects and commercial products.

@@ -32,7 +32,10 @@
         "success": "93BA8B",
         "special": "B7A6E8",
         "info": "8CB5EB",
-        "control-border": "6A7C6C"
+        "control-border": "6A7C6C",
+        "board-light": "849682",
+        "board-dark": "57665B",
+        "board-mark": "FFFFFF"
       },
       "hues": ["87AFF7", "BA9CE4", "80BAA6", "D7B67C", "D3959C", "8DBDC8"],
       "syntax": {
@@ -86,7 +89,10 @@
         "success": "2F6B3A",
         "special": "5B4A96",
         "info": "2563A8",
-        "control-border": "7D877F"
+        "control-border": "7D877F",
+        "board-light": "E8EDE3",
+        "board-dark": "8A9A7B",
+        "board-mark": "29443B"
       },
       "hues": ["2F5D8F", "6B4AA3", "2F7A60", "8A6516", "A24A58", "2C6F80"],
       "syntax": {
@@ -120,6 +126,12 @@
     "surfaces": ["ground", "panel", "editor", "raised", "overlay"],
     "syntaxMin": 4.5,
     "subtleMin": 3,
+    "board": {
+      "note": "The chessboard follows the page theme, never a band. Its pieces are fixed art: black pieces and the outline of every piece are pure black. pieces: black against each square, so every outline and black piece shows. mark: coordinates and move markers against each square. squares: the two squares against each other, so the checkerboard reads without the labels.",
+      "pieces": 3,
+      "mark": 3,
+      "squares": 1.4
+    },
     "web": {
       "note": "Gates for every web band (Paper, Mist, Sage, Ink) in both themes. text: fg, muted, link, status and on-colors on their grounds. large: link-large, for display type only. control: control borders against the ground and the field. focus: the focus ring. graphic: the six hues, as chart marks. line: hairlines only need to be visible, they do not carry meaning alone, so they are held to 1.4 and not 3.",
       "text": 4.5,

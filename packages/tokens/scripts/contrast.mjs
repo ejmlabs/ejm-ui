@@ -37,6 +37,24 @@ export function checkUi(theme, resolved = resolveThemes(theme)) {
   return problems;
 }
 
+// The chessboard roles, for both themes. The pieces are fixed art whose black body and outline are pure black.
+export function checkBoard(theme, resolved = resolveThemes(theme)) {
+  const g = theme.contrast.board;
+  const problems = [];
+  for (const [name, t] of Object.entries(resolved)) {
+    const { 'board-light': light, 'board-dark': dark, 'board-mark': mark } = t.roles;
+    for (const [square, color] of [['light', light], ['dark', dark]]) {
+      const pieces = ratio('000000', color);
+      if (pieces < g.pieces) problems.push(`${name}: black pieces on the ${square} square are ${pieces.toFixed(2)}:1, need ${g.pieces}:1`);
+      const labels = ratio(mark, color);
+      if (labels < g.mark) problems.push(`${name}: board-mark on the ${square} square is ${labels.toFixed(2)}:1, needs ${g.mark}:1`);
+    }
+    const squares = ratio(light, dark);
+    if (squares < g.squares) problems.push(`${name}: the board squares are ${squares.toFixed(2)}:1 apart, need ${g.squares}:1`);
+  }
+  return problems;
+}
+
 // The web bands: for each of paper, mist, sage and ink, in light and dark, every foreground against the grounds it sits on.
 // Returns { problems, rows }; rows is every pair measured, for the verbose report.
 export function checkBands(theme, brand, resolved = resolveThemes(theme)) {
@@ -88,13 +106,13 @@ export function checkBands(theme, brand, resolved = resolveThemes(theme)) {
 }
 
 export function checkAll(theme, brand = loadTheme().brand) {
-  return [...checkUi(theme), ...checkBands(theme, brand).problems];
+  return [...checkUi(theme), ...checkBoard(theme), ...checkBands(theme, brand).problems];
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const { theme, brand } = loadTheme();
   const { problems, rows } = checkBands(theme, brand);
-  const all = [...checkUi(theme), ...problems];
+  const all = [...checkUi(theme), ...checkBoard(theme), ...problems];
   if (process.argv.includes('--verbose')) for (const r of rows) console.log(`${r.value.toFixed(2).padStart(6)}:1  (min ${r.min})  ${r.label}`);
   if (all.length) { console.error(all.join('\n')); process.exit(1); }
   const min = Math.min(...rows.map(r => r.value / r.min));
