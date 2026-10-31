@@ -7,6 +7,9 @@ headers emitted by `@ejm/site`. Its `env.staging` Worker, `ejmlabs-ui-staging`,
 serves `https://staging.ui.ejmlabs.com` with the same settings. Staging is
 publicly reachable and serves the latest main.
 
+The Wrangler config is `apps/gallery/wrangler.jsonc`. It publishes the build
+output in `apps/gallery/dist`, for both the top-level Worker and `env.staging`.
+
 From the reviewed source commit, install the locked dependencies, then run:
 
 ```sh
@@ -15,47 +18,15 @@ npm run check
 npm run build -w @ejm/gallery
 ```
 
-A push to main runs `.github/workflows/deploy.yml`, the canonical caller of the
-shared `ejmlabs/.github` workflow `deploy-site.yml`. A build job with
-`contents: read` and no secrets builds the gallery from that main commit. A
-staging job then runs `wrangler deploy --env staging` automatically, and once
-it succeeds a production job deploys the same built files with the top-level
-config. The merge is the human decision; no deploy waits for an approval.
-Deploys queue: a newer merge never stops a deploy that is already running.
+A local Wrangler dry run against `apps/gallery/wrangler.jsonc` is fine for each
+environment in that file. A local build or source PR does not publish the site.
 
-Deploy jobs run Wrangler 4.153.0, pinned in the shared repository, not this
-repository's dependencies. The Cloudflare token is the `CLOUDFLARE_API_TOKEN`
-secret of the `staging` and `production` GitHub environments. The existing
-Cloudflare account must own the domain, and that token must have
-Worker/custom-domain rights. A manual `wrangler deploy` from a workstation is
-no longer the procedure; a local Wrangler dry run against
-`apps/gallery/wrangler.jsonc` is still fine. The repository's protected source
-review gates apply before merge. A local build or source PR does not publish
-the site.
-
-## Before the first deploy
-
-The shared deploy fails closed unless these are in place:
-
-- The `staging` and `production` GitHub environments exist, and each has a
-  custom deployment branch policy with exactly one branch, `main`.
-- Both environments hold the `CLOUDFLARE_API_TOKEN` secret.
-
-`python3 scripts/set_deploy_token.py` in `ejmlabs/.github` sets up both for
-every site repository at once.
-
-The deploy also refuses a build whose `apps/gallery/wrangler.jsonc` differs from
-the reviewed commit, so change that file in source, never in a build step.
-
-If a DNS record for `staging.ui.ejmlabs.com` already exists outside Wrangler,
-Wrangler prompts in CI and nobody can answer. The shared guide says: "a custom
-domain whose DNS record exists makes Wrangler prompt, and CI cannot answer"
-(`docs/operations.md`, "Site deploys", in `ejmlabs/.github`).
+A push to main deploys staging, then production. How that pipeline runs, what it
+refuses, how to follow a run, what to do when one fails and how to roll back are
+in [CI deploys](../../.agents/skills/ejmlabs-cloudflare/references/ci-deploys.md).
 
 Run these checks on staging after each merge, and on the canonical host once
 production has deployed: the host, shared headers, fonts and original OFL notices, 404
 handling, complete no-script docs, keyboard navigation and light/dark
-phone/desktop layouts. Retain the source SHA and Worker version ID. For
-rollback, redeploy a previously accepted Worker version in Cloudflare, or
-revert the change on main, then verify the same host and routes; do not serve a source branch with failed
-gates.
+phone/desktop layouts. After a rollback, check the same host and routes again;
+do not serve a source branch with failed gates.
