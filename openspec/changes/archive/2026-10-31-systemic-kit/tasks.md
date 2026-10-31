@@ -27,5 +27,15 @@
 ## 5. Verify
 
 - [x] 5.1 `npm run check`, `npm run build`, `npm run check:rust`, `node scripts/pack-proof.mjs`
-- [ ] 5.2 Screenshots of the gallery in light and dark at 390 and 1440 px, keyboard and reduced motion; `scripts/shoot.mjs`
-- [ ] 5.3 `npm run perf` against the baseline
+- [x] 5.2 Screenshots of the gallery in light and dark at 390 and 1440 px, keyboard and reduced motion; `scripts/shoot.mjs`
+- [x] 5.3 `npm run perf` against the baseline
+
+## Verification record
+
+Run on Linux in a cloud container, Node 22.23, Rust 1.99.1:
+
+- The gate from `npm ci`: `npm run check` (103 test files, 1090 passed, 2 skipped), `npm run build`, `npm run check:rust`, `node scripts/pack-proof.mjs` (17 files identical to the workspace build).
+- A linked (`file:`) throwaway consumer with only `ejmlabs()`, `extends: "@ejm/ui/tsconfig.json"` and one stylesheet import type checked and built; `node scripts/pack-proof-publish.mjs` passed.
+- Gallery screenshots at 390 and 1440 px in light and dark; horizontal overflow checked at 13 widths from 320 to 5120 px on all 18 routes in both themes (none); `scripts/shoot.mjs` on the home page in both themes (clean); keyboard order and reduced motion on three routes.
+- `npm run perf`: no route a second or more above its baseline.
+- Not run: `static-touch` (removed with the static profile), demo and shot honesty checks (they need product checkouts), the consumer repositories' own builds at a new pin.
