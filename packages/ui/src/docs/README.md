@@ -40,6 +40,30 @@ Every part renders complete, usable HTML on the server. Script only adds to it. 
 
 `DocsSidebar` and `Pager` render their links with the site's link component (`LinkProvider`, set by `SiteLayout` from `linkComponent`), so a docs page navigates without a reload on an ssg site; without a provider they are plain anchors.
 
+## Specimens
+
+Blocks for a documentation page that has to show the system itself. They are closed like every part (no `className` or `style`), take children or token names, and write every class inside the kit, so a docs page needs no layout or color of its own and passes the design guard. The gallery's `/components/`, `/app/`, `/shell/`, `/tokens/` and `/hooks/` pages are built from them.
+
+| Part | What it shows |
+| --- | --- |
+| `ThemePair` | Its children once under the light theme and once under the dark theme, each in a labelled group on the Paper ground (`data-theme` and `data-band="paper"`), side by side from 56rem of the pair's own width and stacked below. State and ids are per pane. |
+| `DensityPair` | Its children once on a comfortable surface and once on a compact one (`DensityProvider`), side by side the same way, labelled "Comfortable, for sites" and "Compact, for applications". |
+| `ColorSwatches` | `label` and `colors`, a list of token names (`SwatchColor`: `hue-1` to `hue-6`, the brand colors and the status colors). Each is a swatch with its name in mono under it. Pass `HUES` from `@ejm/tokens` for the chart roles. Not for Sage, where the hues are not defined. |
+| `TypeScaleSample` | The six sizes (`display`, `title`, `heading`, `lead`, `body`, `meta`) and tabular figures, one hairline row each with the token name above the sample. |
+| `ElevationSample` | `shadow-rest`, `shadow-raised` and `shadow-float`, each on an unfilled window-shaped outline (`rounded-window`), because only windows, menus and overlays carry a shadow and a filled box would be a card. |
+| `RadiusSample` | `rounded-control`, `rounded-pill` and `rounded-window` as outlines. A radius is an edge, so there is no fill. |
+| `ResizableSample` | A hairline region the reader can drag wider or narrower. It takes the `ref` that `useContainerQuery` returns. |
+| `DrawOnSample` | A three-path line drawing with `pathLength="1"` paths. It takes the `ref` that `useDrawOn` returns. |
+
+```tsx
+import { HUES } from '@ejm/tokens';
+import { ColorSwatches, ThemePair, TypeScaleSample } from '@ejm/ui';
+
+<ThemePair><ControlSet /></ThemePair>
+<ColorSwatches label="Six hue roles" colors={HUES} />
+<TypeScaleSample />
+```
+
 ## Markup and accessibility
 
 - `DocsSidebar`: `nav` named "Documentation", a labelled `ul` per group, links with `aria-current="page"`. Entries are 32px tall with a mouse and 44px on touch screens. The filter is an `Input` (44px) with a visually hidden label and a `role="status"` count that is empty until you type.

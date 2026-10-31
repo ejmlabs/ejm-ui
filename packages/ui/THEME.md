@@ -13,11 +13,11 @@ One stylesheet styles every component in `@ejm/ui`: layouts, shell, controls, do
 
 The stylesheet scans only the kit's own source. `base.css` imports Tailwind with `source(none)`, so automatic source detection is off and no folder of the consumer is scanned. `styles.css` adds an `@source` line for each component folder (`components`, `layout`, `shell`, `hooks`, `motion`, `docs`, `app` and `lib`) and for `control-recipes.mjs`, and leaves out tests. A consumer needs no `source(none)` on its import and no `@source` line of its own, and there is no partial to forget: a class the kit writes is always in the sheet.
 
-Two scripts keep that true. `node packages/ui/scripts/check-sources.mjs` checks that every utility a component folder uses is generated, that the sheet scans nothing outside `src` and no test file, and that `styles-site.css` and `styles-docs.css` generate exactly what `styles.css` does. `node packages/ui/scripts/check-classes.mjs` checks that every class string the kit writes builds CSS at all, because Tailwind drops a class it cannot build without an error, so a typo or a removed token such as `bg-surface` would render unstyled. `check-sources.mjs` prints the size of the sheet: 15.6 KB gzip at this revision.
+Two scripts keep that true. `node packages/ui/scripts/check-sources.mjs` checks that every utility a component folder uses is generated, that the sheet scans nothing outside `src` and no test file, and that `styles-site.css` and `styles-docs.css` generate exactly what `styles.css` does. `node packages/ui/scripts/check-classes.mjs` checks that every class string the kit writes builds CSS at all, because Tailwind drops a class it cannot build without an error, so a typo or a removed token such as `bg-surface` would render unstyled. `check-sources.mjs` prints the size of the sheet: 16.0 KB gzip at this revision.
 
 `@ejm/ui/styles-site.css` forwards to `styles.css`, and `@ejm/ui/styles-docs.css` is empty, because `styles.css` already covers the docs parts. Both stay for consumers pinned before the one-stylesheet change; replace their imports with `styles.css`.
 
-Under `ejmUi()` and `ejmlabs()` the design guard rejects any class, style or CSS rule of the consumer's own, so a consumer's `src` holds only imports of public `@ejm/*` CSS (see [ADOPTION.md](../../ADOPTION.md)). Product demo styles come from the public `@ejm/demos/*.css` entries, imported after `@ejm/ui/styles.css`. A project that builds without the presets is outside the guard and adds its own `@source` lines for its own folders. `base.css` is private.
+Under `ejmUi()` and `ejmlabs()` the design guard rejects any class, style or CSS rule of the consumer's own, so a consumer's `src` holds only imports of public `@ejm/*` CSS (see [ADOPTION.md](../../ADOPTION.md)). The gallery in this repository is checked the same way: it has no exemption, and its own stylesheet is only public `@ejm` imports. Product demo styles come from the public `@ejm/demos/*.css` entries, imported after `@ejm/ui/styles.css`. A project that builds without the presets is outside the guard and adds its own `@source` lines for its own folders. `base.css` is private.
 
 ```html
 <head>
@@ -37,7 +37,7 @@ The Tailwind default palette, radius, shadow and font namespaces are reset. `bg-
 | --- | --- |
 | `<html data-theme="light\|dark">` | Sets the page theme. Light is the default. |
 | No `data-theme` on the root | The system `prefers-color-scheme` decides, with no script. |
-| `data-theme` on any element | Starts a new theme for that subtree (for a preview of both themes side by side). The nearest one wins. |
+| `data-theme` on any element | Starts a new theme for that subtree (for a preview of both themes side by side: `ThemePair` from `@ejm/ui` does this for any content). The nearest one wins. |
 | `?theme=dark\|light` in the URL | Test override. `theme-boot.js` applies it and never saves it. |
 | `dark:` variant | `dark:` follows the same rules. The semantic colors already flip, so use `dark:` only for what a color token cannot say. |
 
@@ -174,6 +174,7 @@ The gutter is never smaller than `env(safe-area-inset-left/right)`. Pages need `
 | `px-gutter`, `p-gutter`, ... | The current gutter. |
 | `max-w-page`, `max-w-measure` | Column width and 68ch reading width. |
 | Breakpoints | Tailwind defaults, plus `xs` 420px, `3xl` 1920px, `4xl` 2560px, `5xl` 3200px, `6xl` 4400px (the same steps as the table). |
+| Container queries | Tailwind's own `@container` and `@xs` to `@7xl` (the `--container-*` sizes), for a part that must follow the room it has rather than the window: `Header` (nav list from `@3xl`, 48rem, otherwise the menu), `Dashboard`, the charts, `ProductStage` and the specimen pairs. A part inside a narrow preview then behaves as it does on a phone. |
 
 `--ejm-header-h` (default 4.5rem) feeds the page `scroll-padding-top`, so anchors and focused headings land below a sticky header. A sticky header component sets it.
 
@@ -238,10 +239,11 @@ Every control comes from one recipe (`packages/ui/src/control-recipes.mjs` for b
 
 | Property | Value |
 | --- | --- |
-| Height | `min-h-11` (44px). Compact: `min-h-8` with `compact-target` (32px on a fine pointer), and `touch-target` keeps 44px on a coarse pointer. This covers Button, Input, Select, Tabs triggers, menu items, Disclosure summaries, header nav items, the theme toggle, and checkbox, radio and switch rows. Textarea keeps `min-h-28`. |
+| Height | `min-h-11` (44px). Compact: `min-h-8` with `compact-target` (32px on a fine pointer), and `touch-target` keeps 44px on a coarse pointer. This covers Button, Input, Select, Tabs triggers, menu items, Disclosure summaries, header nav items, the `AppShell` side nav items, the theme toggle, and checkbox, radio and switch rows. Textarea keeps `min-h-28`. |
 | Radius | Buttons, switches and the theme toggle `rounded-pill`. Fields, checkboxes, menu items, nav items, tabs and the tooltip `rounded-control`. Dialog, menu, toast and the header phone menu `rounded-window`. Radio buttons `rounded-full`. |
 | Type | `text-base` (16px), `text-sm` (14px) when compact. Weight 600 for buttons and the current tab, 400 otherwise. Labels and metadata use `text-meta`. |
-| Button variants | `primary`: Sage fill, Forest on hover. `secondary`: transparent with `border border-control`, `bg-tone` on hover (a hairline outline, never a fill). `ghost`: transparent, `bg-tone` on hover. `link`: underlined text. `danger`: the danger fill. Sizes `md` and `icon` only (`icon` is a 44px square, 32px compact). |
+| Button variants | `primary`: Sage fill, Forest on hover. `secondary`: transparent with `border border-control`, `bg-tone` on hover (a hairline outline, never a fill). `ghost`: transparent, `bg-tone` on hover. `link`: underlined text. `danger`: the danger fill. Sizes `md` and `icon` only (`icon` is a 44px square, 32px compact, and sizes the icon inside it: 20px, 16px compact). |
+| Icons | The kit ships no icon set. An icon button (`Button size="icon"`) takes a `lucide-react` icon as its child and an `aria-label`; a consumer adds `lucide-react` to its own dependencies. See `COMPONENTS.md`, "Icons in icon buttons". |
 | Hover | A filled control changes to its hover token. Every other interactive surface (ghost and secondary buttons, nav items, menu items, rows, tabs) fills with `hover:bg-tone`. Links thicken their underline to 2px. All instant. |
 | Pressed | Buttons sink to `scale-[0.97]` under `motion-safe`. Nothing else scales. |
 | Focus | The global `:focus-visible` outline: 2px `--ejm-focus`, 2px offset. Components add nothing, except `focus-visible:outline-offset-[-2px]` where an ancestor clips the outline (menu items, tabs in a scroller, the phone menu rows). |
@@ -267,6 +269,10 @@ A control is `comfortable` (the table above) unless its surface says otherwise. 
 
 Generated art lives in `packages/ui/src/art`. The inline files (`art/inline/*.svg`) use `class="art"`: lines take `--ejm-link`, `.art-accent` paths take `--ejm-primary`, `.art-fill` paths fill with `--ejm-primary`, so they read on every band. The standalone `*-light.svg` and `*-dark.svg` files use brand hex values and are for `<img>` and backgrounds on Paper, Mist or Sage (light) and Ink or a dark page (dark). Art is decorative: `aria-hidden` or `alt=""`.
 
+## Specimens for documentation pages
+
+A documentation page of any ejmlabs design or product shows the system with blocks of the kit, not with classes of its own. `@ejm/ui` (folder `docs`) has them, closed like every export: `ThemePair` (children under light and dark, side by side from 56rem of its own width), `DensityPair` (children comfortable and compact), `ColorSwatches` (token names, such as `HUES` from `@ejm/tokens`), `TypeScaleSample` (the six sizes and tabular figures), `ElevationSample` (the three shadows, on window-shaped outlines), `RadiusSample` (the three radii as outlines), and the demo targets `ResizableSample` and `DrawOnSample`, which take a `ref` for a hook. Each sample is fed from token names and writes its classes inside the kit, so a changed token changes every page that shows it. The gallery's `/tokens/` page is built from them.
+
 ## Do not
 
 - No cards, panels, tiles or tonal boxes. Group with `hairline` rows, space and bands.
@@ -277,4 +283,4 @@ Generated art lives in `packages/ui/src/art`. The inline files (`art/inline/*.sv
 
 ## Measured
 
-`node packages/ui/scripts/check-sources.mjs` builds the one stylesheet with every class the kit uses and prints its gzip size: 15.6 KB at this revision (read in this session). It holds Tailwind's reset, the band and theme variables, the window colors, the five `@font-face` rules and the utilities of every component folder. Bytes are not a bar: load time is (see `QUALITY.md`).
+`node packages/ui/scripts/check-sources.mjs` builds the one stylesheet with every class the kit uses and prints its gzip size: 16.0 KB at this revision (read in this session). It holds Tailwind's reset, the band and theme variables, the window colors, the five `@font-face` rules and the utilities of every component folder. Bytes are not a bar: load time is (see `QUALITY.md`).

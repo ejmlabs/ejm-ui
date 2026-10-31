@@ -4,12 +4,10 @@
 import { createRequire } from 'node:module';
 import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { parseSync } from 'vite';
 import postcss from 'postcss';
 
 const require = createRequire(import.meta.url);
-const gallery = resolve(dirname(fileURLToPath(import.meta.url)), '../../../apps/gallery');
 const sourceExtensions = new Set(['.js', '.jsx', '.ts', '.tsx', '.css', '.scss', '.sass', '.less', '.styl']);
 const scriptExtensions = new Set(['.js', '.jsx', '.ts', '.tsx']);
 const retired = {
@@ -161,7 +159,6 @@ function scriptIssues(file, source, report, sourceRoot) {
 export function siteDesignGuard(root) {
   const site = actualPath(root);
   const sourceRoot = join(site, 'src');
-  const libraryGallery = site === actualPath(gallery);
   const cache = new Map();
   const owns = file => under(sourceRoot, resolve(file)) && sourceExtensions.has(extname(file));
   return {
@@ -169,7 +166,7 @@ export function siteDesignGuard(root) {
     invalidate(file) { cache.delete(resolve(file)); },
     validate() {
       const started = performance.now();
-      const files = libraryGallery ? [] : filesIn(sourceRoot);
+      const files = filesIn(sourceRoot);
       const issues = [];
       for (const file of files) {
         const stat = statSync(file);

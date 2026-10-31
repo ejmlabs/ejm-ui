@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { DensityProvider } from '../lib/density';
 import { Collapse } from './Collapse';
-import { LinkProvider, useLinkComponent, type LinkComponent } from './link';
+import { LinkProvider, useLinkComponent, type LinkComponent, type NavItem } from './link';
+import { NavLink } from './NavLink';
 import { SkipLink } from './SkipLink';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -14,17 +15,21 @@ export interface AppShellProps {
   actions?: ReactNode;
   /** Replaces the last theme control. Omit to use ThemeToggle; pass null to show none. */
   themeControl?: ReactNode;
-  /** The side navigation list. Below 768px it becomes a labelled disclosure above the content. */
-  nav: ReactNode;
+  /** The side navigation: one item per page (`label`, `href`, `current`, `external`). Below 768px it becomes a labelled disclosure above the content. */
+  nav: readonly NavItem[];
   navLabel?: string;
   linkComponent?: LinkComponent;
   children: ReactNode;
 }
 
+// One control recipe, compact because the shell is: 32px with a mouse, 44px on touch, the control radius and a bg-tone hover. NavLink marks the current page.
+const navItemClass = 'touch-target compact-target flex min-h-8 items-center rounded-control px-3 text-sm text-fg hover:bg-tone';
+
 /**
- * The frame for an application: a top bar with the theme toggle last, a side navigation and the content. No boxes: the bar and
- * the nav are the page ground, separated by one hairline each (one under the bar from 768px, one beside the nav). The page scrolls as a whole (the bar and nav stay put), which
- * keeps find, zoom and print working. Collapses to a single column below 768px.
+ * The frame for an application: a top bar with the theme toggle last, a side navigation (items, rendered through the router-agnostic
+ * link context) and the content. No boxes: the bar and the nav are the page ground, separated by one hairline each (one under the bar
+ * from 768px, one beside the nav). The page scrolls as a whole (the bar and nav stay put), which keeps find, zoom and print working.
+ * Collapses to a single column below 768px.
  * It provides `compact` density, so every Button, field, tab and the theme toggle inside is compact with no prop: 32px on a fine
  * pointer, 44px on touch. The top bar keeps its 56px height.
  */
@@ -52,7 +57,13 @@ export function AppShell({ brand, homeHref = '/', homeLabel = 'Home', actions, t
               <div className="px-(--ejm-page-gutter) md:sticky md:top-[calc(3.5rem+env(safe-area-inset-top,0px))] md:max-h-[calc(100svh-3.5rem-env(safe-area-inset-top,0px))] md:overflow-y-auto md:overscroll-contain md:py-6 md:ps-[max(var(--ejm-page-gutter),env(safe-area-inset-left,0px))] md:pe-4">
                 <Collapse from="md" label={navLabel}>
                   <nav aria-label={navLabel} className="pb-4 md:pb-0">
-                    {nav}
+                    <ul className="grid gap-1">
+                      {nav.map(item => (
+                        <li key={item.href}>
+                          <NavLink item={item} link={Link} className={navItemClass} />
+                        </li>
+                      ))}
+                    </ul>
                   </nav>
                 </Collapse>
               </div>

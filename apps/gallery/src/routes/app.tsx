@@ -1,6 +1,5 @@
 import { formatDuration, formatNumber, type StatState } from '@ejm/core';
-import { ActivityList, ChartArea, ChartBar, ChartLine, ContentFlow, Dashboard, Hero, MetricGrid, Rule, Section, Stat, Table, type ActivityItem, type DashboardProps } from '@ejm/ui';
-import { ThemePair } from '../specimen';
+import { ActivityList, ChartArea, ChartBar, ChartLine, ContentFlow, Dashboard, Hero, MetricGrid, Rule, Section, Stat, Table, ThemePair, type ActivityItem, type DashboardProps } from '@ejm/ui';
 
 // The application kit: a dashboard, the three chart types and every empty, loading and error state, in light and dark. Sections
 // alternate their grounds on their own. Every figure here is SAMPLE data, invented for the demo. None of it is a real customer or a real metric.
@@ -69,6 +68,13 @@ const dashboard: DashboardProps = {
   activity: { title: 'Recent activity', items: feed, now: NOW },
 };
 
+type Replaced = Partial<Pick<DashboardProps, 'title' | 'state' | 'action' | 'onAction' | 'stats' | 'chart' | 'table' | 'activity'>>;
+
+/** The sample dashboard with any part replaced. Each prop is named, because the design guard rejects an opaque JSX spread. */
+function SampleDashboard({ title = dashboard.title, state, action, onAction, stats = dashboard.stats, chart = dashboard.chart, table = dashboard.table, activity = dashboard.activity }: Replaced) {
+  return <Dashboard as="h3" title={title} period={dashboard.period} sample={dashboard.sample} state={state} action={action} onAction={onAction} stats={stats} chart={chart} table={table} activity={activity} />;
+}
+
 const Charts = (
   <>
     <ChartLine title="Sessions per day" description="Line, four series: marker shape and dash pattern tell them apart" categories={days} series={sessions} categoryLabel="Day" unit="sessions" />
@@ -118,7 +124,7 @@ export default function App() {
       </Hero>
 
       <Section title="One row of figures, then the detail." kicker="01 / Dashboard">
-        <Dashboard {...dashboard} as="h3" />
+        <SampleDashboard />
       </Section>
 
       <Section
@@ -138,12 +144,10 @@ export default function App() {
       </Section>
 
       <Section title="The whole dashboard, and parts of it." kicker="04 / Dashboard states">
-        <Dashboard {...dashboard} as="h3" title="Loading" state="loading" />
-        <Dashboard {...dashboard} as="h3" title="Error" state="error" action={{ key: 'r', label: 'Try again' }} onAction={none} />
-        <Dashboard {...dashboard} as="h3" title="Empty" state="empty" action={{ label: 'Start a session' }} onAction={none} />
-        <Dashboard
-          {...dashboard}
-          as="h3"
+        <SampleDashboard title="Loading" state="loading" />
+        <SampleDashboard title="Error" state="error" action={{ key: 'r', label: 'Try again' }} onAction={none} />
+        <SampleDashboard title="Empty" state="empty" action={{ label: 'Start a session' }} onAction={none} />
+        <SampleDashboard
           title="Partly failed"
           stats={stats.map((s, i) => (i === 2 ? { ...s, state: 'error' as const } : s))}
           chart={{ ...dashboard.chart, state: 'error', action: { label: 'Try again' }, onAction: none }}
