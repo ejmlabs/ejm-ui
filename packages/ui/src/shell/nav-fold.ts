@@ -22,6 +22,8 @@ const foldClasses = [
 const bodyPx = (w: number) => Math.min(20, Math.max(16, 14.4 + 0.0028 * w));
 const headingPx = (w: number) => Math.min(32, Math.max(20, 16 + 0.011 * w));
 const chrome = 96 + 16 + 16 + 4 + 44;
+// The bar lines up with the page column (page-inset), which is at most 75rem wide below a 1600px viewport, and every fold is below that.
+const pageMaxPx = 1200;
 
 function needs(width: number, nav: readonly NavItem[], identity: SiteIdentity) {
   const art = identity.artwork;
@@ -35,5 +37,5 @@ const alwaysMenu: NavFold = { list: '', menu: '' };
 
 /** The narrowest fold at which the identity, every nav link and the theme toggle fit on one line, or the menu at every width. */
 export function navFold(nav: readonly NavItem[], identity: SiteIdentity): NavFold {
-  return foldClasses.find(fold => needs(fold.min, nav, identity) <= fold.min) ?? alwaysMenu;
+  return foldClasses.find(fold => needs(fold.min, nav, identity) <= Math.min(fold.min, pageMaxPx)) ?? alwaysMenu;
 }

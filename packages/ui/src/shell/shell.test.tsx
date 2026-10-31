@@ -250,6 +250,14 @@ describe('Header', () => {
     expect(fold({ identity: { name: 'ejm-ide', artwork: mark }, nav: long })).toBe('@6xl:flex');
   });
 
+  it('measures the bar against the page column, which is at most 75rem wide, not the whole header', () => {
+    // About 1250px of links and brand: within an 80rem header, but over the 75rem column the bar lines up with.
+    const eight = ['Overview', 'Install', 'Guides', 'Reference', 'Examples', 'Changelog', 'Community', 'Download'].map(label => ({ label, href: `/${label}/` }));
+    const { container } = render(<Header identity={{ name: 'ejmlabs', artwork: { src: '/m.svg', width: 32, height: 32 } }} nav={eight} />);
+    expect(container.querySelector('nav > ul')!.className).not.toMatch(/@7xl:flex/);
+    expect(container.querySelector('details')!.className).not.toMatch(/@7xl:hidden/);
+  });
+
   it('keeps the menu at every width when the nav is too long for the widest fold', () => {
     const many = Array.from({ length: 14 }, (_, i) => ({ label: `Section number ${i + 1}`, href: `/#s${i}` }));
     const { container } = render(<Header identity={{ name: 'ejm-ide' }} nav={many} />);
