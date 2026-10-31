@@ -123,21 +123,26 @@ export function ejmSsg(options) {
         return `<link rel="preload" as="font"${type ? ` type="${type}"` : ''} crossorigin href="${attr(f)}">`;
       });
 
+      const pages = [];
       for (const route of bundle.allRoutes(site)) {
         const { html, head } = await bundle.renderRoute(site, route);
         const page = template
           .replace(/<title>[\s\S]*?<\/title>\s*/i, '')
           .replace('<!--ejm-head-->', () => [head, ...fontTags, ...chunkTags(route)].join('\n'))
           .replace('<!--ejm-root-->', () => html);
-        const file = join(dist, outFile(route, site.notFound));
+        const name = outFile(route, site.notFound);
+        const file = join(dist, name);
         await mkdir(dirname(file), { recursive: true });
         await writeFile(file, page);
+        pages.push({ file: name, html: page });
       }
 
       await rm(join(dist, '.vite'), { recursive: true, force: true });
       await rm(server, { recursive: true, force: true });
       await rm(entry, { force: true });
       await writeFile(join(work, 'build.json'), JSON.stringify({ dist, base, ignore: site.ignore }, null, 2) + '\n');
+      // Other plugins check the finished pages through `api.onPages(pages)`; a thrown error fails the build.
+      for (const plugin of config.plugins) await plugin.api?.onPages?.(pages);
     },
   };
 }

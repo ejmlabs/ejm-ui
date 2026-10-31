@@ -143,3 +143,22 @@ describe('server asset merge', () => {
     }
   }, 180_000);
 });
+
+describe('page hook', () => {
+  it('hands every written page to a plugin with api.onPages, and a thrown error fails the build', () => {
+    const output = mkdtempSync(join(tmpdir(), 'ejm-ssg-pages-'));
+    try {
+      const cli = join(pkg, '..', '..', 'node_modules', 'vite', 'bin', 'vite.js');
+      const result = spawnSync(process.execPath, [cli, 'build', '--config', 'vite.pages.config.ts', '--outDir', output], {
+        cwd: fixture,
+        encoding: 'utf8',
+        env: { ...process.env, NODE_ENV: 'production' },
+      });
+      expect(result.status).toBe(1);
+      expect(result.stderr).toContain('pages seen: 404.html=true index.html=true lazy/index.html=true');
+      expect(readFileSync(join(output, 'lazy', 'index.html'), 'utf8')).toContain('Lazy heading');
+    } finally {
+      rmSync(output, { recursive: true, force: true });
+    }
+  }, 180_000);
+});

@@ -37,7 +37,6 @@
     "entities": "8.1.0",
     "github-slugger": "2.0.0",
     "marked": "18.1.1",
-    "postcss": "8.5.31",
     "yaml": "2.9.1",
     "parse5": "8.0.1"
   },

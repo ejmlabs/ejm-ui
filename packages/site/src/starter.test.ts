@@ -12,6 +12,7 @@ const dist = join(starter, 'dist');
 const ssgBin = join(here, '..', '..', 'ssg', 'bin', 'ejm-ssg.mjs');
 const headersBin = join(here, '..', 'bin', 'ejm-site-headers.mjs');
 const ROUTES = ['index.html', 'about/index.html', '404.html'];
+const authored = (file: string) => readFileSync(join(starter, file), 'utf8');
 const page = (file: string) => new DOMParser().parseFromString(readFileSync(join(dist, file), 'utf8'), 'text/html');
 
 beforeAll(() => {
@@ -60,6 +61,17 @@ describe.each(ROUTES)('%s', file => {
       expect(a.getAttribute('rel'), a.href).toMatch(/\bexternal\b/);
       expect(new URL(a.href).hostname).not.toBe('localhost');
     }
+  });
+});
+
+describe('the starter consumes the kit with no build glue', () => {
+  it('lists one plugin and no build options', () => {
+    expect(authored('vite.config.ts')).toContain("plugins: [ejmlabs({ project: 'ejmlabs' })]");
+    expect(authored('vite.config.ts')).not.toMatch(/tailwind|plugin-react|dedupe|build:|ejmSite|ejmSsg/);
+  });
+
+  it('imports one stylesheet', () => {
+    expect(authored('src/styles.css')).toBe('@import "@ejm/ui/styles.css";\n');
   });
 });
 

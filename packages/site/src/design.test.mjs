@@ -73,7 +73,7 @@ describe('site design ownership in real Vite builds', () => {
     ['opaque props', 'const props = {}; export default () => <div {...props} />;'],
     ['untrusted static wrapper', 'const Static = () => null; export default () => <Static className="contents" />;'],
     ['computed static wrapper', 'import { Static } from "@ejm/ssg"; export default () => <Static className={"contents"} />;'],
-    ['aliased hero override', 'import { Hero as Opening } from "@ejm/ui/layout/Hero"; export default () => <Opening title="Hello" motion="none" />;'],
+    ['aliased hero override', 'import { Hero as Opening } from "@ejm/ui/layout/Hero"; export default () => <Opening title="Hello" tone="mist" />;'],
     ['namespace heading override', 'import * as UI from "@ejm/ui"; export default () => <UI.SectionHead title="Hello" size="title" />;'],
     ['footer object override', 'import { SiteLayout } from "@ejm/ui"; const footer = { brand: "Local" }; export default () => <SiteLayout footer={{ ...footer }} />;'],
     ['dynamic private stylesheet import', 'void import("../custom.css"); export default () => <p>Hello</p>;'],

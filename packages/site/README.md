@@ -1,6 +1,6 @@
 # @ejm/site
 
-The shared build and design boundary for every ejmlabs site: the project registry, Cloudflare Web Analytics, the shared head with the theme boot script, and the security headers. It sits next to `@ejm/ui` (components) and `@ejm/ssg` (prerender), and `examples/starter` shows all three together.
+The shared build and design boundary for every ejmlabs site: the project registry, Cloudflare Web Analytics, the shared head with the theme boot script, the security headers, and the check every built page must pass. It sits next to `@ejm/ui` (components) and `@ejm/ssg` (prerender), and `examples/starter` shows all three together.
 
 | Entry | What it is |
 | --- | --- |
@@ -10,25 +10,24 @@ The shared build and design boundary for every ejmlabs site: the project registr
 | `@ejm/site/head` | `siteDefaults(id)` for `defineSite`, and `siteFonts()`. |
 | `@ejm/site/headers` | `headersFile`, `csp`, `directives`: the policy as a typed generator. |
 | `@ejm/site/docs` | Node-only Markdown compiler and static/live documentation split. |
-| `@ejm/site/vite` | The `ejmSite({ project })` Vite plugin, with mandatory design ownership checks. |
+| `@ejm/site/vite` | `ejmlabs({ project })`, the preset a site lists as its only plugin, and the `ejmSite({ project })` plugin inside it. Both run the design ownership check and the page check. |
 | `ejm-site-headers` | CLI that writes or checks a `_headers` file. |
 
 `projects`, `headers` and `vite` are plain `.mjs` files with `.d.mts` types, so Node can load them from `node_modules` (Node refuses to strip types from TypeScript there). `analytics` and `head` are TypeScript source that Vite compiles, like the other `@ejm` packages.
 
 ## Use it
 
+A site lists one plugin. `ejmlabs()` is `ejmUi()` from `@ejm/ui/vite` (Tailwind, React, one copy of React, the design guard), `ejmSite()`, the `ejm-ssg` prerenderer from `@ejm/ssg/vite`, and `build.target: 'es2022'` with `build.cssMinify: 'lightningcss'` unless the site sets them.
+
 ```ts
 // vite.config.ts
-import tailwindcss from '@tailwindcss/vite';
-import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-import { ejmSite } from '@ejm/site/vite';
-import { ejmSsg } from '@ejm/ssg/vite';
+import { ejmlabs } from '@ejm/site/vite';
 
-export default defineConfig({
-  plugins: [tailwindcss(), react(), ejmSite({ project: 'cli' }), ejmSsg({ site: 'src/site.tsx' })],
-});
+export default defineConfig({ plugins: [ejmlabs({ project: 'cli' })] });
 ```
+
+`ejmlabs({ project, site = 'src/site.tsx', headers })` takes the project id (or a project object), the site module for the prerenderer, and the same `headers` option as `ejmSite`. A site needs no `@tailwindcss/vite`, `@vitejs/plugin-react`, `tailwindcss` or `resolve.dedupe` of its own, and imports one stylesheet, `@import "@ejm/ui/styles.css";`. `ejmSite` and `ejmSsg` stay exported for a site that wants to place them itself.
 
 ```tsx
 // src/site.tsx
@@ -41,7 +40,8 @@ export default defineSite({ ...siteDefaults('cli'), App, routes: [/* ... */], no
 
 ## Design ownership
 
-`ejmSite({ project })` checks every consumer's `src` tree before bundling,
+The design guard lives in `@ejm/ui` (`ejmUi()` runs it, and so does `ejmSite()` on its own;
+a config with both checks once). It checks every consumer's `src` tree before bundling,
 including unused stylesheets. The check is mandatory. Remove the obsolete
 `enforceDesignKit` option from existing configurations; passing its former false
 value does not disable the check. Dev checks new files and edits, then rechecks
@@ -62,10 +62,9 @@ publish any site by itself.
 The source check accepts:
 
 - Public CSS exports from `@ejm/ui`, `@ejm/tokens` and `@ejm/demos`, such as
-  `@import "@ejm/ui/styles-site.css" source(none);`. The optional `source(none)`
-  keeps unrelated installed package files out of the scan while retaining each
-  public profile's explicit component sources. Consumer CSS files contain only
-  these imports and comments. The exact `@source not "../content";` declaration may
+  `@import "@ejm/ui/styles.css";`. That stylesheet scans no consumer folder
+  itself, so the import needs no `source(none)`; the check still accepts it for
+  existing sites. Consumer CSS files contain only these imports and comments. The exact `@source not "../content";` declaration may
   exclude authored guide text from the content scan.
 - Named JSX content, route and state props through shared contracts. Keep
   heading semantics with `as` and choose a shared `SectionHead` purpose.
@@ -78,7 +77,7 @@ The source check accepts:
 It rejects local CSS rules and imports, theme or utility declarations, inline
 styles, `<style>` elements, stylesheet links, raw markup through
 `dangerouslySetInnerHTML`, consumer `className` or `class`, opaque JSX spreads,
-and removed visual overrides such as `Hero.motion` or `SectionHead.size`.
+and removed visual overrides such as `Hero.tone` or `SectionHead.size`.
 Stylesheet imports in scripts must use public shared exports or a CSS entry
 inside the consumer `src` tree. Put the site's own aggregate CSS import in the
 entry module; it may import only shared CSS.
@@ -101,16 +100,17 @@ dev checks; changed and deleted files invalidate that cache. The cache compares
 file size and modification time. An edit that preserves both needs a file event
 or a dev server restart to invalidate its cached result.
 
-## Native HTML applications
+## Page check
 
-Applications that own native forms and DOM state use the public
-`@ejm/site/native` Node build check with `@ejm/ui/static.css`. It checks authored
-templates, presentation setters and finished route markup against the shared
-native profile without adding a browser runtime. Native controls require their
-shared recipes and buttons need an explicit type. Use `group` for related
-content with React `AppGroup` spacing. See
-[Native HTML applications](native-html.md) for composition, fixed recipes,
-asset serving, privacy-sensitive themes, no-script forms and checks.
+After `ejm-ssg` writes the HTML, `ejmSite` parses every prerendered page with parse5 and fails the build with one `[ejm-site:pages] <file>: <rule>` line per violation (`<file>` is relative to the build folder, such as `about/index.html`). The rules:
+
+- Exactly one `h1`. The 404 page follows the same rule.
+- No skipped heading level going down: `h2` then `h4` fails, going back up is fine, and the first heading is the `h1`.
+- The first focusable element is the skip link to `#main`. Focusable means `a[href]`, an enabled `button`, `input` (not hidden), `select` or `textarea`, `summary`, or an element with a `tabindex` of 0 or more.
+- `main#main` exists.
+- Every absolute link to another site (`http:`, `https:` or `//host`) has `rel` containing `external`. A link counts as the same site only when its origin is the project's own `url` in the registry. Relative links, anchors, `mailto:` and `tel:` are not checked.
+
+The pages reach the check through the `api.onPages` hook of `@ejm/ssg/vite` (see its README), so the check runs whichever order the plugins are listed in.
 
 ## projects
 
