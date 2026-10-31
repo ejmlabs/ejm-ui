@@ -168,6 +168,19 @@ it('keeps a move in progress when the host re-renders with a new getLegalMoves f
   expect(board.enableMoveInput).toHaveBeenCalledOnce();
 });
 
+it('keeps hints while focus moves inside the board and clears them when focus leaves it', () => {
+  const { container } = render(<Surface {...props({ showLegalMoves: true, getLegalMoves: () => [{ square: 'e3' }] })} />);
+  const board = current();
+  board.input?.({ type: 'started', squareFrom: 'e2' });
+  expect(board.addMarker).toHaveBeenCalledWith('dot', 'e3');
+  const [square, promotion] = [document.createElement('button'), document.createElement('button')];
+  container.firstElementChild!.append(square, promotion);
+  fireEvent.focusOut(square, { relatedTarget: promotion });
+  expect(board.removeMarkers).not.toHaveBeenCalledWith('dot');
+  fireEvent.focusOut(promotion, { relatedTarget: document.body });
+  expect(board.removeMarkers).toHaveBeenCalledWith('dot');
+});
+
 it('clears pointer hints on unconsumed Escape, preserves consumed Escape and disposes its listener', () => {
   const getLegalMoves = vi.fn(() => [{ square: 'e3' }, { square: 'd3', capture: true }]);
   const { rerender, unmount } = render(<Surface {...props({ showLegalMoves: true, getLegalMoves })} />);
