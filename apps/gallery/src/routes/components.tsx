@@ -1,10 +1,18 @@
 import {
-  Actions, AppField, AppForm, Badge, Button, Checkbox, ContentFlow, DensityProvider, Dialog, Disclosure, Fact, Facts, Hero, Input, KeyHints, Menu,
-  MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger, Prompt, RadioGroup, Section, Select, StateBlock, Status, Switch, Table,
+  Actions, AppField, AppForm, Badge, Button, Checkbox, Columns, ContentFlow, DensityProvider, Dialog, Disclosure, Fact, Facts, Hero, Input, KeyHints, Menu,
+  GameClock, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger, Prompt, RadioGroup, Section, Select, StateBlock, Status, Switch, Table,
   Tabs, Text, Textarea, ToastProvider, Tooltip, useToast,
 } from '@ejm/ui';
-import { useId, useState } from 'react';
+import { lazy, Suspense, useId, useState } from 'react';
 import { Compare, Pane, PlusIcon, ThemePair } from '../specimen';
+
+// The barrel does not export Chessboard, so cm-chessboard loads only on this route, after mount. The server renders the leaf directly, which
+// draws its loading square, so hydration finds the same HTML.
+const Chessboard = import.meta.env.SSR
+  ? (await import('@ejm/ui/components/Chessboard')).Chessboard
+  : lazy(() => import('@ejm/ui/components/Chessboard').then(module => ({ default: module.Chessboard })));
+const italianGame = 'r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3';
+const startPosition = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 // Every control, drawn from the one control recipe. Each part is a block of the kit, so nothing here chooses a size, radius, color or spacing.
 // Sections alternate Mist and Paper on their own and nested sections take the next heading level. Overlays open on the page theme.
@@ -119,6 +127,7 @@ function Overlays() {
 export default function ComponentsPage() {
   const id = useId();
   const [prompt, setPrompt] = useState('ejm init');
+  const [proposed, setProposed] = useState('');
   return (
     <ToastProvider>
       <Hero eyebrow="ejm-ui / components" title="One control recipe.">
@@ -246,6 +255,31 @@ export default function ComponentsPage() {
           <Prompt value="ejm nope" state="error" message="Unknown command: nope. Try ejm help." label="Failed command" />
           <KeyHints hints={[{ key: 'Enter', label: 'run' }, { key: 'Tab', label: 'complete' }, { key: 'Esc', label: 'cancel' }, { key: '?', label: 'help' }, { key: 'Ctrl+C', label: 'quit' }, { key: 'Ctrl+L', label: 'clear' }]} label="Shortcuts" />
         </ContentFlow>
+      </Section>
+
+      <Section title="Game parts" intro={<p>A clock and a lazy chessboard with no chess rules. The host owns time, legality and the accepted position; a move is only a proposal.</p>}>
+        <Section title="Game clock">
+          <Actions>
+            <GameClock value="5:03" label="White has 5 minutes and 3 seconds" running />
+            <GameClock value="4:41" label="Black has 4 minutes and 41 seconds" />
+            <GameClock value="0:09" label="White has 9 seconds, low on time" low running />
+          </Actions>
+        </Section>
+        <Section title="Chessboard">
+          <Columns
+            primary={<Suspense fallback={null}>
+              <Chessboard fen={startPosition} color="w" enabled onMove={({ from, to }) => setProposed(`${from} to ${to}`)} />
+            </Suspense>}
+            secondary={<ContentFlow>
+              <p>Tab to the board, then use the arrow keys and Enter to move.</p>
+              <Text as="p" variant="muted" role="status">{proposed ? `Proposed: ${proposed}` : 'No move proposed. The position stays the same.'}</Text>
+              <Suspense fallback={null}>
+                <Chessboard fen={italianGame} color="w" enabled={false} readOnly lastMove={{ from: 'f1', to: 'c4' }} onMove={() => {}}
+                  aria-label="Read-only chessboard. The Italian Game after White's bishop moves to c4. White is at the bottom." />
+              </Suspense>
+            </ContentFlow>}
+          />
+        </Section>
       </Section>
 
       <Section

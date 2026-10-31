@@ -58,7 +58,7 @@ Source: `src/components/ui/`, copied-in shadcn/ui style on React 19 with `class-
 | `Tabs` | `components/ui/tabs.tsx` | core (`tabsReducer`) on native buttons | The same arrows, Home, End, wrap and roving tabindex as the Ink and Rust tabs. No Radix needed, so no extra weight. |
 | `Dialog` | `components/ui/dialog.tsx` | native `<dialog>` | `showModal()` traps focus, makes the page inert, handles Escape and restores focus. The component adds the label, the backdrop click and an explicit focus return. Radix Dialog was rejected as the heavier path. |
 | `Menu`, `MenuTrigger`, `MenuContent`, `MenuItem`, `MenuLabel`, `MenuSeparator`, `MenuGroup` | `components/ui/menu.tsx` | Radix DropdownMenu | Roving focus, typeahead, Escape, focus return and collision-aware placement. A native popover has no menu keyboard model. |
-| `Toast`, `ToastProvider` (with `useToast`) | `components/ui/toast.tsx` | Radix Toast | A polite live region per toast (`type="background"`), auto-dismiss that pauses on hover and focus, F8 to reach the stack, swipe to dismiss. |
+| `Toast`, `ToastProvider` (with `useToast`) | `components/ui/toast.tsx` | Radix Toast | A polite live region per toast (`type="background"`), auto-dismiss that pauses on hover and focus, F8 to reach the stack, swipe to dismiss. `label` names the stack's region (default "Notifications (F8)"); give each provider on one page its own. |
 | `RadioGroup` | `components/ui/radio-group.tsx` | native fieldset and radio inputs | Form validation, submission and keyboard selection. The label is the whole touch target. |
 | `Disclosure` | `components/ui/disclosure.tsx` | native `<details>` and `<summary>` | Collapsible at every width, with a hairline above and a `summary` prop for its label. The summary is a 44px row (32px compact). Closed content stays mounted, so forms keep input and widget state. No scripts. |
 
@@ -199,7 +199,7 @@ These exports supply their complete visual treatment. Applications pass content,
 
 | Component | File | Primitive | Why |
 | --- | --- | --- | --- |
-| GameClock | components/GameClock.tsx | native span | Supplied time and state, no timer or ticking live region. |
+| GameClock | components/GameClock.tsx | native span | Supplied time and state; the host owns ticking. `role="timer"` by default, so a tick is not announced, and the warn glyph beside the time when `low`. |
 | Chessboard | components/Chessboard.tsx | React lazy boundary | Public leaf-only board surface. SSR shows a labelled loading square; the maintained renderer loads after mount. Hosts supply FEN, orientation, accepted moves and optional legal destinations. No chess rules, product records, server or engine code enters the kit. |
 | ChessboardSurface (internal) | components/chessboard/ChessboardSurface.tsx | maintained cm-chessboard SVG | Owns pointer and keyboard interaction, promotion, marker layers, orientation serialization, reduced motion and cleanup. It is an internal renderer; consumers use the public Chessboard leaf. |
 | RadioGroup | components/ui/radio-group.tsx | native fieldset and radio inputs | Form validation, submission and keyboard selection. |
@@ -219,7 +219,9 @@ const Chessboard = lazy(() => import('@ejm/ui/components/Chessboard').then(modul
 <GameClock value="5:03" label="White has 5 minutes and 3 seconds" running />
 ```
 
-`Chessboard` accepts `fen`, `color: 'w' | 'b'`, `enabled`, `readOnly`, `showLegalMoves`, `getLegalMoves(square)`, `lastMove`, `premove`, `onMove` and `aria-label`. Like every public component it takes no `className` or `style`. It imports no chess rules. Optional destination rows are `{ square, capture? }`; the host computes them from its authoritative position. Hints default off and the host decides which modes permit them. Accepted positions come back through `fen`; a move callback is a proposal. The maintained board and its separately licensed piece assets keep their notices and source files. This package's board tests protect disposal, current callbacks and presentation behavior; a host must still test its move authority and legality adapter.
+`Chessboard` accepts `fen`, `color: 'w' | 'b'`, `enabled`, `readOnly`, `showLegalMoves`, `getLegalMoves(square)`, `lastMove`, `premove`, `onMove` and `aria-label`, which replaces the default accessible name of the board's `svg` (see the [Chessboard guide](src/components/chessboard/README.md)). Like every public component it takes no `className` or `style`. It imports no chess rules. Optional destination rows are `{ square, capture? }`; the host computes them from its authoritative position. Hints default off and the host decides which modes permit them. Accepted positions come back through `fen`; a move callback is a proposal. The maintained board and its separately licensed piece assets keep their notices and source files. This package's board tests protect disposal, current callbacks and presentation behavior; a host must still test its move authority and legality adapter.
+
+`GameClock` defaults to `role="timer"`; a `role` prop from the host wins, and `label` stays the accessible name. A timer is a live region that is off, so a tick is not announced. When `low`, it shows the warn glyph from the `@ejm/core` contract (`glyphs.status.warn`, hidden from assistive technology) beside the time, so low time does not rely on the danger fill alone.
 
 ## Application pages and composition
 

@@ -71,10 +71,13 @@ that imports the `@ejm/ui/components/Chessboard` subpath. Protected by a barrel 
 - **WHEN** a consumer imports the `@ejm/ui` barrel
 - **THEN** it has no `Chessboard` export, and the subpath does
 
-### Requirement: Board roles keep pieces, marks and squares legible
-Both themes SHALL define `board-light`, `board-dark` and `board-mark` ui roles. The token contrast
-gate MUST fail when pure black falls under 3:1 against either square, `board-mark` falls under 3:1
-against either square, or the two squares fall under 1.4:1 apart. Protected by
+### Requirement: Board roles keep pieces, labels, marks and squares legible
+Both themes SHALL define `board-light`, `board-dark`, `board-on-light`, `board-on-dark` and
+`board-mark` ui roles. Coordinate labels SHALL use `board-on-light` on the light square and
+`board-on-dark` on the dark square; markers and the keyboard focus frame SHALL use `board-mark`.
+The token contrast gate MUST fail when pure black falls under 3:1 against either square, a label
+color falls under 4.5:1 against its own square, `board-mark` falls under 3:1 against either
+square, or the two squares fall under 1.4:1 apart. Protected by
 `packages/tokens/src/contrast.test.ts`.
 
 #### Scenario: Shipped roles pass
@@ -84,3 +87,18 @@ against either square, or the two squares fall under 1.4:1 apart. Protected by
 #### Scenario: A dark square hides black pieces
 - **WHEN** the dark theme's `board-dark` is changed to a color under 3:1 against black
 - **THEN** the gate reports the theme, the square and the measured ratio
+
+#### Scenario: A coordinate label fades into its square
+- **WHEN** a theme's `board-on-light` is changed to a color under 4.5:1 against `board-light`
+- **THEN** the gate reports the theme, the role, the square and the measured ratio
+
+### Requirement: The board is named on its svg
+The accessible name SHALL sit on the package's `svg.cm-chessboard`, which is a focusable
+`application` with move input and an `img` when read only, and never on the wrapper element. A
+host `aria-label` MUST replace the default name, including after a `readOnly` change rebuilds the
+board. Protected by `packages/ui/src/components/Chessboard.test.tsx`.
+
+#### Scenario: Read-only replay
+- **WHEN** a host renders a read-only board without `aria-label`
+- **THEN** the board svg is an image named "Read-only chessboard" with the side at the bottom, and
+  the wrapper has no `aria-label`
