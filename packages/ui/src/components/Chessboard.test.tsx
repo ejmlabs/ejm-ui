@@ -111,6 +111,13 @@ it('names the board svg by mode, never its wrapper, for the player and for a rec
   expect(wrapper).not.toHaveAttribute('aria-label');
 });
 
+it('does not offer moves in the default name while input is off', () => {
+  const { rerender } = render(<Surface {...props({ enabled: false })} />);
+  expect(screen.getByRole('application', { name: 'Chessboard. You play White. You cannot move right now.' })).toBeInTheDocument();
+  rerender(<Surface {...props()} />);
+  expect(screen.getByRole('application', { name: 'Chessboard. You play White. Use arrow keys and Enter to move.' })).toBeInTheDocument();
+});
+
 it('keeps a host name on the new svg when readOnly rebuilds the board', () => {
   const name = 'Game 7, White to move';
   const { rerender } = render(<Surface {...props({ 'aria-label': name })} />);

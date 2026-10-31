@@ -65,7 +65,9 @@ export default function ChessboardSurface(props: ChessboardProps) {
   const side = props.color === 'w' ? 'White' : 'Black';
   const label = props['aria-label'] ?? (props.readOnly
     ? `Read-only chessboard. ${side} is at the bottom. Use the replay controls to change position.`
-    : `Chessboard. You play ${side}. Use arrow keys and Enter to move.`);
+    : props.enabled
+      ? `Chessboard. You play ${side}. Use arrow keys and Enter to move.`
+      : `Chessboard. You play ${side}. You cannot move right now.`);
   useEffect(() => {
     element.current?.querySelector('svg.cm-chessboard')?.setAttribute('aria-label', label);
   }, [label, props.readOnly]);

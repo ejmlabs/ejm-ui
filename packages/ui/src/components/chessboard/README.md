@@ -39,7 +39,8 @@ Each coordinate color is gated at 4.5:1 against the square it sits on.
 The accessible name sits on the package's `svg.cm-chessboard`: the focusable
 board, or the image when `readOnly`. It is not on the wrapper `div`, where an
 `aria-label` without a role is prohibited. A host `aria-label` replaces the
-default text. Keyboard focus on the board draws the kit's `--ejm-focus` ring, not
+default text. While `enabled` is false, the default name says the player cannot
+move right now instead of naming the move keys. Keyboard focus on the board draws the kit's `--ejm-focus` ring, not
 the package's own blue outline.
 The marker SVG uses Vite's `?url&no-inline` public asset query because the board
 package does not recognize a data URI as an absolute sprite URL.

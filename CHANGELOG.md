@@ -5,7 +5,7 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
-- Name the Chessboard on the board itself. The accessible name now sits on cm-chessboard's `svg.cm-chessboard`, the focusable board, or the image when `readOnly`, not on the wrapper `div`, where an `aria-label` without a role is prohibited. A host `aria-label` still wins, and the default text is unchanged. Keyboard focus on the board now draws the kit's `--ejm-focus` ring instead of cm-chessboard's `#0066cc` outline, which is outside the palette.
+- Name the Chessboard on the board itself. The accessible name now sits on cm-chessboard's `svg.cm-chessboard`, the focusable board, or the image when `readOnly`, not on the wrapper `div`, where an `aria-label` without a role is prohibited. A host `aria-label` still wins. The default text is unchanged, except that while `enabled` is false it says "You cannot move right now." instead of naming the arrow keys and Enter. Keyboard focus on the board now draws the kit's `--ejm-focus` ring instead of cm-chessboard's `#0066cc` outline, which is outside the palette.
 
 - Add the `ui-board-on-light` and `ui-board-on-dark` roles in both themes, which the Chessboard draws its coordinates with, on the light and the dark square. Coordinates used `ui-board-mark`, which measured 3.15:1 on the dark theme's light square and 3.52:1 on the light theme's dark square. A new `labels` gate in the board contrast check holds each coordinate color at 4.5:1 against the square it sits on. `ui-board-mark` now covers move markers and the keyboard focus frame only, still at 3:1.
 
