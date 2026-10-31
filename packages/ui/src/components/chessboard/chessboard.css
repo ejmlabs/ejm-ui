@@ -1,4 +1,7 @@
 .cm-chessboard { display: block; }
+/* The package draws its own blue focus ring; use the kit's ring so the board matches every other control. */
+.cm-chessboard.ejm-board:focus { outline: none; }
+.cm-chessboard.ejm-board:focus-visible { outline: 2px solid var(--ejm-focus); outline-offset: 2px; }
 .cm-chessboard.ejm-board .board .square.white { fill: var(--ejm-ui-board-light); }
 .cm-chessboard.ejm-board .board .square.black { fill: var(--ejm-ui-board-dark); }
 .cm-chessboard.ejm-board .coordinates { font-family: var(--font-mono); font-size: 7px; pointer-events: none; user-select: none; }

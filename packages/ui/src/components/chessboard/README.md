@@ -39,7 +39,8 @@ Each coordinate color is gated at 4.5:1 against the square it sits on.
 The accessible name sits on the package's `svg.cm-chessboard`: the focusable
 board, or the image when `readOnly`. It is not on the wrapper `div`, where an
 `aria-label` without a role is prohibited. A host `aria-label` replaces the
-default text.
+default text. Keyboard focus on the board draws the kit's `--ejm-focus` ring, not
+the package's own blue outline.
 The marker SVG uses Vite's `?url&no-inline` public asset query because the board
 package does not recognize a data URI as an absolute sprite URL.
 
@@ -68,7 +69,8 @@ position.
 Known limit: the last-move highlight is `ui-board-mark` at 18 percent opacity,
 drawn above the coordinates. On a highlighted edge square a coordinate label
 falls from at least 5.09:1 to between 3.75:1 and 4.25:1 in the dark theme and to
-3.94:1 on the light theme's dark square (computed, sRGB compositing). No palette
+3.94:1 on the light theme's dark square (computed, and matched by rendered pixels
+in Chromium). No palette
 color keeps 4.5:1 there, and a highlight faint enough to keep it would hide the
 last move.
 

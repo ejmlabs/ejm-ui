@@ -69,6 +69,7 @@ function Showcase({ theme }: { theme: 'light' | 'dark' }) {
             <Button variant="secondary">Secondary</Button>
             <Button variant="ghost">Ghost</Button>
             <Button variant="link">Link</Button>
+            <Button variant="danger">Delete</Button>
             <Button disabled>Disabled</Button>
           </Row>
           <Row label="Arrow and sizes">
