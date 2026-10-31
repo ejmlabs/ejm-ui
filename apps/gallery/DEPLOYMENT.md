@@ -35,6 +35,23 @@ no longer the procedure; a local Wrangler dry run against
 review gates apply before merge. A local build or source PR does not publish
 the site.
 
+## Before the first deploy
+
+The shared deploy fails closed unless these are in place:
+
+- The `staging` and `production` GitHub environments exist, and each has a
+  custom deployment branch policy with exactly one branch, `main`.
+- `production` has at least one required reviewer.
+- Both environments hold the `CLOUDFLARE_API_TOKEN` secret.
+
+The deploy also refuses a build whose `apps/gallery/wrangler.jsonc` differs from
+the reviewed commit, so change that file in source, never in a build step.
+
+If a DNS record for `ui-staging.ejmlabs.com` already exists outside Wrangler,
+Wrangler prompts in CI and nobody can answer. The shared guide says: "a custom
+domain whose DNS record exists makes Wrangler prompt, and CI cannot answer"
+(`docs/operations.md`, "Site deploys", in `ejmlabs/.github`).
+
 Run these checks on staging after each merge, and on the canonical host after
 approval: the host, shared headers, fonts and original OFL notices, 404
 handling, complete no-script docs, keyboard navigation and light/dark
