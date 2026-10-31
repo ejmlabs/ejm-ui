@@ -66,8 +66,9 @@ The source check accepts:
   itself, so the import needs no `source(none)`; the check still accepts it for
   existing sites. Consumer CSS files contain only these imports and comments. The exact `@source not "../content";` declaration may
   exclude authored guide text from the content scan.
-- Named JSX content, route and state props through shared contracts. Keep
-  heading semantics with `as` and choose a shared `SectionHead` purpose.
+- Named JSX content, route and state props through shared contracts. Build
+  sections with `Section`, which derives the heading level, the ground and the
+  id. Use `SectionHead` with a shared `purpose` only for a page opening.
 - `Static` imported from `@ejm/ssg` with literal `className="contents"`. The
   structural wrapper retains prerendered content. Imported aliases and
   namespaces work too.

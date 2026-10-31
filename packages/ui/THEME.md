@@ -1,13 +1,23 @@
 # Theme contract
 
-The public theme contract for `@ejm/ui/styles.css` and its opt-in entries. If a name is not in this file, it does not exist. Colors never appear as literals in components: they come from the semantic names below, which come from `packages/tokens/theme.json`.
+The public theme contract for `@ejm/ui/styles.css`, the one stylesheet. If a name is not in this file, it does not exist. Colors never appear as literals in components: they come from the semantic names below, which come from `packages/tokens/theme.json`.
 
 ## Use it
 
+One stylesheet styles every component in `@ejm/ui`: layouts, shell, controls, docs parts, application parts and motion. A site or an app imports it once.
+
 ```css
-/* a site's entry stylesheet */
-@import "@ejm/ui/styles-site.css" source(none);
+/* src/styles.css */
+@import "@ejm/ui/styles.css";
 ```
+
+The stylesheet scans only the kit's own source. `base.css` imports Tailwind with `source(none)`, so automatic source detection is off and no folder of the consumer is scanned. `styles.css` adds an `@source` line for each component folder (`components`, `layout`, `shell`, `hooks`, `motion`, `docs`, `app` and `lib`) and for `control-recipes.mjs`, and leaves out tests. A consumer needs no `source(none)` on its import and no `@source` line of its own, and there is no partial to forget: a class the kit writes is always in the sheet.
+
+Two scripts keep that true. `node packages/ui/scripts/check-sources.mjs` checks that every utility a component folder uses is generated, that the sheet scans nothing outside `src` and no test file, and that `styles-site.css` and `styles-docs.css` generate exactly what `styles.css` does. `node packages/ui/scripts/check-classes.mjs` checks that every class string the kit writes builds CSS at all, because Tailwind drops a class it cannot build without an error, so a typo or a removed token such as `bg-surface` would render unstyled. `check-sources.mjs` prints the size of the sheet: 15.6 KB gzip at this revision.
+
+`@ejm/ui/styles-site.css` forwards to `styles.css`, and `@ejm/ui/styles-docs.css` is empty, because `styles.css` already covers the docs parts. Both stay for consumers pinned before the one-stylesheet change; replace their imports with `styles.css`.
+
+Under `ejmUi()` and `ejmlabs()` the design guard rejects any class, style or CSS rule of the consumer's own, so a consumer's `src` holds only imports of public `@ejm/*` CSS (see [ADOPTION.md](../../ADOPTION.md)). Product demo styles come from the public `@ejm/demos/*.css` entries, imported after `@ejm/ui/styles.css`. A project that builds without the presets is outside the guard and adds its own `@source` lines for its own folders. `base.css` is private.
 
 ```html
 <head>
@@ -17,44 +27,7 @@ The public theme contract for `@ejm/ui/styles.css` and its opt-in entries. If a 
 </head>
 ```
 
-Serve `packages/ui/public/theme-boot.js` as `/theme-boot.js` (an external file, so `script-src 'self'` holds). Each profile scans its own shared components. `styles.css` scans `components`, `layout`, `shell`, `hooks` and `motion`. Docs, app, static and terminal components use opt-in entries:
-
-```css
-@import "@ejm/ui/styles.css";
-@import "@ejm/ui/styles-docs.css";   /* only if the site renders DocsLayout, DocsSidebar, CodeBlock, ParamTable, Callout, Pager, Contents */
-@import "@ejm/ui/styles-app.css";    /* only if it renders Dashboard, ChartLine, ChartBar, Legend, ActivityList */
-@import "@ejm/ui/styles-static.css"; /* only if it renders NativeCheckbox, Disclosure, ActionRows, DocumentContent */
-@import "@ejm/ui/styles-terminal.css"; /* only if it renders TerminalWorkspace and the Terminal* views */
-```
-
-Import the partial for every folder whose components you render, or their classes are missing. `node packages/ui/scripts/check-sources.mjs` checks that each folder gets its classes from the right entry and that a default folder never imports from docs or app. Applications may scan their own source folders. Sites use the stricter shared design guard. Shared package source coverage belongs to the package, through its public stylesheet exports; do not scan or exclude private package files.
-
-`styles-site.css` is the smaller public profile for marketing and project sites. It includes shared site layout, branding, shell, Button, hooks and motion. Add the same docs or app partials when needed. `styles.css` remains the full default profile for component galleries and apps. Both import one internal base with identical tokens, fonts, type, motion and global rules. `base.css` is private. Product demo source coverage comes from the public `@ejm/demos/*.css` profiles.
-
-Use `source(none)` on the entry import. This retains the profile's explicit
-component sources and avoids scanning unrelated installed package files. Sites
-compose public components and do not add utility classes or source directives.
-The starter and installed-package proof use this setup.
-
-## Native HTML profile
-
-Keep visible copy brief. Use no text where the layout or native state is clear; retain labels, trust disclosures, permission limits, errors, recovery and accessible names.
-
-`@ejm/ui/static.css` is the compiled, React-free profile for applications that already own native HTML and state. It shares the current Header and Brand geometry, application title and form rhythm, tokens, system themes, local fonts, canonical controls and calm motion. Consumers supply semantic content and events through the fixed `data-ejm` recipes, with no classes, inline styles or local CSS rules.
-
-See [Native HTML applications](../site/native-html.md) for the shell and form markup, fixed setup and one-column workspace recipes, compact connection details, asset copying, no-script forms, bounded output, motion and reduced-motion behavior. Setup and workspace-header h1 headings use a fixed 2rem size and weight 600; other native pages and React headings retain their current scale. It also documents the public `@ejm/site/native` build check for authored templates, DOM presentation hooks and finished route documents.
-
-Run `npm run build:static -w @ejm/ui` after shared recipe, token or font changes. The shared check rejects stale output. This profile does not load theme-boot.js, analytics or a browser runtime and does not store a theme choice. Native privacy-sensitive pages can continue to use the system palette and ordinary same-origin forms.
-The terminal module lives in `src/terminal` and keeps the public import
-`@ejm/ui/components/TerminalWorkspace`. Its structural utilities belong to
-`styles-terminal.css`; products should compose the public components rather
-than copy their markup or utility classes. `NativeCheckbox`, `Disclosure`,
-`ActionRows` and `DocumentContent` live in `src/static` and use
-`styles-static.css`. All keep root exports. `Disclosure`, `ActionRows` and
-`DocumentContent` keep their shell or layout deep aliases. `NativeCheckbox`
-uses `@ejm/ui/components/NativeCheckbox`. A page that
-uses both groups needs both partials. All entries share the same tokens, fonts
-and theme.
+Serve `packages/ui/public/theme-boot.js` as `/theme-boot.js` (an external file, so `script-src 'self'` holds). `ejmSite()`, inside `ejmlabs()`, adds the script tag and writes the file; an app on `ejmUi()` alone serves it itself.
 
 The Tailwind default palette, radius, shadow and font namespaces are reset. `bg-red-500`, `rounded-xl`, `shadow-md`, `font-serif` and `drop-shadow-*` do not exist, so a color or shape outside the system fails to compile.
 
@@ -78,7 +51,7 @@ Because the boot script always sets the attribute, the hook must also follow the
 
 ## Bands
 
-A band is a full-bleed section with its own ground. Put `data-band="paper|mist|sage|ink"` on the element, plus the `band` utility to paint it. Every band sets the same variables for its whole subtree, so children only ever say `text-fg`, `text-muted`, `border-line` and the rest, and they are right on every ground.
+A band is a full-bleed section with its own ground. Put `data-band="paper|mist|sage|ink"` on the element, plus the `band` utility to paint it (a page uses `Section`, below, instead of writing this by hand). Every band sets the same variables for its whole subtree, so children only ever say `text-fg`, `text-muted`, `border-line` and the rest, and they are right on every ground.
 
 ```html
 <section data-band="sage" class="band py-rhythm">
@@ -87,6 +60,12 @@ A band is a full-bleed section with its own ground. Put `data-band="paper|mist|s
 ```
 
 Bands may nest (the nearest wins), and `[data-band]` works on the same element as `[data-theme]`. The page itself is the Paper band.
+
+### Automatic bands
+
+`Section` (see `packages/ui/src/layout/README.md`) is how a page gets its bands, so a page never names Mist or Paper itself. A top-level `Section` renders `data-band="auto"`. Among the `data-band="auto"` children of one parent, the odd ones are Mist and the even ones Paper, in both themes: the tokens generator emits `[data-band="auto"]:nth-child(odd of [data-band="auto"])` beside the named bands in `packages/tokens/generated/tailwind.css`. `Hero` is a Paper band that is not `auto`, so the first section after it is Mist, then Paper, then Mist. `emphasis` renders `data-band="sage"` instead, which is not counted, so the alternation continues past it. A `Section` inside a `Section` has no band and keeps the ground of its parent. Keep the sections of one page as siblings, or they do not alternate.
+
+`:nth-child(... of S)` needs Chrome 111, Firefox 113 or Safari 9. The generated sheet lists the automatic selectors beside `:root`, but the built CSS of `examples/starter` (minified with Lightning CSS) holds them as rules of their own, so a browser that cannot parse them ignores only those rules and a section keeps the page ground. That was read in the built file and not tested in an older browser.
 
 | Band | Light theme | Dark theme | Use |
 | --- | --- | --- | --- |
@@ -134,7 +113,7 @@ Full values for every band and theme are in `packages/tokens/generated/tailwind.
 
 ### Variants and utilities for bands
 
-- `band-paper:`, `band-mist:`, `band-sage:`, `band-ink:` apply inside that band (`band-sage:text-link-large`).
+- `band-paper:`, `band-mist:`, `band-sage:`, `band-ink:` apply inside that band (`band-sage:text-link-large`). They match the named `data-band` values only, so `band-paper:` and `band-mist:` do not match an automatic section (`data-band="auto"`). `band-sage:` and `band-ink:` still match an `emphasis` section. No component in the kit uses these variants: the semantic colors are right on every ground.
 - `band` paints `background: var(--ejm-ground); color: var(--ejm-fg)`.
 - `scheme-page` makes an object (a product window, a code well) keep the page theme even inside a Sage or Ink band.
 
@@ -154,18 +133,16 @@ Fonts: Manrope (variable, weights 200 to 800) as `font-sans`, IBM Plex Mono Medi
 
 | Utility | Range at the base scale (320 to 1919px) | Line height | Tracking | Weight |
 | --- | --- | --- | --- | --- |
-| `text-display-lg` | 44px to 140px (reaches 140 at 1370px) | 0.96 | -0.045em | 600 |
 | `text-display` | 36px to 96px | 1.0 | -0.04em | 600 |
 | `text-title` | 28px to 56px | 1.06 | -0.035em | 600 |
 | `text-heading` | 20px to 32px | 1.2 | -0.02em | 600 |
 | `text-lead` | 19px to 26px | 1.5 | 0 | 400 |
-| `text-stat` | 52px to 136px | 0.95 | -0.04em | 600 |
 | `text-body` | 16px to 20px (18.4px at 1440px, 20px from 2000px) | 1.6 | 0 | 400 |
 | `text-meta` | 13px to 14.4px, IBM Plex Mono | 1.5 | +0.02em | 500 |
 
-From 1920px the five largest sizes (`display-lg`, `display`, `title`, `heading`, `stat`) multiply their maximum by `--ejm-scale` (1.125 at 1920, 1.25 at 2560, 1.375 at 3200, 1.5 from 4400). So `display-lg` tops out at 157px at 1920, 175px at 2560, 192px at 3200, 210px at 4400 and above. Body, lead and meta never scale past their caps. The root font size is never scaled, so `rem` and the Tailwind spacing scale mean the same thing on every screen.
+From 1920px the three largest sizes (`display`, `title`, `heading`) multiply their maximum by `--ejm-scale` (1.125 at 1920, 1.25 at 2560, 1.375 at 3200, 1.5 from 4400). So `display` tops out at 108px at 1920, 120px at 2560, 132px at 3200 and 144px at 4400 and above. Body, lead and meta never scale past their caps. The root font size is never scaled, so `rem` and the Tailwind spacing scale mean the same thing on every screen.
 
-Also: Tailwind's own `text-xs` to `text-9xl` still exist for dense app UI (nothing under 12px). `h1` to `h6` get `text-wrap: balance`, and `p`, `li`, `dd`, `blockquote` get `text-wrap: pretty`. `tabular-nums` (a built-in utility) gives tabular figures in Manrope and is what stats, versions and table cells use. Reading width: `max-w-measure` (68ch).
+Six sizes are the whole scale: `display`, `title`, `heading`, `lead`, `body` and `meta`. Controls and dense tables add `text-base` (16px) and, in the compact density, `text-sm` (14px); the kit uses no other named size. The one exception is `ProductWindow`, which sets the text size of the simulated product screen it frames (13px at least) from the width of its stage. `Stat` uses `display`. Tailwind's own `text-xs` to `text-9xl` still compile, but the kit uses none of them. `h1` to `h6` get `text-wrap: balance`, and `p`, `li`, `dd`, `blockquote` get `text-wrap: pretty`. `tabular-nums` (a built-in utility) gives tabular figures in Manrope and is what stats, versions and table cells use. Reading width: `max-w-measure` (68ch).
 
 Font files: `packages/ui/src/fonts/manrope-latin.woff2` (22,856 bytes) and `ibm-plex-mono-500-latin.woff2` (11,680 bytes), 34,536 bytes together, down from 93,968 for the full WOFF2s (the TTFs stay in `@ejm/tokens` as the source). Latin, Latin-1, general punctuation, currency and a few symbols; the mono also has arrows, box drawing, block elements and the check mark. Both `@font-face` rules carry the same `unicode-range`. Rebuild with `node packages/ui/scripts/build-fonts.mjs` (runs `pyftsubset`, or `uv run --with fonttools --with brotli pyftsubset` when it is not installed). Preload both with `fontPreloads` from `@ejm/ui`.
 
@@ -199,20 +176,20 @@ The gutter is never smaller than `env(safe-area-inset-left/right)`. Pages need `
 
 `--ejm-header-h` (default 4.5rem) feeds the page `scroll-padding-top`, so anchors and focused headings land below a sticky header. A sticky header component sets it.
 
-`Page variant="application"` combines the column with the shared application rhythm. `SectionHead purpose="application"` stacks a title heading and body-sized copy. Page openings use `purpose="page"`; ordinary sections use the default `purpose="section"`. Sites cannot pick a different heading size or alter the recipe with classes.
+`Page variant="application"` combines the column with the shared application rhythm and makes every control inside it compact (see Density below). `SectionHead purpose="application"` stacks a title heading and body-sized copy. Page openings use `purpose="page"`; ordinary sections use the default `purpose="section"`. A consumer cannot pick a different heading size or alter the recipe with classes.
 
-Public sites use `Hero`, `SectionHead`, structured shell identity and the recipes in `@ejm/ui/layout/SiteContent`. `@ejm/site/vite` checks that site source contains no local styling. Change typography, spacing, branding or motion in ejm-ui, then rebuild the sites. Product data, words, routes and accessible state remain in the site. See the layout README for the public composition API. Lower-level utility recipes in this document describe shared implementation, not consumer escape hatches.
+Pages are built from `Hero` and `Section`, structured shell identity, and the recipes in `@ejm/ui/layout/SiteContent`. `Section` derives its heading level, its ground, its id and its spacing, so a page chooses none of them. The design guard (`@ejm/ui/design-guard`, run by `ejmUi()` and `ejmlabs()`) checks that a consumer's source contains no local styling, and `ejmSite()` checks every built page. Change typography, spacing, branding or motion in ejm-ui, then rebuild the consumers. Product data, words, routes and accessible state remain in the consumer. See the layout README for the public composition API. The lower-level utility recipes in this document describe shared implementation, not consumer escape hatches.
 
 ## Elevation and radius
 
 - `shadow-rest`, `shadow-raised`, `shadow-float`: soft layered shadows, deeper in dark with a faint top edge of light. **Reserved for product windows, menus and overlays.** Nothing else has a shadow. Variables: `--ejm-shadow-rest|raised|float`.
-- `rounded-control` (6px) for buttons, inputs, tags, toggles; `rounded-pill` (999px) for pills and the theme toggle; `rounded-full` and `rounded-none` as usual. `rounded-compact` (5px) is the control radius of the compact density that applications use (see COMPONENTS.md). `rounded-window` (16px) for product windows, menus and overlays only. `rounded-sm|md|lg` equal `rounded-control` so shadcn source works; prefer `rounded-control` in new code. There is no card or panel radius.
+- Three radii, and nothing else: `rounded-control` (6px) for fields, checkboxes, menu items, nav items, tabs and the tooltip; `rounded-pill` (999px) for buttons, switches and the theme toggle; `rounded-window` (16px) for product windows, menus and overlays only. `rounded-full` and `rounded-none` are Tailwind's own and stay (radio buttons use `rounded-full`). The other Tailwind radius names do not compile. There is no card or panel radius.
 
 ## Motion
 
 Transform and opacity only (draw-on uses stroke offset, as specified). Every animation utility is wrapped in `prefers-reduced-motion: no-preference`, so under reduced motion nothing moves and every element is in its final state. Durations also collapse to 1ms under reduced motion.
 
-The shared theme control uses the native View Transitions API for a 320ms crossfade after an explicit click or key press. The preference still saves if a transition is skipped or cannot start; browsers without the API and visitors who prefer reduced motion switch immediately. Initial theme selection and system-theme updates do not start a transition. The shared SSG stylesheet supplies the crossfade timing. Header links and the narrow menu use the existing color and fade utilities. Keep first-paint text and product captures visible; use a transform-only entrance for large hero text.
+The shared theme control uses the native View Transitions API for a 320ms crossfade after an explicit click or key press. The preference still saves if a transition is skipped or cannot start; browsers without the API and visitors who prefer reduced motion switch immediately. Initial theme selection and system-theme updates do not start a transition. The shared SSG stylesheet supplies the crossfade timing. Color changes are instant: hover, pressed and state colors never transition, and the kit uses no `transition-colors` or `transition-all`. Only `transform` and `opacity` transition, with `duration-fast` and `ease-standard`. The open narrow menu fades in with `animate-fade`. Keep first-paint text and product captures visible; use a transform-only entrance for large hero text.
 
 | Token | Value |
 | --- | --- |
@@ -254,27 +231,36 @@ Under reduced motion, with scripts off, and in print, `pending` hides nothing. T
 - `skip-link`: first focusable element on every page, `<a href="#main" class="skip-link">`. Visible on focus.
 - `duration-*`, `ease-*`, `shadow-*`, `rounded-*` as above. `sr-only` is Tailwind's own.
 
-### Shared component structure
+## The control system
 
-These public, implementation-owned utilities keep shared component output
-small. Prefer the components when composing a product; keep their markup and
-state hooks with `@ejm/ui`. The native and document utilities below belong to
-`styles-static.css`. Import that entry after `styles.css` for the static parts.
+Every control comes from one recipe (`packages/ui/src/control-recipes.mjs` for buttons and fields, and the same values in every other control), so controls placed side by side agree. The values:
 
-- `native-check-label`, `native-check`: checkbox label target and native input
-  with the shared accent color. The platform supplies the checkmark.
-- `disclosure-summary`, `disclosure-content`, `disclosure-menu`: native
-  disclosure structure and bounded menu presentation. The platform supplies
-  the open/closed marker. Menus retain a border in forced colors.
-- `document-content`: shared reading width, heading and form rhythm, wrapped
-  preformatted text and status/error presentation.
-- `terminal-*`: the workspace, header, navigation, transcript, status and
-  composer structure in the opt-in `styles-terminal.css` entry. Import that
-  entry after `styles.css` when rendering the `Terminal*` components.
+| Property | Value |
+| --- | --- |
+| Height | `min-h-11` (44px). Compact: `min-h-8` with `compact-target` (32px on a fine pointer), and `touch-target` keeps 44px on a coarse pointer. This covers Button, Input, Select, Tabs triggers, menu items, Disclosure summaries, header nav items, the theme toggle, and checkbox, radio and switch rows. Textarea keeps `min-h-28`. |
+| Radius | Buttons, switches and the theme toggle `rounded-pill`. Fields, checkboxes, menu items, nav items, tabs and the tooltip `rounded-control`. Dialog, menu, toast and the header phone menu `rounded-window`. Radio buttons `rounded-full`. |
+| Type | `text-base` (16px), `text-sm` (14px) when compact. Weight 600 for buttons and the current tab, 400 otherwise. Labels and metadata use `text-meta`. |
+| Button variants | `primary`: Sage fill, Forest on hover. `secondary`: transparent with `border border-control`, `bg-tone` on hover (a hairline outline, never a fill). `ghost`: transparent, `bg-tone` on hover. `link`: underlined text. `danger`: the danger fill. Sizes `md` and `icon` only (`icon` is a 44px square, 32px compact). |
+| Hover | A filled control changes to its hover token. Every other interactive surface (ghost and secondary buttons, nav items, menu items, rows, tabs) fills with `hover:bg-tone`. Links thicken their underline to 2px. All instant. |
+| Pressed | Buttons sink to `scale-[0.97]` under `motion-safe`. Nothing else scales. |
+| Focus | The global `:focus-visible` outline: 2px `--ejm-focus`, 2px offset. Components add nothing, except `focus-visible:outline-offset-[-2px]` where an ancestor clips the outline (menu items, tabs in a scroller, the phone menu rows). |
+| Disabled | `disabled:opacity-50 disabled:pointer-events-none`, and the same for `aria-disabled`. |
+| Overlay | Dialog, menu, toast and the header phone menu: `rounded-window border border-line bg-ground text-fg shadow-float`, entering with `animate-fade`. The tooltip is the small one: `rounded-control border border-line bg-ground text-sm shadow-raised`. |
+| Rows | List rows, fact rows, table rows and activity rows: `py-4`, compact `py-2`, separated by `hairline` and `hairline-t` only. Row text starts on the column edge. |
+| Reading width | Text and forms use `max-w-measure` (68ch). |
+| Status words | `Status` (`ok`, `warn`, `error`, `info`, `pending`) is the one vocabulary. `Badge` takes the same names plus `neutral`, and a dashboard delta takes them as `status`. |
+
+### Density
+
+A control is `comfortable` (the table above) unless its surface says otherwise. `AppShell` and `Page variant="application"` provide `compact` to everything inside them through `DensityProvider` (`lib/density.tsx`), and every control reads it, so an application page needs no prop. `DensityProvider` and `useDensity` are exported from `@ejm/ui`. A `density` prop on a control still overrides the surface. On a coarse pointer a compact control is still 44px.
+
+### Inline code
+
+`code` outside `pre` has one style, in `base.css`: the mono face at 0.9em, no fill and no border. No component restyles it, and `Text variant="code"` and `InlineCode` render a plain `code` element. A fenced block (`CodeBlock`) is the one flat ground, `bg-ui-editor`.
 
 ## Base styles
 
-`html`: ground background, no font synthesis, text-size-adjust 100%, smooth scrolling (not under reduced motion), `scroll-padding-top` for a sticky header and the notch. `body`: ground and fg, `text-body` size, 1.6 line height, antialiased. `::selection`: fg on ground, inverted. `*`: border color is `line`. `:focus-visible` as above. Forced colors keep the system focus color.
+`html`: ground background, no font synthesis, text-size-adjust 100%, smooth scrolling (not under reduced motion), `scroll-padding-top` for a sticky header and the notch. `body`: ground and fg, `text-body` size, 1.6 line height, antialiased. `::selection`: fg on ground, inverted. `*`: border color is `line`. `code` outside `pre`: the mono face at 0.9em, no fill. `:focus-visible` as above. Forced colors keep the system focus color.
 
 ## Symbol art
 
@@ -285,8 +271,9 @@ Generated art lives in `packages/ui/src/art`. The inline files (`art/inline/*.sv
 - No cards, panels, tiles or tonal boxes. Group with `hairline` rows, space and bands.
 - No shadow outside product windows, menus and overlays; no radius except on controls and windows.
 - No literal colors and no Tailwind palette names. No second font.
-- No animation on anything but transform and opacity (plus the draw-on stroke offset), and always with a final state that needs no script.
+- No animation on anything but transform and opacity (plus the draw-on stroke offset), and always with a final state that needs no script. No transition on a color.
+- No `className`, `style` or raw HTML on a public component: the kit owns every class, and `packages/ui/src/closed-api.test.ts` fails when an export accepts one.
 
 ## Measured
 
-Gallery tokens route (4 bands, type scale, elevation, about 60 distinct utilities): built CSS 31.2 KB, 6.99 KB gzip, including Tailwind's reset, the full band and theme variables, the window colors (about 1.4 KB gzip) and all five `@font-face` rules.
+`node packages/ui/scripts/check-sources.mjs` builds the one stylesheet with every class the kit uses and prints its gzip size: 15.6 KB at this revision (read in this session). It holds Tailwind's reset, the band and theme variables, the window colors, the five `@font-face` rules and the utilities of every component folder. Bytes are not a bar: load time is (see `QUALITY.md`).

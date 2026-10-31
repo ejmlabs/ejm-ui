@@ -99,7 +99,7 @@ and the starter pass it.
 
 | Removed | Why | Consumers |
 | --- | --- | --- |
-| `src/static/*`, `styles-static.css`, `src/static.css`, `public/static.css`, `build-static.mjs`, `static-touch.test.mjs`, `@ejm/site/native`, `native-html.md`, `./control-recipes` export | A second implementation of controls with product recipes and no consumer | none in the seven repositories |
+| `src/static/*`, `styles-static.css`, `src/static.css`, `public/static.css`, `build-static.mjs`, `static-touch.test.mjs`, `@ejm/site/native`, `native-html.md` | A second implementation of controls with product recipes and no consumer | none in the seven repositories |
 | `src/terminal/*`, `styles-terminal.css`, `./components/TerminalWorkspace` | Product chat and pairing views with no web consumer; the contract and the Ink and Rust targets stay | none |
 | `styles-app.css` | Covered by `styles.css` | none |
 | `display-lg`, `stat` sizes, `rounded-compact`, `rounded-sm|md|lg` | Off-scale or unused | none outside the kit |

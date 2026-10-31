@@ -58,18 +58,20 @@ trusted preparation workflow supports the metadata. UI does not need a
 self-reference or private harness token. A Git tree hash or an uncommitted
 working directory cannot serve as the dependency commit pin.
 
-A source snapshot does not prove a successful install, build, native check
-or hosted review.
+A source snapshot does not prove a successful install, build, check or hosted
+review.
 
-Native pages can prerender shared controls and layout parts from `@ejm/ui`.
-Import `@ejm/ui/styles.css` first. Add `@ejm/ui/styles-static.css` for
-`NativeCheckbox`, `Disclosure`, `ActionRows` and `DocumentContent`. Add
-`@ejm/ui/styles-terminal.css` for the `Terminal*` views. A page that uses both
-groups needs both partials. Products retain their authentication, transport,
-validation and command logic. Read
-[Native static pages](packages/ui/COMPONENTS.md#native-static-pages) for form
-behavior, public deep imports and safe transcript templates. These source APIs
-do not establish a deployed consumer or a published package.
+A site's whole build setup is one plugin in `vite.config.ts`, a base `tsconfig.json` and one stylesheet import:
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite';
+import { ejmlabs } from '@ejm/site/vite';
+
+export default defineConfig({ plugins: [ejmlabs({ project: 'cli' })] });
+```
+
+`ejmlabs()` is Tailwind, React, one copy of React, the design guard, the shared head and headers, the prerenderer and the build options. An app that is not a prerendered site uses `ejmUi()` from `@ejm/ui/vite` instead. `tsconfig.json` is `{ "extends": "@ejm/ui/tsconfig.json", "include": ["src", "vite.config.ts"] }` and the one stylesheet import is `@import "@ejm/ui/styles.css";`. The build fails on a consumer `className`, `style` or local CSS, and on a built page without one `h1`, with a skipped heading level, without the skip link first, without `main#main` or with an unmarked link to another host. Public `@ejm/ui` components accept no `className` or `style`. Read the [adoption guide](ADOPTION.md) for the recipe, the checks and the state of each consumer. Products retain their authentication, transport, validation and command logic. These source APIs do not establish a deployed consumer or a published package.
 
 ## Development
 
@@ -89,12 +91,12 @@ workflow in `openspec/`: explore, propose, apply, sync specs, then archive.
 | Path | What it holds |
 | --- | --- |
 | `packages/tokens` | `theme.json`, brand tokens, and the generators for CSS, Tailwind, Rust, Monaco and terminal themes |
-| `packages/ui` | Components, hooks, layouts, views, styles and art |
+| `packages/ui` | Components, hooks, layouts, the one stylesheet, art, the Vite preset `ejmUi()`, the design guard and the base tsconfig |
 | `packages/demos` | Scenario data and the lazy demo islands |
 | `packages/core` | Shared state and interaction helpers |
 | `packages/ink` | Ink terminal components |
 | `crates/ejm-tui` | Ratatui terminal components |
-| `packages/site` | Site components, navigation, headers and static assets |
+| `packages/site` | The site preset `ejmlabs()`, project registry, analytics, headers and the built-page check |
 | `packages/ssg` | Prerendering and server-only asset handling |
 | `packages/shots` | Product capture metadata, exports and optimized images |
 | `apps/gallery` | The gallery and docs site, built with the packages above |
@@ -123,10 +125,14 @@ disabled. The pack proof uses the npm registry and checks six tarball-based
 interfaces. It does not publish packages.
 
 `npm run check` covers text, retained assets, generated themes, parity,
-workspace checks, types and tests. Load time is the only performance bar, measured
-by `npm run perf`; see [QUALITY.md](QUALITY.md). Browser acceptance, actual product captures and
-demo honesty checks need their documented tools and immutable product inputs.
-A passing owner check does not prove those separate checks or deployment.
+workspace checks (including `check-classes.mjs`, which fails on a class the kit
+writes that builds no CSS), types (including the closed-props test, which fails
+when a public component accepts `className` or `style`) and tests. A site build
+also runs the design guard and the built-page check. Load time is the only
+performance bar, measured by `npm run perf`; see [QUALITY.md](QUALITY.md).
+Browser acceptance, actual product captures and demo honesty checks need their
+documented tools and immutable product inputs. A passing owner check does not
+prove those separate checks or deployment.
 
 Before changing an export, manifest or package file list, run the pack proof
 and affected consumer checks. Keep each public guide with its owner and
