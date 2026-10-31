@@ -4,7 +4,7 @@ The canonical host is `https://ui.ejmlabs.com`. The static Worker is
 `ejmlabs-ui`; workers.dev and version preview URLs are disabled. The gallery
 has no API, session service or analytics beacon. It uses the shared security
 headers emitted by `@ejm/site`. Its `env.staging` Worker, `ejmlabs-ui-staging`,
-serves `https://ui-staging.ejmlabs.com` with the same settings. Staging is
+serves `https://staging.ui.ejmlabs.com` with the same settings. Staging is
 publicly reachable and serves the latest main.
 
 From the reviewed source commit, install the locked dependencies, then run:
@@ -47,7 +47,7 @@ every site repository at once.
 The deploy also refuses a build whose `apps/gallery/wrangler.jsonc` differs from
 the reviewed commit, so change that file in source, never in a build step.
 
-If a DNS record for `ui-staging.ejmlabs.com` already exists outside Wrangler,
+If a DNS record for `staging.ui.ejmlabs.com` already exists outside Wrangler,
 Wrangler prompts in CI and nobody can answer. The shared guide says: "a custom
 domain whose DNS record exists makes Wrangler prompt, and CI cannot answer"
 (`docs/operations.md`, "Site deploys", in `ejmlabs/.github`).

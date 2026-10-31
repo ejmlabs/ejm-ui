@@ -49,7 +49,9 @@ const tarballs = join(dir, 'tarballs');
 rmSync(tarballs, { recursive: true, force: true });
 mkdirSync(tarballs, { recursive: true });
 const packed = PACKAGES.map(p => {
-  const [info] = JSON.parse(read('npm', ['pack', '-w', `packages/${p}`, '--pack-destination', tarballs, '--json'], repo));
+  // npm 11 prints an array, npm 12 an object keyed by package name; `-w <one package>` yields one entry either way.
+  const out = JSON.parse(read('npm', ['pack', '-w', `packages/${p}`, '--pack-destination', tarballs, '--json'], repo));
+  const [info] = Array.isArray(out) ? out : Object.values(out);
   console.log(`${info.name.padEnd(14)} ${String(info.size).padStart(9)} bytes gzip, ${String(info.unpackedSize).padStart(9)} unpacked, ${String(info.entryCount).padStart(4)} files`);
   return info;
 });
