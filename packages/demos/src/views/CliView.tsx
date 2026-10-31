@@ -3,7 +3,7 @@ import { cx } from './cx';
 import { cliFrame, type CliFrame } from './frames';
 import { CliHeader, CliHints, CliStatus, TermBlock, glyphsFor } from './terminal';
 
-export type ViewProps = Pick<ProductWindowProps, 'elevation' | 'labelSide' | 'label' | 'className'>;
+export type ViewProps = Pick<ProductWindowProps, 'elevation' | 'labelSide' | 'label'>;
 
 /** The terminal screen of one ejm-cli frame: header, transcript (newest at the bottom), status line, composer and key hints. */
 /** In a stage window (compact) the status line and key hints are left out and the transcript fades where it is cut, so no line is shown half drawn. */

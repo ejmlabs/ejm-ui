@@ -157,6 +157,6 @@ export function IdeScreen({ frame, dispatch, running = false, folders = {}, flas
 }
 
 /** Static HTML for the same workspace and inline tool results as the island. */
-export function IdeView({ frame = ideFrame, label = 'ejm-ide', className, passive = false }: IdeViewProps) {
-  return <div role="group" aria-label={label} className={className}><IdeScreen frame={frame} passive={passive} /></div>;
+export function IdeView({ frame = ideFrame, label = 'ejm-ide', passive = false }: IdeViewProps) {
+  return <div role="group" aria-label={label}><IdeScreen frame={frame} passive={passive} /></div>;
 }
