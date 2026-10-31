@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { cn } from '../lib/utils';
 import { Collapse } from './Collapse';
 
 export interface DocsLayoutProps {
@@ -9,7 +8,6 @@ export interface DocsLayoutProps {
   contents?: ReactNode;
   sidebarLabel?: string;
   contentsLabel?: string;
-  className?: string;
   /** The article. Held to a 68ch reading column. */
   children: ReactNode;
 }
@@ -23,16 +21,21 @@ const stickXl = 'xl:sticky xl:top-[calc(var(--ejm-header-h)+env(safe-area-inset-
  * reading column; the docs parts (SidebarFilter, Contents, Pager and the rest) go in the slots. Source order is sidebar,
  * contents, article, which is also the visual order on phones. With JavaScript off both disclosures are native and work.
  */
-export function DocsLayout({ sidebar, contents, sidebarLabel = 'Browse docs', contentsLabel = 'On this page', className, children }: DocsLayoutProps) {
+export function DocsLayout({ sidebar, contents, sidebarLabel = 'Browse docs', contentsLabel = 'On this page', children }: DocsLayoutProps) {
   return (
-    <div className={cn('page grid gap-y-4 py-rhythm-sm lg:grid-cols-[15rem_minmax(0,68ch)] lg:justify-center lg:gap-x-12 lg:gap-y-0 xl:grid-cols-[15rem_minmax(0,68ch)_13rem]', className)}>
-      <Collapse from="lg" label={sidebarLabel} className={cn('lg:col-start-1 lg:row-span-2 lg:row-start-1 xl:row-span-1', stickLg)}>
-        {sidebar}
-      </Collapse>
-      {contents && (
-        <Collapse from="xl" label={contentsLabel} className={cn('lg:col-start-2 lg:row-start-1 xl:col-start-3', stickXl)}>
-          {contents}
+    <div className="page grid gap-y-4 py-rhythm-sm lg:grid-cols-[15rem_minmax(0,68ch)] lg:justify-center lg:gap-x-12 lg:gap-y-0 xl:grid-cols-[15rem_minmax(0,68ch)_13rem]">
+      {/* Each Collapse sits in the grid cell that places and sticks it, so the Collapse itself takes no class. */}
+      <div className={`lg:col-start-1 lg:row-span-2 lg:row-start-1 xl:row-span-1 ${stickLg}`}>
+        <Collapse from="lg" label={sidebarLabel}>
+          {sidebar}
         </Collapse>
+      </div>
+      {contents && (
+        <div className={`lg:col-start-2 lg:row-start-1 xl:col-start-3 ${stickXl}`}>
+          <Collapse from="xl" label={contentsLabel}>
+            {contents}
+          </Collapse>
+        </div>
       )}
       <div className="min-w-0 max-w-measure lg:col-start-2 lg:row-start-2 xl:row-start-1">{children}</div>
     </div>

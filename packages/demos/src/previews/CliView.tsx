@@ -1,12 +1,11 @@
 import type { RefObject } from 'react';
 import type { ProductWindowProps } from '@ejm/ui/layout/ProductWindow';
-import { cx } from './cx';
 import { cliFrame } from './frames/cli';
 import type { CliFrame } from './frames';
 import { CliHeader, CliHints, CliStatus, TermBlock } from './terminal';
 
 /** Layout options kept for existing consumers. Product surfaces draw their own chrome. */
-export type ViewProps = Pick<ProductWindowProps, 'elevation' | 'labelSide' | 'label' | 'className'>;
+export type ViewProps = Pick<ProductWindowProps, 'elevation' | 'labelSide' | 'label'>;
 
 /** Native TUI hierarchy: header, transcript, status, bordered composer and key hints. */
 export function CliScreen({ frame, transcript }: { frame: CliFrame; compact?: boolean; transcript?: RefObject<HTMLDivElement | null> }) {
@@ -29,6 +28,6 @@ export function CliScreen({ frame, transcript }: { frame: CliFrame; compact?: bo
 }
 
 /** A static moment from the local scenario, without added demo chrome. */
-export function CliView({ frame = cliFrame, label = 'ejm-cli', className }: ViewProps & { frame?: CliFrame; compact?: boolean }) {
-  return <div role="group" aria-label={label} className={cx('ejm-cli-surface h-full min-h-0 bg-ui-ground p-[1em] font-mono text-[12px] text-ui-text', className)}><CliScreen frame={frame} /></div>;
+export function CliView({ frame = cliFrame, label = 'ejm-cli' }: ViewProps & { frame?: CliFrame; compact?: boolean }) {
+  return <div role="group" aria-label={label} className="ejm-cli-surface h-full min-h-0 bg-ui-ground p-[1em] font-mono text-[12px] text-ui-text"><CliScreen frame={frame} /></div>;
 }

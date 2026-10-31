@@ -18,16 +18,20 @@ export const gettingStarted: DocPage = {
           ),
         },
         {
+          type: 'p',
+          children: <>The components are closed. They take content, state and accessible attributes, and no <code>className</code> or <code>style</code>. You give a page its words and the kit decides how it looks.</>,
+        },
+        {
           type: 'params',
           caption: 'Packages in the workspace',
           labels: { name: 'Package', description: 'What it holds' },
           rows: [
             { name: '@ejm/tokens', description: 'theme.json, brand assets and the generators for CSS, Tailwind, Rust, Monaco and terminal themes.' },
-            { name: '@ejm/ui', description: 'Components, hooks, layouts, docs parts, styles and art for the web.' },
+            { name: '@ejm/ui', description: 'Components, hooks, layouts, docs parts, the one stylesheet, the Vite preset and the base tsconfig.' },
             { name: '@ejm/core', description: 'Framework-free logic: state machines, the component contract and formatting. It has no React in it.' },
             { name: '@ejm/demos', description: 'Scenario data and the demo engines for the product pages.' },
             { name: '@ejm/ssg', description: 'The prerender package for Vite and React sites: static HTML for every route, hydration and links.' },
-            { name: '@ejm/site', description: 'What every ejmlabs site shares: the project registry, analytics, the shared head and the security headers.' },
+            { name: '@ejm/site', description: 'What every ejmlabs site shares: the Vite plugin, the project registry, analytics, the shared head and the security headers.' },
             { name: '@ejm/gallery', description: 'This site: the gallery and the docs, a prerendered Vite and React site built on @ejm/ssg and @ejm/site.' },
           ],
         },
@@ -59,72 +63,101 @@ npm run check      # text checks, type check and tests`,
       ],
     },
     {
-      id: 'first-page',
-      title: 'Your first page',
+      id: 'set-up',
+      title: 'Set up a site',
       blocks: [
-        { type: 'h3', id: 'stylesheet', title: 'Import the stylesheet' },
         {
           type: 'p',
-          children: (
-            <>
-              A site has one entry stylesheet. It loads Tailwind, the generated color theme, the two brand fonts, the type scale, the page column and the motion rules.
-            </>
-          ),
+          children: <>A site needs three small files: one Vite plugin, one base tsconfig and one stylesheet import. <code>examples/starter</code> is the reference.</>,
         },
-        { type: 'code', lang: 'css', code: '@import "@ejm/ui/styles-site.css" source(none);' },
-        { type: 'p', children: <>The site profile covers shared layouts and Button. Turning off the automatic scan keeps unrelated package styles out of the bundle. Use the complete <code>styles.css</code> profile for form and application controls. Add <code>@ejm/ui/styles-docs.css</code> for documentation. Native product previews import the public <code>@ejm/demos/cli.css</code>, <code>ide-preview.css</code> or <code>harness.css</code> profile. <code>ide.css</code> still styles the interactive simulated IDE. Each import lists its own sources, so do not scan private package paths.</> },
-        { type: 'p', children: <>Use the public Button and Input components for controls, Brand for approved artwork, and DocsSidebar and Contents for documentation navigation. Compose site content with SectionBody, Columns, ContentFlow and Actions. If a visual pattern is missing, add it to ejm-ui. Public sites do not write CSS or utility classes.</> },
-        { type: 'p', children: <>The gallery links a complete stylesheet per route through <code>@ejm/ssg</code> head links, so docs, app examples and recorded demos load their own required styles before hydration. Interactive examples stay disabled while page code loads and enable when their handlers are ready. With scripts off, their content remains readable.</> },
-        { type: 'p', children: <>If a page chunk cannot load, a recovery message offers <strong>Reload this page</strong>. Reconnect first if you are offline. Reloading requests the latest HTML and can recover a tab opened before a release.</> },
+        { type: 'h3', id: 'plugin', title: 'One Vite plugin' },
         {
           type: 'p',
           children: (
             <>
-              In the head, set the color scheme, load <code>theme-boot.js</code> before any CSS paints, and preload the two fonts. <a href="/docs/theming">Theming and the cookie</a> explains the script.
+              <code>ejmlabs({'{ project }'})</code> from <code>@ejm/site/vite</code> is the whole build setup. It adds Tailwind, React, one copy of React for linked and installed packages, the design guard, the shared head and headers, prerendering and the shared build options. A site lists no other plugin and sets no <code>resolve.dedupe</code>.
             </>
           ),
         },
         {
           type: 'code',
-          lang: 'html',
-          code: `<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="color-scheme" content="light dark" />
-  <script src="/theme-boot.js"></script>
-</head>`,
+          lang: 'ts',
+          label: 'vite.config.ts',
+          code: `import { defineConfig } from 'vite';
+import { ejmlabs } from '@ejm/site/vite';
+
+export default defineConfig({ plugins: [ejmlabs({ project: 'ejmlabs' })] });`,
         },
-        { type: 'h3', id: 'compose', title: 'Build with bands' },
+        { type: 'h3', id: 'tsconfig', title: 'One base tsconfig' },
+        {
+          type: 'p',
+          children: <><code>@ejm/ui/tsconfig.json</code> holds the strict compiler options and resolves one copy of the React types, whether the packages are linked or installed. A site extends it and names its files.</>,
+        },
+        {
+          type: 'code',
+          lang: 'json',
+          label: 'tsconfig.json',
+          code: `{
+  "extends": "@ejm/ui/tsconfig.json",
+  "include": ["src", "vite.config.ts"]
+}`,
+        },
+        { type: 'h3', id: 'stylesheet', title: 'One stylesheet' },
         {
           type: 'p',
           children: (
             <>
-              A page is a stack of full-bleed bands. Each band sets its own ground, and everything inside reads correctly on it. Rows, type and space do the grouping, so there are no cards.
+              <code>@ejm/ui/styles.css</code> styles every component, including the docs and app parts. It loads Tailwind, the generated color theme, the two brand fonts, the type scale, the page column and the motion rules. It turns off Tailwind&apos;s automatic source scan, so it never reads your folders.
+            </>
+          ),
+        },
+        { type: 'code', lang: 'css', label: 'src/styles.css', code: '@import "@ejm/ui/styles.css";' },
+        {
+          type: 'p',
+          children: <>A site writes no utility classes, so that one line is the whole stylesheet. There are no partial stylesheets to forget. A route that shows product demos imports the public <code>@ejm/demos/cli.css</code>, <code>ide-preview.css</code> or <code>harness.css</code> profile for the product it shows.</>,
+        },
+        {
+          type: 'p',
+          children: <>The plugin adds the color scheme, <code>theme-boot.js</code> and the icons to the head, so you do not write them. <a href="/docs/theming">Theming and the cookie</a> explains the script.</>,
+        },
+        { type: 'h3', id: 'compose', title: 'Build a page' },
+        {
+          type: 'p',
+          children: (
+            <>
+              A page is one <code>Hero</code> and a stack of <code>Section</code> blocks. You pass words. <code>Section</code> derives its heading level, its ground, its ids and its spacing, and the components inside it read correctly on every ground. Rows, type and space do the grouping, so there are no cards.
             </>
           ),
         },
         {
           type: 'code',
           lang: 'tsx',
-          code: `import { Band, Row, Rows, SectionBody, SectionHead } from '@ejm/ui';
+          code: `import { Hero, Row, Rows, Section } from '@ejm/ui';
 
-export default function Projects() {
+export default function Home() {
   return (
-    <Band tone="paper" aria-labelledby="projects-title">
-      <SectionHead kicker="01 / Projects" title="Three tools, one engine." id="projects-title">
-        <p>ejm-harness is the engine. ejm-cli and ejm-ide run on it.</p>
-      </SectionHead>
-      <SectionBody><Rows aria-label="Projects">
-        <Row title="ejm-cli" href="/cli" description="A Rust terminal coding agent." meta="Rust / terminal" />
-      </Rows></SectionBody>
-    </Band>
+    <>
+      <Hero title="Small experiments">
+        <p>What we build, and why.</p>
+      </Hero>
+      <Section title="Projects" kicker="01 / Projects">
+        <Rows aria-label="Projects">
+          <Row title="ejm-cli" href="/cli/" description="A Rust terminal coding agent." meta="Rust / terminal" />
+        </Rows>
+      </Section>
+    </>
   );
 }`,
+        },
+        {
+          type: 'p',
+          children: <>If a visual pattern is missing, add it to ejm-ui as a block. A site that passes <code>className</code>, <code>style</code> or local CSS fails the build.</>,
         },
         { type: 'h3', id: 'read-a-token', title: 'Read a token anywhere' },
         {
           type: 'p',
           children: (
-            <>The same color has a name in every layer. The primary fill is Sage on a light page. Use the semantic name, never a hex value.</>
+            <>The same color has a name in every layer. The primary fill is Sage on a light page. Use the semantic name, never a hex value. Only <code>@ejm/ui</code> writes Tailwind classes, so a site gets these names by using the component.</>
           ),
         },
         {
@@ -132,7 +165,7 @@ export default function Projects() {
           label: 'Language',
           tabs: [
             { label: 'CSS', lang: 'css', code: '.button {\n  background: var(--ejm-primary);\n  color: var(--ejm-on-primary);\n}' },
-            { label: 'TypeScript', lang: 'tsx', code: '<a href="/start" className="bg-primary text-on-primary hover:bg-primary-hover">\n  Start\n</a>' },
+            { label: 'Tailwind', lang: 'tsx', code: '// inside @ejm/ui\n<a href="/start" className="bg-primary text-on-primary hover:bg-primary-hover">\n  Start\n</a>' },
             { label: 'Rust', lang: 'rust', code: 'use ejm_theme::DARK;\n\nlet fill = DARK.primary;' },
           ],
         },
@@ -148,6 +181,7 @@ export default function Projects() {
             <><a href="/docs/design-language">Design language</a> for the rules that keep every page one family.</>,
             <><a href="/docs/tokens-and-bands">Tokens and bands</a> for every color name and what it is for.</>,
             <><a href="/docs/components">Components</a> for what exists before you build something new.</>,
+            <><a href="/docs/checks">Checks</a> for what fails a build.</>,
           ],
         },
       ],

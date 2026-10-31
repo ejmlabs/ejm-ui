@@ -3,7 +3,9 @@ import { ChevronRight } from 'lucide-react';
 import { useId, type ReactNode } from 'react';
 import { StateBlock } from '../components/StateBlock';
 import { Table } from '../components/Table';
+import { useDensity } from '../lib/density';
 import { cn } from '../lib/utils';
+import { partHeading } from './classes';
 import { Legend } from './Legend';
 import { maxSeries } from './marks';
 import { appWords, type PartState } from './messages';
@@ -41,7 +43,6 @@ export interface ChartProps {
   /** Empty and error only: the one action under the sentence. */
   action?: { key?: string; label: string };
   onAction?: () => void;
-  className?: string;
 }
 
 export type ChartKind = 'line' | 'area' | 'bar';
@@ -68,7 +69,7 @@ interface FrameProps extends ChartProps {
 function Skeleton({ kind }: { kind: ChartKind }) {
   const heights = [38, 62, 48, 80, 56, 72, 44, 66];
   return (
-    <div aria-hidden className={cn('relative border-b border-line', plotH)}>
+    <div aria-hidden className={cn('relative hairline', plotH)}>
       {kind === 'bar' ? (
         <div className="absolute inset-0 flex items-end gap-[7%] px-[2%]">
           {heights.map((h, i) => (
@@ -88,9 +89,10 @@ function Skeleton({ kind }: { kind: ChartKind }) {
  * The shared body of the line, area and bar charts: a heading, the drawing, a text legend and a "View as table" disclosure with every value.
  * The legend and the table are real elements in the server HTML. Empty, loading and error keep the heading and the plot's height.
  */
-export function ChartFrame({ kind, draw, title, description, categories, series, categoryLabel = 'Period', unit, format = n => formatNumber(n), as: H = 'h3', state, message, action, onAction, className }: FrameProps) {
+export function ChartFrame({ kind, draw, title, description, categories, series, categoryLabel = 'Period', unit, format = n => formatNumber(n), as: H = 'h3', state, message, action, onAction }: FrameProps) {
   const uid = useId().replace(/:/g, '');
   const headId = `${uid}-h`;
+  const compact = useDensity() === 'compact';
   const box = useBox<HTMLDivElement>({ width: 640, height: 256 });
   const drawn = series.slice(0, maxSeries);
   const hasData = categories.length > 0 && drawn.some(s => s.values.some(Number.isFinite));
@@ -101,33 +103,35 @@ export function ChartFrame({ kind, draw, title, description, categories, series,
   const name = `${title}. ${kind === 'bar' ? 'Bar' : kind === 'area' ? 'Area' : 'Line'} chart of ${drawn.map(s => s.label).join(', ')}${unit ? `, in ${unit}` : ''}, from ${categories[0]} to ${categories[categories.length - 1]}. The values are in the table below the chart.`;
 
   return (
-    <div role="group" aria-labelledby={headId} data-state={shown} className={cn('@container min-w-0', className)}>
-      <H id={headId} className="text-lead m-0 font-semibold">{title}</H>
+    <div role="group" aria-labelledby={headId} data-state={shown} className="@container min-w-0">
+      <H id={headId} className={partHeading}>{title}</H>
       {description && <p className="text-meta mt-1 mb-0 text-muted">{description}</p>}
       <div className="mt-5">
         {shown === 'default' ? (
-          <figure className="m-0">
+          <figure className="m-0 grid grid-cols-1 gap-y-4">
             <div ref={box.ref} className={cn('w-full', plotH)}>
               <svg role="img" aria-label={name} viewBox={`0 0 ${box.width} ${box.height}`} width="100%" height="100%" className="block">
                 {draw({ width: box.width, height: box.height, patternId: `${uid}-p`, series: drawn, format })}
               </svg>
             </div>
-            <Legend items={drawn} kind={kind} patternId={`${uid}-p`} className="mt-4" />
-            <details className="group mt-4">
-              <summary className="text-meta touch-target focus-ring inline-flex cursor-pointer list-none items-center gap-1 rounded-control text-link underline decoration-1 underline-offset-[0.2em] [&::-webkit-details-marker]:hidden">
+            <Legend items={drawn} kind={kind} patternId={`${uid}-p`} />
+            <details className="group">
+              <summary className={cn('link touch-target inline-flex cursor-pointer list-none items-center gap-2 rounded-control [&::-webkit-details-marker]:hidden', compact ? 'min-h-8 compact-target text-sm' : 'min-h-11 text-base')}>
                 <ChevronRight aria-hidden strokeWidth={1.5} className="size-4 transition-transform duration-fast ease-standard group-open:rotate-90" />
                 View as table
               </summary>
-              <Table columns={columns} rows={rows} label={`${title}, values`} className="mt-2" />
+              <div className="mt-2">
+                <Table columns={columns} rows={rows} label={`${title}, values`} />
+              </div>
             </details>
           </figure>
         ) : shown === 'loading' ? (
           <>
             <Skeleton kind={kind} />
-            <StateBlock kind="loading" message={message ?? appWords.chart.loading} skeleton={false} className="py-4" />
+            <StateBlock kind="loading" message={message ?? appWords.chart.loading} skeleton={false} />
           </>
         ) : (
-          <div className={cn('flex items-center border-y border-line', plotMinH)}>
+          <div className={cn('flex items-center hairline-t hairline', plotMinH)}>
             <StateBlock kind={shown} message={message ?? appWords.chart[shown]} action={action} onAction={onAction} />
           </div>
         )}

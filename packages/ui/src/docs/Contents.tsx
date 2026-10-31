@@ -2,6 +2,7 @@ import { pickCurrentHeading } from '@ejm/core';
 import { useEffect, useState, type MouseEvent } from 'react';
 import { cn } from '../lib/utils';
 import { prefersReducedMotion } from './hooks';
+import { navLinkClass } from './nav-link';
 
 export interface ContentsItem {
   id: string;
@@ -16,7 +17,7 @@ export interface ContentsItem {
  * of the page), and activating an entry moves focus to the heading and scrolls to it, smoothly unless the visitor
  * prefers reduced motion. Modified clicks keep their normal meaning.
  */
-export function Contents({ items, label = 'On this page', className }: { items: readonly ContentsItem[]; label?: string; className?: string }) {
+export function Contents({ items, label = 'On this page' }: { items: readonly ContentsItem[]; label?: string }) {
   const [current, setCurrent] = useState<string | null>(null);
   const ids = items.map((i) => i.id).join('\n');
 
@@ -73,7 +74,7 @@ export function Contents({ items, label = 'On this page', className }: { items: 
   };
 
   return (
-    <nav aria-label={label} className={className}>
+    <nav aria-label={label}>
       {/* Below xl the list sits in a disclosure whose button already says this. */}
       <p className="hidden text-meta text-muted xl:block" aria-hidden="true">
         {label}
@@ -85,11 +86,7 @@ export function Contents({ items, label = 'On this page', className }: { items: 
               href={`#${item.id}`}
               onClick={(e) => go(e, item.id)}
               aria-current={current === item.id ? 'true' : undefined}
-              className={cn(
-                'touch-target focus-ring block border-s py-1.5 text-[0.9375rem] leading-snug no-underline transition-colors duration-fast',
-                item.level === 3 ? 'ps-7' : 'ps-4',
-                'border-line text-muted hover:border-control hover:text-fg aria-[current=true]:border-fg aria-[current=true]:text-fg',
-              )}
+              className={cn(navLinkClass, item.level === 3 && 'ps-7')}
             >
               {item.label}
             </a>

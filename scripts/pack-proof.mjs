@@ -3,14 +3,16 @@
 //
 //   node scripts/pack-proof.mjs [--dir <folder outside the repo>]
 //
-// NEEDS NETWORK: the throwaway consumer installs react, vite, tailwind and typescript from the npm registry. That is why this is not
-// part of `npm run check`. Run it before relying on a change to a package.json, `files`, `exports` or the Vite plugins.
+// NEEDS NETWORK: the throwaway consumer installs react, vite and typescript from the npm registry, and the tarballs' own dependencies
+// (Tailwind, the React plugin). That is why this is not part of `npm run check`. Run it before relying on a change to a package.json, `files`, `exports` or the Vite plugins.
 //
 // What it does, in order:
 //   1. builds examples/starter in the workspace (the reference output),
 //   2. `npm pack` for @ejm/tokens, core, ui, ssg, site and demos into <dir>/tarballs,
 //   3. copies examples/starter to <dir>/consumer and installs ONLY the six tarballs from disk (no workspace, no links; the tokens assets
-//      the public tarball leaves out are copied back in, because site and demos are private),
+//      the public tarball leaves out are copied back in, because site and demos are private). The consumer is the documented recipe:
+//      the tarballs, react, react-dom and vite as dependencies, typescript and the React types as dev dependencies,
+//      `ejmlabs({ project })` as the whole plugin list, `extends: "@ejm/ui/tsconfig.json"` and one `@import "@ejm/ui/styles.css"`,
 //   4. in the consumer runs `ejm-ssg build`, `ejm-site-headers dist/_headers --check` and `tsc`
 //      (the typecheck also compiles a probe file that imports every documented deep import of @ejm/ui),
 //   5. diffs the consumer's HTML against the workspace build (hashed asset names are folded; CSS and JS are compared by size).
@@ -69,34 +71,29 @@ writeFileSync(join(consumer, 'package.json'), JSON.stringify({
   private: true,
   type: 'module',
   scripts: { build: 'ejm-ssg build', typecheck: 'tsc -p tsconfig.json --pretty false' },
-  dependencies: { ...ejm, react: range('react'), 'react-dom': range('react-dom') },
-  devDependencies: Object.fromEntries(['@tailwindcss/vite', '@types/node', '@types/react', '@types/react-dom', '@vitejs/plugin-react', 'tailwindcss', 'typescript', 'vite'].map(n => [n, range(n)])),
+  dependencies: { ...ejm, react: range('react'), 'react-dom': range('react-dom'), vite: range('vite') },
+  devDependencies: Object.fromEntries(['@types/react', '@types/react-dom', 'typescript'].map(n => [n, range(n)])),
 }, null, 2) + '\n');
-// No `extends` into the repo and no `paths`: types must resolve through the packages' `exports`.
-const base = JSON.parse(readFileSync(join(repo, 'tsconfig.base.json'), 'utf8')).compilerOptions;
-delete base.paths;
-writeFileSync(join(consumer, 'tsconfig.json'), JSON.stringify({ compilerOptions: { ...base, types: ['node', 'vite/client'] }, include: ['src', 'vite.config.ts'] }, null, 2) + '\n');
+// The base config ships in @ejm/ui. No `extends` into the repo and no `paths` of the consumer's own.
+writeFileSync(join(consumer, 'tsconfig.json'), JSON.stringify({ extends: '@ejm/ui/tsconfig.json', include: ['src', 'vite.config.ts'] }, null, 2) + '\n');
 // The deep imports that ADOPTION.md and the sites use must typecheck for an outside consumer too.
 writeFileSync(join(consumer, 'src', 'deep-imports.ts'), `// Written by scripts/pack-proof.mjs.
 import { fontPreloads } from '@ejm/ui/font-preloads';
 import { Hero } from '@ejm/ui/layout/Hero';
+import { Section } from '@ejm/ui/layout/Section';
 import { ProductWindow } from '@ejm/ui/layout/ProductWindow';
-import { NativeCheckbox } from '@ejm/ui/components/NativeCheckbox';
-import { Disclosure } from '@ejm/ui/shell/Disclosure';
+import { Collapse } from '@ejm/ui/shell/Collapse';
 import { Header } from '@ejm/ui/shell/Header';
 import { AppShell } from '@ejm/ui/shell/AppShell';
-import { ActionRows, ActionRow } from '@ejm/ui/layout/ActionRows';
-import { DocumentContent } from '@ejm/ui/layout/DocumentContent';
-import {
-  TerminalWorkspace, TerminalHeader, TerminalLink, TerminalOutput, TerminalPairing, TerminalLog,
-  TerminalEntry, TerminalStatus, TerminalComposer, TerminalTextarea, TerminalSelect,
-} from '@ejm/ui/components/TerminalWorkspace';
 import { useInView } from '@ejm/ui/hooks/useInView';
 import { useReducedMotion } from '@ejm/ui/hooks/useReducedMotion';
 import { useTheme } from '@ejm/ui/hooks/useTheme';
 import { tokenize } from '@ejm/ui/docs/highlight';
 import ripple from '@ejm/ui/art/inline/divider-ripple.svg?raw';
+import { ejmUi } from '@ejm/ui/vite';
+import { siteDesignGuard } from '@ejm/ui/design-guard';
 import { ejmSsg } from '@ejm/ssg/vite';
+import { ejmlabs } from '@ejm/site/vite';
 import { PROJECTS } from '@ejm/site/projects';
 import { CliHeroWindow, ProductHeroStage } from '@ejm/demos/hero';
 import { LazyCliDemo } from '@ejm/demos/islands/cli-lazy';
@@ -104,9 +101,8 @@ import { ShowcaseFrame } from '@ejm/demos/ShowcaseFrame';
 import { LazyCliPreview } from '@ejm/demos/islands/cli-preview';
 import { LazyIdePreview } from '@ejm/demos/islands/ide-preview';
 import { LazyHarnessPreview } from '@ejm/demos/islands/harness-preview';
-export const probe = [fontPreloads, Hero, ProductWindow, NativeCheckbox, Disclosure, Header, AppShell, ActionRows, ActionRow, DocumentContent,
-  TerminalWorkspace, TerminalHeader, TerminalLink, TerminalOutput, TerminalPairing, TerminalLog, TerminalEntry, TerminalStatus, TerminalComposer, TerminalTextarea, TerminalSelect,
-  useInView, useReducedMotion, useTheme, tokenize, ripple, ejmSsg, PROJECTS, CliHeroWindow, ProductHeroStage, LazyCliDemo,
+export const probe = [fontPreloads, Hero, Section, ProductWindow, Collapse, Header, AppShell,
+  useInView, useReducedMotion, useTheme, tokenize, ripple, ejmUi, siteDesignGuard, ejmSsg, ejmlabs, PROJECTS, CliHeroWindow, ProductHeroStage, LazyCliDemo,
   ShowcaseFrame, LazyCliPreview, LazyIdePreview, LazyHarnessPreview];
 `);
 run('npm', ['install', '--no-audit', '--no-fund'], consumer);
@@ -164,28 +160,34 @@ if (problems.length) {
   console.error(`\npack-proof FAILED\n  ${problems.join('\n  ')}\nkept: ${dir}`);
   process.exit(1);
 }
-// Compile optional CSS independently, preserving the starter's real output comparison.
-step('installed opt-in CSS exports');
+// Compile each CSS entry on its own, preserving the starter's real output comparison.
+step('installed CSS exports');
 const cssProbe = join(consumer, 'css-entry-proof.mjs');
 writeFileSync(cssProbe, `
 import { compile } from '@tailwindcss/node';
 import { Scanner } from '@tailwindcss/oxide';
 import { writeFileSync } from 'node:fs';
-const css = ['styles.css', 'styles-docs.css', 'styles-app.css', 'styles-static.css', 'styles-terminal.css']
-  .map(name => '@import "@ejm/ui/' + name + '";')
-  .concat(['cli.css', 'ide-preview.css', 'harness.css'].map(name => '@import "@ejm/demos/' + name + '";')).join('\\n');
-const compiler = await compile(css, { base: process.cwd(), onDependency() {} });
-const scanner = new Scanner({ sources: compiler.sources });
-const output = compiler.build(scanner.scan());
-const neutralRefs = new Set([...output.matchAll(/var\\((--ejm-ui-n\\d+)\\)/g)].map(match => match[1]));
+const build = async css => {
+  const compiler = await compile(css, { base: process.cwd(), onDependency() {} });
+  return compiler.build(new Scanner({ sources: compiler.sources }).scan());
+};
+const entry = name => '@import "@ejm/ui/' + name + '";';
+const styles = await build(entry('styles.css'));
+// The one stylesheet styles every component (the control recipe, the docs pager) and nothing in the consumer's folders.
+for (const name of ['min-h-11', 'hairline-t']) {
+  if (!styles.includes('.' + name)) throw new Error('Installed styles.css is missing ' + name);
+}
+// The kept entries still resolve: styles-site.css forwards to styles.css, styles-docs.css adds nothing.
+if ((await build(entry('styles-site.css'))) !== styles) throw new Error('Installed styles-site.css differs from styles.css');
+await build(entry('styles-docs.css'));
+const demos = await build([entry('styles.css'), ...['cli.css', 'ide-preview.css', 'harness.css'].map(name => '@import "@ejm/demos/' + name + '";')].join('\\n'));
+const neutralRefs = new Set([...demos.matchAll(/var\\((--ejm-ui-n\\d+)\\)/g)].map(match => match[1]));
 if (!neutralRefs.size) throw new Error('Installed native preview has no neutral colors');
 for (const name of neutralRefs) {
-  if (!output.includes(name + ':')) throw new Error('Installed preview color is missing ' + name);
+  if (!demos.includes(name + ':')) throw new Error('Installed preview color is missing ' + name);
 }
-for (const name of ['native-check-label', 'disclosure-menu', 'document-content', 'terminal-workspace', 'ejm-ide-viewport']) {
-  if (!output.includes('.' + name)) throw new Error('Installed CSS is missing ' + name);
-}
-writeFileSync('css-entry-proof.css', output);
+if (!demos.includes('.ejm-ide-viewport')) throw new Error('Installed demos CSS is missing ejm-ide-viewport');
+writeFileSync('css-entry-proof.css', demos);
 console.log('Every installed CSS entry resolves and generates its components.');
 `);
 run('node', [cssProbe], consumer);

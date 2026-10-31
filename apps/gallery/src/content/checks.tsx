@@ -34,12 +34,20 @@ export const checks: DocPage = {
           labels: { name: 'Gate', type: 'Command', description: 'Fails on' },
           rows: [
             { name: 'Text, types and tests', type: 'npm run check', description: 'Em dashes, stale generated files, changed brand assets, type errors and failing tests.' },
-            { name: 'Site design ownership', type: 'ejm-ssg build', description: 'Consumer CSS rules, visual classes, inline styles and unsupported shared overrides. The @ejm/site Vite check is mandatory, including unused source files.' },
+            { name: 'Closed components', type: 'npm run typecheck', description: 'A capitalized export of the @ejm/ui barrel whose props accept className, style or raw HTML. A type test names the export.' },
+            { name: 'Design guard', type: 'ejm-ssg build', description: 'A site that passes className, style or raw markup, writes local CSS, or uses a removed prop such as Hero size. It runs in the Vite plugin, in build and in dev. The gallery is not checked.' },
+            { name: 'Page invariants', type: 'ejm-ssg build', description: 'A prerendered page without exactly one h1, with a skipped heading level, without the skip link first, without main#main, or with a link to another host that lacks rel="external".' },
+            { name: 'Class check', type: 'node packages/ui/scripts/check-classes.mjs', description: 'A class the kit writes that builds to no CSS, such as a typo or a removed token. Tailwind would drop it silently.' },
             { name: 'Contrast', type: 'node packages/tokens/scripts/contrast.mjs --verbose', description: 'Text under 4.5:1, control borders or focus under 3:1, in both themes and on every band.' },
             { name: 'Viewport matrix', type: 'node scripts/shoot.mjs <url>', description: 'Horizontal overflow from 320px to 5120px. It also reports touch targets under 44px.' },
             { name: 'Load time', type: 'npm run perf', description: 'A route whose first contentful paint is a second or more above its baseline.' },
             { name: 'Parity', type: 'node scripts/parity.mjs', description: 'A web, Ink or Rust target that lacks a component or a state from the contract.' },
           ],
+        },
+        { type: 'h3', id: 'build-checks', title: 'Checks that fail loudly' },
+        {
+          type: 'p',
+          children: <>Four checks make a mistake loud. The type test and the class check run in <code>npm run check</code>, which is not part of the build. The design guard and the page invariants run inside <code>ejm-ssg build</code>, so a site cannot ship without them: the guard reads the source before bundling, and the page check reads each finished HTML file. A failure names the file and the rule.</>,
         },
         { type: 'h3', id: 'matrix', title: 'The device matrix' },
         {

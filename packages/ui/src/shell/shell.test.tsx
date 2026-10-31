@@ -6,16 +6,20 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { axe } from 'vitest-axe';
 import * as axeMatchers from 'vitest-axe/matchers';
 import type { AxeMatchers } from 'vitest-axe/matchers';
+import { Button } from '../components/ui/button';
+import { useDensity } from '../lib/density';
 import { AppShell } from './AppShell';
 import { Contents } from '../docs/Contents';
 import { DocsSidebar } from '../docs/DocsSidebar';
 import { Pager } from '../docs/Pager';
 import { DocsLayout } from './DocsLayout';
+import { Collapse } from './Collapse';
 import { ExternalLink } from './ExternalLink';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import type { LinkComponent } from './link';
 import { SiteLayout } from './SiteLayout';
+import { SkipLink } from './SkipLink';
 import { ThemeToggle } from './ThemeToggle';
 
 expect.extend(axeMatchers);
@@ -54,6 +58,11 @@ describe('ExternalLink', () => {
     expect(a).toHaveAttribute('rel', 'external noopener');
     expect(a).not.toHaveAttribute('target');
     expect(a.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('always has the link style, which thickens its underline on hover', () => {
+    render(<ExternalLink href="https://example.com">Example</ExternalLink>);
+    expect(screen.getByRole('link')).toHaveClass('link');
   });
 });
 
@@ -125,6 +134,13 @@ describe('ThemeToggle', () => {
   it('server-renders as a button with the light-theme name, before any script runs', () => {
     expect(renderToString(<ThemeToggle />)).toContain('aria-label="Switch to dark theme"');
   });
+
+  it('is the ghost icon button of the control recipe: 44px, a pill, a bg-tone hover and no color transition', () => {
+    render(<ThemeToggle />);
+    const button = screen.getByRole('button', { name: 'Switch to dark theme' });
+    expect(button).toHaveClass('size-11', 'rounded-pill', 'hover:bg-tone');
+    expect(button.className).not.toMatch(/transition-(colors|all)/);
+  });
 });
 
 describe('Header', () => {
@@ -152,6 +168,33 @@ describe('Header', () => {
     expect(details.open).toBe(true);
     await user.click(within(details).getByRole('link', { name: 'Gallery' }));
     expect(details.open).toBe(false);
+  });
+
+  it('gives nav items and the menu button the control recipe: 44px, the control radius, a bg-tone hover', () => {
+    const { container } = render(<Header {...header} />);
+    const docs = within(screen.getByRole('banner')).getAllByRole('link', { name: 'Docs' })[0]!;
+    expect(docs).toHaveClass('min-h-11', 'rounded-control', 'hover:bg-tone');
+    expect(container.querySelector('summary')).toHaveClass('min-h-11', 'rounded-control', 'hover:bg-tone');
+    expect(container.innerHTML).not.toMatch(/transition-(colors|all)/);
+  });
+
+  it('shows the current page with weight 600 and an underline, not color alone', () => {
+    render(<Header {...header} />);
+    const docs = within(screen.getByRole('banner')).getAllByRole('link', { name: 'Docs' })[0]!;
+    expect(docs).toHaveAttribute('aria-current', 'page');
+    expect(docs).toHaveClass('aria-[current=page]:font-semibold', 'aria-[current=page]:underline');
+  });
+
+  it('opens the narrow menu as an overlay inset to the page gutter, with hairline rows that are 48px targets', () => {
+    const { container } = render(<Header {...header} />);
+    const panel = container.querySelector('details > div') as HTMLElement;
+    expect(panel).toHaveClass('rounded-window', 'border', 'border-line', 'bg-ground', 'shadow-float', 'group-open:animate-fade');
+    expect(panel).toHaveClass('inset-x-(--ejm-page-gutter)');
+    expect(panel).not.toHaveClass('inset-x-0');
+    const rows = [...panel.querySelectorAll('li')];
+    expect(rows).toHaveLength(nav.length);
+    for (const row of rows) expect(within(row).getByRole('link')).toHaveClass('min-h-12', 'hover:bg-tone');
+    expect(rows.slice(1).every(row => row.className.includes('hairline-t'))).toBe(true);
   });
 
   it('closes the menu on a press outside it', async () => {
@@ -220,6 +263,14 @@ describe('Footer', () => {
     expect(within(f).getByRole('link', { name: /GitHub/ })).toHaveAttribute('rel', 'external noopener');
   });
 
+  it('marks the current page like the header does, and turns links text-link on hover with no transition', () => {
+    const { container } = render(<Footer {...footer} />);
+    const docs = within(screen.getByRole('contentinfo')).getAllByRole('link', { name: 'Docs' })[0]!;
+    expect(docs).toHaveAttribute('aria-current', 'page');
+    expect(docs).toHaveClass('aria-[current=page]:font-semibold', 'aria-[current=page]:underline', 'hover:text-link');
+    expect(container.innerHTML).not.toMatch(/transition-(colors|all)/);
+  });
+
   it('has no axe violations', async () => {
     const { container } = render(<Footer {...footer} />);
     await noViolations(container);
@@ -271,6 +322,13 @@ describe('DocsLayout', () => {
     await noViolations(container);
   });
 
+  it('places and sticks each disclosure through its grid cell, so Collapse itself takes no class', () => {
+    const { container } = render(<DocsLayout sidebar={<p>nav</p>} contents={<p>toc</p>}>x</DocsLayout>);
+    const [sidebar, contents] = [...container.querySelectorAll('details')];
+    expect(sidebar!.parentElement).toHaveClass('lg:sticky');
+    expect(contents!.parentElement).toHaveClass('xl:sticky');
+  });
+
   it('omits the contents disclosure when there are none', () => {
     const { container } = render(<DocsLayout sidebar={<p>nav</p>}>x</DocsLayout>);
     expect(container.querySelectorAll('details')).toHaveLength(1);
@@ -298,5 +356,83 @@ describe('AppShell', () => {
     expect(screen.getByRole('main')).toHaveAttribute('id', 'main');
     expect(screen.getAllByRole('link')[0]).toHaveAttribute('href', '#main');
     await noViolations(container);
+  });
+
+  it('keeps the 56px top bar', () => {
+    render(<AppShell brand={<span>app</span>} nav={<p>nav</p>}>x</AppShell>);
+    expect(screen.getByRole('banner').firstElementChild).toHaveClass('h-14');
+  });
+
+  it('makes every control inside compact without a prop, and leaves controls outside it comfortable', () => {
+    function Density() {
+      return <output>{useDensity()}</output>;
+    }
+    const { container } = render(
+      <>
+        <Button>Outside</Button>
+        <Density />
+        <AppShell brand={<span>app</span>} nav={<p>nav</p>}>
+          <Button>Inside</Button>
+          <Density />
+        </AppShell>
+      </>,
+    );
+    expect([...container.querySelectorAll('output')].map(o => o.textContent)).toEqual(['comfortable', 'compact']);
+    expect(screen.getByRole('button', { name: 'Inside' })).toHaveClass('compact-target', 'text-sm');
+    expect(screen.getByRole('button', { name: 'Outside' })).not.toHaveClass('compact-target');
+    expect(screen.getByRole('button', { name: 'Outside' })).toHaveClass('min-h-11', 'text-base');
+  });
+
+  it('makes the theme toggle in the bar a compact icon button', () => {
+    render(<AppShell brand={<span>app</span>} nav={<p>nav</p>}>x</AppShell>);
+    expect(screen.getByRole('button', { name: 'Switch to dark theme' })).toHaveClass('size-8', 'compact-target');
+  });
+
+  it('gives the home link the control recipe: the control radius and a bg-tone hover', () => {
+    const { container } = render(<AppShell brand={<span>app</span>} nav={<p>nav</p>}>x</AppShell>);
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveClass('rounded-control', 'hover:bg-tone');
+    expect(container.innerHTML).not.toMatch(/transition-(colors|all)/);
+  });
+});
+
+describe('Collapse and SkipLink', () => {
+  it('render a labelled native disclosure and a skip link to main', () => {
+    const { container } = render(
+      <>
+        <SkipLink />
+        <Collapse from="md" label="Browse">
+          <p>inside</p>
+        </Collapse>
+      </>,
+    );
+    expect(screen.getByRole('link', { name: 'Skip to main content' })).toHaveAttribute('href', '#main');
+    expect(container.querySelector('details > summary')).toHaveTextContent('Browse');
+    expect(container.innerHTML).not.toMatch(/transition-(colors|all)/);
+  });
+});
+
+describe('closed props', () => {
+  // The types are the test: tsc fails when an expected error disappears. closed-api.test.ts covers className and style for every
+  // export; these are the legacy props the guard already rejected in sites.
+  it('has no logo, brand, className or style on the shell', () => {
+    const elements = [
+      // @ts-expect-error logo was removed: sites supply identity
+      <Header key="logo" {...header} logo={<b>Legacy</b>} />,
+      // @ts-expect-error className was removed
+      <Header key="header" {...header} className="x" />,
+      // @ts-expect-error brand was removed: sites supply identity
+      <Footer key="brand" {...footer} brand={<b>Legacy</b>} />,
+      // @ts-expect-error className was removed
+      <Footer key="footer" {...footer} className="x" />,
+      // @ts-expect-error className was removed
+      <SiteLayout key="site" header={header} className="x">x</SiteLayout>,
+      // @ts-expect-error className was removed
+      <Collapse key="collapse" from="md" label="x" className="x">x</Collapse>,
+      // @ts-expect-error className was removed
+      <ExternalLink key="external" href="https://example.com" className="x">x</ExternalLink>,
+      // @ts-expect-error style was removed
+      <ExternalLink key="external-style" href="https://example.com" style={{ color: 'red' }}>x</ExternalLink>,
+    ];
+    expect(elements).toHaveLength(8);
   });
 });

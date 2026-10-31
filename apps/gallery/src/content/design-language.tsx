@@ -25,29 +25,51 @@ export const designLanguage: DocPage = {
       ],
     },
     {
+      id: 'derived',
+      title: 'Derived, not chosen',
+      blocks: [
+        {
+          type: 'p',
+          children: <>A site passes content and state. The kit derives everything else, so two people building the same page get the same page.</>,
+        },
+        {
+          type: 'params',
+          caption: 'What the kit decides',
+          labels: { name: 'Decision', description: 'Who makes it' },
+          rows: [
+            { name: 'Heading level', description: 'Section. A top-level Section is an h2, and each Section inside one is a level deeper. Hero owns the one h1.' },
+            { name: 'Ground', description: 'Section. Top-level Sections alternate Mist and Paper after the Hero. emphasis gives Sage.' },
+            { name: 'Ids and spacing', description: 'Section. It names its own heading and sets one rhythm.' },
+            { name: 'Control size', description: 'The surface. A site is comfortable (44px). AppShell and an application Page are compact (32px with a mouse).' },
+            { name: 'Control look', description: 'One recipe. Buttons are pills, fields and menu items use the control radius, and every hover is the same tone.' },
+            { name: 'Classes and styles', description: 'The kit. No component accepts className or style.' },
+          ],
+        },
+        { type: 'callout', kind: 'tip', children: <p>One <code>Hero</code> opens a page. Every part after it is a <code>Section</code>. Use <code>emphasis</code> at most once.</p> },
+      ],
+    },
+    {
       id: 'type',
       title: 'Type',
       blocks: [
         {
           type: 'p',
-          children: <>Two families only: Manrope for text and IBM Plex Mono for labels, metadata and code. Nothing else loads. Sizes scale smoothly with the screen from 320px to 5120px, and from 1920px the five largest sizes scale a second time.</>,
+          children: <>Two families only: Manrope for text and IBM Plex Mono for labels, metadata and code. Nothing else loads. Sizes scale smoothly with the screen from 320px to 5120px, and from 1920px the three largest sizes scale a second time.</>,
         },
         {
           type: 'params',
           caption: 'The type scale',
-          labels: { name: 'Utility', type: 'Size', default: 'Weight', description: 'Use it for' },
+          labels: { name: 'Utility', type: 'Size', default: 'Weight', description: 'Set by' },
           rows: [
-            { name: 'text-display-lg', type: '44px to 140px', default: '600', description: 'The single display line of a hero.' },
-            { name: 'text-display', type: '36px to 96px', default: '600', description: 'Section heads.' },
-            { name: 'text-title', type: '28px to 56px', default: '600', description: 'Page titles.' },
-            { name: 'text-heading', type: '20px to 32px', default: '600', description: 'Headings inside a page.' },
-            { name: 'text-lead', type: '19px to 26px', default: '400', description: 'The sentence under a title.' },
-            { name: 'text-stat', type: '52px to 136px', default: '600', description: 'Large figures.' },
+            { name: 'text-display', type: '36px to 96px', default: '600', description: 'Hero. The headline, the one display line of a page.' },
+            { name: 'text-title', type: '28px to 56px', default: '600', description: 'Section. The title of each top-level Section.' },
+            { name: 'text-heading', type: '20px to 32px', default: '600', description: 'Section and Rows. A subsection title, or a row title.' },
+            { name: 'text-lead', type: '19px to 26px', default: '400', description: 'Hero and Section. The copy under a title.' },
             { name: 'text-body', type: '16px to 20px', default: '400', description: 'Running text. Line height 1.6.' },
             { name: 'text-meta', type: '13px to 14.4px', default: '500', description: 'Labels and metadata, in IBM Plex Mono.' },
           ],
         },
-        { type: 'p', children: <>Body lines stop at 68 characters (<code>max-w-measure</code>). Numbers in tables and facts use tabular figures (<code>tabular-nums</code>). Nothing is smaller than 12px.</> },
+        { type: 'p', children: <>Body lines stop at 68 characters. Numbers in tables and facts use tabular figures. Nothing is smaller than 12px. You do not choose these sizes: the blocks apply them.</> },
       ],
     },
     {
@@ -56,7 +78,7 @@ export const designLanguage: DocPage = {
       blocks: [
         {
           type: 'p',
-          children: <>Bands are always full bleed. The column inside them is <code>page</code>: it steps up from a 16px gutter on a phone to a 96px gutter on the widest screens, and stays a readable width in between.</>,
+          children: <>Bands are always full bleed. The column inside them is <code>page</code>: it steps up from a 16px gutter on a phone to a 96px gutter on the widest screens, and stays a readable width in between. <code>Section</code> and <code>Hero</code> place their content in it.</>,
         },
         {
           type: 'params',
@@ -71,14 +93,14 @@ export const designLanguage: DocPage = {
             { name: '4400px', type: '96px', default: '2800px', description: '1.5' },
           ],
         },
-        { type: 'p', children: <>Vertical space comes from <code>py-rhythm</code>, 72px to 160px, so neighbouring sections breathe the same way on every screen.</> },
+        { type: 'p', children: <>Vertical space between sections is one rhythm, 72px to 160px, so neighbouring sections breathe the same way on every screen. A Section applies it for you.</> },
       ],
     },
     {
       id: 'motion',
       title: 'Motion',
       blocks: [
-        { type: 'p', children: <>Motion moves transform and opacity only, takes under 300ms for an interaction and under 1.2 seconds for a page entrance, and needs a cause: arrival, a state change or a user action.</> },
+        { type: 'p', children: <>Motion moves transform and opacity only, takes under 300ms for an interaction and under 1.2 seconds for a page entrance, and needs a cause: arrival, a state change or a user action. Color changes are instant.</> },
         { type: 'h3', id: 'reduced-motion', title: 'Reduced motion and no script' },
         {
           type: 'p',

@@ -54,7 +54,7 @@ export function ContentHeading({ as: H = 'h3', id, children }: ContentProps & { 
 export { InlineLink } from './InlineLink';
 
 export function InlineCode({ children }: ContentProps) {
-  return <code className="font-mono text-[0.9em]">{children}</code>;
+  return <code>{children}</code>;
 }
 
 /** Plain source commands do not need a client highlighter. */

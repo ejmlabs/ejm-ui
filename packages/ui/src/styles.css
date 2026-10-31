@@ -1,4 +1,6 @@
-/* Complete default component sources. */
+/* The one @ejm/ui stylesheet. It styles every component and scans no consumer folder (base.css turns automatic source
+   detection off), so a site or app imports it once and never adds @source lines:
+     @import "@ejm/ui/styles.css"; */
 @import "./base.css";
 @source "./control-recipes.mjs";
 @source "./components";
@@ -6,4 +8,8 @@
 @source "./shell";
 @source "./hooks";
 @source "./motion";
+@source "./docs";
+@source "./app";
+@source "./lib";
 @source not "./**/*.test.{ts,tsx}";
+@source not "./**/test-setup.tsx";

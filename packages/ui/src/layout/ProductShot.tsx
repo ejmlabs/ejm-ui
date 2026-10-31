@@ -64,7 +64,6 @@ export interface ProductShotProps {
   caption?: ReactNode | false;
   /** The `sizes` attribute. Default: the shot's own width on wide screens, the viewport below that. */
   sizes?: string;
-  className?: string;
 }
 
 const shadow: Record<Elevation, string> = { rest: 'shadow-rest', raised: 'shadow-raised', float: 'shadow-float' };
@@ -118,7 +117,7 @@ function SystemPic({ shot, alt, sizes, className }: { shot: ShotData; alt: strin
  * A real product capture as a figure. Dark and light variants follow the page theme; see the notes at the top of this file.
  * It has no card or panel: the image sits on the band and a hairline sets the caption off.
  */
-export function ProductShot({ shot, alt, priority = false, frame = false, elevation, caption, sizes, className }: ProductShotProps) {
+export function ProductShot({ shot, alt, priority = false, frame = false, elevation, caption, sizes }: ProductShotProps) {
   if (frame && shot.surface !== 'terminal') throw new Error(`ProductShot: frame is for terminal captures only, and ${shot.product}/${shot.name} is a ${shot.surface} capture`);
   const illustration = shot.kind === 'illustration';
   if (illustration && frame) throw new Error(`ProductShot: ${shot.product}/${shot.name} is an illustration, and a terminal frame would make it look like a capture`);
@@ -145,7 +144,7 @@ export function ProductShot({ shot, alt, priority = false, frame = false, elevat
   );
 
   return (
-    <figure data-shot="" data-product={shot.product} data-kind={shot.kind ?? 'screenshot'} data-surface={shot.surface} className={cn('m-0 min-w-0', className)}>
+    <figure data-shot="" data-product={shot.product} data-kind={shot.kind ?? 'screenshot'} data-surface={shot.surface} className="m-0 min-w-0">
       <div className={cn('w-fit max-w-full', elevation && shadow[elevation], frame && 'scheme-page overflow-hidden rounded-window border border-ui-line')}>
         {frame && (
           <div aria-hidden="true" data-shot-frame="" className="flex items-center gap-3 border-b border-ui-line bg-ui-panel px-4 py-3">
@@ -160,7 +159,7 @@ export function ProductShot({ shot, alt, priority = false, frame = false, elevat
         {pics}
       </div>
       {(illustration || (text !== false && text !== '')) && (
-        <figcaption className="text-meta mt-3 max-w-prose border-t border-line pt-2 text-muted">
+        <figcaption className="text-meta mt-3 max-w-measure hairline-t pt-2 text-muted">
           {illustration && <IllustrationLabel product={shot.product} />}
           {text !== false && text !== '' && (illustration ? <span className="block">{text}</span> : text)}
         </figcaption>

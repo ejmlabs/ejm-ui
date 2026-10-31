@@ -16,8 +16,7 @@
     "./headers": "./src/headers.mjs",
     "./projects": "./src/projects.mjs",
     "./vite": "./src/vite.mjs",
-    "./docs": "./src/docs.mjs",
-    "./native": "./src/native.mjs"
+    "./docs": "./src/docs.mjs"
   },
   "files": [
     "bin",
@@ -25,8 +24,7 @@
     "!src/**/*.test.*",
     "README.md",
     "LICENSE",
-    "THIRD_PARTY_NOTICES.md",
-    "native-html.md"
+    "THIRD_PARTY_NOTICES.md"
   ],
   "peerDependencies": {
     "@ejm/ssg": "0.1.0",
@@ -39,7 +37,6 @@
     "entities": "8.1.0",
     "github-slugger": "2.0.0",
     "marked": "18.1.1",
-    "postcss": "8.5.31",
     "yaml": "2.9.1",
     "parse5": "8.0.1"
   },

@@ -17,12 +17,11 @@ export interface ProductWindowProps {
   labelSide?: 'start' | 'end';
   /** Gives an interactive window an accessible name (role group). Without it the window is decoration and hidden from assistive tech. */
   label?: string;
-  className?: string;
   children: ReactNode;
 }
 
 /** A floating product window. The only layout part with a shadow. It keeps the page theme inside any band. */
-export function ProductWindow({ title, meta, elevation = 'raised', live = false, labelSide = 'end', label, className, children }: ProductWindowProps) {
+export function ProductWindow({ title, meta, elevation = 'raised', live = false, labelSide = 'end', label, children }: ProductWindowProps) {
   return (
     <div
       data-window=""
@@ -34,7 +33,6 @@ export function ProductWindow({ title, meta, elevation = 'raised', live = false,
       className={cn(
         'scheme-page flex h-full min-w-0 flex-col overflow-hidden rounded-window border border-ui-line bg-ui-editor text-[length:var(--ejm-window-text,0.8125rem)] leading-normal text-ui-text',
         shadow[elevation],
-        className,
       )}
     >
       <div className="flex items-center gap-3 border-b border-ui-line bg-ui-panel px-4 py-3">
@@ -68,11 +66,11 @@ const place: Record<number, readonly string[]> = {
 };
 
 /** Layers one to three ProductWindows with offset and overlap. Scales with its own width; tucks into a stack when narrow. */
-export function ProductStage({ children, className }: { children: ReactNode; className?: string }) {
+export function ProductStage({ children }: { children: ReactNode }) {
   const items = Children.toArray(children).slice(0, 3);
   const n = Math.max(1, items.length);
   return (
-    <div className={cn('@container', className)}>
+    <div className="@container">
       <div className={cn('relative flex flex-col pb-2 @md:block @md:pb-0 @md:[--ejm-window-text:clamp(0.8125rem,1.9cqw,1.75rem)]', stageShape[n - 1])}>
         {items.map((child, i) => (
           <div key={i} className={cn('relative w-[88%] @md:absolute @md:m-0', tuck[i], place[n]?.[i])} style={{ zIndex: i + 1 }}>

@@ -26,8 +26,9 @@ node scripts/pack-proof.mjs
 - `npm run check` runs, in order: `scripts/check.mjs` (em dashes in tracked text),
   `scripts/assets.mjs --local` (brand files against `PROVENANCE.md`), `sync-rust-theme.mjs
   --check`, `parity.mjs --strict`, each workspace's `check` (tokens: generated files and
-  contrast; ui: static profile, art, containerless, components, tree shaking, sources, merge
-  config, catalog), `npm run typecheck` and `npm test` (Vitest).
+  contrast; ui: art, containerless, components, tree shaking, sources, classes, merge config,
+  catalog), `npm run typecheck` (which includes the closed-props test
+  `packages/ui/src/closed-api.test.ts`) and `npm test` (Vitest).
 - `npm run check:rust` runs `cargo test`, `cargo clippy --all-targets -- -D warnings` and
   `cargo fmt --check` in `crates/ejm-tui`.
 - `node scripts/pack-proof.mjs` needs the npm registry. Without network it has not run.
@@ -38,8 +39,8 @@ node scripts/pack-proof.mjs
   only lifecycle exception and runs with no repository, model or release credentials in the
   environment. On Linux it needs Python and C/C++ build tools.
 - Rust 1.99.1 with Clippy and rustfmt. Keep `CARGO_BUILD_JOBS=2`.
-- Google Chrome, or `CHROME=/path/to/chrome`, for `static-touch.test.mjs`, the ssg perf test,
-  `shoot.mjs` and `npm run perf`. Without it those tests skip: report them as not run, with the
+- Google Chrome, or `CHROME=/path/to/chrome`, for the ssg perf test, `shoot.mjs` and
+  `npm run perf`. Without it those tests skip: report them as not run, with the
   skip count. `check-balance.test.mjs` skips without Pillow or uv.
 
 ## Focused checks
@@ -49,7 +50,11 @@ node scripts/pack-proof.mjs
   its source with the same stem.
 - Tokens: `npm run check -w @ejm/tokens`, or `node packages/tokens/scripts/contrast.mjs
   --verbose` for every pair.
-- Components and styles: `npm run check -w @ejm/ui`.
+- Components and styles: `npm run check -w @ejm/ui`. It runs `check-sources.mjs` (the one
+  stylesheet generates every class the kit uses and scans only package source) and
+  `check-classes.mjs` (every class string the kit writes builds CSS, because Tailwind drops an
+  unknown class without an error). Run `node packages/ui/scripts/check-classes.mjs` alone after
+  adding a class.
 - Contract and catalogs: `node scripts/parity.mjs --strict`. `cargo test` rewrites
   `crates/ejm-tui/catalog.json` and `npm run catalog -w @ejm/ink` rewrites the Ink catalog;
   commit them. `packages/core/terminal-fixtures.json` holds the cases Rust and Ink must print the

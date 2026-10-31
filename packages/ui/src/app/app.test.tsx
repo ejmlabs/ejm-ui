@@ -3,7 +3,8 @@ import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { expectAccessible, renderIn, themes } from '../components/test-setup';
-import { ActivityList, ChartArea, ChartBar, ChartLine, Dashboard, appWords, type ActivityItem, type ChartProps, type DashboardProps } from './index';
+import { DensityProvider } from '../lib/density';
+import { ActivityList, ChartArea, ChartBar, ChartLine, Dashboard, Legend, appWords, type ActivityItem, type ChartProps, type DashboardProps } from './index';
 import { compact, niceScale, spread } from './scale';
 
 const NOW = Date.UTC(2026, 9, 18, 14, 0, 0);
@@ -21,7 +22,7 @@ const items: ActivityItem[] = [
 const dash: DashboardProps = {
   title: 'Agent activity',
   sample: true,
-  stats: [{ label: 'sessions', figure: '1,284', delta: { text: '+8.2% vs last week', direction: 'up', tone: 'good' } }, { label: 'tool calls', figure: '18,406' }],
+  stats: [{ label: 'sessions', figure: '1,284', delta: { text: '+8.2% vs last week', direction: 'up', status: 'ok' } }, { label: 'tool calls', figure: '18,406' }],
   chart,
   table: { title: 'Busiest tools', columns: [{ key: 'tool', label: 'Tool' }, { key: 'calls', label: 'Calls', align: 'right' }], rows: [{ tool: 'read_file', calls: '6,120' }] },
   activity: { title: 'Recent activity', items, now: NOW },
@@ -165,6 +166,94 @@ describe('Dashboard', () => {
   it('does not call itself sample data unless asked', () => {
     render(<Dashboard {...dash} sample={false} />);
     expect(screen.queryByText(/Sample data/)).toBeNull();
+  });
+});
+
+describe('the application kit follows the one system', () => {
+  const tokens = (root: Element) => [...root.querySelectorAll('[class]')].flatMap(el => (el.getAttribute('class') ?? '').split(/\s+/).filter(Boolean));
+  // One control system (packages/ui/THEME.md, "The control system"): these utilities no longer exist in the kit.
+  const retired = /^(focus-ring|transition-colors|transition-all|uppercase|tracking-wider|rounded-(sm|md|lg|compact)|text-(xs|lg|xl|2xl|3xl|stat|display-lg|\[.*\]))$/;
+  const everything = (
+    <>
+      <Dashboard {...dash} />
+      <ChartBar {...chart} />
+      <ChartArea {...chart} />
+      <ChartLine title="Loading" categories={[]} series={[]} state="loading" />
+      <ChartLine title="Error" categories={[]} series={[]} state="error" action={{ label: 'Try again' }} />
+      <ActivityList items={items} now={NOW} label="Activity" />
+      <ActivityList items={[]} now={NOW} label="Loading activity" state="loading" />
+      <Dashboard {...dash} title="Failed" state="error" action={{ label: 'Try again' }} />
+    </>
+  );
+
+  it('uses none of the retired utilities: color changes are instant, type has no literal sizes, focus is global', () => {
+    const { container } = render(everything);
+    const used = new Set(tokens(container).map(t => t.split(':').pop()!));
+    expect([...used].filter(t => retired.test(t))).toEqual([]);
+  });
+
+  it('ignores a class or style an untyped caller still passes: the kit owns every class', () => {
+    const stray = { className: 'stray-class', style: { color: 'red' } } as object;
+    const { container } = render(
+      <>
+        <Dashboard {...dash} {...stray} />
+        <ChartLine {...chart} {...stray} />
+        <ActivityList items={items} now={NOW} label="Activity" {...stray} />
+        <Legend items={series} kind="line" {...stray} />
+      </>,
+    );
+    expect(container.querySelector('.stray-class')).toBeNull();
+    expect(container.querySelector('[style*="red"]')).toBeNull();
+  });
+
+  it('shows each dashboard figure at the title size through Stat, with no selector reaching into it', () => {
+    const { container } = render(<Dashboard {...dash} />);
+    const figure = screen.getByText('1,284');
+    expect(figure).toHaveClass('text-title');
+    expect(tokens(container).some(t => t.includes('text-stat'))).toBe(false);
+  });
+
+  it('colors a delta with the Status vocabulary, and leaves a neutral one muted', () => {
+    const delta = (status?: 'ok' | 'warn' | 'error' | 'info' | 'pending') => ({ text: `change ${status ?? 'none'}`, direction: 'up' as const, status });
+    render(<Dashboard {...dash} stats={[
+      { label: 'a', figure: '1', delta: delta('ok') },
+      { label: 'b', figure: '2', delta: delta('warn') },
+      { label: 'c', figure: '3', delta: delta('error') },
+      { label: 'd', figure: '4', delta: delta('info') },
+      { label: 'e', figure: '5', delta: delta('pending') },
+      { label: 'f', figure: '6', delta: delta() },
+    ]} />);
+    const colorOf = (text: string) => screen.getByText(text).parentElement!.className;
+    expect(colorOf('change ok')).toContain('text-success');
+    expect(colorOf('change warn')).toContain('text-warn');
+    expect(colorOf('change error')).toContain('text-danger');
+    expect(colorOf('change info')).toContain('text-info');
+    expect(colorOf('change pending')).toContain('text-muted');
+    expect(colorOf('change none')).toContain('text-muted');
+  });
+
+  it('sets activity rows in hairlines of py-4, and py-2 on a compact surface', () => {
+    const comfortable = render(<ActivityList items={items} now={NOW} label="Activity" />);
+    for (const row of screen.getAllByRole('listitem')) expect(row).toHaveClass('hairline', 'py-4');
+    comfortable.unmount();
+    render(<DensityProvider density="compact"><ActivityList items={items} now={NOW} label="Activity" /></DensityProvider>);
+    for (const row of screen.getAllByRole('listitem')) expect(row).toHaveClass('hairline', 'py-2');
+  });
+
+  it('draws the loading rows of a list on the same hairlines and padding as the real rows', () => {
+    render(<ActivityList items={[]} now={NOW} label="Activity" state="loading" />);
+    const rows = screen.getByRole('group', { name: 'Activity' }).querySelectorAll(':scope > [aria-hidden]');
+    expect(rows.length).toBeGreaterThan(0);
+    for (const row of rows) expect(row).toHaveClass('hairline', 'py-4');
+  });
+
+  it('opens the table of a chart with a 44px disclosure, and a 32px one on a compact surface', () => {
+    const summary = () => screen.getByText('View as table').closest('summary')!;
+    const comfortable = render(<ChartLine {...chart} />);
+    expect(summary()).toHaveClass('min-h-11', 'text-base', 'rounded-control', 'link');
+    comfortable.unmount();
+    render(<DensityProvider density="compact"><ChartLine {...chart} /></DensityProvider>);
+    expect(summary()).toHaveClass('min-h-8', 'compact-target', 'text-sm');
   });
 });
 

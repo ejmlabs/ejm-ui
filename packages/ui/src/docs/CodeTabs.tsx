@@ -11,10 +11,10 @@ export interface CodeTab {
 }
 
 /** Language tabs with highlighted code, or caller-supplied content. */
-export function CodeTabs({ label, tabs, className }: { label?: string; tabs: readonly CodeTab[]; className?: string }) {
+export function CodeTabs({ label, tabs }: { label?: string; tabs: readonly CodeTab[] }) {
   const hydrated = useHydrated();
-  return <CodeTabsFrame label={label} className={className} tabs={tabs.map((tab) => ({
+  return <CodeTabsFrame label={label} tabs={tabs.map((tab) => ({
     label: tab.label,
-    children: tab.code !== undefined ? <CodeBlock code={tab.code} lang={tab.lang} quietLabel={hydrated} className={hydrated ? 'my-0 border-t-0' : 'mb-0 mt-2'} /> : tab.children,
+    children: tab.code !== undefined ? <CodeBlock code={tab.code} lang={tab.lang} quietLabel={hydrated} /> : tab.children,
   }))} />;
 }

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { cn } from '../lib/utils';
+import { useDensity } from '../lib/density';
 
 export interface Param {
   /** The name, shown in mono: a prop, option, token or command. Can hold a link or inline code. */
@@ -24,7 +25,7 @@ export interface ParamColumn {
 }
 
 /**
- * Reference rows: name, type, default and a sentence, plus any `columns` of prose you add. Hairline rows, no zebra and no box. The wrapper is the scroll
+ * Reference rows: name, type, default and a sentence, plus any `columns` of prose you add. Hairline rows (`py-4`, or `py-2` on a compact surface), no zebra and no box. The wrapper is the scroll
  * container (a labelled, focusable region), so on a narrow screen the table scrolls inside itself and the page does not.
  */
 export function ParamTable({
@@ -32,7 +33,6 @@ export function ParamTable({
   rows,
   labels,
   columns = [],
-  className,
 }: {
   caption: string;
   rows: readonly Param[];
@@ -40,53 +40,54 @@ export function ParamTable({
   labels?: Partial<Record<'name' | 'type' | 'default' | 'description', string>>;
   /** Extra columns between Default and the description. Each row gives its content in `cells`. */
   columns?: readonly ParamColumn[];
-  className?: string;
 }) {
+  const cell = useDensity() === 'compact' ? 'py-2 pe-6 align-baseline last:pe-0' : 'py-4 pe-6 align-baseline last:pe-0';
+  const head = `${cell} text-start font-medium`;
   const hasType = rows.some((r) => r.type);
   const hasDefault = rows.some((r) => r.default);
   return (
-    <div role="region" aria-label={caption} tabIndex={0} className={cn('focus-ring my-8 overflow-x-auto', className)}>
-      <table className={cn('w-full border-collapse text-start text-[0.9375rem] leading-snug', (hasType || hasDefault || columns.length > 0) && 'min-w-[34rem]')}>
+    <div role="region" aria-label={caption} tabIndex={0} className="my-8 overflow-x-auto">
+      <table className={cn('w-full border-collapse text-start text-sm leading-snug', (hasType || hasDefault || columns.length > 0) && 'min-w-[34rem]')}>
         <caption className="sr-only">{caption}</caption>
         <thead>
           <tr className="hairline text-meta text-muted">
-            <th scope="col" className="py-3 pe-6 text-start font-medium">
+            <th scope="col" className={head}>
               {labels?.name ?? 'Name'}
             </th>
             {hasType && (
-              <th scope="col" className="py-3 pe-6 text-start font-medium">
+              <th scope="col" className={head}>
                 {labels?.type ?? 'Type'}
               </th>
             )}
             {hasDefault && (
-              <th scope="col" className="py-3 pe-6 text-start font-medium">
+              <th scope="col" className={head}>
                 {labels?.default ?? 'Default'}
               </th>
             )}
             {columns.map((c) => (
-              <th key={c.key} scope="col" className="py-3 pe-6 text-start font-medium">
+              <th key={c.key} scope="col" className={head}>
                 {c.label}
               </th>
             ))}
-            <th scope="col" className="py-3 text-start font-medium">
+            <th scope="col" className={head}>
               {labels?.description ?? 'What it does'}
             </th>
           </tr>
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={r.key ?? (typeof r.name === 'string' ? r.name : i)} className="hairline align-baseline">
-              <th scope="row" className="py-4 pe-6 text-start align-baseline font-mono break-words sm:whitespace-nowrap text-[0.875rem] font-medium text-fg">
+            <tr key={r.key ?? (typeof r.name === 'string' ? r.name : i)} className="hairline">
+              <th scope="row" className={`${cell} break-words text-start font-mono text-sm font-medium text-fg sm:whitespace-nowrap`}>
                 {r.name}
               </th>
-              {hasType && <td className="py-4 pe-6 align-baseline font-mono text-[0.875rem] tabular-nums text-muted">{r.type}</td>}
-              {hasDefault && <td className="py-4 pe-6 align-baseline font-mono text-[0.875rem] tabular-nums text-muted">{r.default}</td>}
+              {hasType && <td className={`${cell} font-mono text-sm tabular-nums text-muted`}>{r.type}</td>}
+              {hasDefault && <td className={`${cell} font-mono text-sm tabular-nums text-muted`}>{r.default}</td>}
               {columns.map((c) => (
-                <td key={c.key} className={cn('py-4 pe-6 align-baseline', c.mono ? 'font-mono text-[0.875rem] text-muted' : 'min-w-[10rem] text-fg')}>
+                <td key={c.key} className={cn(cell, c.mono ? 'font-mono text-sm text-muted' : 'min-w-[10rem] text-fg')}>
                   {r.cells?.[c.key]}
                 </td>
               ))}
-              <td className="sm:min-w-[14rem] py-4 align-baseline text-fg">{r.description}</td>
+              <td className={`${cell} text-fg sm:min-w-[14rem]`}>{r.description}</td>
             </tr>
           ))}
         </tbody>

@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { renderToString } from 'react-dom/server';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { expectAccessible } from '../components/test-setup';
+import { DensityProvider } from '../lib/density';
+import { CodeBlock } from './CodeBlock';
 import { CodeTabs } from './CodeTabs';
 import { tabPreference } from './hooks';
 
@@ -83,5 +85,38 @@ describe('CodeTabs', () => {
     );
     await user.click(within(screen.getByRole('tablist', { name: 'First' })).getByRole('tab', { name: 'TypeScript' }));
     expect(within(screen.getByRole('tablist', { name: 'Second' })).getByRole('tab', { name: 'TypeScript' })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('lays its figures out flush: alone a code figure keeps its margins, in a stack or under the tab list it does not', () => {
+    const figure = (html: string) => {
+      const host = document.createElement('div');
+      host.innerHTML = html;
+      return host.querySelector('figure')!;
+    };
+    expect(figure(renderToString(<CodeBlock code="a" lang="ts" />))).toHaveClass('my-8');
+    const stacked = figure(renderToString(<CodeTabs tabs={tabs} />));
+    expect(stacked).toHaveClass('my-0');
+    expect(stacked).not.toHaveClass('my-8');
+    expect(stacked).toHaveClass('border-y');
+    render(<CodeTabs tabs={tabs} />);
+    const tabbed = screen.getByRole('tabpanel').querySelector('figure')!;
+    expect(tabbed).toHaveClass('my-0', 'border-t-0');
+    expect(tabbed).toHaveClass('border-y');
+  });
+
+  it('draws its tab triggers like the Tabs control: 44px, rounded, tone on hover, the current tab bold and underlined', () => {
+    render(<CodeTabs tabs={tabs} />);
+    const [css, ts] = screen.getAllByRole('tab');
+    for (const token of ['min-h-11', 'text-base', 'rounded-control', 'hover:bg-tone', 'aria-selected:font-semibold', 'aria-selected:underline']) expect(css).toHaveClass(token);
+    expect(css).toHaveAttribute('aria-selected', 'true');
+    expect(ts).toHaveAttribute('aria-selected', 'false');
+    expect(css!.className).not.toMatch(/focus-ring|transition-colors/);
+  });
+
+  it('reads the density of the surface: compact tabs are 32px with 14px type', () => {
+    render(<DensityProvider density="compact"><CodeTabs tabs={tabs} /></DensityProvider>);
+    const [css] = screen.getAllByRole('tab');
+    for (const token of ['min-h-8', 'compact-target', 'text-sm']) expect(css).toHaveClass(token);
+    expect(css).not.toHaveClass('min-h-11');
   });
 });

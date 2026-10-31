@@ -18,6 +18,7 @@ export const tokensAndBands: DocPage = {
           ),
         },
         { type: 'callout', kind: 'note', children: <p>The Tailwind default palette, radius, shadow and font namespaces are reset. <code>bg-red-500</code>, <code>rounded-xl</code> and <code>shadow-md</code> do not exist.</p> },
+        { type: 'p', children: <>Only <code>@ejm/ui</code> writes these names, in its own components. A site never writes a color, a class or a style. It picks a component, and the component picks the token.</> },
       ],
     },
     {
@@ -28,14 +29,32 @@ export const tokensAndBands: DocPage = {
           type: 'p',
           children: (
             <>
-              A band is a full-bleed section with its own ground. Put <code>data-band</code> on the element and the <code>band</code> utility to paint it. The page itself is the Paper band.
+              A band is a full-bleed section with its own ground. The page itself is the Paper band. <code>Hero</code> is Paper, and each top-level <code>Section</code> after it takes the next ground, so you never name one.
+            </>
+          ),
+        },
+        {
+          type: 'params',
+          caption: 'How Section picks its ground',
+          labels: { name: 'Section', description: 'Ground' },
+          rows: [
+            { name: 'First after the Hero', description: 'Mist, then Paper, then Mist again, among sibling Sections, in both themes.' },
+            { name: 'emphasis', description: 'Sage. It does not count in the alternation. Use it at most once on a page.' },
+            { name: 'Nested Section', description: 'No band of its own. It keeps the ground of the Section around it.' },
+          ],
+        },
+        {
+          type: 'p',
+          children: (
+            <>
+              Underneath, a band is <code>data-band</code> on an element plus the <code>band</code> utility. Sections write <code>data-band=&quot;auto&quot;</code>, and the theme picks Mist for odd positions and Paper for even ones with <code>:nth-child(odd of [data-band=&quot;auto&quot;])</code>. A browser without that selector leaves the page ground, which still reads. Name a band yourself only to show every ground, as the <a href="/tokens/">tokens page</a> does with <code>Band</code>.
             </>
           ),
         },
         {
           type: 'code',
           lang: 'html',
-          code: `<section data-band="sage" class="band py-rhythm">
+          code: `<section data-band="auto" class="band py-rhythm">
   <div class="page"> ... </div>
 </section>`,
         },
@@ -47,7 +66,7 @@ export const tokensAndBands: DocPage = {
             { name: 'paper', type: 'F6F5EF, Ink text', default: '131614, E3E5DC text', description: 'The page. With Mist, about 60 percent of a page.' },
             { name: 'mist', type: 'E8EDE3, Ink text', default: '1C211D, E3E5DC text', description: 'The quiet alternate.' },
             { name: 'sage', type: '8A9A7B, Ink text', default: 'the same', description: 'The lead color, about 30 percent of a page.' },
-            { name: 'ink', type: '202721, Paper text', default: 'the same', description: 'A dark moment in either theme.' },
+            { name: 'ink', type: '202721, Paper text', default: 'the same', description: 'A dark moment in either theme. The footer uses it.' },
           ],
         },
         { type: 'p', children: <>Forest stays under 10 percent of a page and never sets a large ground, which is why it is not a band. Bands can nest, and the nearest one wins.</> },
@@ -95,7 +114,7 @@ export const tokensAndBands: DocPage = {
         { type: 'h3', id: 'status-and-hues', title: 'Status and chart hues' },
         {
           type: 'p',
-          children: <>Status text is <code>text-success</code>, <code>text-warn</code>, <code>text-danger</code> and <code>text-info</code>, each 4.5:1 on its ground. Charts use <code>hue-1</code> to <code>hue-6</code>, each 3:1 on the ground. Always add a word or a label next to a color.</>,
+          children: <>Status is one vocabulary: <code>ok</code>, <code>warn</code>, <code>error</code>, <code>info</code> and <code>pending</code>. <code>Status</code> draws a glyph and the word. <code>Badge</code> takes the same names plus <code>neutral</code>, and a dashboard change takes one as its <code>status</code>. The colors are <code>text-success</code>, <code>text-warn</code>, <code>text-danger</code> and <code>text-info</code>, each 4.5:1 on its ground. Charts use <code>hue-1</code> to <code>hue-6</code>, each 3:1 on the ground. A color always comes with a word or a label.</>,
         },
         { type: 'h3', id: 'product-windows', title: 'Product windows and code' },
         {

@@ -1,9 +1,9 @@
 import { Link } from '@ejm/ssg';
 import logoInk from '@ejm/tokens/assets/projects/ide/logo-ink.svg?url';
 import logoPaper from '@ejm/tokens/assets/projects/ide/logo-paper.svg?url';
-import { AppShell, Brand, Button } from '@ejm/ui';
+import { AppActions, AppFlow, AppHeading, AppShell, Brand, Button, SectionHead, Table, Text } from '@ejm/ui';
 
-// AppShell is a whole page frame (top bar, side nav, content), so it has its own route.
+// AppShell is a whole page frame (top bar, side nav, content), so it has its own route. It makes every control inside compact.
 
 const items = [
   ['Files', '#files'],
@@ -12,6 +12,9 @@ const items = [
   ['Settings', '#settings'],
 ] as const;
 
+const columns = [{ key: 'file', label: 'File' }, { key: 'size', label: 'Size (KB)' }];
+const rows = Array.from({ length: 12 }, (_, i) => ({ file: `src/module-${i + 1}.rs`, size: (i + 1) * 3 }));
+
 export default function AppShellPage() {
   return (
     <AppShell
@@ -19,34 +22,34 @@ export default function AppShellPage() {
       brand={<Brand src={logoInk} darkSrc={logoPaper} width={605} height={256} />}
       homeLabel="ejm-ide home"
       nav={
-        <ul className="m-0 list-none p-0">
+        <ul>
           {items.map(([label, href], i) => (
             <li key={label}>
-              <a href={href} aria-current={i === 0 ? 'page' : undefined} className="touch-target flex items-center py-2 text-fg hover:text-link aria-[current=page]:font-semibold aria-[current=page]:underline aria-[current=page]:decoration-2">
+              <a href={href} aria-current={i === 0 ? 'page' : undefined} className="touch-target compact-target flex min-h-8 items-center rounded-control px-3 text-sm text-fg no-underline hover:bg-tone aria-[current=page]:font-semibold aria-[current=page]:underline aria-[current=page]:decoration-2">
                 {label}
               </a>
             </li>
           ))}
         </ul>
       }
-      actions={
-        <Button asChild variant="ghost" size="sm"><Link href="/shell/">
-          Shell
-        </Link></Button>
-      }
+      actions={<Button asChild variant="ghost"><Link href="/shell/">Shell</Link></Button>}
     >
-      <h1 className="text-title">Workspace</h1>
-      <p className="mt-4 max-w-measure text-muted">
-        The top bar and the side nav stay while the page scrolls. The nav folds into a labelled disclosure below 768px. Nothing here is a box: the nav is separated by one hairline.
-      </p>
-      <ul className="hairline-t mt-10 max-w-measure">
-        {Array.from({ length: 12 }, (_, i) => (
-          <li key={i} className="hairline flex items-baseline justify-between gap-x-6 py-4">
-            <span>src/module-{i + 1}.rs</span>
-            <span className="text-meta tabular-nums text-muted">{(i + 1) * 3} KB</span>
-          </li>
-        ))}
-      </ul>
+      <AppFlow>
+        <SectionHead purpose="application" as="h1" id="workspace-title" title="Workspace">
+          <Text as="p">
+            The top bar and the side nav stay while the page scrolls. The nav folds into a labelled disclosure below 768px. Every control here is compact, because the shell sets the density.
+          </Text>
+        </SectionHead>
+        <AppActions>
+          <Button>Open a file</Button>
+          <Button variant="secondary">Filter</Button>
+          <Button variant="ghost">Refresh</Button>
+        </AppActions>
+        <AppFlow as="section" aria-labelledby="files-title">
+          <AppHeading id="files-title">Files</AppHeading>
+          <Table label="Files" columns={columns} rows={rows} />
+        </AppFlow>
+      </AppFlow>
     </AppShell>
   );
 }

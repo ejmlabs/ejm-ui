@@ -12,9 +12,9 @@ describe('cn', () => {
     expect(cn('text-title', 'text-heading')).toBe('text-heading');
     expect(cn('px-2', 'px-4')).toBe('px-4');
     // The radius names of THEME.md replace each other.
-    expect(cn('rounded-pill px-4', 'rounded-compact')).toBe('px-4 rounded-compact');
+    expect(cn('rounded-pill px-4', 'rounded-window')).toBe('px-4 rounded-window');
     expect(cn('rounded-control', 'rounded-pill')).toBe('rounded-pill');
-    expect(cn('rounded-t-window', 'rounded-t-compact')).toBe('rounded-t-compact');
+    expect(cn('rounded-t-window', 'rounded-t-control')).toBe('rounded-t-control');
   });
   it('lets named application gaps and numeric overrides replace each other', () => {
     expect(cn('grid gap-content', 'gap-field')).toBe('grid gap-field');
@@ -29,8 +29,8 @@ describe('cn', () => {
 describe('cn against the full tailwind-merge', () => {
   const full = extendTailwindMerge({
     extend: {
-      theme: { radius: ['control', 'pill', 'window', 'compact'], spacing: ['field', 'content'] },
-      classGroups: { 'font-size': [{ text: ['display-lg', 'display', 'title', 'heading', 'lead', 'stat', 'body', 'meta'] }] },
+      theme: { radius: ['control', 'pill', 'window'], spacing: ['field', 'content'] },
+      classGroups: { 'font-size': [{ text: ['display', 'title', 'heading', 'lead', 'body', 'meta'] }] },
     },
   });
   const here = dirname(fileURLToPath(import.meta.url));
@@ -45,7 +45,7 @@ describe('cn against the full tailwind-merge', () => {
   const overrides = [
     'p-0', 'p-4', 'px-2', 'px-6', 'py-3', 'pt-0', 'pl-2', 'pe-3', 'm-0', 'mx-auto', 'mt-8', 'mb-0', 'ml-2', 'w-full', 'w-[12rem]', 'h-10', 'size-6', 'min-h-0', 'max-w-measure', 'max-w-prose',
     'text-sm', 'text-lg', 'text-title', 'text-meta', 'text-fg', 'text-muted', 'text-[#fff]', 'text-center', 'font-bold', 'font-mono', 'leading-6', 'tracking-wide', 'underline', 'no-underline',
-    'bg-tone', 'bg-primary', 'bg-transparent', 'rounded-none', 'rounded-pill', 'rounded-compact', 'rounded-control', 'rounded-t-window', 'rounded-t-lg', 'border', 'border-0', 'border-t', 'border-line', 'border-b-2', 'divide-y', 'shadow-none', 'shadow-lg', 'opacity-50', 'ring-2',
+    'bg-tone', 'bg-primary', 'bg-transparent', 'rounded-none', 'rounded-pill', 'rounded-control', 'rounded-t-window', 'rounded-t-lg', 'border', 'border-0', 'border-t', 'border-line', 'border-b-2', 'divide-y', 'shadow-none', 'shadow-lg', 'opacity-50', 'ring-2',
     'flex', 'hidden', 'block', 'grid', 'inline-flex', 'flex-col', 'flex-row', 'items-center', 'items-start', 'justify-between', 'gap-2', 'gap-content', 'gap-field', 'gap-x-4', 'gap-y-1', 'grow', 'shrink-0', 'basis-1/2',
     'absolute', 'relative', 'fixed', 'sticky', 'inset-0', 'top-0', 'z-10', 'overflow-hidden', 'overflow-x-auto', 'whitespace-nowrap', 'whitespace-normal', 'truncate', 'sr-only', 'not-sr-only',
     'transition', 'duration-200', 'ease-in', 'animate-none', 'cursor-pointer', 'pointer-events-none', 'select-none', 'fill-current', 'stroke-2', 'translate-x-1', 'scale-95', 'rotate-45',

@@ -15,6 +15,18 @@ describe('Badge', () => {
   });
 });
 
+describe('Badge tones', () => {
+  it('uses the Status vocabulary plus neutral, as plain mono text with no fill, border or pill', () => {
+    const tones = { neutral: 'text-fg', ok: 'text-success', warn: 'text-warn', error: 'text-danger', info: 'text-info', pending: 'text-muted' } as const;
+    render(<p>{(Object.keys(tones) as (keyof typeof tones)[]).map(tone => <Badge key={tone} tone={tone}>{`is ${tone}`}</Badge>)}</p>);
+    for (const [tone, color] of Object.entries(tones)) {
+      const classes = screen.getByText(`is ${tone}`).parentElement!.className.split(' ');
+      expect(classes).toEqual(expect.arrayContaining([color, 'text-meta']));
+      expect(classes.filter(c => /^(bg-|border|rounded)/.test(c))).toEqual([]);
+    }
+  });
+});
+
 describe('Separator', () => {
   it('is invisible to assistive technology when decorative and a separator when it divides regions', () => {
     const { rerender } = render(<Separator />);
@@ -41,7 +53,7 @@ describe.each(themes)('accessibility in %s', theme => {
     const { container } = renderIn(
       theme,
       <div>
-        <p><Badge tone="success">ok</Badge> <Badge separator="dot">v0.4</Badge></p>
+        <p><Badge tone="ok">ok</Badge> <Badge separator="dot">v0.4</Badge></p>
         <Separator />
       </div>,
     );

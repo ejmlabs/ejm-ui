@@ -7,10 +7,10 @@ import { slimConfig } from './merge-config';
 // (scripts/build-merge-config.mjs); a class outside those groups is kept as written.
 const twMerge = createTailwindMerge(() => {
   const config = slimConfig();
-  // The radius names of THEME.md, so `rounded-pill`, `rounded-control` and `rounded-compact` replace each other like any other radius.
-  (config.theme.radius as unknown[]).push('control', 'pill', 'window', 'compact');
+  // The radius names of THEME.md, so `rounded-pill`, `rounded-control` and `rounded-window` replace each other like any other radius.
+  (config.theme.radius as unknown[]).push('control', 'pill', 'window');
   (config.theme.spacing as unknown[]).push('field', 'content');
-  (config.classGroups['font-size'] as unknown[]).push({ text: ['display-lg', 'display', 'title', 'heading', 'lead', 'stat', 'body', 'meta'] });
+  (config.classGroups['font-size'] as unknown[]).push({ text: ['display', 'title', 'heading', 'lead', 'body', 'meta'] });
   return config;
 });
 

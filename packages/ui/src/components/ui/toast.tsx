@@ -28,7 +28,7 @@ export function useToast(): ToastApi {
 
 /**
  * Toasts as a polite live region: each one is announced when it appears without taking focus, closes by itself,
- * pauses while hovered or focused, and F8 moves focus to the stack. Toasts are overlays, so they carry the float shadow.
+ * pauses while hovered or focused, and F8 moves focus to the stack. Toasts are overlays: window radius, line border, float shadow and the fade.
  */
 /** `label` names the stack's region (Radix's default is "Notifications (F8)"). Give each provider on one page its own. */
 export function ToastProvider({ children, duration = 5000, label }: { children: ReactNode; duration?: number; label?: string }) {
@@ -52,23 +52,27 @@ export function ToastProvider({ children, duration = 5000, label }: { children: 
             type="background"
             duration={t.duration}
             onOpenChange={open => { if (!open) dismiss(t.id); }}
-            className="flex items-start gap-4 rounded-window border border-line bg-popover p-4 text-popover-foreground shadow-float animate-reveal"
+            className="flex items-start gap-4 rounded-window border border-line bg-ground p-4 text-fg shadow-float animate-fade"
           >
             <div className="min-w-0 flex-1">
               <ToastPrimitive.Title className="font-semibold">{t.title}</ToastPrimitive.Title>
               {t.description && <ToastPrimitive.Description className="mt-1 text-muted">{t.description}</ToastPrimitive.Description>}
               {t.action && (
-                <ToastPrimitive.Action altText={t.action.altText} asChild>
-                  <Button variant="link" size="sm" className="mt-2" onClick={t.action.onClick}>{t.action.label}</Button>
-                </ToastPrimitive.Action>
+                <div className="mt-2">
+                  <ToastPrimitive.Action altText={t.action.altText} asChild>
+                    <Button variant="link" onClick={t.action.onClick}>{t.action.label}</Button>
+                  </ToastPrimitive.Action>
+                </div>
               )}
             </div>
-            <ToastPrimitive.Close asChild>
-              <Button variant="ghost" size="sm" aria-label="Dismiss" className="-me-2 -mt-2 px-3"><X aria-hidden className="size-4" /></Button>
-            </ToastPrimitive.Close>
+            <div className="-me-2 -mt-2 shrink-0">
+              <ToastPrimitive.Close asChild>
+                <Button variant="ghost" size="icon" aria-label="Dismiss"><X aria-hidden className="size-4" /></Button>
+              </ToastPrimitive.Close>
+            </div>
           </ToastPrimitive.Root>
         ))}
-        <ToastPrimitive.Viewport label={label} className="fixed inset-x-0 bottom-0 z-50 m-0 flex list-none flex-col gap-3 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] outline-none sm:inset-x-auto sm:end-0 sm:w-[26rem]" />
+        <ToastPrimitive.Viewport label={label} className="fixed inset-x-0 bottom-0 z-50 m-0 flex list-none flex-col gap-3 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:inset-x-auto sm:end-0 sm:w-[26rem]" />
       </ToastPrimitive.Provider>
     </ToastContext.Provider>
   );

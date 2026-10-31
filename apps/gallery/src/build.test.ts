@@ -51,6 +51,24 @@ describe.each(expected)('$path', route => {
     expect(d.querySelector('main#main h1'), 'the h1 is inside main').not.toBeNull();
   });
 
+  it('derives its structure: no skipped heading level, and every labelled section is named by a heading on the page', () => {
+    const d = doc();
+    const levels = [...d.querySelectorAll('h1, h2, h3, h4, h5, h6')].map(h => Number(h.tagName[1]));
+    levels.forEach((level, i) => {
+      if (i > 0) expect(level - levels[i - 1]!, `h${level} follows h${levels[i - 1]}`).toBeLessThanOrEqual(1);
+    });
+    for (const section of d.querySelectorAll('section[aria-labelledby]')) {
+      const id = section.getAttribute('aria-labelledby')!;
+      expect(d.getElementById(id), `no element with id ${id}`).not.toBeNull();
+    }
+  });
+
+  it('takes its grounds from its Sections: only the tokens page names Mist or Ink, and at most one Section is emphasized', () => {
+    const d = doc();
+    if (route.path !== '/tokens/') expect(d.querySelectorAll('section[data-band="mist"], section[data-band="ink"]')).toHaveLength(0);
+    expect(d.querySelectorAll('section[data-band="sage"]').length).toBeLessThanOrEqual(1);
+  });
+
   it('puts the theme toggle last in the header, with nothing usable after it', () => {
     const d = doc();
     const header = d.querySelector('header')!;

@@ -7,6 +7,7 @@ export * from './ProductShot';
 export * from './ProductWindow';
 export * from './Rows';
 export * from './Rule';
+export * from './Section';
 export * from './SectionHead';
 export * from './Stat';
 export * from './Status';

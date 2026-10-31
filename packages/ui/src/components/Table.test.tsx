@@ -27,6 +27,14 @@ describe('Table', () => {
     expect(screen.getByTitle('Headless logic for every target, with no framework')).toBeInTheDocument();
   });
 
+  it('separates every row with the hairline utility and draws no box edges', () => {
+    const { container } = render(<Table columns={columns} rows={rows} />);
+    const trs = [...container.querySelectorAll('tr')];
+    expect(trs).toHaveLength(rows.length + 1);
+    for (const tr of trs) expect(tr.className).toBe('hairline');
+    expect(container.querySelector('td')!.className).toContain('py-4');
+  });
+
   it('empty, loading and error keep the header and put one sentence under it, in the contract words', () => {
     for (const state of ['empty', 'loading', 'error'] as const) {
       const { unmount } = render(<Table columns={columns} rows={[]} state={state} />);

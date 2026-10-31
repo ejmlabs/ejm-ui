@@ -1,5 +1,0 @@
-/* Opt-in utilities for the app components (Dashboard, ChartLine, ChartBar, Legend, ActivityList). Import it after styles.css:
-     @import "@ejm/ui/styles.css";
-     @import "@ejm/ui/styles-app.css"; */
-@source "./app";
-@source not "./app/**/*.test.{ts,tsx}";
