@@ -65,6 +65,13 @@ page whose headings do not lead to its hidden `h3`, it also reports
 `heading-order`. The table stays on because it is the screen-reader view of the
 position.
 
+Known limit: the last-move highlight is `ui-board-mark` at 18 percent opacity,
+drawn above the coordinates. On a highlighted edge square a coordinate label
+falls from at least 5.09:1 to between 3.75:1 and 4.25:1 in the dark theme and to
+3.94:1 on the light theme's dark square (computed, sRGB compositing). No palette
+color keeps 4.5:1 there, and a highlight faint enough to keep it would hide the
+last move.
+
 The unchanged `assets/pieces/standard.svg` is by Cburnett and Rfc1394, modified by
 shaack for cm-chessboard. It uses CC BY-SA 3.0, separately from the code's MIT
 license. The distributed SVG retains its embedded attribution. Keep the notice

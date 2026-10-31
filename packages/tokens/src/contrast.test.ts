@@ -50,11 +50,13 @@ describe('contrast gates', () => {
       x.themes.light.roles['board-mark'] = '8A9A7B';
       x.themes.light.roles['board-light'] = '9AA98B';
       x.themes.dark.roles['board-on-light'] = '57665B';
+      x.themes.light.roles['board-on-dark'] = '8A9A7B';
     })).join('\n');
     expect(text).toMatch(/dark: black pieces on the dark square are \d\.\d\d:1, need 3:1/);
     expect(text).toMatch(/light: board-mark on the light square/);
     expect(text).toMatch(/light: the board squares are \d\.\d\d:1 apart/);
     expect(text).toMatch(/dark: board-on-light on the light square is \d\.\d\d:1, needs 4\.5:1/);
+    expect(text).toMatch(/light: board-on-dark on the dark square is \d\.\d\d:1, needs 4\.5:1/);
   });
 
   it('fail when the danger Button, drawn at 85 percent on its hover, leaves its text under 4.5:1', () => {

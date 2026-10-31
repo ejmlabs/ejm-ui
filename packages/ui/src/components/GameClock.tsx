@@ -17,5 +17,5 @@ export function GameClock({ value, label, running = false, low = false, classNam
   return <span role="timer" {...props} aria-label={label} className={cn(
     'shrink-0 whitespace-nowrap px-3 py-2 text-center font-mono text-3xl leading-none tabular-nums',
     low ? 'bg-danger text-on-danger' : running ? 'bg-primary text-on-primary' : 'text-muted', className,
-  )}>{low && <span aria-hidden="true" className="mr-2">{contract.glyphs.status.warn.unicode}</span>}{value}</span>;
+  )}>{low && <span aria-hidden="true" className="me-2">{contract.glyphs.status.warn.unicode}</span>}{value}</span>;
 }
