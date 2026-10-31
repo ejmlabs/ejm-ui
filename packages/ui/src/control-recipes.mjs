@@ -1,6 +1,6 @@
 import { cva } from 'class-variance-authority';
 
-// One control system (openspec/changes/systemic-kit/design.md, section 3). Every control is 44px tall at 16px type. Compact is 32px on a fine
+// One control system (packages/ui/THEME.md, "The control system"). Every control is 44px tall at 16px type. Compact is 32px on a fine
 // pointer at 14px type; touch-target keeps the target at 44px on a coarse pointer. Each recipe emits exactly one height, so no class string
 // carries two values for the same property.
 const comfortable = 'min-h-11 text-base';

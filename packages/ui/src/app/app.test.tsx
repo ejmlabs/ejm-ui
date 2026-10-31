@@ -171,7 +171,7 @@ describe('Dashboard', () => {
 
 describe('the application kit follows the one system', () => {
   const tokens = (root: Element) => [...root.querySelectorAll('[class]')].flatMap(el => (el.getAttribute('class') ?? '').split(/\s+/).filter(Boolean));
-  // One control system (openspec/changes/systemic-kit/design.md): these utilities no longer exist in the kit.
+  // One control system (packages/ui/THEME.md, "The control system"): these utilities no longer exist in the kit.
   const retired = /^(focus-ring|transition-colors|transition-all|uppercase|tracking-wider|rounded-(sm|md|lg|compact)|text-(xs|lg|xl|2xl|3xl|stat|display-lg|\[.*\]))$/;
   const everything = (
     <>
