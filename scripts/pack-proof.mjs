@@ -20,6 +20,7 @@ import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, 
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { packWorkspace } from './pack-workspace.mjs';
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -30,7 +31,6 @@ if (dir === repo || dir.startsWith(repo + sep)) throw new Error(`pack-proof: --d
 const PACKAGES = ['tokens', 'core', 'ui', 'ssg', 'site', 'demos'];
 const step = title => console.log(`\n== ${title}`);
 const run = (cmd, cmdArgs, cwd, extra = {}) => execFileSync(cmd, cmdArgs, { cwd, stdio: 'inherit', ...extra });
-const read = (cmd, cmdArgs, cwd) => execFileSync(cmd, cmdArgs, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'] });
 const problems = [];
 
 // 1. The reference build, inside the workspace.
@@ -46,13 +46,7 @@ step('npm pack');
 const tarballs = join(dir, 'tarballs');
 rmSync(tarballs, { recursive: true, force: true });
 mkdirSync(tarballs, { recursive: true });
-const packed = PACKAGES.map(p => {
-  // npm 11 prints an array, npm 12 an object keyed by package name; `-w <one package>` yields one entry either way.
-  const out = JSON.parse(read('npm', ['pack', '-w', `packages/${p}`, '--pack-destination', tarballs, '--json'], repo));
-  const [info] = Array.isArray(out) ? out : Object.values(out);
-  console.log(`${info.name.padEnd(14)} ${String(info.size).padStart(9)} bytes gzip, ${String(info.unpackedSize).padStart(9)} unpacked, ${String(info.entryCount).padStart(4)} files`);
-  return info;
-});
+const packed = PACKAGES.map(p => packWorkspace(p, tarballs, repo));
 
 // 3. The consumer: the starter's source, a package.json that names tarballs, and nothing else from this repo.
 step('consumer install from the tarballs only');
