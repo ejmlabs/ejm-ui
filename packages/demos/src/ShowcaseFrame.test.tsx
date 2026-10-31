@@ -38,4 +38,8 @@ it('shows one disclosure for an island: its own note alone, the frame note insid
   const note = screen.getByText('Simulated demo. Nothing is sent anywhere.');
   expect(screen.getByRole('group', { name: 'ejm-ide example' })).toHaveAttribute('aria-describedby', note.id);
   expect(screen.getByText('Pick a prompt.')).toBeInTheDocument();
+  cleanup();
+  // A frame that shows no note leaves the island's own.
+  render(<ShowcaseFrame label="ejm-ide example" note={null}>{island}</ShowcaseFrame>);
+  expect(screen.getAllByText('Simulated demo. Nothing is sent anywhere.')).toHaveLength(1);
 });

@@ -357,6 +357,7 @@
   :where(code):not(pre code) { font-family: var(--font-mono); font-size: 0.9em; }
   /* A key is a small outlined cap in the same face, so a shortcut reads as keys wherever it is written. A combination is a kbd of kbds. */
   :where(kbd) { font-family: var(--font-mono); font-size: 0.85em; white-space: nowrap; }
+  :where(kbd kbd) { font-size: 1em; }
   :where(kbd):not(:has(kbd)) { padding: 0.05em 0.4em; border: 1px solid var(--ejm-line); border-radius: var(--radius-control); }
   :focus-visible { outline: 2px solid var(--ejm-focus); outline-offset: 2px; }
   @media (forced-colors: active) {

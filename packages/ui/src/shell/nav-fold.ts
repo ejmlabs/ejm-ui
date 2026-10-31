@@ -30,7 +30,10 @@ function needs(width: number, nav: readonly NavItem[], identity: SiteIdentity) {
   return chrome + brand + links + Math.max(0, nav.length - 1) * 4;
 }
 
-/** The narrowest fold at which the identity, every nav link and the theme toggle fit on one line. */
+// A nav too long for the widest fold keeps the menu at every width: the list stays hidden and the menu is never hidden.
+const alwaysMenu: NavFold = { list: '', menu: '' };
+
+/** The narrowest fold at which the identity, every nav link and the theme toggle fit on one line, or the menu at every width. */
 export function navFold(nav: readonly NavItem[], identity: SiteIdentity): NavFold {
-  return foldClasses.find(fold => needs(fold.min, nav, identity) <= fold.min) ?? foldClasses[4];
+  return foldClasses.find(fold => needs(fold.min, nav, identity) <= fold.min) ?? alwaysMenu;
 }

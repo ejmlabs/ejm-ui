@@ -250,6 +250,14 @@ describe('Header', () => {
     expect(fold({ identity: { name: 'ejm-ide', artwork: mark }, nav: long })).toBe('@6xl:flex');
   });
 
+  it('keeps the menu at every width when the nav is too long for the widest fold', () => {
+    const many = Array.from({ length: 14 }, (_, i) => ({ label: `Section number ${i + 1}`, href: `/#s${i}` }));
+    const { container } = render(<Header identity={{ name: 'ejm-ide' }} nav={many} />);
+    expect(container.querySelector('nav > ul')!.className).not.toMatch(/:flex/);
+    expect(container.querySelector('nav > ul')).toHaveClass('hidden');
+    expect(container.querySelector('details')!.className).not.toMatch(/:hidden/);
+  });
+
   it('shows the current page with weight 600 and an underline, not color alone', () => {
     render(<Header {...header} />);
     const docs = within(screen.getByRole('banner')).getAllByRole('link', { name: 'Docs' })[0]!;
