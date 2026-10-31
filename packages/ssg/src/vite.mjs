@@ -30,10 +30,12 @@ export function ejmSsg(options) {
     apply: 'build',
     config(_, env) {
       return {
-        // The server build bundles @ejm/* (they ship TypeScript source); the client build needs the manifest to find route chunks.
-        ssr: { noExternal: [/^@ejm\//] },
+        // The server build bundles every dependency, so prerendering never depends on Node finding a package from the build folder.
+        // Left external, a package the site's own install lacks resolves from any node_modules above the site (an app in the same
+        // repository), and that copy brings a second React. The client build needs the manifest to find route chunks.
+        ssr: { noExternal: true },
         // React 19 supplies this exact public shim export; the compatibility implementation is unused.
-        resolve: env.isSsrBuild ? {} : { alias: [{ find: /^use-sync-external-store\/shim\/index\.js$/, replacement: 'react' }] },
+        resolve: { alias: [{ find: /^use-sync-external-store\/shim\/index\.js$/, replacement: 'react' }] },
         // Native imports still work without modulepreload support; only preload acceleration is lost.
         build: env.isSsrBuild ? {} : { manifest: true, modulePreload: { polyfill: false } },
       };

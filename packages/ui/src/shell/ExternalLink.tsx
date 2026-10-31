@@ -6,8 +6,10 @@ export type ExternalLinkProps = Closed<ComponentPropsWithoutRef<'a'>> & { href: 
 
 /**
  * A link to another site: rel="external noopener", an arrow, and "opens another site" for screen readers.
- * It is a plain anchor, never a router link, in the `link` style, and does not open a new tab unless you pass target.
+ * It is a plain anchor, never a router link, in the `link` style, and does not open a new tab unless you pass target. Inside
+ * `Button asChild` it takes the button's recipe instead, which the button passes through its slot.
  */
 export function ExternalLink(props: ExternalLinkProps) {
-  return <ExternalAnchor {...props} className="link" />;
+  const { className, ...rest } = props as ExternalLinkProps & { className?: string };
+  return <ExternalAnchor {...rest} className={className ?? 'link'} />;
 }

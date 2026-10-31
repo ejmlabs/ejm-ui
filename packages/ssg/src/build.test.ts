@@ -144,6 +144,26 @@ describe('server asset merge', () => {
   }, 180_000);
 });
 
+describe('prerender bundle', () => {
+  it('bundles every package, so a node_modules above the site (an app beside it) cannot supply a second React', () => {
+    const output = mkdtempSync(join(tmpdir(), 'ejm-ssg-bundled-'));
+    try {
+      const cli = join(pkg, '..', '..', 'node_modules', 'vite', 'bin', 'vite.js');
+      const result = spawnSync(process.execPath, [cli, 'build', '--config', 'vite.bundled.config.ts', '--outDir', output], {
+        cwd: fixture,
+        encoding: 'utf8',
+        env: { ...process.env, NODE_ENV: 'production' },
+      });
+      expect(result.stderr).not.toContain('prerender imports packages');
+      expect(result.status).toBe(0);
+      expect(result.stdout).toContain('prerender bundle checked');
+      expect(readFileSync(join(output, 'index.html'), 'utf8')).toContain('<h1');
+    } finally {
+      rmSync(output, { recursive: true, force: true });
+    }
+  }, 180_000);
+});
+
 describe('page hook', () => {
   it('hands every written page to a plugin with api.onPages, and a thrown error fails the build', () => {
     const output = mkdtempSync(join(tmpdir(), 'ejm-ssg-pages-'));

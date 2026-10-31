@@ -226,7 +226,9 @@ bytes: check a consuming site with its `npm run perf` first-paint measurement.
 
 `ShowcaseFrame` supplies one nearby accessible disclosure. Its optional `note`
 replaces the default, so project-specific capture facts do not need a second
-paragraph. Keep a truthful offline disclosure near each preview. The CLI
+paragraph. An interactive island inside a `ShowcaseFrame` leaves out its own
+note, so the frame's note, which is in the prerendered page, is the one
+disclosure; give the frame the island's honesty sentence. Keep a truthful offline disclosure near each preview. The CLI
 contains recorded Cargo/Git results; IDE edits are authored and its tests were
 not run; Harness retains historical worker output and admission reservations.
 See [preview provenance](src/previews/PROVENANCE.md) for raw artifacts, source

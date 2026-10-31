@@ -206,6 +206,8 @@
 }
 @utility hairline-t {
   border-block-start: 1px solid var(--ejm-line);
+  /* A labelled Rule right above already draws this line, so the list does not draw a second one. */
+  [data-rule] + & { border-block-start-width: 0; }
 }
 /* focus-ring: the 2px focus outline for custom controls. The global :focus-visible rule already does this for native ones. */
 @utility focus-ring {
@@ -353,6 +355,9 @@
   fieldset { min-inline-size: 0; }
   /* Inline code reads as part of the sentence: the mono face a step smaller, no fill. Components never restyle it. */
   :where(code):not(pre code) { font-family: var(--font-mono); font-size: 0.9em; }
+  /* A key is a small outlined cap in the same face, so a shortcut reads as keys wherever it is written. A combination is a kbd of kbds. */
+  :where(kbd) { font-family: var(--font-mono); font-size: 0.85em; white-space: nowrap; }
+  :where(kbd):not(:has(kbd)) { padding: 0.05em 0.4em; border: 1px solid var(--ejm-line); border-radius: var(--radius-control); }
   :focus-visible { outline: 2px solid var(--ejm-focus); outline-offset: 2px; }
   @media (forced-colors: active) {
     :focus-visible { outline-color: Highlight; }
