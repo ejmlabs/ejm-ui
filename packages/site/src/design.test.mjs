@@ -1,7 +1,8 @@
 // @vitest-environment node
 import { mkdtemp, mkdir, readFile, realpath, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join, relative, sep } from 'node:path';
+import { dirname, join, relative, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 import { build, createServer } from 'vite';
 import { ejmSite } from './vite.mjs';
@@ -181,10 +182,14 @@ describe('site design ownership in real Vite builds', () => {
     await expect(build(config)).rejects.toThrow(/src\/styles\.css:1:1.*Consumer CSS/);
   });
 
-  it('keeps only the owned gallery outside the consumer boundary', async () => {
+  it('checks every source root alike: a copy of the gallery package name gets no exception', async () => {
     const root = await fixture('export default () => <div className="local" />;');
-    // A consumer cannot escape by copying the gallery package name.
     await writeFile(join(root, 'package.json'), '{"name":"@ejm/gallery"}');
     expect(() => siteDesignGuard(root).validate()).toThrow(/Consumer className/);
+  });
+
+  it('checks the library gallery like a consumer, and it passes', () => {
+    const gallery = join(dirname(fileURLToPath(import.meta.url)), '../../../apps/gallery');
+    expect(siteDesignGuard(gallery).validate().files.length).toBeGreaterThan(20);
   });
 });

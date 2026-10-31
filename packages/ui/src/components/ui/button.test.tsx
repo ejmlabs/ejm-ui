@@ -36,6 +36,12 @@ describe('Button', () => {
     expect(buttonVariants({ size: 'icon', density: 'compact' }).split(' ')).toEqual(expect.arrayContaining(['size-8', 'compact-target']));
   });
 
+  it('sizes the icon inside an icon button, so a lucide-react icon needs no size of its own: 20px, 16px compact', () => {
+    expect(buttonVariants({ size: 'icon' }).split(' ')).toContain('[&_svg]:size-5');
+    expect(buttonVariants({ size: 'icon', density: 'compact' }).split(' ')).toContain('[&_svg]:size-4');
+    expect(buttonVariants({ size: 'md' })).not.toContain('[&_svg]');
+  });
+
   it('never puts two values for one property in a recipe, and carries no color transition, own focus ring or off-scale size', () => {
     for (const variant of ['primary', 'secondary', 'ghost', 'link', 'danger'] as const) {
       for (const size of ['md', 'icon'] as const) {

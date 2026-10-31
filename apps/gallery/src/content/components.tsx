@@ -64,7 +64,7 @@ export const components: DocPage = {
           caption: 'Button props',
           rows: [
             { name: 'variant', type: "'primary' | 'secondary' | 'ghost' | 'link' | 'danger'", default: "'primary'", description: 'The look. Primary is the Sage fill. Secondary is a hairline outline.' },
-            { name: 'size', type: "'md' | 'icon'", default: "'md'", description: 'A 44px button, or a 44px square for an icon-only control. Give an icon button an aria-label.' },
+            { name: 'size', type: "'md' | 'icon'", default: "'md'", description: 'A 44px button, or a 44px square for an icon-only control. An icon button takes a lucide-react icon and an aria-label. The button sizes the icon.' },
             { name: 'density', type: "'comfortable' | 'compact'", default: 'the surface', description: 'An override. Leave it out: the surface sets it.' },
             { name: 'arrow', type: 'boolean', default: 'false', description: 'Adds the trailing arrow, which slides 4px on hover and stays put under reduced motion.' },
             { name: 'asChild', type: 'boolean', default: 'false', description: 'Renders the child element, for example a link, with the button look.' },
@@ -263,8 +263,8 @@ const Chessboard = lazy(() => import('@ejm/ui/components/Chessboard').then(modul
             { name: 'SiteLayout', description: 'Skip link, Header, main and Footer. The route supplies one Hero and its Sections.' },
             { name: 'Brand', description: 'Canonical artwork with optional light and dark sources, an optional name and shared sizing.' },
             { name: 'DocsLayout', description: 'A sidebar, a 68ch reading column and a contents list, both folding into labelled disclosures on narrow screens.' },
-            { name: 'AppShell', description: 'A top bar, a side navigation and content for applications. It makes every control inside compact.' },
-            { name: 'Header, Footer, ThemeToggle', description: 'The sticky header (it needs an identity) with a menu below 768px, the Ink footer, and the light and dark switch, which takes no props.' },
+            { name: 'AppShell', description: 'A top bar, a side navigation and content for applications. The nav is a list of items (label, href, current, external), drawn as compact links. It makes every control inside compact.' },
+            { name: 'Header, Footer, ThemeToggle', description: 'The sticky header (it needs an identity) with a menu below 48rem of its own width, the Ink footer, and the light and dark switch, which takes no props.' },
             { name: 'ExternalLink, SkipLink, Collapse', description: 'A link to another site with an arrow, the first focusable element, and one native disclosure.' },
             { name: 'Reveal, Stagger, useReveal, useDrawOn', description: 'Entrance and scroll motion. Nothing is hidden without scripts or under reduced motion.' },
             { name: 'useTheme', description: 'Light, dark or system, saved to the ejm-theme cookie.' },
@@ -294,6 +294,8 @@ const Chessboard = lazy(() => import('@ejm/ui/components/Chessboard').then(modul
             { name: 'Callout', description: 'Note, Tip or Warning: a left rule and a word first.' },
             { name: 'ParamTable', description: 'Names in mono, tabular figures, and a scroll region on narrow screens.' },
             { name: 'Pager', description: 'Previous and next links that name the pages.' },
+            { name: 'ThemePair, DensityPair', description: 'Any content under light and dark, or comfortable and compact, side by side. For a page that shows the system itself.' },
+            { name: 'ColorSwatches, TypeScaleSample, ElevationSample, RadiusSample', description: 'Samples of the tokens, fed from their names: the hue roles, the six type sizes, the three shadows and the three radii.' },
           ],
         },
         {

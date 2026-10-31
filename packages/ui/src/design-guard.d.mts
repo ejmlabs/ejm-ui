@@ -9,7 +9,7 @@ export interface DesignGuard {
   validate(): { files: string[]; durationMs: number };
 }
 
-/** The ownership check for the app at `root`. The library's own gallery is the only root it skips. */
+/** The ownership check for the app at `root`. It checks every root alike, the library's own gallery included. */
 export function siteDesignGuard(root: string): DesignGuard;
 
 /** The guard as a Vite plugin for build and dev. Only the first instance in a config is active. */

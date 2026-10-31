@@ -88,12 +88,14 @@ They also inspect imported component aliases, namespace imports, and header or
 footer objects passed to `SiteLayout`. Use `identity` data for shared shell
 branding. The reference starter shows these contracts together.
 
-The library's own gallery, identified by its exact resolved path inside the
-`ejm-ui` checkout, is a development surface for visual recipes. It is the only
-non-consumer source root and does not create a flag or package-name exception
-for downstream sites. The starter follows the same checks as all other
-consumers. This is an engineering ownership check, not a security sandbox for
-untrusted source. Normal review and type checks still apply.
+There is no exemption. The library's own gallery (`apps/gallery`) is checked like
+every consumer: its `src` has no `className`, `style` or opaque spread, and its
+stylesheet is one file of public `@ejm` imports. Where the gallery needs a
+specimen the kit lacks (both themes side by side, a type scale, an elevation or
+radius sample), the kit gains a closed block for it (`ThemePair` and the other
+specimens of `@ejm/ui`, folder `docs`) instead of the gallery gaining a class.
+This is an engineering ownership check, not a security sandbox for untrusted
+source. Normal review and type checks still apply.
 
 Checks use Vite's public TSX parser and PostCSS in Node. Neither parser enters
 browser code, and the check adds no browser dependency. Files are cached between

@@ -10,7 +10,7 @@ Product views for ejm-cli, ejm-ide and ejm-harness: headless engines, simulated 
 | `@ejm/demos/islands/cli-lazy`, `/ide-lazy`, `/harness-lazy` | `LazyCliDemo`, `LazyIdeDemo`, `LazyHarnessDemo`: static view first, island on approach or use. Ship only that product's view. Use these. |
 | `@ejm/demos/islands/cli-lazy`, `/harness-lazy` | Additive `LazyCliShowcase` and `LazyHarnessShowcase` entries for passive, product-owned recordings. Existing interactive exports stay available. |
 | `@ejm/demos/islands/cli-preview`, `/ide-preview`, `/harness-preview` | `LazyCliPreview`, `LazyIdePreview`, `LazyHarnessPreview`: native passive views with bundled, finite workflow data. No source prop. |
-| `@ejm/demos/ShowcaseFrame` | `ShowcaseFrame`: fixed width and an accessible nearby disclosure, with an optional project-specific `note`. |
+| `@ejm/demos/ShowcaseFrame` | `ShowcaseFrame`: fills its column up to a fixed maximum width (so it can be a direct child of a `Section` body, with no wrapper) and carries an accessible nearby disclosure, with an optional project-specific `note`. |
 | `@ejm/demos/islands` | `LazyDemo product="..."`: the same for any product, but it imports all three views (about 5 KB gzip more than one). |
 | `@ejm/demos/islands/cli`, `/ide`, `/harness` | The interactive islands, default exports, for `React.lazy`. |
 | `@ejm/demos/styles.css` | `@source` lines so Tailwind scans the views, islands and hero (not the tests or the scenario data). Import it once from the site stylesheet, after `@ejm/ui/styles.css`. About 1.7 KB gzip of CSS. |

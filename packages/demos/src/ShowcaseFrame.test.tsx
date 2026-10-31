@@ -17,3 +17,8 @@ it('gives each product its own note association and retains native playback cont
   expect(screen.getByRole('button', { name: 'Pause CLI' })).toBeEnabled();
   expect(screen.getByRole('button', { name: 'Restart IDE' })).toBeEnabled();
 });
+
+it('fills its column up to a maximum width instead of shrinking to its content, so a grid child needs no wrapper', () => {
+  render(<ShowcaseFrame label="CLI example"><p>Short</p></ShowcaseFrame>);
+  expect(screen.getByRole('group', { name: 'CLI example' })).toHaveClass('w-full', 'max-w-6xl', 'mx-auto', 'min-w-0');
+});

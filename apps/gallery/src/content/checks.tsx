@@ -35,7 +35,7 @@ export const checks: DocPage = {
           rows: [
             { name: 'Text, types and tests', type: 'npm run check', description: 'Em dashes, stale generated files, changed brand assets, type errors and failing tests.' },
             { name: 'Closed components', type: 'npm run typecheck', description: 'A capitalized export of the @ejm/ui barrel whose props accept className, style or raw HTML. A type test names the export.' },
-            { name: 'Design guard', type: 'ejm-ssg build', description: 'A site that passes className, style or raw markup, writes local CSS, or uses a removed prop such as Hero size. It runs in the Vite plugin, in build and in dev. The gallery is not checked.' },
+            { name: 'Design guard', type: 'ejm-ssg build', description: 'A site that passes className, style or raw markup, writes local CSS, or uses a removed prop such as Hero size. It runs in the Vite plugin, in build and in dev. It checks every app alike, this gallery included.' },
             { name: 'Page invariants', type: 'ejm-ssg build', description: 'A prerendered page without exactly one h1, with a skipped heading level, without the skip link first, without main#main, or with a link to another host that lacks rel="external".' },
             { name: 'Class check', type: 'node packages/ui/scripts/check-classes.mjs', description: 'A class the kit writes that builds to no CSS, such as a typo or a removed token. Tailwind would drop it silently.' },
             { name: 'Contrast', type: 'node packages/tokens/scripts/contrast.mjs --verbose', description: 'Text under 4.5:1, control borders or focus under 3:1, in both themes and on every band.' },

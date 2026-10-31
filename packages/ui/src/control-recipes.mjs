@@ -33,8 +33,9 @@ export const buttonVariants = /* @__PURE__ */ cva(
       { size: 'md', density: 'comfortable', variant: withLabel, className: 'px-6' },
       { size: 'md', density: 'compact', variant: withLabel, className: 'px-4' },
       { size: 'md', variant: 'link', className: 'px-0' },
-      { size: 'icon', density: 'comfortable', className: 'size-11 text-base' },
-      { size: 'icon', density: 'compact', className: 'size-8 compact-target text-sm' },
+      // The kit sizes the icon, so a lucide-react icon needs no size of its own: 20px, or 16px compact (as in ThemeToggle).
+      { size: 'icon', density: 'comfortable', className: 'size-11 text-base [&_svg]:size-5 [&_svg]:shrink-0' },
+      { size: 'icon', density: 'compact', className: 'size-8 compact-target text-sm [&_svg]:size-4 [&_svg]:shrink-0' },
     ],
     defaultVariants: { variant: 'primary', size: 'md', density: 'comfortable' },
   },
