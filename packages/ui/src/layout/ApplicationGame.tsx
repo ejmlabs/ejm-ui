@@ -10,12 +10,22 @@ export interface GameWorkspaceProps extends Omit<HTMLAttributes<HTMLElement>, 'c
   ref?: Ref<HTMLElement>;
 }
 
-/** The board retains room to play while related state moves below it on a phone. */
+/**
+ * The board column is centred on the page and sized to the viewport. From 40rem its height leaves room for a player strip above
+ * and below it and, below 64rem, for about two lines of the details that follow. From 64rem the details sit to its right. On a
+ * phone the board keeps the full width and the details follow it.
+ */
 export function GameWorkspace({ board, children, after, label, detailsLabel, ref, ...props }: GameWorkspaceProps) {
-  return <section {...props} ref={ref} aria-label={label ?? props['aria-label']} className="grid min-w-0 grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,min(42rem,max(16rem,calc(100svh_-_23rem))))_minmax(16rem,1fr)] lg:gap-12">
-    <div className="min-w-0">{board}</div>
-    <aside aria-label={detailsLabel} className="grid min-w-0 grid-cols-1 gap-6">{children}</aside>
-    {after && <div className="min-w-0 lg:col-span-2">{after}</div>}
+  return <section {...props} ref={ref} aria-label={label ?? props['aria-label']} className={[
+    'grid min-w-0 grid-cols-1 items-start justify-items-center gap-8 [--ejm-board:42rem]',
+    '[--ejm-room:calc(100svh_-_var(--ejm-header-h)_-_env(safe-area-inset-top,0px))]',
+    'sm:[--ejm-board:clamp(20rem,calc(var(--ejm-room)_-_26rem),42rem)]',
+    'lg:[--ejm-board:clamp(20rem,calc(var(--ejm-room)_-_13rem),42rem)]',
+    'lg:grid-cols-[minmax(0,1fr)_minmax(0,var(--ejm-board))_minmax(12rem,1fr)] lg:gap-x-8',
+  ].join(' ')}>
+    <div className="w-full min-w-0 max-w-(--ejm-board) lg:col-start-2">{board}</div>
+    <aside aria-label={detailsLabel} className="grid w-full min-w-0 max-w-(--ejm-board) grid-cols-1 gap-6 lg:col-start-3 lg:max-w-sm lg:justify-self-start">{children}</aside>
+    {after && <div className="w-full min-w-0 lg:col-span-3">{after}</div>}
   </section>;
 }
 
@@ -30,13 +40,24 @@ export function PlayerStrip({ name, detail, children }: { name: ReactNode; detai
 }
 
 export function BoardPlaceholder({ children }: { children?: ReactNode }) {
-  return <div className="grid aspect-square min-w-0 items-center justify-items-center p-6">{children}</div>;
+  return <div className="grid aspect-square min-w-0 items-center justify-items-center bg-tone p-6">{children}</div>;
 }
 
+const atEnd = (list: HTMLElement) => list.scrollHeight - list.scrollTop - list.clientHeight < 4; // under 4px: fractional scroll positions
+
+/** Accepted move pairs. The bounded list follows the latest move, unless the reader scrolled up, and never scrolls its document. */
 export function MovePairs({ moves, label = 'Moves' }: { moves: readonly { number: number; white?: string; black?: string }[]; label?: string }) {
-  return <ol role="list" aria-label={label} className="grid max-h-80 min-w-0 gap-2 overflow-y-auto overscroll-contain font-mono text-meta tabular-nums">
-    {moves.map(move => <li key={move.number} className="grid grid-cols-[3ch_1fr_1fr] gap-3">
-      <span className="text-muted">{move.number}.</span><span>{move.white ?? ''}</span><span>{move.black ?? ''}</span>
+  const listRef = useRef<HTMLOListElement>(null);
+  const following = useRef(true);
+  const latest = moves.at(-1);
+  useEffect(() => {
+    const list = listRef.current;
+    if (list && following.current) list.scrollTop = list.scrollHeight;
+  }, [moves.length, latest?.black]);
+  return <ol ref={listRef} role="list" aria-label={label} onScroll={event => { following.current = atEnd(event.currentTarget); }}
+    className="grid max-h-80 min-w-0 gap-2 overflow-y-auto overscroll-contain font-mono text-meta tabular-nums">
+    {moves.map(move => <li key={move.number} className="grid grid-cols-[4ch_1fr_1fr] gap-3">
+      <span className="whitespace-nowrap text-muted">{move.number}.</span><span>{move.white ?? ''}</span><span>{move.black ?? ''}</span>
     </li>)}
   </ol>;
 }

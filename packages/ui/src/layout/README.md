@@ -97,13 +97,22 @@ They accept content, IDs, events, refs and accessible state. They do not accept
 | `AppField`, `AppFieldset`, `AppForm` | Existing native labels, legends, validation and form handlers in the shared field rhythm. Forms have one reading width. |
 | `AppSection` | Account and information sections at the shared reading measure. |
 | `AppPre` | Wrapped source or records, including long unbroken values. |
-| `GameWorkspace` | A board beside related state on desktop and above it on phones. `board`, `children` and optional `after` describe content slots. |
-| `PlayerStrip`, `BoardPlaceholder` | Player and clock alignment, and a square board loading region. |
-| `MovePairs`, `MoveHistory` | Accepted move pairs or selectable replay moves in a bounded scroll region. |
+| `GameWorkspace` | A centred board column with related state beside it from 64rem and below it before that. `board`, `children` and optional `after` describe content slots. |
+| `PlayerStrip`, `BoardPlaceholder` | Player and clock alignment, and a square board loading region in the `tone` fill, the same as the Chessboard loading state. |
+| `MovePairs`, `MoveHistory` | Accepted move pairs or selectable replay moves in a bounded scroll region. `MovePairs` follows the latest move unless the reader scrolled up. |
 
-On desktop, `GameWorkspace` bounds the board column by viewport height as well
-as the shared maximum width. This leaves room for both player strips and
-clocks. A short landscape viewport keeps a playable minimum and may scroll.
+`GameWorkspace` centres the board column on the page and sizes it to the
+viewport. From 40rem its height leaves room for a player strip above and below
+the board and, below 64rem, for about two lines of the details that follow. It
+never exceeds the shared 42rem maximum. From 64rem the details column sits to
+the right of the board. On a phone the board keeps the full width and the
+details follow it. Compose the board slot as a `PlayerStrip`, the board and a
+`PlayerStrip` in an `AppGroup`. A short landscape viewport keeps a playable
+minimum of 20rem and may scroll.
+
+`MovePairs` scrolls only its own list to the newest move when a move is added.
+If the reader scrolls the list up it keeps that position, and scrolling back to
+the end resumes following.
 
 `MoveHistory` takes `items`, `selectedId` and `onSelect`. Items contain `id`,
 `number`, `color` and `san`. It marks the selected step and keeps it visible by

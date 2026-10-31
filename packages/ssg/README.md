@@ -73,6 +73,7 @@ Link(props: AnchorProps & { href: string; replace?: boolean })       // page pat
 Static(props: { render?: () => ReactNode; className? })              // server-rendered, not hydrated, not in the browser bundle (see Static parts)
 useNavigate(): (to: string, opts?: { replace?: boolean }) => Promise<void>
 usePath(): string                                                    // current path without the base or a trailing slash (`/work`), same on the server and in the browser
+useSearch(): string                                                  // the query string with its `?` (`?game=abc`), empty on the server and while hydrating, then live (see Navigation)
 ejmSsg({ site }): VitePlugin                                         // from '@ejm/ssg/vite'
 ```
 
@@ -137,6 +138,7 @@ The build finds a route's chunk from its `import('...')` call in the server bund
 - Internal page `Link` clicks without a cross-document fragment use `history.pushState`. A fragment link to a different pathname or query loads the full document before the browser finds its target, including targets inside `Static` prose. This also applies to delegated links inside `Static` and programmatic `useNavigate` calls. The site base, query and fragment are preserved; `replace: true` replaces the history entry. Same-document, same-query hashes stay in the current document. Undeclared file paths such as `/license.txt?raw=1` keep native navigation; a declared file-shaped route still uses the router. Extensionless unknown paths retain the site's client-side 404. Absolute URLs, `rel="external"`, `target`, `download` and clicks with modifier keys or a non-primary button are left to the browser. Absolute URLs get `rel="external noopener"` unless you pass `rel`.
 - After a route change focus moves to the page `h1` (first `#main h1`, else the first `h1`, else `#main`) with `tabindex="-1"`, `document.title` and the head tags are swapped, and the title is announced in `#ejm-announcer` (`role="status"`, `aria-live="polite"`). This also happens on back and forward. Give each page an `h1`.
 - Scroll goes to the top, or to the `#hash` target.
+- `useSearch()` returns `location.search`. The prerender and the hydration pass see `''`, so markup that depends on it never mismatches, and the live value follows in the next render. It updates on back and forward and on a `Link` or `useNavigate` push, not on `replaceState` (direct, or `replace`), so a page can rewrite its own query without remounting what is keyed by it.
 - The route change runs in `document.startViewTransition` when it exists and the visitor has not asked for reduced motion; only the page area crossfades for 320 ms with the shared easing, and the header stays still. Skipped transitions are swallowed, and a transition that cannot start within 300 ms is skipped so the page never freezes. Without the API, a CSS fade-in runs after the first navigation. Under `prefers-reduced-motion: reduce` nothing is animated and the API is not called. The first load never animates.
 - `ssg.css` is imported by the package itself.
 

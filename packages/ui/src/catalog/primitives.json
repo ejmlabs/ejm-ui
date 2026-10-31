@@ -144,5 +144,17 @@
     "default",
     "running",
     "low"
+  ],
+  "Chessboard": [
+    "loading",
+    "interactive",
+    "read-only",
+    "orientation",
+    "disabled",
+    "last-move",
+    "premove",
+    "legal-moves",
+    "promotion",
+    "reduced-motion"
   ]
 }

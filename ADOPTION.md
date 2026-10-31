@@ -219,7 +219,7 @@ State read from the sibling checkouts of ejmlabs, ejm-cli and ejm-chess on 31 Oc
 | --- | --- | --- | --- |
 | studio (`ejmlabs/ejmlabs`, `site/`) | sibling `file:` links | `a5551a0` in `.github/ui-source.json` | A site on `ejmSite` and `ejmSsg`. Carries its own Tailwind and React plugins, `resolve.dedupe`, build options and tsconfig `paths`. Sets the removed `budget` option in `defineSite`. |
 | ejm-cli (`site/`) | sibling `file:` links | `f2029e5` in `.github/ui-source.json` | A site on `ejmSite` and `ejmSsg`, with its own `docsPlugin`, the same glue as studio, `styles-docs.css` and an `ejm-ssg budget` script (both removed earlier with the size caps). |
-| ejm-chess | sibling `file:` links | none | Imports `@ejm/ui/components/Chessboard` and `useSearch` from `@ejm/ssg`, neither of which exists in ejm-ui. Sets the removed `budget` option and has `ejm-ssg budget` scripts. Neither import exists in this revision of ejm-ui, so a build against it fails there. |
+| ejm-chess | sibling `file:` links | none | Imports `@ejm/ui/components/Chessboard` and `useSearch` from `@ejm/ssg`, which ejm-ui added after its last review; its next pin move picks them up. Sets the removed `budget` option and has `ejm-ssg budget` scripts. Neither import exists in this revision of ejm-ui, so a build against it fails there. |
 | ejm-ide app and website | none | `.github/ui-source.json` records `d4f7b06` | Neither depends on `@ejm/*`. The website copies the old design kit with `sync-design-kit.sh`, and the app has its own styles. |
 | ejm-harness site | none | none | Copies the old design kit with `scripts/sync-design-kit.sh`. No `@ejm/*` dependency. |
 | ejm-calm, gerry | none | none | Their own design systems. They are only linked from the project registry (`LINKED_PROJECTS`). |
@@ -228,7 +228,7 @@ At its next pin move each linked consumer does the following, then builds, type 
 
 - **studio.** Replace the plugin list with `ejmlabs({ project: 'ejmlabs' })`. Delete `resolve.dedupe`, the `build` options, the tsconfig `paths`, `src/vite-env.d.ts`, and `@tailwindcss/vite`, `@vitejs/plugin-react` and `tailwindcss` from `devDependencies`. Extend `@ejm/ui/tsconfig.json`. Make `src/styles.css` `@import "@ejm/ui/styles.css";` (no `source(none)`) and keep its demo stylesheet imports. Delete `budget` from `defineSite`. Fix what the guard and the page check name.
 - **ejm-cli.** The same steps with `ejmlabs({ project: 'cli' })`, keeping `docsPlugin(...)` in the plugin list. Also delete the `styles-docs.css` import and the `budget` script.
-- **ejm-chess.** Record a pin in `.github/ui-source.json`, as studio and ejm-cli do. Delete `budget` from `defineSite` and the `ejm-ssg budget` scripts. Replace the plugin list with `ejmlabs({ project: 'chess', headers: chessHeaders })` and delete the same glue as studio. Settle the two missing imports: a chessboard is not in ejm-ui, so it either becomes a kit component here first or stays in chess without a class, and `useSearch` is not exported by `@ejm/ssg`.
+- **ejm-chess.** Record a pin in `.github/ui-source.json`, as studio and ejm-cli do. Delete `budget` from `defineSite` and the `ejm-ssg budget` scripts. Replace the plugin list with `ejmlabs({ project: 'chess', headers: chessHeaders })` and delete the same glue as studio. `Chessboard` and `useSearch` now exist in ejm-ui; pass `Chessboard` no `className`.
 
 ## 8. Deploy configuration (Cloudflare Workers static assets)
 
