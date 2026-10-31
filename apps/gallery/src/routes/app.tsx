@@ -1,9 +1,9 @@
 import { formatDuration, formatNumber, type StatState } from '@ejm/core';
-import { ActivityList, Band, ChartArea, ChartBar, ChartLine, Dashboard, Rule, SectionHead, Stat, Table, type ActivityItem, type DashboardProps } from '@ejm/ui';
-import type { ReactNode } from 'react';
+import { ActivityList, ChartArea, ChartBar, ChartLine, ContentFlow, Dashboard, Hero, MetricGrid, Rule, Section, Stat, Table, type ActivityItem, type DashboardProps } from '@ejm/ui';
+import { ThemePair } from '../specimen';
 
-// The application kit: a dashboard, the three chart types and every empty, loading and error state, on a Paper band and an Ink band,
-// in light and dark. Every figure here is SAMPLE data, invented for the demo. None of it is a real customer or a real metric.
+// The application kit: a dashboard, the three chart types and every empty, loading and error state, in light and dark. Sections
+// alternate their grounds on their own. Every figure here is SAMPLE data, invented for the demo. None of it is a real customer or a real metric.
 
 const NOW = Date.UTC(2026, 9, 18, 14, 0, 0); // fixed, so the server and the browser print the same "5m ago"
 const MIN = 60_000;
@@ -53,10 +53,10 @@ const feed: ActivityItem[] = [
 ];
 
 const stats: DashboardProps['stats'] = [
-  { label: 'sessions', figure: '1,284', delta: { text: '+8.2% vs last week', direction: 'up', tone: 'good' } },
-  { label: 'tool calls', figure: '18,406', delta: { text: '+12.4% vs last week', direction: 'up', tone: 'neutral' } },
-  { label: 'tokens used', figure: '41.2M', delta: { text: '+3.1% vs last week', direction: 'up', tone: 'neutral' } },
-  { label: 'median run time', figure: formatDuration(72_000), delta: { text: '-6.0% vs last week', direction: 'down', tone: 'good' } },
+  { label: 'sessions', figure: '1,284', delta: { text: '+8.2% vs last week', direction: 'up', status: 'ok' } },
+  { label: 'tool calls', figure: '18,406', delta: { text: '+12.4% vs last week', direction: 'up' } },
+  { label: 'tokens used', figure: '41.2M', delta: { text: '+3.1% vs last week', direction: 'up' } },
+  { label: 'median run time', figure: formatDuration(72_000), delta: { text: '-6.0% vs last week', direction: 'down', status: 'ok' } },
 ];
 
 const dashboard: DashboardProps = {
@@ -68,19 +68,6 @@ const dashboard: DashboardProps = {
   table: { title: 'Busiest tools', columns: toolColumns, rows: toolRows },
   activity: { title: 'Recent activity', items: feed, now: NOW },
 };
-
-function Pair({ band, children }: { band: 'paper' | 'ink'; children: ReactNode }) {
-  return (
-    <div className="grid lg:grid-cols-12">
-      {(['light', 'dark'] as const).map(theme => (
-        <div key={theme} data-theme={theme} data-band={band} className="band page-inset py-rhythm-sm lg:col-span-6">
-          <p className="text-meta m-0 mb-8 text-muted">{theme} theme / {band} band</p>
-          <div className="flex flex-col gap-10">{children}</div>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 const Charts = (
   <>
@@ -94,96 +81,76 @@ const statStates: StatState[] = ['default', 'loading', 'error', 'empty'];
 
 const States = (
   <>
-    <div>
+    <ContentFlow>
       <Rule label="Stat" />
-      <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-8">
+      <MetricGrid>
         {statStates.map(s => (
           <Stat key={s} state={s} figure="1,284" label={`sessions, ${s}`} size="title" />
         ))}
-      </div>
-    </div>
-    <div>
+      </MetricGrid>
+    </ContentFlow>
+    <ContentFlow>
       <Rule label="Activity list" />
-      <div className="mt-6 flex flex-col gap-10">
-        <ActivityList items={[]} now={NOW} label="Activity, empty" state="empty" action={{ label: 'Start a session' }} onAction={none} />
-        <ActivityList items={[]} now={NOW} label="Activity, loading" state="loading" />
-        <ActivityList items={[]} now={NOW} label="Activity, error" state="error" action={{ key: 'r', label: 'Try again' }} onAction={none} />
-      </div>
-    </div>
-    <div>
+      <ActivityList items={[]} now={NOW} label="Activity, empty" state="empty" action={{ label: 'Start a session' }} onAction={none} />
+      <ActivityList items={[]} now={NOW} label="Activity, loading" state="loading" />
+      <ActivityList items={[]} now={NOW} label="Activity, error" state="error" action={{ key: 'r', label: 'Try again' }} onAction={none} />
+    </ContentFlow>
+    <ContentFlow>
       <Rule label="Chart" />
-      <div className="mt-6 flex flex-col gap-10">
-        <ChartLine title="Empty chart" categories={[]} series={[]} action={{ label: 'Widen the period' }} onAction={none} />
-        <ChartBar title="Loading chart" categories={[]} series={[]} state="loading" />
-        <ChartArea title="Error chart" categories={[]} series={[]} state="error" action={{ label: 'Try again' }} onAction={none} />
-      </div>
-    </div>
-    <div>
+      <ChartLine title="Empty chart" categories={[]} series={[]} action={{ label: 'Widen the period' }} onAction={none} />
+      <ChartBar title="Loading chart" categories={[]} series={[]} state="loading" />
+      <ChartArea title="Error chart" categories={[]} series={[]} state="error" action={{ label: 'Try again' }} onAction={none} />
+    </ContentFlow>
+    <ContentFlow>
       <Rule label="Table" />
-      <div className="mt-6 flex flex-col gap-10">
-        {(['empty', 'loading', 'error'] as const).map(s => (
-          <Table key={s} columns={toolColumns} rows={[]} state={s} label={`Tools, ${s}`} action={s === 'loading' ? undefined : { label: s === 'empty' ? 'Clear the filter' : 'Try again' }} onAction={none} />
-        ))}
-      </div>
-    </div>
+      {(['empty', 'loading', 'error'] as const).map(s => (
+        <Table key={s} columns={toolColumns} rows={[]} state={s} label={`Tools, ${s}`} action={s === 'loading' ? undefined : { label: s === 'empty' ? 'Clear the filter' : 'Try again' }} onAction={none} />
+      ))}
+    </ContentFlow>
   </>
 );
 
 export default function App() {
   return (
     <>
-      <Band tone="paper" aria-labelledby="app-title">
-        <SectionHead purpose="page" kicker="ejm-ui / application kit" title="Figures, charts and calm states." as="h1" id="app-title">
-          <p className="m-0">A dashboard, three chart types and the empty, loading and error states, with no boxes. All data here is sample data.</p>
-        </SectionHead>
-      </Band>
+      <Hero eyebrow="ejm-ui / application kit" title="Figures, charts and calm states.">
+        <p>A dashboard, three chart types and the empty, loading and error states, with no boxes. All data here is sample data.</p>
+      </Hero>
 
-      <Band tone="paper" aria-labelledby="dash-title">
-        <SectionHead kicker="01 / Dashboard" title="One row of figures, then the detail." id="dash-title" />
-        <Dashboard {...dashboard} as="h3" className="mt-16" />
-      </Band>
+      <Section title="One row of figures, then the detail." kicker="01 / Dashboard">
+        <Dashboard {...dashboard} as="h3" />
+      </Section>
 
-      <Band tone="ink" aria-labelledby="dash-ink-title">
-        <SectionHead kicker="02 / Dashboard on Ink" title="The same dashboard on a dark band." id="dash-ink-title" />
-        <Dashboard {...dashboard} as="h3" className="mt-16" />
-      </Band>
+      <Section
+        title="Line, bar and area."
+        kicker="02 / Charts"
+        intro={<p>Each series has a hue, a marker or fill pattern, a legend name and a table of its values.</p>}
+      >
+        <ThemePair>{Charts}</ThemePair>
+      </Section>
 
-      <Band tone="mist" flush column={false} aria-labelledby="charts-title">
-        <div className="page py-rhythm-sm">
-          <SectionHead kicker="03 / Charts" title="Line, bar and area." id="charts-title">
-            <p className="m-0">Each series has a hue, a marker or fill pattern, a legend name and a table of its values.</p>
-          </SectionHead>
-        </div>
-        <Pair band="paper">{Charts}</Pair>
-      </Band>
+      <Section
+        title="Every list, table and panel has a sentence."
+        kicker="03 / States"
+        intro={<p>Empty, loading and error each get one plain sentence, and one action where there is one.</p>}
+      >
+        <ThemePair>{States}</ThemePair>
+      </Section>
 
-      <Band tone="paper" flush column={false} aria-labelledby="states-title">
-        <div className="page py-rhythm-sm">
-          <SectionHead kicker="04 / States" title="Every list, table and panel has a sentence." id="states-title">
-            <p className="m-0">Empty, loading and error each get one plain sentence, and one action where there is one.</p>
-          </SectionHead>
-        </div>
-        <Pair band="paper">{States}</Pair>
-        <Pair band="ink">{States}</Pair>
-      </Band>
-
-      <Band tone="mist" aria-labelledby="dash-states-title">
-        <SectionHead kicker="05 / Dashboard states" title="The whole dashboard, and parts of it." id="dash-states-title" />
-        <div className="mt-16 flex flex-col gap-10">
-          <Dashboard {...dashboard} as="h3" title="Loading" state="loading" />
-          <Dashboard {...dashboard} as="h3" title="Error" state="error" action={{ key: 'r', label: 'Try again' }} onAction={none} />
-          <Dashboard {...dashboard} as="h3" title="Empty" state="empty" action={{ label: 'Start a session' }} onAction={none} />
-          <Dashboard
-            {...dashboard}
-            as="h3"
-            title="Partly failed"
-            stats={stats.map((s, i) => (i === 2 ? { ...s, state: 'error' as const } : s))}
-            chart={{ ...dashboard.chart, state: 'error', action: { label: 'Try again' }, onAction: none }}
-            table={{ ...dashboard.table, rows: [], state: 'empty', action: { label: 'Clear the filter' }, onAction: none }}
-            activity={{ ...dashboard.activity, state: 'loading' }}
-          />
-        </div>
-      </Band>
+      <Section title="The whole dashboard, and parts of it." kicker="04 / Dashboard states">
+        <Dashboard {...dashboard} as="h3" title="Loading" state="loading" />
+        <Dashboard {...dashboard} as="h3" title="Error" state="error" action={{ key: 'r', label: 'Try again' }} onAction={none} />
+        <Dashboard {...dashboard} as="h3" title="Empty" state="empty" action={{ label: 'Start a session' }} onAction={none} />
+        <Dashboard
+          {...dashboard}
+          as="h3"
+          title="Partly failed"
+          stats={stats.map((s, i) => (i === 2 ? { ...s, state: 'error' as const } : s))}
+          chart={{ ...dashboard.chart, state: 'error', action: { label: 'Try again' }, onAction: none }}
+          table={{ ...dashboard.table, rows: [], state: 'empty', action: { label: 'Clear the filter' }, onAction: none }}
+          activity={{ ...dashboard.activity, state: 'loading' }}
+        />
+      </Section>
     </>
   );
 }

@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { Link } from '@ejm/ssg';
 import { PROJECT_LIST } from '@ejm/site/projects';
 import {
-  AppActions, AppField, AppForm, AppSection, Band, Button, Fact, Facts, Hero, Input,
-  MetricGrid, Row, Rows, SectionBody, SectionHead, Stat, Text,
+  Actions, AppActions, AppField, AppForm, AppSection, Button, Columns, ContentFlow, Fact, Facts, Hero, Input, MetricGrid,
+  Row, Rows, Section, SectionHead, Stat, Text,
 } from '@ejm/ui';
 import { pages } from '../pages';
 
+// The opening is a small component example (a form on the application recipes), so the first thing a visitor sees is the kit itself.
 function ComponentExample() {
   const [saved, setSaved] = useState('Changes stay on this page.');
   return <AppSection aria-labelledby="example-title">
@@ -39,54 +40,54 @@ export default function Home() {
           </>
         }
       >
-        <p>Components, tokens and layouts for ejmlabs sites and apps.</p>
+        <p>Components, tokens and layouts for ejmlabs sites and apps. Each block fixes its own look, so any combination reads as one design.</p>
       </Hero>
 
-      <Band id="pages" tone="sage" aria-labelledby="pages-title">
-        <SectionHead kicker="01 / Pages" title="Explore the system." id="pages-title" />
-        <SectionBody>
-          <Rows aria-label="Gallery pages">
-            {pages.map(p => <Row key={p.path} title={p.label} description={p.description} meta={p.meta} href={p.path} />)}
-          </Rows>
-        </SectionBody>
-      </Band>
+      <Section title="Explore the system." kicker="01 / Pages">
+        <Rows aria-label="Gallery pages">
+          {pages.map(p => <Row key={p.path} title={p.label} description={p.description} meta={p.meta} href={p.path} />)}
+        </Rows>
+      </Section>
 
-      <Band tone="paper" aria-labelledby="surfaces-title">
-        <SectionHead kicker="02 / Surfaces" title="In use." id="surfaces-title" />
-        <SectionBody>
-          <Rows aria-label="ejmlabs surfaces">
-            {PROJECT_LIST.filter(p => p.id !== 'ejmlabs' && p.id !== 'ui').map(p => (
-              <Row key={p.id} title={p.name} description={p.tagline} meta={p.host} href={p.url} external />
-            ))}
-          </Rows>
-        </SectionBody>
-      </Band>
+      <Section title="In use." kicker="02 / Surfaces">
+        <Rows aria-label="ejmlabs surfaces">
+          {PROJECT_LIST.filter(p => p.id !== 'ejmlabs' && p.id !== 'ui').map(p => (
+            <Row key={p.id} title={p.name} description={p.tagline} meta={p.host} href={p.url} external />
+          ))}
+        </Rows>
+      </Section>
 
-      <Band tone="mist" aria-labelledby="system-title">
-        <SectionHead kicker="03 / System" title="Tokens and checks." id="system-title" />
-        <SectionBody>
-          <Facts>
-            <Fact label="fonts">Manrope and IBM Plex Mono</Fact>
-            <Fact label="ground">Paper, Mist, Sage and Ink</Fact>
-            <Fact label="groups">Type, space, hairlines and bands</Fact>
-            <Fact label="runtime">React 19, TypeScript, Tailwind CSS 4</Fact>
-          </Facts>
-        </SectionBody>
-        <SectionBody>
-          <MetricGrid>
-            <Stat figure="4" label="bands" />
-            <Stat figure="2" label="themes" />
-            <Stat figure="2" label="fonts" />
-            <Stat figure="1" label="runtime" />
-          </MetricGrid>
-        </SectionBody>
-      </Band>
+      <Section title="Structure is derived." kicker="03 / System">
+        <Columns
+          primary={
+            <ContentFlow>
+              <p>
+                You give a page its words. The kit picks the heading level, the ground, the ids, the spacing and the control size. Every
+                page of this gallery is one Hero and a stack of Sections.
+              </p>
+              <Actions><Button asChild variant="link" arrow><Link href="/layout/">How a page is built</Link></Button></Actions>
+            </ContentFlow>
+          }
+          secondary={
+            <Facts>
+              <Fact label="level">h2 at the top of a page, one deeper in each Section</Fact>
+              <Fact label="ground">Mist and Paper alternate, Sage for emphasis</Fact>
+              <Fact label="density">Comfortable on a site, compact in an application</Fact>
+              <Fact label="classes">None accepted: components are closed</Fact>
+            </Facts>
+          }
+        />
+        <MetricGrid>
+          <Stat figure="4" label="bands" />
+          <Stat figure="2" label="themes" />
+          <Stat figure="2" label="fonts" />
+          <Stat figure="1" label="runtime" />
+        </MetricGrid>
+      </Section>
 
-      <Band tone="ink" aria-labelledby="checks-title">
-        <SectionHead kicker="04 / Checks" title="Check your build." id="checks-title">
-          <Button asChild arrow><Link href="/docs/checks/">Checks</Link></Button>
-        </SectionHead>
-      </Band>
+      <Section title="Check your build." kicker="04 / Checks" emphasis actions={<Button asChild arrow><Link href="/docs/checks/">Checks</Link></Button>}>
+        <p>A build fails on a skipped heading, a missing skip link or an unmarked link to another site.</p>
+      </Section>
     </>
   );
 }

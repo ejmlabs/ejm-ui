@@ -65,6 +65,23 @@ describe('docs content', () => {
     expect(html()).not.toContain('rel="prev"');
   });
 
+  it('describes the one-plugin, one-tsconfig, one-stylesheet setup and the derived Section', () => {
+    const start = text(html());
+    for (const word of ['ejmlabs({ project', '@ejm/site/vite', '@ejm/ui/tsconfig.json', '@ejm/ui/styles.css', 'Section']) expect(start).toContain(word);
+    const components = text(html('components'));
+    for (const word of ['DensityProvider', 'emphasis', 'className']) expect(components).toContain(word);
+    const checks = text(html('checks'));
+    for (const word of ['Closed components', 'Design guard', 'Page invariants', 'Class check']) expect(checks).toContain(word);
+  });
+
+  it('names no part the kit removed', () => {
+    const removed = ['styles-static', 'styles-terminal', 'styles-app', 'NativeCheckbox', 'ActionRows', 'DocumentContent', 'TerminalWorkspace', 'text-display-lg', 'text-stat', 'size="lg"', "'sm' | 'md' | 'lg'"];
+    for (const page of docs.pages) {
+      const body = text(html(page === docs.pages[0] ? undefined : page.slug));
+      for (const word of removed) expect(body, `${page.slug} mentions ${word}`).not.toContain(word);
+    }
+  });
+
   it('uses no em dashes', () => {
     for (const page of docs.pages) expect(html(page === docs.pages[0] ? undefined : page.slug)).not.toContain(String.fromCharCode(0x2014));
   });

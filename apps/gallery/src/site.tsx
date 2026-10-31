@@ -4,12 +4,10 @@ import { App } from './frame';
 import { docRoutes, pages } from './pages';
 import NotFound from './routes/not-found';
 import baseStyles from './styles.css?url';
-import docsStyles from './styles-docs.css?url';
-import appStyles from './styles-app.css?url';
 import demoStyles from './styles-demos.css?url';
-import productStyles from './styles-product.css?url';
 
-const styleLinks = (path: string) => [{ rel: 'stylesheet', href: path.startsWith('/docs/') || path === '/shell/' ? docsStyles : path === '/app/' || path === '/app-shell/' ? appStyles : path === '/demos/' ? demoStyles : path === '/product/' ? productStyles : baseStyles }];
+// One gallery stylesheet. The demos route adds the product preview profiles, so no other route downloads them.
+const styleLinks = (path: string) => [{ rel: 'stylesheet', href: path === '/demos/' ? demoStyles : baseStyles }];
 
 const defaults = siteDefaults('ui');
 const shotLinks = import.meta.env.SSR

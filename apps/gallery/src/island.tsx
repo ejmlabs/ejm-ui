@@ -1,6 +1,7 @@
 import { lazy, Suspense, useLayoutEffect, useState, type ComponentType } from 'react';
+import { Hero, Page, Text } from '@ejm/ui';
 
-type Page = { default: ComponentType };
+type PageModule = { default: ComponentType };
 
 function ReadyPage({ Body }: { Body: ComponentType }) {
   const [ready, setReady] = useState(false);
@@ -8,17 +9,17 @@ function ReadyPage({ Body }: { Body: ComponentType }) {
   useLayoutEffect(() => setReady(true), []);
   return <fieldset disabled={!ready} className="min-w-0">
     <legend className="sr-only">Page examples</legend>
-    {!ready && <p role="status" className="page py-2 text-sm text-muted">Page controls are loading. The examples remain readable.</p>}
+    {!ready && <Page><Text as="p" variant="muted" role="status">Page controls are loading. The examples remain readable.</Text></Page>}
     <Body />
   </fieldset>;
 }
 
 /** Keep complete server HTML while page code loads immediately after the small site entry. */
-export async function island(load: () => Promise<Page>, title: string): Promise<Page> {
+export async function island(load: () => Promise<PageModule>, title: string): Promise<PageModule> {
   const Body = import.meta.env.SSR ? (await load()).default : lazy(load);
   return {
     default: () => (
-      <Suspense fallback={<div className="page py-rhythm"><h1 className="text-display">{title}</h1><p role="status">Loading page controls…</p></div>}>
+      <Suspense fallback={<Hero title={title}><p role="status">Loading page controls…</p></Hero>}>
         <ReadyPage Body={Body} />
       </Suspense>
     ),

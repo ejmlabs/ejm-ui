@@ -1,4 +1,5 @@
-@import "@ejm/ui/styles-site.css" source(none);
+@import "@ejm/ui/styles.css";
+/* The three product preview profiles compile in the same pass as the kit, so their utilities and the kit's share one ordered sheet. */
 @import "@ejm/demos/cli.css";
 @import "@ejm/demos/ide-preview.css";
 @import "@ejm/demos/harness.css";

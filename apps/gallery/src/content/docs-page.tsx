@@ -1,4 +1,4 @@
-import { Contents, DocBody, DocHead, DocsLayout, DocsSidebar, Pager, navGroups, pageContents, pageHref, pagerFor } from '@ejm/ui';
+import { Contents, DocBody, DocHead, DocsLayout, DocsSidebar, Pager, SectionBody, navGroups, pageContents, pageHref, pagerFor } from '@ejm/ui';
 import { docs } from './index';
 
 /** One page of the docs: sidebar, reading column and contents, built only from @ejm/ui parts. The gallery frame (header, main, footer) comes from the site's App. */
@@ -12,9 +12,9 @@ export function DocsPageView({ slug }: { slug?: string }) {
     >
       <article>
         <DocHead page={page} />
-        <div className="mt-16">
+        <SectionBody>
           <DocBody page={page} />
-        </div>
+        </SectionBody>
         <Pager prev={prev} next={next} />
       </article>
     </DocsLayout>
