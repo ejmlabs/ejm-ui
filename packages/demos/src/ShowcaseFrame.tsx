@@ -5,10 +5,10 @@ export type ShowcaseFrameProps = Omit<HTMLAttributes<HTMLDivElement>, 'className
   note?: ReactNode;
 };
 
-/** One nearby disclosure for a passive example. Controls sit outside the product surface. */
+/** One nearby disclosure for a passive example. Controls sit outside the product surface. It fills its column up to its maximum width, so a Section body needs no wrapper. */
 export function ShowcaseFrame({ label, note = 'Example session. Runs in your browser without a model connection.', children, ...props }: ShowcaseFrameProps) {
   const noteId = useId();
-  return <div {...props} role="group" aria-label={label} aria-describedby={note ? noteId : undefined} className="mx-auto min-w-0 max-w-6xl">
+  return <div {...props} role="group" aria-label={label} aria-describedby={note ? noteId : undefined} className="mx-auto w-full min-w-0 max-w-6xl">
     {children}
     {note && <p id={noteId} className="mt-4 text-meta text-muted">{note}</p>}
   </div>;

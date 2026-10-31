@@ -64,6 +64,36 @@ describe('ExternalLink', () => {
     render(<ExternalLink href="https://example.com">Example</ExternalLink>);
     expect(screen.getByRole('link')).toHaveClass('link');
   });
+
+  it('keeps the arrow with the last word of a text label, so it never wraps alone', () => {
+    render(<ExternalLink href="https://example.com">Read more on ejmlabs.com</ExternalLink>);
+    const link = screen.getByRole('link', { name: 'Read more on ejmlabs.com, opens another site' });
+    const unit = link.querySelector('.whitespace-nowrap')!;
+    expect(unit.textContent).toBe('ejmlabs.com, opens another site');
+    expect(unit.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+    expect(unit.firstChild).toHaveTextContent('ejmlabs.com');
+    expect(link.textContent).toBe('Read more on ejmlabs.com, opens another site');
+    // The words before it keep their spaces, and a single word is the whole nowrap unit.
+    expect(link.querySelector('span')!.firstChild!.textContent).toBe('Read more on ');
+    render(<ExternalLink href="https://example.com/b">Docs</ExternalLink>);
+    expect(screen.getByRole('link', { name: 'Docs, opens another site' }).querySelector('.whitespace-nowrap')!.textContent).toBe('Docs, opens another site');
+  });
+
+  it('puts a word joiner before the arrow when the label is not plain text', () => {
+    render(<ExternalLink href="https://example.com"><b>Example</b></ExternalLink>);
+    const link = screen.getByRole('link');
+    const label = link.firstElementChild!;
+    const svg = label.querySelector('svg')!;
+    expect(svg.previousSibling!.textContent).toBe('\u2060');
+    expect(link.querySelector('.whitespace-nowrap')).toBeNull();
+  });
+
+  it('lays a nav item out as one flex item, so its words keep their spaces', () => {
+    render(<Header identity={{ name: 'ejmlabs' }} nav={[{ label: 'Read the docs', href: 'https://example.com', external: true }]} />);
+    const link = within(screen.getByRole('banner')).getAllByRole('link', { name: /Read the docs/ })[0]!;
+    expect(link.children).toHaveLength(1);
+    expect(link.firstElementChild!.firstChild!.textContent).toBe('Read the ');
+  });
 });
 
 describe('ThemeToggle', () => {
@@ -176,6 +206,14 @@ describe('Header', () => {
     expect(docs).toHaveClass('min-h-11', 'rounded-control', 'hover:bg-tone');
     expect(container.querySelector('summary')).toHaveClass('min-h-11', 'rounded-control', 'hover:bg-tone');
     expect(container.innerHTML).not.toMatch(/transition-(colors|all)/);
+  });
+
+  it('switches between the nav list and the menu by its own width, not the window', () => {
+    const { container } = render(<Header {...header} />);
+    expect(screen.getByRole('banner')).toHaveClass('@container');
+    expect(container.querySelector('nav > ul')).toHaveClass('hidden', '@3xl:flex');
+    expect(container.querySelector('details')).toHaveClass('@3xl:hidden');
+    expect(container.innerHTML).not.toMatch(/(^|[\s"])(sm|md|lg|xl):(hidden|flex)/);
   });
 
   it('shows the current page with weight 600 and an underline, not color alone', () => {
@@ -342,10 +380,16 @@ describe('DocsLayout', () => {
   });
 });
 
+const appNav = [
+  { label: 'Files', href: '/files', current: true },
+  { label: 'Search', href: '/search' },
+  { label: 'Docs', href: 'https://example.com/docs', external: true },
+];
+
 describe('AppShell', () => {
   it('has a top bar with the toggle last, a labelled side nav and main', async () => {
     const { container } = render(
-      <AppShell brand={<span>ejm-ide</span>} nav={<ul><li><a href="/files">Files</a></li></ul>} actions={<button type="button">Search</button>}>
+      <AppShell brand={<span>ejm-ide</span>} nav={appNav} actions={<button type="button">Search</button>}>
         <h1>Workspace</h1>
       </AppShell>,
     );
@@ -358,8 +402,26 @@ describe('AppShell', () => {
     await noViolations(container);
   });
 
+  it('renders the nav items as controls: compact, the control radius, a bg-tone hover, the current page marked twice', () => {
+    render(<AppShell brand={<span>app</span>} nav={appNav}>x</AppShell>);
+    const nav = screen.getByRole('navigation', { name: 'Navigation' });
+    const files = within(nav).getByRole('link', { name: 'Files' });
+    expect(files).toHaveAttribute('aria-current', 'page');
+    expect(files).toHaveClass('min-h-8', 'compact-target', 'touch-target', 'text-sm', 'rounded-control', 'hover:bg-tone', 'aria-[current=page]:font-semibold', 'aria-[current=page]:underline');
+    expect(within(nav).getByRole('link', { name: 'Search' })).not.toHaveAttribute('aria-current');
+    expect(within(nav).getByRole('link', { name: /Docs/ })).toHaveAttribute('rel', 'external noopener');
+  });
+
+  it('renders internal nav items through the link component, and external ones as plain anchors', () => {
+    const Router: LinkComponent = ({ href, ...p }) => <a data-router href={href} {...p} />;
+    render(<AppShell brand={<span>app</span>} nav={appNav} linkComponent={Router}>x</AppShell>);
+    const nav = screen.getByRole('navigation', { name: 'Navigation' });
+    expect([...nav.querySelectorAll('a[data-router]')].map(a => a.getAttribute('href'))).toEqual(['/files', '/search']);
+    expect(within(nav).getByRole('link', { name: /Docs/ })).not.toHaveAttribute('data-router');
+  });
+
   it('keeps the 56px top bar', () => {
-    render(<AppShell brand={<span>app</span>} nav={<p>nav</p>}>x</AppShell>);
+    render(<AppShell brand={<span>app</span>} nav={appNav}>x</AppShell>);
     expect(screen.getByRole('banner').firstElementChild).toHaveClass('h-14');
   });
 
@@ -371,7 +433,7 @@ describe('AppShell', () => {
       <>
         <Button>Outside</Button>
         <Density />
-        <AppShell brand={<span>app</span>} nav={<p>nav</p>}>
+        <AppShell brand={<span>app</span>} nav={appNav}>
           <Button>Inside</Button>
           <Density />
         </AppShell>
@@ -384,12 +446,12 @@ describe('AppShell', () => {
   });
 
   it('makes the theme toggle in the bar a compact icon button', () => {
-    render(<AppShell brand={<span>app</span>} nav={<p>nav</p>}>x</AppShell>);
+    render(<AppShell brand={<span>app</span>} nav={appNav}>x</AppShell>);
     expect(screen.getByRole('button', { name: 'Switch to dark theme' })).toHaveClass('size-8', 'compact-target');
   });
 
   it('gives the home link the control recipe: the control radius and a bg-tone hover', () => {
-    const { container } = render(<AppShell brand={<span>app</span>} nav={<p>nav</p>}>x</AppShell>);
+    const { container } = render(<AppShell brand={<span>app</span>} nav={appNav}>x</AppShell>);
     expect(screen.getByRole('link', { name: 'Home' })).toHaveClass('rounded-control', 'hover:bg-tone');
     expect(container.innerHTML).not.toMatch(/transition-(colors|all)/);
   });
@@ -414,7 +476,7 @@ describe('Collapse and SkipLink', () => {
 describe('closed props', () => {
   // The types are the test: tsc fails when an expected error disappears. closed-api.test.ts covers className and style for every
   // export; these are the legacy props the guard already rejected in sites.
-  it('has no logo, brand, className or style on the shell', () => {
+  it('has no logo, brand, className, style or free nav markup on the shell', () => {
     const elements = [
       // @ts-expect-error logo was removed: sites supply identity
       <Header key="logo" {...header} logo={<b>Legacy</b>} />,
@@ -432,7 +494,9 @@ describe('closed props', () => {
       <ExternalLink key="external" href="https://example.com" className="x">x</ExternalLink>,
       // @ts-expect-error style was removed
       <ExternalLink key="external-style" href="https://example.com" style={{ color: 'red' }}>x</ExternalLink>,
+      // @ts-expect-error the app nav is a list of items, not markup
+      <AppShell key="app-nav" brand={<b>x</b>} nav={<ul />}>x</AppShell>,
     ];
-    expect(elements).toHaveLength(8);
+    expect(elements).toHaveLength(9);
   });
 });

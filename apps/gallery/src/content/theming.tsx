@@ -22,7 +22,7 @@ export const theming: DocPage = {
         { type: 'code', lang: 'html', code: '<section data-theme="dark" data-band="paper" class="band">\n  A dark preview inside a light page.\n</section>' },
         {
           type: 'p',
-          children: <>No kit component takes a theme prop. The gallery writes these attributes in one file, <code>src/specimen.tsx</code>, to show light beside dark on the components, app and shell pages.</>,
+          children: <>No kit component takes a theme prop. <code>ThemePair</code> in <code>@ejm/ui</code> writes these attributes to show any content light beside dark, which is how the components, app and shell pages do it.</>,
         },
       ],
     },
