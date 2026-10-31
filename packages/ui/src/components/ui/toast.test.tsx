@@ -16,6 +16,12 @@ const ui = (input: ToastInput, duration?: number) => (
 );
 
 describe('Toast', () => {
+  it('names its region, so two providers on one page stay distinct landmarks', () => {
+    render(<><ToastProvider><span /></ToastProvider><ToastProvider label="Notifications ({hotkey}) dark"><span /></ToastProvider></>);
+    expect(screen.getByRole('region', { name: 'Notifications (F8)' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Notifications (F8) dark' })).toBeInTheDocument();
+  });
+
   it('announces in a polite live region without taking focus', async () => {
     const user = userEvent.setup();
     render(ui({ title: 'Saved', description: 'Your changes are live.' }));

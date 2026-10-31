@@ -30,7 +30,8 @@ export function useToast(): ToastApi {
  * Toasts as a polite live region: each one is announced when it appears without taking focus, closes by itself,
  * pauses while hovered or focused, and F8 moves focus to the stack. Toasts are overlays, so they carry the float shadow.
  */
-export function ToastProvider({ children, duration = 5000 }: { children: ReactNode; duration?: number }) {
+/** `label` names the stack's region (Radix's default is "Notifications (F8)"). Give each provider on one page its own. */
+export function ToastProvider({ children, duration = 5000, label }: { children: ReactNode; duration?: number; label?: string }) {
   const [items, setItems] = useState<(ToastInput & { id: string })[]>([]);
   const n = useRef(0);
   const dismiss = useCallback((id: string) => setItems(list => list.filter(t => t.id !== id)), []);
@@ -67,7 +68,7 @@ export function ToastProvider({ children, duration = 5000 }: { children: ReactNo
             </ToastPrimitive.Close>
           </ToastPrimitive.Root>
         ))}
-        <ToastPrimitive.Viewport className="fixed inset-x-0 bottom-0 z-50 m-0 flex list-none flex-col gap-3 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] outline-none sm:inset-x-auto sm:end-0 sm:w-[26rem]" />
+        <ToastPrimitive.Viewport label={label} className="fixed inset-x-0 bottom-0 z-50 m-0 flex list-none flex-col gap-3 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] outline-none sm:inset-x-auto sm:end-0 sm:w-[26rem]" />
       </ToastPrimitive.Provider>
     </ToastContext.Provider>
   );
