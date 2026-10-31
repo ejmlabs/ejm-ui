@@ -7,5 +7,9 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['packages/**/*.test.{ts,tsx,mjs}', 'apps/**/*.test.{ts,tsx}'],
     globals: false,
+    ...(process.env.EJM_TEST_REPORT ? {
+      reporters: ['default', 'json'],
+      outputFile: { json: process.env.EJM_TEST_REPORT },
+    } : {}),
   },
 });
