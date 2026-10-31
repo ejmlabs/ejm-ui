@@ -9,6 +9,7 @@ import { expectAccessible } from './test-setup';
 type Input = { type: string; squareFrom?: string; squareTo?: string };
 type Promotion = { type: string; piece?: string };
 interface BoardMock {
+  view: { svg: SVGSVGElement };
   position: string;
   color: 'w' | 'b';
   input?: (event: Input) => boolean;
@@ -28,15 +29,18 @@ interface BoardMock {
 }
 const adapter = vi.hoisted(() => ({ instances: [] as BoardMock[] }));
 
+type Extension = { class: new (board: BoardMock, props: Record<string, unknown>) => unknown; props: Record<string, unknown> };
+
 vi.mock('cm-chessboard/src/Chessboard.js', () => ({
   INPUT_EVENT_TYPE: { moveInputStarted: 'started', validateMoveInput: 'validate', moveInputCanceled: 'canceled', moveInputFinished: 'finished' },
-  Chessboard: vi.fn(function (element: HTMLElement, props: { position: string; orientation: 'w' | 'b' }) {
-    // The package draws an svg with role img, and the Accessibility extension turns it into a focusable application.
+  Chessboard: vi.fn(function (element: HTMLElement, props: { position: string; orientation: 'w' | 'b'; extensions: Extension[] }) {
+    // Like ChessboardView in cm-chessboard 8.15.4: the constructor appends one svg with role img, synchronously, before the extensions run.
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('class', 'cm-chessboard');
     svg.setAttribute('role', 'img');
     element.append(svg);
     const board: BoardMock = {
+      view: { svg },
       position: props.position.split(' ')[0]!, color: props.orientation,
       getPosition: vi.fn(() => board.position), getOrientation: vi.fn(() => board.color),
       getPiece: vi.fn((square: string) => ({ e2: 'wp', a7: 'wp', e1: 'wk', e7: 'bp' } as Record<string, string>)[square]),
@@ -48,12 +52,23 @@ vi.mock('cm-chessboard/src/Chessboard.js', () => ({
       addMarker: vi.fn(), removeMarkers: vi.fn(), destroy: vi.fn(() => svg.remove()),
       showPromotionDialog: vi.fn((_square: string, _color: string, callback: (result: Promotion) => void) => { board.promotion = callback; }),
     };
+    for (const extension of props.extensions) new extension.class(board, extension.props);
     adapter.instances.push(board);
     return board;
   }),
 }));
 vi.mock('cm-chessboard/src/extensions/promotion-dialog/PromotionDialog.js', () => ({ PromotionDialog: class {} }));
-vi.mock('cm-chessboard/src/extensions/accessibility/Accessibility.js', () => ({ Accessibility: class {} }));
+vi.mock('cm-chessboard/src/extensions/accessibility/Accessibility.js', () => ({
+  // Like KeyboardMoveInput in cm-chessboard 8.15.4: with keyboardMoveInput the svg becomes a focusable application named "Chessboard".
+  Accessibility: class {
+    constructor(board: BoardMock, props: { keyboardMoveInput: boolean }) {
+      if (!props.keyboardMoveInput) return;
+      board.view.svg.setAttribute('tabindex', '0');
+      board.view.svg.setAttribute('role', 'application');
+      board.view.svg.setAttribute('aria-label', 'Chessboard');
+    }
+  },
+}));
 vi.mock('cm-chessboard/src/extensions/markers/Markers.js', () => ({
   Markers: class {}, MARKER_TYPE: { square: 'last', circlePrimary: 'premove', dot: 'dot', circle: 'capture' },
 }));
@@ -78,18 +93,41 @@ it('stays out of the @ejm/ui barrel so the renderer and styles load only through
   expect(Chessboard).toBeTypeOf('function');
 });
 
-it('names the board svg, never its wrapper, for the player and for a recorded game', async () => {
+it('names the board svg by mode, never its wrapper, for the player and for a recorded game', async () => {
   const { container, rerender } = render(<Surface {...props()} />);
-  expect(container.firstElementChild).not.toHaveAttribute('aria-label');
-  expect(screen.getByRole('img', { name: 'Chessboard. You play White. Use arrow keys and Enter to move.' })).toBeInTheDocument();
+  const wrapper = container.firstElementChild;
+  const svg = container.querySelector('svg.cm-chessboard');
+  // With move input the package makes the svg a focusable application; read only it stays an image.
+  expect(screen.getByRole('application', { name: 'Chessboard. You play White. Use arrow keys and Enter to move.' })).toBe(svg);
   await expectAccessible(container);
   rerender(<Surface {...props({ color: 'b' })} />);
-  expect(screen.getByRole('img', { name: /You play Black/ })).toBeInTheDocument();
+  expect(screen.getByRole('application', { name: /You play Black/ })).toBe(svg);
   rerender(<Surface {...props({ readOnly: true, enabled: false })} />);
-  expect(screen.getByRole('img', { name: /^Read-only chessboard\. White is at the bottom/ })).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: /^Read-only chessboard\. White is at the bottom/ })).toBe(container.querySelector('svg.cm-chessboard'));
+  expect(screen.queryByRole('application')).toBeNull();
   await expectAccessible(container);
   rerender(<Surface {...props({ readOnly: true, enabled: false, 'aria-label': 'Move 12 of the game' })} />);
   expect(screen.getByRole('img', { name: 'Move 12 of the game' })).toBeInTheDocument();
+  expect(wrapper).not.toHaveAttribute('aria-label');
+});
+
+it('keeps a host name on the new svg when readOnly rebuilds the board', () => {
+  const name = 'Game 7, White to move';
+  const { rerender } = render(<Surface {...props({ 'aria-label': name })} />);
+  expect(screen.getByRole('application', { name })).toBeInTheDocument();
+  rerender(<Surface {...props({ readOnly: true, enabled: false, 'aria-label': name })} />);
+  expect(adapter.instances).toHaveLength(2);
+  expect(screen.getByRole('img', { name })).toBeInTheDocument();
+  rerender(<Surface {...props({ 'aria-label': name })} />);
+  expect(adapter.instances).toHaveLength(3);
+  expect(screen.getByRole('application', { name })).toBeInTheDocument();
+});
+
+it('shows a named loading square, then the named board once the lazy surface has loaded', async () => {
+  render(<Chessboard {...props()} />);
+  expect(screen.getByRole('status', { name: 'Loading chessboard' })).toBeInTheDocument();
+  expect(await screen.findByRole('application', { name: /^Chessboard\. You play White/ })).toBeInTheDocument();
+  expect(screen.queryByRole('status')).toBeNull();
 });
 
 it('emits moves without changing the accepted position and bridges promotion choices', () => {

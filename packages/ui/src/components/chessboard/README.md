@@ -59,10 +59,11 @@ declarations describe the public methods used here because this version ships
 without TypeScript declarations. Check these contracts and the board lifecycle
 tests when upgrading; replace them with upstream types when available.
 
-Known limit: an axe-core audit of the real board reports `empty-table-header` and
-`heading-order`. Both come from the package's visually hidden board-as-table (an
-empty corner header cell and an `h3`). It stays on because it is the screen-reader
-view of the position.
+Known limit: axe-core reports `empty-table-header` on the real board, from the
+empty corner header cell of the package's visually hidden board-as-table. On a
+page whose headings do not lead to its hidden `h3`, it also reports
+`heading-order`. The table stays on because it is the screen-reader view of the
+position.
 
 The unchanged `assets/pieces/standard.svg` is by Cburnett and Rfc1394, modified by
 shaack for cm-chessboard. It uses CC BY-SA 3.0, separately from the code's MIT

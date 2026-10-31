@@ -60,6 +60,8 @@ export default function ChessboardSurface(props: ChessboardProps) {
   }, [props.readOnly]);
 
   // The package's svg is the focusable board, or an image when read only. Name that element: a label on its wrapper is prohibited.
+  // The package names it only "Chessboard" with input, and not at all without. It draws the svg synchronously and never replaces it,
+  // but a readOnly change rebuilds the board, so the label is set again even when its text did not change.
   const side = props.color === 'w' ? 'White' : 'Black';
   const label = props['aria-label'] ?? (props.readOnly
     ? `Read-only chessboard. ${side} is at the bottom. Use the replay controls to change position.`
