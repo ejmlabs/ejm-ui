@@ -1,14 +1,23 @@
 import {
-  Badge, Band, Button, Checkbox, Dialog, Input, KeyHints, Menu, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger, Prompt,
+  Badge, Band, Button, Checkbox, Dialog, GameClock, Input, KeyHints, Menu, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger, Prompt,
   SectionHead, Select, Separator, StateBlock, Switch, Table, Tabs, Textarea, ToastProvider, Tooltip, useToast,
 } from '@ejm/ui';
-import { createContext, useContext, useId, useState, type ReactNode } from 'react';
+import { createContext, lazy, Suspense, useContext, useId, useState, type ReactNode } from 'react';
 
 // Every component and state in the primitives workstream, drawn twice: once under data-theme="light" and once under "dark".
 // Only kit utilities. Overlays (tooltip, menu) portal into the theme wrapper so they take its theme; the dialog is native and
 // stays inside it.
 
 const Scope = createContext<HTMLElement | null>(null);
+
+// The barrel does not export Chessboard, so cm-chessboard loads only on this route, after mount. The server renders the leaf directly, which
+// draws its loading square, so hydration finds the same HTML.
+const Chessboard = import.meta.env.SSR
+  ? (await import('@ejm/ui/components/Chessboard')).Chessboard
+  : lazy(() => import('@ejm/ui/components/Chessboard').then(module => ({ default: module.Chessboard })));
+const italianGame = 'r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3';
+const italianGameLastMove = { from: 'f1', to: 'c4' };
+const startPosition = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 function Part({ name, note, children }: { name: string; note?: string; children: ReactNode }) {
   return (
@@ -57,8 +66,9 @@ function Showcase({ theme }: { theme: 'light' | 'dark' }) {
   const container = useContext(Scope);
   const [dialog, setDialog] = useState(false);
   const [prompt, setPrompt] = useState('ejm init');
+  const [proposed, setProposed] = useState('');
   return (
-    <ToastProvider>
+    <ToastProvider label={`Notifications ({hotkey}) ${theme}`}>
       <div className="page py-rhythm-sm">
         <p className="pb-4 text-meta text-muted">{theme} theme</p>
         <h2 className="text-title">{theme === 'light' ? 'Light theme' : 'Dark theme'}</h2>
@@ -190,6 +200,33 @@ function Showcase({ theme }: { theme: 'light' | 'dark' }) {
           <Prompt value="ejm build" state="busy" label={`Busy command ${theme}`} />
           <Prompt value="ejm nope" state="error" message="Unknown command: nope. Try ejm help." label={`Failed command ${theme}`} />
           <KeyHints hints={[{ key: 'Enter', label: 'run' }, { key: 'Tab', label: 'complete' }, { key: 'Esc', label: 'cancel' }, { key: '?', label: 'help' }, { key: 'Ctrl+C', label: 'quit' }, { key: 'Ctrl+L', label: 'clear' }]} label={`Shortcuts ${theme}`} />
+        </Part>
+
+        <Part name="GameClock" note="The host supplies the time and does the ticking. Low time adds a warning glyph.">
+          <Row label="Running, idle, low">
+            <GameClock value="5:03" label="White has 5 minutes and 3 seconds" running />
+            <GameClock value="4:41" label="Black has 4 minutes and 41 seconds" />
+            <GameClock value="0:09" label="White has 9 seconds, low on time" low running />
+          </Row>
+        </Part>
+
+        <Part name="Chessboard" note="A lazy leaf with no chess rules. A move is only a proposal until the host passes a new position.">
+          <Row label="Read only, last move marked">
+            <div className="w-full max-w-sm">
+              <Suspense fallback={null}>
+                <Chessboard fen={italianGame} color="w" enabled={false} readOnly lastMove={italianGameLastMove} onMove={() => {}}
+                  aria-label={`Read-only chessboard, ${theme} theme. The Italian Game after White's bishop moves to c4. White is at the bottom.`} />
+              </Suspense>
+            </div>
+          </Row>
+          <Row label="Playable. Tab to the board, then use arrows and Enter.">
+            <div className="w-full max-w-sm">
+              <Suspense fallback={null}>
+                <Chessboard fen={startPosition} color="w" enabled onMove={({ from, to }) => setProposed(`${from} to ${to}`)} />
+              </Suspense>
+            </div>
+            <p role="status" className="text-meta text-muted">{proposed ? `Proposed: ${proposed}` : 'No move proposed. The position stays the same.'}</p>
+          </Row>
         </Part>
       </div>
     </ToastProvider>

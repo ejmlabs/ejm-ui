@@ -15,6 +15,10 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 - Show the warn glyph from the `@ejm/core` contract (`glyphs.status.warn`, hidden from assistive technology) beside the time of a `low` `GameClock`, so low time does not rely on the fill color alone. The display is a little wider while low.
 
+- Add an optional `label` to `ToastProvider` that names its stack's region. Radix's default name is "Notifications (F8)", so two providers on one page were two landmarks with one name (axe `landmark-unique`); the gallery's light and dark sections now name theirs apart.
+
+- Show `Chessboard` and `GameClock` in the gallery: their API under Game parts at `/docs/components`, and a read-only board, a playable board that shows the proposed move without applying it, and running, idle and low clocks in both themes at `/components`. The board still loads only on that route, after mount. The two code samples on `/docs/components` that were both named "TSX code" now have their own labels.
+
 - Add the public `@ejm/ui/components/Chessboard` leaf. It renders a labelled loading square on the server and loads the maintained cm-chessboard renderer after mount. The host supplies FEN, orientation, accepted moves and optional legal destinations; the kit holds no chess rules, and a move is a proposal until the host returns a new FEN. It stays out of the `@ejm/ui` barrel, so its renderer and CSS reach only pages that import it. `@ejm/ui` gains the dependency `cm-chessboard` 8.15.4 (MIT); its piece sprite is CC BY-SA 3.0, recorded in `THIRD_PARTY_NOTICES.md`.
 
 - Add `useSearch` to `@ejm/ssg`. It returns the query string, empty while prerendering and hydrating, and follows back, forward and router pushes but not `replaceState`, so a page can rewrite its own query without remounting.

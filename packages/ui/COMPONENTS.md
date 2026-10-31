@@ -31,7 +31,7 @@ Source: `src/components/ui/`, copied-in shadcn/ui style on React 19 with `cn` an
 | `Tabs` | `components/ui/tabs.tsx` | core (`tabsReducer`) on native buttons | The same arrows, Home, End, wrap and roving tabindex as the Ink and Rust tabs. No Radix needed, so no extra weight. |
 | `Dialog` | `components/ui/dialog.tsx` | native `<dialog>` | `showModal()` traps focus, makes the page inert, handles Escape and restores focus. The component adds the label, the backdrop click and an explicit focus return. Radix Dialog was rejected as the heavier path. |
 | `Menu`, `MenuTrigger`, `MenuContent`, `MenuItem`, `MenuLabel`, `MenuSeparator`, `MenuGroup` | `components/ui/menu.tsx` | Radix DropdownMenu | Roving focus, typeahead, Escape, focus return and collision-aware placement. A native popover has no menu keyboard model. |
-| `Toast`, `ToastProvider` (with `useToast`) | `components/ui/toast.tsx` | Radix Toast | A polite live region per toast (`type="background"`), auto-dismiss that pauses on hover and focus, F8 to reach the stack, swipe to dismiss. |
+| `Toast`, `ToastProvider` (with `useToast`) | `components/ui/toast.tsx` | Radix Toast | A polite live region per toast (`type="background"`), auto-dismiss that pauses on hover and focus, F8 to reach the stack, swipe to dismiss. `label` names the stack's region (default "Notifications (F8)"); give each provider on one page its own. |
 
 ## Contract primitives (primitives workstream)
 
