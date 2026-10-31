@@ -163,3 +163,17 @@ describe('Section accessibility', () => {
     await expectAccessible(container);
   });
 });
+
+describe('Section width', () => {
+  it('lets its body and a subsection shrink below a wide child, so a table cannot widen a phone page', () => {
+    render(
+      <Section title="Outer">
+        <Section title="Inner"><p>Wide</p></Section>
+      </Section>,
+    );
+    const inner = screen.getByRole('region', { name: 'Inner' });
+    expect(inner).toHaveClass('min-w-0');
+    expect(inner.parentElement).toHaveClass('grid-cols-[minmax(0,1fr)]');
+    expect(screen.getByText('Wide').parentElement).toHaveClass('grid-cols-[minmax(0,1fr)]');
+  });
+});

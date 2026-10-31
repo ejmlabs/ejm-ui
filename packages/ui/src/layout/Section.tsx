@@ -20,8 +20,9 @@ export interface SectionProps {
 /** True below a top-level Section, so a Section inside another is a subsection without a band. */
 const InsideSection = createContext(false);
 
-// Bare paragraphs and lists keep the reading measure. A part that has its own class (a Rows list, a Note) sizes itself.
-const bodyMeasure = '[&>p:not([class])]:max-w-measure [&>ul:not([class])]:max-w-measure [&>ol:not([class])]:max-w-measure';
+// One column that may shrink below its content (a wide table scrolls inside itself rather than widening the page). Bare paragraphs
+// and lists keep the reading measure; a part that has its own class (a Rows list, a Note) sizes itself.
+const bodyMeasure = 'grid-cols-[minmax(0,1fr)] [&>p:not([class])]:max-w-measure [&>ul:not([class])]:max-w-measure [&>ol:not([class])]:max-w-measure';
 
 /**
  * A page section: the way to build the parts of a page. The heading level, the ground, the id and the spacing are derived.
@@ -43,7 +44,7 @@ export function Section({ title, kicker, intro, actions, emphasis = false, id, c
 
   if (nested) {
     return (
-      <section aria-labelledby={headingId}>
+      <section aria-labelledby={headingId} className="min-w-0">
         <header className="grid max-w-measure gap-3">
           {kicker && <p className="text-meta text-muted">{kicker}</p>}
           <Heading id={headingId} className="text-heading">{title}</Heading>
