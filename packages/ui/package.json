@@ -55,7 +55,7 @@
     }
   },
   "scripts": {
-    "check": "node scripts/check-art.mjs && node scripts/check-containerless.mjs && node scripts/check-components.mjs && node scripts/check-treeshake.mjs && node scripts/check-sources.mjs && node scripts/build-merge-config.mjs --check && node scripts/build-catalog.mjs --check"
+    "check": "node scripts/check-art.mjs && node scripts/check-containerless.mjs && node scripts/check-components.mjs && node scripts/check-treeshake.mjs && node scripts/check-sources.mjs && node scripts/check-classes.mjs && node scripts/build-merge-config.mjs --check && node scripts/build-catalog.mjs --check"
   },
   "sideEffects": [
     "*.css"
