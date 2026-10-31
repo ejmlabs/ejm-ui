@@ -1,10 +1,10 @@
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import * as barrel from '../index';
 import { Chessboard, type ChessboardProps } from './Chessboard';
 import Surface from './chessboard/ChessboardSurface';
-import './test-setup';
+import { expectAccessible } from './test-setup';
 
 type Input = { type: string; squareFrom?: string; squareTo?: string };
 type Promotion = { type: string; piece?: string };
@@ -30,7 +30,12 @@ const adapter = vi.hoisted(() => ({ instances: [] as BoardMock[] }));
 
 vi.mock('cm-chessboard/src/Chessboard.js', () => ({
   INPUT_EVENT_TYPE: { moveInputStarted: 'started', validateMoveInput: 'validate', moveInputCanceled: 'canceled', moveInputFinished: 'finished' },
-  Chessboard: vi.fn(function (_element: HTMLElement, props: { position: string; orientation: 'w' | 'b' }) {
+  Chessboard: vi.fn(function (element: HTMLElement, props: { position: string; orientation: 'w' | 'b' }) {
+    // The package draws an svg with role img, and the Accessibility extension turns it into a focusable application.
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'cm-chessboard');
+    svg.setAttribute('role', 'img');
+    element.append(svg);
     const board: BoardMock = {
       position: props.position.split(' ')[0]!, color: props.orientation,
       getPosition: vi.fn(() => board.position), getOrientation: vi.fn(() => board.color),
@@ -40,7 +45,7 @@ vi.mock('cm-chessboard/src/Chessboard.js', () => ({
       enableMoveInput: vi.fn((callback: (event: Input) => boolean) => { board.input = callback; }),
       disableMoveInput: vi.fn(),
       cancelMoveInput: vi.fn(() => { board.input?.({ type: 'canceled' }); }),
-      addMarker: vi.fn(), removeMarkers: vi.fn(), destroy: vi.fn(),
+      addMarker: vi.fn(), removeMarkers: vi.fn(), destroy: vi.fn(() => svg.remove()),
       showPromotionDialog: vi.fn((_square: string, _color: string, callback: (result: Promotion) => void) => { board.promotion = callback; }),
     };
     adapter.instances.push(board);
@@ -71,6 +76,20 @@ it('renders on the server without constructing a board surface', () => {
 it('stays out of the @ejm/ui barrel so the renderer and styles load only through the subpath', () => {
   expect(barrel).not.toHaveProperty('Chessboard');
   expect(Chessboard).toBeTypeOf('function');
+});
+
+it('names the board svg, never its wrapper, for the player and for a recorded game', async () => {
+  const { container, rerender } = render(<Surface {...props()} />);
+  expect(container.firstElementChild).not.toHaveAttribute('aria-label');
+  expect(screen.getByRole('img', { name: 'Chessboard. You play White. Use arrow keys and Enter to move.' })).toBeInTheDocument();
+  await expectAccessible(container);
+  rerender(<Surface {...props({ color: 'b' })} />);
+  expect(screen.getByRole('img', { name: /You play Black/ })).toBeInTheDocument();
+  rerender(<Surface {...props({ readOnly: true, enabled: false })} />);
+  expect(screen.getByRole('img', { name: /^Read-only chessboard\. White is at the bottom/ })).toBeInTheDocument();
+  await expectAccessible(container);
+  rerender(<Surface {...props({ readOnly: true, enabled: false, 'aria-label': 'Move 12 of the game' })} />);
+  expect(screen.getByRole('img', { name: 'Move 12 of the game' })).toBeInTheDocument();
 });
 
 it('emits moves without changing the accepted position and bridges promotion choices', () => {

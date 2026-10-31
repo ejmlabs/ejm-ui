@@ -59,6 +59,15 @@ export default function ChessboardSurface(props: ChessboardProps) {
     };
   }, [props.readOnly]);
 
+  // The package's svg is the focusable board, or an image when read only. Name that element: a label on its wrapper is prohibited.
+  const side = props.color === 'w' ? 'White' : 'Black';
+  const label = props['aria-label'] ?? (props.readOnly
+    ? `Read-only chessboard. ${side} is at the bottom. Use the replay controls to change position.`
+    : `Chessboard. You play ${side}. Use arrow keys and Enter to move.`);
+  useEffect(() => {
+    element.current?.querySelector('svg.cm-chessboard')?.setAttribute('aria-label', label);
+  }, [label, props.readOnly]);
+
   useEffect(() => {
     const instance = board.current;
     if (!instance) return;
@@ -139,8 +148,5 @@ export default function ChessboardSurface(props: ChessboardProps) {
       if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') hints.current?.clear();
       if (event.key === 'Escape') board.current?.cancelMoveInput();
     }}
-    onBlur={() => hints.current?.clear()}
-    aria-label={props['aria-label'] ?? (props.readOnly
-    ? `Read-only chessboard. ${props.color === 'w' ? 'White' : 'Black'} is at the bottom. Use the replay controls to change position.`
-    : `Chessboard. You play ${props.color === 'w' ? 'White' : 'Black'}. Use arrow keys and Enter to move.`)} />;
+    onBlur={() => hints.current?.clear()} />;
 }

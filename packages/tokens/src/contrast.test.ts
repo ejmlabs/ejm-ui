@@ -43,16 +43,24 @@ describe('contrast gates', () => {
     expect(text).toMatch(/paper\/light: on-primary on primary/);
   });
 
-  it('fail when a dark theme board square hides black pieces, a mark vanishes or the squares merge', () => {
+  it('fail when a board square hides black pieces, a label or mark vanishes or the squares merge', () => {
     expect(checkBoard(theme)).toEqual([]);
     const text = checkBoard(bad(x => {
       x.themes.dark.roles['board-dark'] = '2A322C';
       x.themes.light.roles['board-mark'] = '8A9A7B';
       x.themes.light.roles['board-light'] = '9AA98B';
+      x.themes.dark.roles['board-on-light'] = '57665B';
     })).join('\n');
     expect(text).toMatch(/dark: black pieces on the dark square are \d\.\d\d:1, need 3:1/);
     expect(text).toMatch(/light: board-mark on the light square/);
     expect(text).toMatch(/light: the board squares are \d\.\d\d:1 apart/);
+    expect(text).toMatch(/dark: board-on-light on the light square is \d\.\d\d:1, needs 4\.5:1/);
+  });
+
+  it('fail when the danger Button, drawn at 85 percent on its hover, leaves its text under 4.5:1', () => {
+    expect(checkBands(theme, brand).problems).toEqual([]);
+    const t = bad(x => { x.web.bands.paper.light.danger = 'light.error'; });
+    expect(checkBands(t, brand).problems.join('\n')).toMatch(/paper\/light: on-danger on danger hover is 4\.41:1, needs 4\.5:1/);
   });
 
   it('fail on a ui theme text color under 4.5:1', () => {

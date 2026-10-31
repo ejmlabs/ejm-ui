@@ -2,7 +2,8 @@
 .cm-chessboard.ejm-board .board .square.white { fill: var(--ejm-ui-board-light); }
 .cm-chessboard.ejm-board .board .square.black { fill: var(--ejm-ui-board-dark); }
 .cm-chessboard.ejm-board .coordinates { font-family: var(--font-mono); font-size: 7px; pointer-events: none; user-select: none; }
-.cm-chessboard.ejm-board .coordinates .coordinate { fill: var(--ejm-ui-board-mark); }
+.cm-chessboard.ejm-board .coordinates .coordinate.white { fill: var(--ejm-ui-board-on-light); }
+.cm-chessboard.ejm-board .coordinates .coordinate.black { fill: var(--ejm-ui-board-on-dark); }
 .cm-chessboard.ejm-board .board .border { stroke-width: 0; }
 .cm-chessboard.ejm-board .markers .marker.marker-square { fill: var(--ejm-ui-board-mark); opacity: .18; }
 .cm-chessboard.ejm-board .markers .marker.marker-frame { stroke: var(--ejm-ui-board-mark); fill: none; stroke-width: 2px; opacity: .65; }
