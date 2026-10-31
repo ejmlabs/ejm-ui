@@ -18,7 +18,7 @@ export interface CodeTabContent {
  * Without scripts, and on the server, every panel is shown stacked under its own label. After hydration the labels
  * give way to a tab list and only the selected panel shows.
  */
-export function CodeTabsFrame({ label = 'Language', tabs }: { label?: string; tabs: readonly CodeTabContent[] }) {
+export function CodeTabsFrame({ label = 'Language', tabs }: { label?: string | undefined; tabs: readonly CodeTabContent[] }) {
   const hydrated = useHydrated();
   const compact = useDensity() === 'compact';
   const uid = useId();

@@ -27,9 +27,9 @@ export function DocsSidebar({
   groups: readonly DocsNavGroup[];
   /** The href of the page being read. */
   current: string;
-  label?: string;
+  label?: string | undefined;
   /** Show the filter. Defaults to on when there are more than 8 entries. */
-  filter?: boolean;
+  filter?: boolean | undefined;
 }) {
   const Link = useLinkComponent();
   const uid = useId();

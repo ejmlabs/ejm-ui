@@ -37,12 +37,12 @@ export interface ChartProps {
   format?: (n: number) => string;
   /** Heading level. Keep levels in order on the page. */
   as?: 'h2' | 'h3' | 'h4';
-  state?: PartState;
+  state?: PartState | undefined;
   /** Replaces the sentence for empty, loading and error. */
-  message?: string;
+  message?: string | undefined;
   /** Empty and error only: the one action under the sentence. */
-  action?: { key?: string; label: string };
-  onAction?: () => void;
+  action?: { key?: string; label: string } | undefined;
+  onAction?: (() => void) | undefined;
 }
 
 export type ChartKind = 'line' | 'area' | 'bar';

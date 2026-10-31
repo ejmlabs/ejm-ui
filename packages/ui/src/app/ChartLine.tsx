@@ -64,7 +64,7 @@ function LinePlot({ width: w, height: h, series, categories, filled }: DrawArgs 
             Number.isFinite(v) && i < n && (i % markEvery === 0 || i === n - 1) ? <Marker key={`m${si}-${i}`} shape={shapes[si % maxSeries]!} x={xs[i]!} y={y(v)} index={si} /> : null,
           ),
         )}
-        {series.map((s, si) => (
+        {series.map((_, si) => (
           <text key={`t${si}`} x={w - frame.right + 4} y={labelYs[si]} dominantBaseline="central" className="text-meta fill-fg">
             {clip(names[si]!, chars)}
           </text>

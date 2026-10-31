@@ -3,7 +3,7 @@ import { useHeadingTag } from '../lib/heading';
 
 export interface SectionHeadProps {
   /** Mono kicker, for example "01 / Projects". */
-  kicker?: string;
+  kicker?: string | undefined;
   title: ReactNode;
   children?: ReactNode;
   /** The content's role selects the complete shared recipe. */

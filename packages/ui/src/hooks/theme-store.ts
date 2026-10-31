@@ -77,7 +77,7 @@ export function createThemeStore(env: ThemeEnv): ThemeStore {
   const listeners = new Set<() => void>();
   const readChoice = (): ThemeChoice => parseThemeChoice(shared ? /(?:^|;\s*)ejm-theme=(light|dark)(?:;|$)/.exec(env.getCookie())?.[1] : env.getStored());
   const readResolved = (choice: ThemeChoice): ResolvedTheme => {
-    const set = env.rootData.theme;
+    const set = env.rootData["theme"];
     return set === 'light' || set === 'dark' ? set : resolveTheme(choice, env.systemDark.matches);
   };
 
@@ -91,8 +91,8 @@ export function createThemeStore(env: ThemeEnv): ThemeStore {
   };
   const apply = (choice: ThemeChoice) => {
     const resolved = resolveTheme(choice, env.systemDark.matches);
-    env.rootData.theme = resolved;
-    env.rootData.themeChoice = choice;
+    env.rootData["theme"] = resolved;
+    env.rootData["themeChoice"] = choice;
     state = { choice, resolved };
     listeners.forEach(l => l());
   };

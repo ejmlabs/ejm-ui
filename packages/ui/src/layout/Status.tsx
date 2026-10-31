@@ -11,7 +11,7 @@ const tone: Record<StatusLevel, string> = {
 export interface StatusProps {
   status: StatusLevel;
   /** The word next to the glyph. Defaults to the contract word (ok, warn, error, info, pending). */
-  label?: string;
+  label?: string | undefined;
 }
 
 /** A status as a glyph and a word together, so it reads without color. */

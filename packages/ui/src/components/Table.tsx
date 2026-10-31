@@ -24,14 +24,14 @@ export interface TableProps {
   rowHeader?: string;
   /** Stable row identity, from a field or callback. Without it rows keep their positional keys. */
   rowKey?: string | ((row: TableRow, index: number) => Key);
-  state?: TableState;
+  state?: TableState | undefined;
   /** Overrides the sentence for empty, loading and error. */
-  message?: string;
+  message?: string | undefined;
   /** Names the scrolling region. */
   label?: string;
   /** Empty and error only: the one action under the sentence. */
-  action?: { key?: string; label: string };
-  onAction?: () => void;
+  action?: { key?: string; label: string } | undefined;
+  onAction?: (() => void) | undefined;
   /** Overrides the density of the surface. Compact has `py-2` rows and 14px text. */
   density?: Density;
   /** Cut long text and number cells with an ellipsis (default). Rich cells stay intact. Pass false to let text wrap. */

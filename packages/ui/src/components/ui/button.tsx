@@ -28,7 +28,7 @@ export function Button({ variant, size, density, asChild = false, arrow = false,
   const Comp = asChild ? Slot : 'button';
   const surface = useDensity(density);
   return (
-    <Comp {...props} className={buttonVariants({ variant, size, density: surface })} type={asChild ? undefined : (type ?? 'button')}>
+    <Comp {...props} className={buttonVariants({ ...(variant === undefined ? {} : { variant }), ...(size === undefined ? {} : { size }), density: surface })} type={asChild ? undefined : (type ?? 'button')}>
       <Slottable>{children}</Slottable>
       {arrow && <ArrowRight aria-hidden className="size-4 shrink-0 transition-transform duration-fast ease-standard motion-safe:group-hover:translate-x-1 motion-safe:group-focus-visible:translate-x-1" />}
     </Comp>

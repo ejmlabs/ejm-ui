@@ -3,7 +3,7 @@ import { createMachine, type Machine } from "./machine";
 export type CopyState = "idle" | "copied" | "failed";
 export type CopyAction = "copied" | "failed" | "reset";
 
-export const copyReducer = (s: CopyState, a: CopyAction): CopyState => (a === "reset" ? "idle" : a);
+export const copyReducer = (_s: CopyState, a: CopyAction): CopyState => (a === "reset" ? "idle" : a);
 
 /** The visible label. The state is always named in words, so it reads without color. */
 export const copyLabel = (s: CopyState): string => ({ idle: "Copy", copied: "Copied", failed: "Copy failed" })[s];

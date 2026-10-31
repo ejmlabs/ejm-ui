@@ -37,9 +37,9 @@ export function ParamTable({
   caption: string;
   rows: readonly Param[];
   /** Column headings when the table is not about props: for example { name: 'Gate', type: 'Command', description: 'Fails on' }. */
-  labels?: Partial<Record<'name' | 'type' | 'default' | 'description', string>>;
+  labels?: Partial<Record<'name' | 'type' | 'default' | 'description', string>> | undefined;
   /** Extra columns between Default and the description. Each row gives its content in `cells`. */
-  columns?: readonly ParamColumn[];
+  columns?: readonly ParamColumn[] | undefined;
 }) {
   const cell = useDensity() === 'compact' ? 'py-2 pe-6 align-baseline last:pe-0' : 'py-4 pe-6 align-baseline last:pe-0';
   const head = `${cell} text-start font-medium`;

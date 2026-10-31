@@ -9,8 +9,8 @@ export interface StateBlockProps {
   /** ONE plain sentence. */
   message: string;
   /** At most one action. `key` is a single key that triggers it from anywhere that is not a text field. */
-  action?: { key?: string; label: string };
-  onAction?: () => void;
+  action?: { key?: string; label: string } | undefined;
+  onAction?: (() => void) | undefined;
   /** Loading only: draw skeleton lines under the sentence. Pass false when the caller draws a skeleton that matches its own layout. */
   skeleton?: boolean;
   /** Overrides the density of the surface. Compact (panes of an application) has less space around the sentence, 14px text and a compact action. */
@@ -23,7 +23,7 @@ const barWidths = { full: 'w-full', '4/5': 'w-4/5', '3/5': 'w-3/5', '2/3': 'w-2/
 
 export interface SkeletonBarProps {
   /** A share of the line it sits in. Default `full`. */
-  width?: keyof typeof barWidths;
+  width?: keyof typeof barWidths | undefined;
   /** Push the bar to the end of its cell, for a right aligned column. */
   end?: boolean;
 }

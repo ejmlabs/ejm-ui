@@ -67,20 +67,20 @@ export function applyHead(h: ResolvedHead) {
   const nextStyles = new Set<Element>();
   for (const t of h.tags) {
     // Reuse a sheet already painted by this document, including rapid back navigation.
-    const existing = t.tag === 'link' && t.attrs.rel === 'stylesheet'
+    const existing = t.tag === 'link' && t.attrs['rel'] === 'stylesheet'
       ? oldStyles.find(n => (n as HTMLLinkElement).sheet
         && Object.entries(t.attrs).every(([name, value]) => n.getAttribute(name) === value)
         && n.getAttributeNames().every(name => name === 'data-ejm' || name in t.attrs))
       : undefined;
     // A failed or still-pending link has no sheet. Recreate it on a new request
     // so recovery cannot wait forever for a load event that already failed.
-    if (!existing && t.tag === 'link' && t.attrs.rel === 'stylesheet') {
-      oldStyles.filter(n => n.getAttribute('href') === t.attrs.href && !(n as HTMLLinkElement).sheet).forEach(n => n.remove());
+    if (!existing && t.tag === 'link' && t.attrs['rel'] === 'stylesheet') {
+      oldStyles.filter(n => n.getAttribute('href') === t.attrs['href'] && !(n as HTMLLinkElement).sheet).forEach(n => n.remove());
     }
     const el = existing ?? document.createElement(t.tag);
     for (const [k, v] of Object.entries(t.attrs)) el.setAttribute(k, v);
     el.setAttribute('data-ejm', '');
-    if (t.tag === 'link' && t.attrs.rel === 'stylesheet') {
+    if (t.tag === 'link' && t.attrs['rel'] === 'stylesheet') {
       nextStyles.add(el);
       if (!(el as HTMLLinkElement).sheet) styleLoads.push(new Promise(resolve => {
         el.addEventListener('load', () => resolve(), { once: true });

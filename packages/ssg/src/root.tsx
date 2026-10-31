@@ -19,7 +19,7 @@ import { navigate, usePathname } from 'wouter/use-browser-location';
 import { applyHead, resolveHead } from './head';
 import { matchRoute, normalizePath, stripBase, type Route, type Site } from './site';
 
-const SiteContext = createContext<{ site: Site; ssrPath?: string } | null>(null);
+const SiteContext = createContext<{ site: Site; ssrPath?: string | undefined } | null>(null);
 const useSiteContext = () => {
   const context = useContext(SiteContext);
   if (!context) throw new Error('ssg: used outside of the site root');
@@ -30,7 +30,7 @@ const useSite = () => useSiteContext().site;
 /** Wouter owns history subscriptions; SSG owns the base-relative exact path. */
 function useRoutePath() {
   const { site, ssrPath } = useSiteContext();
-  return stripBase(site, usePathname({ ssrPath }));
+  return stripBase(site, usePathname(ssrPath === undefined ? {} : { ssrPath }));
 }
 
 /** The current path without the site base and without a trailing slash, e.g. `/about`. The prerender and the browser agree on it, so an `App` can render from it without a hydration mismatch. */
@@ -100,7 +100,7 @@ function startTransition(run: () => void) {
 }
 
 export interface NavigateOptions {
-  replace?: boolean;
+  replace?: boolean | undefined;
 }
 
 function crossDocumentFragment(href: string) {
@@ -125,7 +125,7 @@ export function useNavigate() {
       await route?.preload().catch(noop);
       const hash = to.includes('#') ? to.slice(to.indexOf('#')) : '';
       startTransition(() => {
-        flushSync(() => navigate(site.base + to, { replace: opts.replace }));
+        flushSync(() => navigate(site.base + to, opts.replace === undefined ? {} : { replace: opts.replace }));
         scrollTo(hash);
       });
     },
@@ -136,7 +136,7 @@ export function useNavigate() {
 export type LinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
   /** A site path such as `/about#team` (no base), or any absolute URL, which navigates normally. */
   href: string;
-  replace?: boolean;
+  replace?: boolean | undefined;
 };
 
 /** An `<a>` that navigates client side for internal paths. Cross-document fragments, file paths, absolute URLs, `rel="external"`, `target`, `download` and modified clicks behave as normal links. Declared file-shaped routes still use the router. */
@@ -213,9 +213,9 @@ export function Static({ render, className }: StaticProps) {
 }
 
 class RouteBoundary extends ReactComponent<{ children: ReactNode; href: string }, { failed: boolean }> {
-  state = { failed: false };
+  override state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
-  render() {
+  override render() {
     if (!this.state.failed) return this.props.children;
     return <div role="alert" className="page py-rhythm">
       <h1 className="text-title">Page could not load</h1>
@@ -256,7 +256,7 @@ function Shell() {
 }
 
 /** The whole tree: router, page and the live region that announces route changes. Server and client render the same thing. */
-export function SiteRoot({ site, ssrPath }: { site: Site; ssrPath?: string }) {
+export function SiteRoot({ site, ssrPath }: { site: Site; ssrPath?: string | undefined }) {
   return (
     <SiteContext.Provider value={{ site, ssrPath: ssrPath?.split('?')[0] }}>
       <Shell />
