@@ -261,9 +261,11 @@ A control is `comfortable` (the table above) unless its surface says otherwise. 
 
 `code` outside `pre` has one style, in `base.css`: the mono face at 0.9em, no fill and no border. No component restyles it, and `Text variant="code"` and `InlineCode` render a plain `code` element. A fenced block (`CodeBlock`) is the one flat ground, `bg-ui-editor`.
 
+`kbd` has one style too: the mono face at 0.85em in a hairline cap with the control radius. Write a combination as a `kbd` of `kbd`s (`<kbd><kbd>Ctrl</kbd>+<kbd>K</kbd></kbd>`); only the inner keys are outlined.
+
 ## Base styles
 
-`html`: ground background, no font synthesis, text-size-adjust 100%, smooth scrolling (not under reduced motion), `scroll-padding-top` for a sticky header and the notch. `body`: ground and fg, `text-body` size, 1.6 line height, antialiased. `::selection`: fg on ground, inverted. `*`: border color is `line`. `code` outside `pre`: the mono face at 0.9em, no fill. `:focus-visible` as above. Forced colors keep the system focus color.
+`html`: ground background, no font synthesis, text-size-adjust 100%, smooth scrolling (not under reduced motion), `scroll-padding-top` for a sticky header and the notch. `body`: ground and fg, `text-body` size, 1.6 line height, antialiased. `::selection`: fg on ground, inverted. `*`: border color is `line`. `code` outside `pre`: the mono face at 0.9em, no fill. `kbd`: the mono face at 0.85em in a hairline cap. `:focus-visible` as above. Forced colors keep the system focus color.
 
 ## Symbol art
 

@@ -89,7 +89,7 @@ Page, Band, Section, SectionHead, Rows, Row, Facts, Stat, Hero, ProductWindow, P
 | Fact | layout/Facts.tsx | native `<div>` with `<dt>` and `<dd>` | One label and value pair inside Facts. |
 | Stat | layout/Stat.tsx | native `<p>` pair | Large numerals in `display` type with a mono label and no box; states per contract. |
 | Text | layout/Text.tsx | native span or element | Default, muted, strong and code variants per contract. `code` renders a plain `code` element in the base inline code style. |
-| Rule | layout/Rule.tsx | native `<hr>` or labelled rule | A single hairline, never a frame. |
+| Rule | layout/Rule.tsx | native `<hr>` or labelled rule | A single hairline, never a frame. Right before `Facts` or `Rows` a labelled rule replaces the list's top hairline, so there is one line. |
 | Status | layout/Status.tsx | native `<span>` | Glyph and word, so status never relies on color. The one status vocabulary: ok, warn, error, info, pending. |
 | Hero | layout/Hero.tsx | native `<section>` | Type-led opening on the page ground, with the page's one `h1` and an aside slot for windows. Takes content only. |
 | Art | layout/Art.tsx | inline `<svg>` | Decorative symbol line art; draw-on is added after mount only. |
@@ -114,7 +114,7 @@ Consumers supply content, routes, artwork data and accessible state. These compo
 | Actions | layout/SiteContent.tsx | native elements | Wrapping standalone actions. `Hero` and `Section` draw their `actions` with it. A bare link in the row is a control, so it keeps a 44px target on touch. |
 | Note | layout/SiteContent.tsx | native elements | A nearby qualification. |
 | ContentHeading | layout/SiteContent.tsx | native elements | A secondary heading with semantic level. |
-| InlineLink | layout/InlineLink.tsx | native elements | Shared route and external link treatment. |
+| InlineLink | layout/InlineLink.tsx | native elements | Shared route and external link treatment. Inside `Button asChild` it takes the button's recipe. |
 | InlineCode | layout/SiteContent.tsx | native elements | Short code inside prose, a plain `code` element in the base style. |
 | CommandLines | layout/SiteContent.tsx | native elements | Plain source commands without a client highlighter. |
 | VisuallyHidden | layout/SiteContent.tsx | native elements | Accessible names without visual text. |
@@ -132,10 +132,10 @@ Header, Footer, ThemeToggle, ExternalLink, SiteLayout, DocsLayout, AppShell, Ski
 | --- | --- | --- | --- |
 | SiteLayout | shell/SiteLayout.tsx | native landmarks | Skip link, header, `main#main` and footer for every site. |
 | Brand | shell/Brand.tsx | decorative mark and optional name | Supplied light and dark image URLs and intrinsic dimensions; placement owns the display size. The footer uses `darkSrc` (or `src` when there is none) on its permanent Ink ground. |
-| Header | shell/Header.tsx | native `<header>`, `<nav>` and `<details>` | The required `identity` (name and optional mark) at the left, nav, and the theme control last; `themeControl` replaces or suppresses the default. The nav list becomes the menu disclosure below 48rem of the header's own width (the header is a Tailwind `@container`), so a header in a narrow preview folds like one on a phone. |
+| Header | shell/Header.tsx | native `<header>`, `<nav>` and `<details>` | The required `identity` (name and optional mark) at the left, nav, and the theme control last; `themeControl` replaces or suppresses the default. The nav list becomes the menu disclosure below the width the bar needs (the header is a Tailwind `@container`, so a header in a narrow preview folds like one on a phone). The header works that width out from its own identity and nav labels: 48rem for a few short links, up to 80rem for many, so a long nav folds into the menu instead of overflowing. |
 | Footer | shell/Footer.tsx | native `<footer>` | Ink band with an `identity`, link columns, the privacy note slot and a legal line. |
 | ThemeToggle | shell/ThemeToggle.tsx | native `<button>` | Far right of the header; its name states the action. It takes no props and is the ghost icon button of the control recipe. |
-| ExternalLink | shell/ExternalLink.tsx | native `<a>` | `rel="external noopener"` with an arrow and a screen reader note. The arrow stays on the line of the last word. |
+| ExternalLink | shell/ExternalLink.tsx | native `<a>` | `rel="external noopener"` with an arrow and a screen reader note. The arrow stays on the line of the last word. Inside `Button asChild` it takes the button's recipe, so an external button is `<Button asChild><ExternalLink …>`. |
 | ExternalAnchor | shell/ExternalAnchor.tsx | native `<a>` | Private. The external anchor that ExternalLink and NavLink share: the `rel`, the arrow and the screen reader note. The last word of a text label, the arrow and the note sit in one nowrap span (any other children get a word joiner before the arrow), so the arrow never wraps onto a line of its own. |
 | NavLink | shell/NavLink.tsx | native `<a>` or the site's link component | Private. One nav item, external or routed, with `aria-current` and the current-page mark (weight 600 and a 2px underline). Header, NavMenu and AppShell all render their items through it. |
 | NavMenu | shell/NavMenu.tsx | native `<details>` | Private. The header menu below 48rem of the header's own width, an overlay under the bar. Escape and an outside press close it. |
