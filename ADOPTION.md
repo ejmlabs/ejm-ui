@@ -191,7 +191,7 @@ documentation does not establish deployment or browser acceptance.
 }
 ```
 
-`not_found_handling: "404-page"` serves the nearest `404.html`, which `ejm-ssg` writes at `dist/404.html` with `noindex`. `_headers` in `dist` is read by the asset server. Do not run `wrangler deploy` by hand: a site's `.github/workflows/deploy.yml` deploys main, and production waits for the owner's approval in the GitHub `production` environment.
+`not_found_handling: "404-page"` serves the nearest `404.html`, which `ejm-ssg` writes at `dist/404.html` with `noindex`. `_headers` in `dist` is read by the asset server. A push to main deploys staging, then production, through the site's `.github/workflows/deploy.yml`; see [CI deploys](.agents/skills/ejmlabs-cloudflare/references/ci-deploys.md). Do not run `wrangler deploy` by hand.
 
 ## 4. Per-site checklist
 
