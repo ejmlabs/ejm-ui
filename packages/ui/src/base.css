@@ -86,12 +86,8 @@
   --font-mono: "IBM Plex Mono", "IBM Plex Mono Fallback", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* Type scale. Fluid with clamp(); the largest sizes grow with --ejm-scale on screens from 1920px (see the page column).
-     Ranges at the base scale: display-lg 44 to 140px, display 36 to 96px, title 28 to 56px, heading 20 to 32px,
-     lead 19 to 26px, stat 52 to 136px, body 16 to 20px (18px on a laptop). */
-  --text-display-lg: clamp(2.75rem, 0.7rem + 9.4vw, calc(8.75rem * var(--ejm-scale)));
-  --text-display-lg--line-height: 0.96;
-  --text-display-lg--letter-spacing: -0.045em;
-  --text-display-lg--font-weight: 600;
+     Ranges at the base scale: display 36 to 96px, title 28 to 56px, heading 20 to 32px, lead 19 to 26px, body 16 to 20px
+     (18px on a laptop). */
   --text-display: clamp(2.25rem, 0.8rem + 6.2vw, calc(6rem * var(--ejm-scale)));
   --text-display--line-height: 1;
   --text-display--letter-spacing: -0.04em;
@@ -106,23 +102,14 @@
   --text-heading--font-weight: 600;
   --text-lead: clamp(1.1875rem, 0.95rem + 0.8vw, 1.625rem);
   --text-lead--line-height: 1.5;
-  --text-stat: clamp(3.25rem, 1rem + 8vw, calc(8.5rem * var(--ejm-scale)));
-  --text-stat--line-height: 0.95;
-  --text-stat--letter-spacing: -0.04em;
-  --text-stat--font-weight: 600;
   --text-body: clamp(1rem, 0.9rem + 0.28vw, 1.25rem);
   --text-body--line-height: 1.6;
 
-  /* Radius for controls only: buttons, inputs, tags and the theme toggle. There is no card or panel radius. window is for
-     product windows, menus and overlays. sm, md and lg are the control radius, so copied shadcn source keeps working.
-     compact (5px) is the control radius of the compact density that applications use (see THEME.md). */
+  /* Three radii. control for fields, checkboxes, menu items, nav items and tabs; pill for buttons and the theme toggle; window
+     for product windows, menus and overlays. There is no card or panel radius. */
   --radius-*: initial;
   --radius-control: 0.375rem;
-  --radius-sm: 0.375rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.375rem;
   --radius-pill: 999px;
-  --radius-compact: 0.3125rem;
   --radius-window: 1rem;
 }
 
