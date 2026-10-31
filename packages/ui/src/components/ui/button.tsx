@@ -3,19 +3,20 @@ import type { VariantProps } from 'class-variance-authority';
 import { buttonVariants } from '../../control-recipes.mjs';
 import { ArrowRight } from 'lucide-react';
 import type { ComponentProps } from 'react';
-import type { Density } from '../../lib/density';
-import { cn } from '../../lib/utils';
+import type { Closed } from '../../lib/closed';
+import { useDensity, type Density } from '../../lib/density';
 
 export { buttonVariants } from '../../control-recipes.mjs';
 
 /**
- * Pill button. primary is the Sage fill (Ink text), secondary a quiet tonal pill, ghost has no fill until hover, link reads as text.
- * danger is the red fill for a destructive action; size icon is a square for an icon-only button (give it an aria-label); density compact is for
- * applications. Pills stay on one line; a link wraps, so a long label does not overflow a 320px screen.
+ * Pill button. primary is the Sage fill (Ink text, Forest on hover), secondary is a transparent pill with a control border, ghost has no
+ * fill until hover, link reads as underlined text, danger is the red fill for a destructive action. Size `md` is 44px; `icon` is a 44px
+ * square for an icon-only button (give it an aria-label). Density comes from the surface (AppShell, Page application): compact is 32px on a
+ * fine pointer and 44px on touch. Pills stay on one line; a link wraps, so a long label does not overflow a 320px screen.
  * Only transform moves: the arrow slides 4px on hover and the whole button sinks a hair while pressed.
  */
-export interface ButtonProps extends ComponentProps<'button'>, Omit<VariantProps<typeof buttonVariants>, 'density'> {
-  /** `compact` for applications: 5px radius, 13px type, 32px target on a fine pointer (44px on touch). Default `comfortable`. */
+export interface ButtonProps extends Closed<ComponentProps<'button'>>, Omit<VariantProps<typeof buttonVariants>, 'density'> {
+  /** Overrides the density of the surface. Leave it out: `AppShell` and `Page variant="application"` set `compact`. */
   density?: Density;
   /** Render the child element (a link, say) with the button's look instead of a `<button>`. */
   asChild?: boolean;
@@ -23,10 +24,11 @@ export interface ButtonProps extends ComponentProps<'button'>, Omit<VariantProps
   arrow?: boolean;
 }
 
-export function Button({ className, variant, size, density, asChild = false, arrow = false, type, children, ...props }: ButtonProps) {
+export function Button({ variant, size, density, asChild = false, arrow = false, type, children, ...props }: ButtonProps) {
   const Comp = asChild ? Slot : 'button';
+  const surface = useDensity(density);
   return (
-    <Comp className={cn(buttonVariants({ variant, size, density }), className)} type={asChild ? undefined : (type ?? 'button')} {...props}>
+    <Comp {...props} className={buttonVariants({ variant, size, density: surface })} type={asChild ? undefined : (type ?? 'button')}>
       <Slottable>{children}</Slottable>
       {arrow && <ArrowRight aria-hidden className="size-4 shrink-0 transition-transform duration-fast ease-standard motion-safe:group-hover:translate-x-1 motion-safe:group-focus-visible:translate-x-1" />}
     </Comp>

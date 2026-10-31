@@ -1,5 +1,6 @@
 import { createTabsState, tabIndexFor, tabsKeyAction, tabsReducer, type TabsState } from '@ejm/core';
 import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { useDensity, type Density } from '../../lib/density';
 import { cn } from '../../lib/utils';
 
 export interface TabItem {
@@ -17,15 +18,18 @@ export interface TabsProps {
   onValueChange?: (id: string) => void;
   /** auto: arrows select as they move. manual: arrows move focus and Enter or Space selects. */
   activation?: 'auto' | 'manual';
-  className?: string;
+  /** Overrides the density of the surface. Leave it out: `AppShell` and `Page variant="application"` set `compact`. */
+  density?: Density;
 }
 
 /**
  * Tabs on the @ejm/core tabs model, so the web, Ink and Rust tabs move the same way: arrows (wrapping), Home and End,
  * a roving tabindex (only the current tab is in the tab order), and the selected tab announced by aria-selected.
+ * A tab is a 44px control (32px compact) like a button; the current tab is 600 weight and underlined.
  */
-export function Tabs({ label, tabs, defaultValue, onValueChange, activation = 'auto', className }: TabsProps) {
+export function Tabs({ label, tabs, defaultValue, onValueChange, activation = 'auto', density }: TabsProps) {
   const uid = useId();
+  const compact = useDensity(density) === 'compact';
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   const start = Math.max(0, tabs.findIndex(t => t.id === defaultValue));
   const [state, setState] = useState<TabsState>(() => createTabsState({ count: tabs.length, selected: start, activation }));
@@ -48,8 +52,8 @@ export function Tabs({ label, tabs, defaultValue, onValueChange, activation = 'a
     move(tabsReducer(model, action), true);
   };
   return (
-    <div className={className}>
-      <div role="tablist" aria-label={label} onKeyDown={onKeyDown} className="hairline flex gap-x-6 overflow-x-auto">
+    <div>
+      <div role="tablist" aria-label={label} onKeyDown={onKeyDown} className="hairline flex gap-x-1 overflow-x-auto">
         {tabs.map((t, i) => (
           <button
             key={t.id}
@@ -61,9 +65,11 @@ export function Tabs({ label, tabs, defaultValue, onValueChange, activation = 'a
             aria-controls={`${uid}-panel-${t.id}`}
             tabIndex={tabIndexFor(model, i)}
             onClick={() => move(tabsReducer(model, { type: 'select', index: i }), false)}
+            // The tab list scrolls, so it clips an outline that sits outside the tab: draw it inside.
             className={cn(
-              'touch-target focus-ring min-h-11 shrink-0 focus-visible:-outline-offset-2 border-b-2 border-transparent font-semibold text-muted hover:text-fg',
-              'aria-selected:border-fg aria-selected:text-fg',
+              'shrink-0 rounded-control px-3 text-muted touch-target hover:bg-tone hover:text-fg focus-visible:outline-offset-[-2px]',
+              'aria-selected:font-semibold aria-selected:text-fg aria-selected:underline aria-selected:decoration-2 aria-selected:underline-offset-[0.5em]',
+              compact ? 'min-h-8 compact-target text-sm' : 'min-h-11 text-base',
             )}
           >
             {t.label}
@@ -78,7 +84,7 @@ export function Tabs({ label, tabs, defaultValue, onValueChange, activation = 'a
           aria-labelledby={`${uid}-tab-${t.id}`}
           hidden={i !== model.selected}
           tabIndex={0}
-          className="focus-ring pt-6"
+          className="pt-6"
         >
           {t.panel}
         </div>

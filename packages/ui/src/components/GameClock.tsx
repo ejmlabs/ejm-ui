@@ -1,7 +1,8 @@
 import type { HTMLAttributes } from 'react';
+import type { Closed } from '../lib/closed';
 import { cn } from '../lib/utils';
 
-export interface GameClockProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'aria-label'> {
+export interface GameClockProps extends Closed<Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'aria-label'>> {
   value: string;
   label: string;
   running?: boolean;
@@ -9,9 +10,9 @@ export interface GameClockProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'c
 }
 
 /** A clock display. The host owns time and ticking; no per-tick live region is added. */
-export function GameClock({ value, label, running = false, low = false, className, ...props }: GameClockProps) {
+export function GameClock({ value, label, running = false, low = false, ...props }: GameClockProps) {
   return <span {...props} aria-label={label} className={cn(
-    'shrink-0 whitespace-nowrap px-3 py-2 text-center font-mono text-3xl leading-none tabular-nums',
-    low ? 'bg-danger text-on-danger' : running ? 'bg-primary text-on-primary' : 'text-muted', className,
+    'shrink-0 whitespace-nowrap px-3 py-2 text-center font-mono text-heading leading-none tabular-nums',
+    low ? 'bg-danger text-on-danger' : running ? 'bg-primary text-on-primary' : 'text-muted',
   )}>{value}</span>;
 }

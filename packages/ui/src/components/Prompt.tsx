@@ -1,6 +1,7 @@
 import type { PromptState } from '@ejm/core';
 import { LoaderCircle } from 'lucide-react';
 import { useId, type FormEvent } from 'react';
+import { useDensity, type Density } from '../lib/density';
 import { cn } from '../lib/utils';
 
 export interface PromptProps {
@@ -14,12 +15,14 @@ export interface PromptProps {
   message?: string;
   /** Accessible name of the input. */
   label?: string;
-  className?: string;
+  /** Overrides the density of the surface. Leave it out: `AppShell` and `Page variant="application"` set `compact`. */
+  density?: Density;
 }
 
 /** An input line in the terminal manner: a prompt glyph, the text and a rule under it. Busy ignores input and says "working". Error says why, in words. */
-export function Prompt({ value, onValueChange, onSubmit, placeholder, state = 'idle', message, label = 'Command', className }: PromptProps) {
+export function Prompt({ value, onValueChange, onSubmit, placeholder, state = 'idle', message, label = 'Command', density }: PromptProps) {
   const errId = useId();
+  const compact = useDensity(density) === 'compact';
   const busy = state === 'busy';
   const failed = state === 'error';
   const submit = (e: FormEvent) => {
@@ -27,8 +30,8 @@ export function Prompt({ value, onValueChange, onSubmit, placeholder, state = 'i
     if (!busy) onSubmit?.(value);
   };
   return (
-    <form onSubmit={submit} className={className}>
-      <div className={cn('flex items-center gap-3 border-b py-2', failed ? 'border-danger' : 'border-control')}>
+    <form onSubmit={submit}>
+      <div className={cn('flex items-center gap-3 border-b', failed ? 'border-danger' : 'border-control')}>
         <span aria-hidden className="font-mono text-link">›</span>
         <input
           aria-label={label}
@@ -41,7 +44,7 @@ export function Prompt({ value, onValueChange, onSubmit, placeholder, state = 'i
           autoComplete="off"
           spellCheck={false}
           onChange={e => onValueChange?.(e.target.value)}
-          className={cn('min-h-11 min-w-0 flex-1 bg-transparent font-mono text-base text-fg placeholder:text-muted', busy && 'text-muted')}
+          className={cn('min-w-0 flex-1 bg-transparent font-mono text-fg placeholder:text-muted touch-target', compact ? 'min-h-8 compact-target text-sm' : 'min-h-11 text-base', busy && 'text-muted')}
         />
         {/* Always in the page, so a screen reader announces the word when it changes. */}
         <span role="status" className="flex items-center gap-2 text-meta text-muted">

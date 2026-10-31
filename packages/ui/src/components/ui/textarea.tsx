@@ -1,8 +1,15 @@
 import type { ComponentProps } from 'react';
-import { cn } from '../../lib/utils';
-import { fieldClass } from './input';
+import { fieldVariants } from '../../control-recipes.mjs';
+import type { Closed } from '../../lib/closed';
+import { useDensity, type Density } from '../../lib/density';
 
-/** A native multi-line input. */
-export function Textarea({ className, ...props }: ComponentProps<'textarea'>) {
-  return <textarea className={cn(fieldClass, 'min-h-28 resize-y py-2.5', className)} {...props} />;
+export interface TextareaProps extends Closed<ComponentProps<'textarea'>> {
+  /** Overrides the density of the surface. Leave it out: `AppShell` and `Page variant="application"` set `compact`. */
+  density?: Density;
+}
+
+/** A native multi-line input. It keeps `min-h-28` at both densities; compact only sets the type to 14px. */
+export function Textarea({ density, ...props }: TextareaProps) {
+  const surface = useDensity(density);
+  return <textarea {...props} className={fieldVariants({ kind: 'area', density: surface })} />;
 }

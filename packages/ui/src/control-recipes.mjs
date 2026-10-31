@@ -1,40 +1,60 @@
 import { cva } from 'class-variance-authority';
 
-/** Fixed native buttons can use these parts without loading the variant resolver or React adapters. */
-export const buttonBaseClass = 'group inline-flex items-center justify-center gap-2 font-semibold select-none touch-target focus-ring transition-transform duration-fast ease-standard motion-safe:active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50';
+// One control system (openspec/changes/systemic-kit/design.md, section 3). Every control is 44px tall at 16px type. Compact is 32px on a fine
+// pointer at 14px type; touch-target keeps the target at 44px on a coarse pointer. Each recipe emits exactly one height, so no class string
+// carries two values for the same property.
+const comfortable = 'min-h-11 text-base';
+const compact = 'min-h-8 compact-target text-sm';
+const withLabel = ['primary', 'secondary', 'ghost', 'danger'];
+
+/** The parts of a fixed native button. The pressed state is the only scale in the kit; the global :focus-visible outline is the focus ring. */
+export const buttonBaseClass = 'group inline-flex items-center justify-center gap-2 font-semibold select-none touch-target transition-transform duration-fast ease-standard motion-safe:active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50';
 export const buttonGhostClass = 'rounded-pill whitespace-nowrap text-fg hover:bg-tone';
 export const buttonMediumClass = 'min-h-11 px-6 text-base';
 
-/** Canonical native-control styles shared by React and the static HTML profile. */
+/** The one button. Filled variants darken to their hover token; the others fill with `bg-tone`. Sizes are `md` and `icon`. */
 export const buttonVariants = /* @__PURE__ */ cva(
   buttonBaseClass,
   {
     variants: {
       variant: {
         primary: 'rounded-pill whitespace-nowrap bg-primary text-on-primary hover:bg-primary-hover hover:text-on-primary-hover',
-        secondary: 'rounded-pill whitespace-nowrap bg-tone text-fg hover:bg-line',
+        secondary: 'rounded-pill whitespace-nowrap border border-control text-fg hover:bg-tone',
         ghost: buttonGhostClass,
         link: 'rounded-control text-start text-link underline decoration-1 underline-offset-[0.2em] hover:decoration-2',
         danger: 'rounded-pill whitespace-nowrap bg-danger text-on-danger hover:bg-danger/85',
       },
-      size: {
-        sm: 'min-h-9 px-4 text-sm',
-        md: buttonMediumClass,
-        lg: 'min-h-14 px-8 text-lg',
-        icon: 'size-11 p-0',
-      },
-      density: { comfortable: '', compact: 'rounded-compact text-[0.8125rem]' },
+      size: { md: '', icon: 'p-0' },
+      density: { comfortable: '', compact: '' },
     },
     compoundVariants: [
-      { variant: 'link', className: 'px-0' },
-      // Compact: 32px tall on a fine pointer (compact-target), 44px on a coarse one (touch-target, already on every button). The icon is 32px square.
-      { density: 'compact', className: 'min-h-0 px-3 compact-target' },
-      { density: 'compact', size: 'icon', className: 'size-8 px-0' },
+      { size: 'md', density: 'comfortable', className: comfortable },
+      { size: 'md', density: 'compact', className: compact },
+      { size: 'md', density: 'comfortable', variant: withLabel, className: 'px-6' },
+      { size: 'md', density: 'compact', variant: withLabel, className: 'px-4' },
+      { size: 'md', variant: 'link', className: 'px-0' },
+      { size: 'icon', density: 'comfortable', className: 'size-11 text-base' },
+      { size: 'icon', density: 'compact', className: 'size-8 compact-target text-sm' },
     ],
     defaultVariants: { variant: 'primary', size: 'md', density: 'comfortable' },
   },
 );
 
-/** The field look shared by Input, Textarea, Select and native HTML. */
-export const fieldClass =
-  'block w-full rounded-control border border-control bg-field px-3 text-base text-fg placeholder:text-muted touch-target disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-danger';
+/** The field look shared by Input, Select and Textarea: `line` is a single row (44px, 32px compact), `area` is the multi-line box (`min-h-28`). */
+export const fieldVariants = /* @__PURE__ */ cva(
+  'block w-full rounded-control border border-control bg-field px-3 text-fg placeholder:text-muted touch-target disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-[invalid=true]:border-danger',
+  {
+    variants: {
+      kind: { line: '', area: 'min-h-28 resize-y py-2.5' },
+      density: { comfortable: 'text-base', compact: 'text-sm' },
+    },
+    compoundVariants: [
+      { kind: 'line', density: 'comfortable', className: 'min-h-11' },
+      { kind: 'line', density: 'compact', className: 'min-h-8 compact-target' },
+    ],
+    defaultVariants: { kind: 'line', density: 'comfortable' },
+  },
+);
+
+/** The comfortable single-row field, for native markup that cannot use the React components. */
+export const fieldClass = /* @__PURE__ */ fieldVariants();

@@ -1,6 +1,6 @@
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import type { ReactNode } from 'react';
-import type { Density } from '../../lib/density';
+import { useDensity, type Density } from '../../lib/density';
 import { cn } from '../../lib/utils';
 
 export interface TooltipProps {
@@ -11,12 +11,13 @@ export interface TooltipProps {
   side?: 'top' | 'right' | 'bottom' | 'left';
   /** Where to portal the tip. Defaults to document.body. */
   container?: HTMLElement | null;
-  /** `compact`: 13px mono text, tighter padding and the 5px radius, for applications. */
+  /** Overrides the density of the surface. Compact tightens the padding; the type is `text-sm` at both. */
   density?: Density;
 }
 
-/** A small label for a control. No shadow: it is a mark on the page, not a surface. */
-export function Tooltip({ content, children, side = 'top', container, density = 'comfortable' }: TooltipProps) {
+/** A small label for a control: an overlay with the control radius, a line border and the raised shadow. */
+export function Tooltip({ content, children, side = 'top', container, density }: TooltipProps) {
+  const compact = useDensity(density) === 'compact';
   return (
     <TooltipPrimitive.Provider delayDuration={300} skipDelayDuration={200}>
       <TooltipPrimitive.Root>
@@ -26,7 +27,7 @@ export function Tooltip({ content, children, side = 'top', container, density = 
             side={side}
             sideOffset={8}
             collisionPadding={16}
-            className={cn('z-50 max-w-64 bg-fg text-ground animate-fade', density === 'compact' ? 'rounded-compact px-2 py-1 font-mono text-[0.8125rem] leading-snug' : 'rounded-control px-3 py-1.5 text-meta')}
+            className={cn('z-50 max-w-64 rounded-control border border-line bg-ground text-sm text-fg shadow-raised animate-fade', compact ? 'px-2 py-1' : 'px-3 py-1.5')}
           >
             {content}
           </TooltipPrimitive.Content>
