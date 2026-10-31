@@ -2,20 +2,27 @@
 
 Header, footer, layouts and the external link. No cards: the header, the nav and the footer are the page ground, a band, or hairlines. The only shadow is the open phone menu, which is an overlay.
 
+Every component here is closed: no `className`, no `style`, no raw HTML. The kit owns every class, so a header, a footer and an app frame look the same on every site. Sites give content and state only.
+
 | Export | Purpose |
 | --- | --- |
 | `SiteLayout` | Skip link, `Header`, `<main id="main" tabIndex={-1}>`, `Footer`. The footer sits at the bottom of short pages. |
 | `Brand` | Decorative mark and optional name, intrinsic proportions, optional dark variant, and fixed navigation, project or footer placement. The surrounding link or heading supplies the accessible name. |
-| `Header` | Sticky, on the page ground (an opaque `band`, so text never sits on page content while scrolling; `band` sets a matching ground when the page opens on Mist, Sage or Ink), no box or rule. Structured `identity` at the left. Nav, then `ThemeToggle` last at the far right. Below 768px the nav is one native `<details>` Menu. |
+| `Header` | Sticky, on the page ground (an opaque `band`, so text never sits on page content while scrolling; `band` sets a matching ground when the page opens on Mist, Sage or Ink), no box or rule. Structured `identity` (required) at the left. Nav, then `ThemeToggle` last at the far right. Below 768px the nav is one native `<details>` menu. |
 | `Footer` | Ink band with structured `identity`, link columns, a `privacy` slot, a `legal` line, and a safe-area bottom inset. |
-| `ThemeToggle` | Sun and moon, 44px, named for its action. Uses `useTheme`. |
-| `ExternalLink` | `rel="external noopener"`, an arrow, and ", opens another site" for screen readers. |
-| `SkipLink` | `<a href="#main" class="skip-link">`. Included by `SiteLayout` and `AppShell`. |
+| `ThemeToggle` | Sun and moon, named for its action. The ghost icon button of the control recipe: 44px, 32px on a compact surface, a pill. Uses `useTheme`. Takes no props. |
+| `ExternalLink` | `rel="external noopener"`, an arrow, and ", opens another site" for screen readers. Always in the `link` style. |
+| `SkipLink` | `<a href="#main" class="skip-link">`. Included by `SiteLayout` and `AppShell`. Its only prop is the label. |
 | `DocsLayout` | Grid for a docs page: `sidebar`, `contents` and the article in a 68ch column. Put it inside `SiteLayout`. |
-| `AppShell` | Top bar (`actions`, then the theme control), side `nav` and content, for applications. A whole page frame with its own skip link and `main`. |
-| `Collapse` | The shared disclosure behind the sidebars: one `<details>`, labelled on narrow screens, always visible from a breakpoint. |
-| `Disclosure` (root or deep import) | Native `<details>` with a `label`, always collapsible at every width. Default `presentation="section"` uses hairlines in normal flow; `presentation="menu"` opens a bounded, scrollable overlay. |
+| `AppShell` | Top bar (`actions`, then the theme control), side `nav` and content, for applications. A whole page frame with its own skip link and `main`. It makes every control inside compact (see Density). |
+| `Collapse` | The shared disclosure behind the sidebars: one `<details>`, labelled on narrow screens, always visible from a breakpoint. It takes no class: `DocsLayout` and `AppShell` place and stick it through the cell around it. |
 | `LinkProvider`, `useLinkComponent`, `LinkComponent`, `NavItem` | Router-agnostic links. |
+
+`ExternalAnchor`, `NavLink` and `NavMenu` are private helpers in this folder. They are not exported from the barrel: `ExternalAnchor` is the external anchor that `ExternalLink` and `NavLink` share, `NavLink` is one nav item (external or routed, with `aria-current`), and `NavMenu` is the header phone menu.
+
+## Density
+
+`AppShell` wraps everything it renders in `DensityProvider density="compact"` (`lib/density.tsx`). A `Button`, field, tab or menu item inside is compact with no prop: `text-sm` and 32px on a fine pointer, still 44px on touch. The theme toggle in the bar becomes the 32px icon button, and the home link takes the compact target. The bar keeps its 56px height. `Header` and `SiteLayout` stay comfortable.
 
 ## Links without a router
 
@@ -26,7 +33,7 @@ const RouterLink: LinkComponent = ({ href, ...rest }) => <Link to={href} {...res
 <SiteLayout header={...} footer={...} linkComponent={RouterLink}>...</SiteLayout>
 ```
 
-External items (`external: true`) always render as a plain `ExternalLink`.
+External items (`external: true`) always render as a plain external anchor.
 
 ## Theme control slot
 
@@ -35,27 +42,21 @@ External items (`external: true`) always render as a plain `ExternalLink`.
 page can supply a shared `Button` and attach its handler from an external
 consumer script. The default toggle still needs hydration to change the theme.
 
+## Hover and current page
+
+One recipe for every control in the shell, and one for every link, both instant (color never transitions):
+
+- Padded controls fill with `bg-tone` on hover: header nav items and the menu button (44px, `rounded-control`), the home link, the phone menu rows (48px) and the theme toggle.
+- Links that sit on a column edge, with no box to fill, turn `text-link`: the footer links and the `Collapse` button. Links in running text use the `link` style, which thickens its underline to 2px.
+- The current page is `aria-current="page"` and is also shown with weight 600 and a 2px underline, in the header, the phone menu and the footer, so it is never color alone.
+
 ## Disclosures at every width
 
-Import `Disclosure` from `@ejm/ui/shell/Disclosure` or `@ejm/ui`. It accepts
-standard details attributes and `label`, `presentation`, `density`,
-`summaryClassName` and `contentClassName`. A menu defaults to compact density;
-a section defaults to comfortable. Both keep the coarse-pointer target.
-
-The implementation lives in `src/static/Disclosure.tsx`. Import
-`@ejm/ui/styles-static.css` after `@ejm/ui/styles.css`. The shell deep path is
-a public alias; the `@ejm/ui/shell` barrel does not export this static part.
-
-Keep links and controls in the disclosed content, outside its summary. Native
-opening and closing work before hydration, with the platform's open/closed
-marker. Menu presentation does not add
-arrow-key navigation, Escape, focus return or collision handling; use `Menu`
-for that interaction contract. `Collapse` keeps its existing breakpoint
-behavior. None of these APIs connects a product session or changes an account.
+`Disclosure` is not part of the shell. It is a component (`@ejm/ui`, from `components/ui/disclosure`), a native `<details>` that is collapsible at every width. `Collapse` is the breakpoint-based sidebar disclosure and stays here. Neither connects a product session or changes an account.
 
 ## Narrow screens, with no script
 
-- `Header`: the Menu is a native `<details>`. Closed, it takes no space. Open, the nav is an absolute overlay under the bar, so nothing moves. A small effect adds Escape (focus returns to the button), a press outside, and closing after a link is chosen.
+- `Header`: the Menu is a native `<details>`. Closed, it takes no space. Open, the list is an overlay under the bar, so nothing moves: `rounded-window`, a `border-line` hairline border, `bg-ground`, `shadow-float`, inset to the page gutter rather than edge to edge, entering with `animate-fade` (opacity only). Rows are separated by hairlines and each is a 48px target. A small effect adds Escape (focus returns to the button), a press outside, and closing after a link is chosen.
 - `DocsLayout` and `AppShell` render the sidebar once, in a `<details>` that is closed on narrow screens in the server HTML. From the breakpoint up (1024px sidebar, 1280px contents, 768px app nav) the button is hidden and `::details-content` is forced visible, so there is no duplicate markup and no script. Browsers without `::details-content` keep the button (it is hidden only where the browser supports that pseudo-element, through `supports-[selector(::details-content)]`) and get a small effect that opens the details on wide screens, so the content is reachable with or without script.
 - Source order in `DocsLayout` is sidebar, contents, article, which is also the phone order.
 
@@ -64,13 +65,13 @@ behavior. None of these APIs connects a product session or changes an account.
 - Landmarks: `header` (banner) with one `nav` named "Main" (the list above 768px, the Menu disclosure below, never both in the accessibility tree), `main#main` with `tabindex="-1"`, `footer` (contentinfo) with one `nav` named "Footer" whose column headings name the groups, and the docs navs "Documentation", "On this page" and "Previous and next pages". Every name is unique, which `shell.test.tsx` checks with axe on a whole docs page. A router can move focus to `main` after navigation. Each page has one `h1`.
 - `aria-current="page"` marks the current link, with a bold underline as well, so it is not color alone.
 - The toggle's name changes with its state ("Switch to dark theme"), and a polite status region says the result. It does not use `aria-pressed`, so name and state never disagree.
-- Targets are 44px: the toggle always, links and the Menu button through `touch-target` on coarse pointers. Contrast was checked by script in both themes for header, footer, nav and app shell.
+- Targets are 44px: the toggle, nav items, the Menu button and the home link by height, the footer links through `touch-target` on coarse pointers. Rows inside the phone menu clip their focus outline, so they draw it inside the row. Contrast was checked by script in both themes for header, footer, nav and app shell.
 - Native `<details>` is used instead of a Radix collapsible: it works without script and needs no state.
 
 ## Shared identity
 
 `Brand placement="project"` inherits its heading type from `Rows` or `SectionHead` and keeps the shared project mark size. The containing heading controls the name size.
 
-`Header` and `Footer` accept `identity={{ name, artwork, description }}`. `name` is plain text. `artwork` is optional and contains `src`, optional `darkSrc`, and intrinsic `width` and `height`. Supply the standalone mark when also showing a name. The footer uses `darkSrc` on its permanent Ink ground in either page theme. Both shell components own brand spacing, scale and type. Authored sites use this identity contract. Legacy non-site component consumers retain `logo`, `brand` and `className`; the site guard rejects these visual overrides.
+`Header` and `Footer` accept `identity={{ name, artwork, description }}`. `name` is plain text. `artwork` is optional and contains `src`, optional `darkSrc`, and intrinsic `width` and `height`. Supply the standalone mark when also showing a name. The footer uses `darkSrc` on its permanent Ink ground in either page theme. Both shell components own brand spacing, scale and type. `Header` requires `identity`; there is no `logo`, `brand` or `className`.
 
 Brand names stay on one line, including names with hyphens. In `Rows`, the title column reserves the intrinsic name width so the description cannot overlap it.

@@ -10,6 +10,10 @@ Transform and opacity only. No animation library: CSS keyframes from `styles.css
 | `staggerStyle(i, delayMs?)` | The `--ejm-i` and `--ejm-delay` style for one step. The index stops at 8, so a staged entrance is at most 8 x 60 + 640 = 1120ms. |
 | `useDrawOn()` | Ref for an inline `<svg class="art">`. Adds `draw-on` when it is first seen. |
 
+## Closed props
+
+`Reveal` and `Stagger` are closed. `as` is one of `div` (default), `section`, `ul`, `ol` or `li`. Besides their effect props (`from`, `index`, `delay`, `effect`) they take `children`, an `id` and ARIA attributes (`aria-label`, `aria-labelledby`), so a wrapper can be labelled or referenced. They take no `className`, `style` or event props. To animate a heading, put it inside a `Reveal` rather than passing `as="h2"`. `Stagger` adds its effect class and `--ejm-i` to each child element it is given, so give it plain elements (`li`, `p`, `div`).
+
 ## The reveal contract (THEME.md)
 
 1. The server render and the first client render carry no `data-reveal`. With no JavaScript nothing is hidden.
@@ -21,5 +25,5 @@ Transform and opacity only. No animation library: CSS keyframes from `styles.css
 ## Accessibility notes
 
 - Nothing that carries meaning is ever the only thing that moves. A reveal never changes reading order or focus order.
-- `Reveal` and `Stagger` add no ARIA and no extra elements beyond the tag you choose.
+- `Reveal` and `Stagger` add no ARIA of their own and no extra elements beyond the tag you choose. The ARIA attributes you pass are kept.
 - Keep `index` for siblings that appear together; do not stagger long lists past 8 steps.

@@ -112,6 +112,32 @@ describe('Reveal (data-reveal contract)', () => {
     expect(box().tagName).toBe('SECTION');
     expect(box().hasAttribute('data-reveal-from')).toBe(false);
   });
+
+  it('renders as each element of its closed set and passes an id and ARIA attributes through', () => {
+    setup({ top: 0 });
+    for (const as of ['div', 'section', 'ul', 'ol', 'li'] as const) {
+      const { unmount } = render(<Reveal as={as} id={`r-${as}`} aria-label={`label ${as}`}>x</Reveal>);
+      const el = document.getElementById(`r-${as}`)!;
+      expect(el.tagName).toBe(as.toUpperCase());
+      expect(el.getAttribute('aria-label')).toBe(`label ${as}`);
+      unmount();
+    }
+  });
+
+  it('takes no class, style or event props, and no element outside its set', () => {
+    // The types are the test: tsc fails when an expected error disappears.
+    const elements = [
+      // @ts-expect-error h2 is not in the closed set: render the heading yourself inside a Reveal
+      <Reveal key="as" as="h2">x</Reveal>,
+      // @ts-expect-error className was removed
+      <Reveal key="class" className="x">x</Reveal>,
+      // @ts-expect-error style was removed
+      <Reveal key="style" style={{ color: 'red' }}>x</Reveal>,
+      // @ts-expect-error element props such as onClick were removed
+      <Reveal key="click" onClick={() => {}}>x</Reveal>,
+    ];
+    expect(elements).toHaveLength(4);
+  });
 });
 
 describe('Stagger', () => {
@@ -124,6 +150,28 @@ describe('Stagger', () => {
     const kids = [...box().children] as HTMLElement[];
     expect(kids.every(k => k.className.includes('animate-enter') && k.className.includes('mt-2'))).toBe(true);
     expect(kids.map(k => k.style.getPropertyValue('--ejm-i'))).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '8']);
+  });
+
+  it('renders as each element of its closed set and passes an id and ARIA attributes through', () => {
+    for (const as of ['div', 'section', 'ul', 'ol'] as const) {
+      const { unmount } = render(<Stagger as={as} id={`s-${as}`} aria-label={`label ${as}`}><li>row</li></Stagger>);
+      const el = document.getElementById(`s-${as}`)!;
+      expect(el.tagName).toBe(as.toUpperCase());
+      expect(el.getAttribute('aria-label')).toBe(`label ${as}`);
+      unmount();
+    }
+  });
+
+  it('takes no class, style or element outside its set', () => {
+    const elements = [
+      // @ts-expect-error h2 is not in the closed set
+      <Stagger key="as" as="h2">x</Stagger>,
+      // @ts-expect-error className was removed
+      <Stagger key="class" className="x">x</Stagger>,
+      // @ts-expect-error style was removed
+      <Stagger key="style" style={{ color: 'red' }}>x</Stagger>,
+    ];
+    expect(elements).toHaveLength(3);
   });
 });
 
