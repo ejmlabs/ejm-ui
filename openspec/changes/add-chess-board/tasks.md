@@ -36,7 +36,7 @@ it.
 - [x] 6.1 Add the change to `CHANGELOG.md`, and verify `npm run check` passes with no stray file mode or generated changes in `git status`
 - [x] 6.2 Run `npm run build` and `node scripts/pack-proof.mjs`, and verify both pass with `@ejm/ui/components/Chessboard` and the `useSearch` export in the packed interfaces
 - [ ] 6.3 Typecheck and build ejm-chess against this branch through a scratch checkout, without touching the shared `../ejm-ui` clone, and verify `npm run typecheck` and `npm run build` pass (if the Stockfish assets are absent, run `npx ejm-ssg build` and report that `engine:check` did not run)
-- [ ] 6.4 View an ejm-chess game page from that build at 390px and 1280px wide in both themes, and verify the board is centred, the details sit right of it at 1280px, and the board squares, pieces and marks read clearly
+- [x] 6.4 View an ejm-chess game page from that build at 390px and 1280px wide in both themes, and verify the board is centred, the details sit right of it at 1280px, and the board squares, pieces and marks read clearly
 
 ## Workflow follow-up
 
