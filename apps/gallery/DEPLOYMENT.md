@@ -18,14 +18,12 @@ npm run build -w @ejm/gallery
 A push to main runs `.github/workflows/deploy.yml`, the canonical caller of the
 shared `ejmlabs/.github` workflow `deploy-site.yml`. A build job with
 `contents: read` and no secrets builds the gallery from that main commit. A
-staging job then runs `wrangler deploy --env staging` automatically. A
-production job deploys the same built files with the top-level config, but
-only after the required reviewer (@everettmorgan) approves the run in the
-GitHub `production` environment. That approval is the owner's deploy
-authorization. A newer merge cancels an older production deploy that is still
-waiting.
+staging job then runs `wrangler deploy --env staging` automatically, and once
+it succeeds a production job deploys the same built files with the top-level
+config. The merge is the human decision; no deploy waits for an approval.
+Deploys queue: a newer merge never stops a deploy that is already running.
 
-Deploy jobs run Wrangler 4.151.3, pinned in the shared repository, not this
+Deploy jobs run Wrangler 4.153.0, pinned in the shared repository, not this
 repository's dependencies. The Cloudflare token is the `CLOUDFLARE_API_TOKEN`
 secret of the `staging` and `production` GitHub environments. The existing
 Cloudflare account must own the domain, and that token must have
@@ -41,8 +39,10 @@ The shared deploy fails closed unless these are in place:
 
 - The `staging` and `production` GitHub environments exist, and each has a
   custom deployment branch policy with exactly one branch, `main`.
-- `production` has at least one required reviewer.
 - Both environments hold the `CLOUDFLARE_API_TOKEN` secret.
+
+`python3 scripts/set_deploy_token.py` in `ejmlabs/.github` sets up both for
+every site repository at once.
 
 The deploy also refuses a build whose `apps/gallery/wrangler.jsonc` differs from
 the reviewed commit, so change that file in source, never in a build step.
@@ -52,11 +52,10 @@ Wrangler prompts in CI and nobody can answer. The shared guide says: "a custom
 domain whose DNS record exists makes Wrangler prompt, and CI cannot answer"
 (`docs/operations.md`, "Site deploys", in `ejmlabs/.github`).
 
-Run these checks on staging after each merge, and on the canonical host after
-approval: the host, shared headers, fonts and original OFL notices, 404
+Run these checks on staging after each merge, and on the canonical host once
+production has deployed: the host, shared headers, fonts and original OFL notices, 404
 handling, complete no-script docs, keyboard navigation and light/dark
 phone/desktop layouts. Retain the source SHA and Worker version ID. For
 rollback, redeploy a previously accepted Worker version in Cloudflare, or
-approve an earlier run's production job while it is still available, then
-verify the same host and routes; do not serve a source branch with failed
+revert the change on main, then verify the same host and routes; do not serve a source branch with failed
 gates.
