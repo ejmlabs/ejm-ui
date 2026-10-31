@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkAll, checkBands, checkUi } from '../scripts/contrast.mjs';
+import { checkAll, checkBands, checkBoard, checkUi } from '../scripts/contrast.mjs';
 import { loadTheme, ratio } from '../scripts/theme.mjs';
 
 const { theme, brand } = loadTheme();
@@ -41,6 +41,18 @@ describe('contrast gates', () => {
     expect(text).toMatch(/ink\/light: focus on ground/);
     expect(text).toMatch(/paper\/dark: control on ground/);
     expect(text).toMatch(/paper\/light: on-primary on primary/);
+  });
+
+  it('fail when a dark theme board square hides black pieces, a mark vanishes or the squares merge', () => {
+    expect(checkBoard(theme)).toEqual([]);
+    const text = checkBoard(bad(x => {
+      x.themes.dark.roles['board-dark'] = '2A322C';
+      x.themes.light.roles['board-mark'] = '8A9A7B';
+      x.themes.light.roles['board-light'] = '9AA98B';
+    })).join('\n');
+    expect(text).toMatch(/dark: black pieces on the dark square are \d\.\d\d:1, need 3:1/);
+    expect(text).toMatch(/light: board-mark on the light square/);
+    expect(text).toMatch(/light: the board squares are \d\.\d\d:1 apart/);
   });
 
   it('fail on a ui theme text color under 4.5:1', () => {

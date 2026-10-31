@@ -206,9 +206,26 @@ state and semantic attributes without visual classes or inline styles.
 | Component | File | Primitive | Why |
 | --- | --- | --- | --- |
 | GameClock | components/GameClock.tsx | native span | Supplied time and state, no timer or ticking live region. |
+| Chessboard | components/Chessboard.tsx | React lazy boundary | Public leaf-only board surface. SSR shows a labelled loading square; the maintained renderer loads after mount. Hosts supply FEN, orientation, accepted moves and optional legal destinations. No chess rules, product records, server or engine code enters the kit. |
+| ChessboardSurface (internal) | components/chessboard/ChessboardSurface.tsx | maintained cm-chessboard SVG | Owns pointer and keyboard interaction, promotion, marker layers, orientation serialization, reduced motion and cleanup. It is an internal renderer; consumers use the public Chessboard leaf. |
 | RadioGroup | components/ui/radio-group.tsx | native fieldset and radio inputs | Form validation, submission and keyboard selection. |
 | Disclosure (deep controls import) | components/ui/disclosure.tsx | native details and summary | Preserves mounted children while closed. |
 | Prose | layout/Prose.tsx | native article or div | Shared reading typography without a highlighter. |
+
+`Chessboard` is deliberately absent from the `@ejm/ui` barrel so its renderer and CSS cannot enter an unrelated consumer through a barrel import. Use the public leaf in a lazy boundary. `GameClock` is a small static display and is also available from the barrel.
+
+```tsx
+import { lazy, Suspense } from 'react';
+import { GameClock } from '@ejm/ui/components/GameClock';
+
+const Chessboard = lazy(() => import('@ejm/ui/components/Chessboard').then(module => ({ default: module.Chessboard })));
+<Suspense fallback={null}>
+  <Chessboard fen={fen} color="w" enabled={false} readOnly onMove={() => {}} />
+</Suspense>
+<GameClock value="5:03" label="White has 5 minutes and 3 seconds" running />
+```
+
+`Chessboard` accepts `fen`, `color: 'w' | 'b'`, `enabled`, `readOnly`, `showLegalMoves`, `getLegalMoves(square)`, `lastMove`, `premove`, `onMove`, `className` and `aria-label`. It imports no chess rules. Optional destination rows are `{ square, capture? }`; the host computes them from its authoritative position. Hints default off and the host decides which modes permit them. Accepted positions come back through `fen`; a move callback is a proposal. The maintained board and its separately licensed piece assets keep their notices and source files. This package's board tests protect disposal, current callbacks and presentation behavior; a host must still test its move authority and legality adapter.
 
 ## Application composition
 
