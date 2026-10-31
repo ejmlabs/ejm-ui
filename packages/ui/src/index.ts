@@ -1,4 +1,4 @@
-export { cn } from './lib/utils';
+export { DensityProvider, useDensity, type Density } from './lib/density';
 export { fontPreloads } from './font-preloads';
 export * from './components/ui/button';
 export * from './components/ui/input';
