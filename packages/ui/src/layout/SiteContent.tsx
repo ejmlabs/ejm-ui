@@ -38,8 +38,9 @@ export function ReadingColumn(props: SiteContentProps) {
   return <div {...props} className="min-w-0 max-w-3xl" />;
 }
 
+/** Standalone actions in one row. A bare link here is a control, not running text, so it keeps a 44px target on touch, centered in the row. */
 export function Actions(props: SiteContentProps) {
-  return <div {...props} className="flex flex-wrap items-center gap-x-8 gap-y-4" />;
+  return <div {...props} className="flex flex-wrap items-center gap-x-8 gap-y-4 [&>a]:touch-target [&>a]:content-center" />;
 }
 
 /** Qualifications stay near the content they describe, with the same type and spacing. */

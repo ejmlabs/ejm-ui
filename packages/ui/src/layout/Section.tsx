@@ -1,6 +1,7 @@
 import { createContext, useContext, useId, type ReactNode } from 'react';
 import { NextHeadingLevel, useHeadingTag } from '../lib/heading';
 import { SectionHead } from './SectionHead';
+import { Actions } from './SiteContent';
 
 export interface SectionProps {
   title: ReactNode;
@@ -39,7 +40,7 @@ export function Section({ title, kicker, intro, actions, emphasis = false, id, c
       <NextHeadingLevel>{children}</NextHeadingLevel>
     </InsideSection.Provider>
   );
-  const buttons = actions && <div className="flex flex-wrap items-center gap-x-8 gap-y-4">{actions}</div>;
+  const buttons = actions && <Actions>{actions}</Actions>;
   const lead = intro || buttons ? <>{intro}{buttons}</> : undefined;
 
   if (nested) {
