@@ -128,6 +128,10 @@ by `npm run perf`; see [QUALITY.md](QUALITY.md). Browser acceptance, actual prod
 demo honesty checks need their documented tools and immutable product inputs.
 A passing owner check does not prove those separate checks or deployment.
 
+Set `EJM_TEST_REPORT` to a file path to write Vitest JSON results alongside the
+usual console output. See [frontend test reliability](docs/flaky-frontend-tests.md)
+and [Rust test reliability](docs/flaky-rust-tests.md) for repeated runs and their evidence.
+
 Before changing an export, manifest or package file list, run the pack proof
 and affected consumer checks. Keep each public guide with its owner and
 update it with the change. Do not copy private sibling source into a package.
