@@ -77,6 +77,7 @@ Band, SectionHead, Rows, Row, Facts, Stat, Hero, ProductWindow, ProductShot, Ill
 | --- | --- | --- | --- |
 | Band | layout/Band.tsx | native `<section>` with `data-band` | A band is a data attribute and a utility, so tone needs no JavaScript. |
 | Page | layout/Band.tsx | native `<div>` | The scaling content column; bands stay full-bleed around it. `variant="application"` adds 32px phone / 48px desktop vertical padding and shared content gaps; the default remains column-only. |
+| Section | layout/Section.tsx | native `<section>`, heading and `data-band` | The way to build a page section. Title, kicker, intro, actions and emphasis are the only inputs: the heading level (from context), the Mist, Paper or Sage ground, the id and the spacing are derived. A nested Section is a subsection without a band. |
 | SectionHead | layout/SectionHead.tsx | native header, heading and support copy | Kicker, display heading and copy. The page, section and application purposes select complete shared recipes. The application purpose stacks body-sized copy. Heading level remains semantic. |
 | Rows | layout/Rows.tsx | native `<ul>` | Hairline list that replaces cards. |
 | Row | layout/Rows.tsx | native `<li>` and `<a>` | The whole row is the link through its title; states per contract. |
