@@ -1,7 +1,7 @@
 import { copyAnnouncement, copyLabel, createCopy, type CopyState } from '@ejm/core';
-import { useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { useContext, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { cn } from '../lib/utils';
-import { useHydrated } from './hooks';
+import { CodeGroupContext, useHydrated } from './hooks';
 import { languageName } from './language';
 
 export interface CodeBlockFrameProps {
@@ -14,7 +14,6 @@ export interface CodeBlockFrameProps {
   copyable?: boolean;
   /** Hide the language label from sight (it stays for assistive technology), for a block under a tab that already names it. */
   quietLabel?: boolean;
-  className?: string;
   children?: ReactNode;
 }
 
@@ -41,11 +40,13 @@ function useCopyControl(getText: () => string, onFail: () => void) {
  * Code the reader will copy. A label row (language on the left, Copy on the right) over a scrolling code area on the
  * flat `ui-editor` ground, framed by two hairlines. The code area is a labelled, focusable region, so a keyboard user
  * can scroll it on a narrow screen. The Copy button appears once scripts run; without them the code is still selectable.
+ * Inside `CodeTabsFrame` the figure drops its own margins and, under the tab list, its top hairline.
  */
-export function CodeBlockFrame({ code, lang = 'text', label, copyable = true, quietLabel = false, className, children }: CodeBlockFrameProps) {
+export function CodeBlockFrame({ code, lang = 'text', label, copyable = true, quietLabel = false, children }: CodeBlockFrameProps) {
   const name = label ?? languageName(lang);
   const body = code.replace(/\n$/, '');
   const hydrated = useHydrated();
+  const group = useContext(CodeGroupContext);
   const figure = useRef<HTMLElement>(null);
   const { state, run } = useCopyControl(
     () => figure.current?.querySelector('pre')?.textContent ?? body,
@@ -61,7 +62,7 @@ export function CodeBlockFrame({ code, lang = 'text', label, copyable = true, qu
     },
   );
   return (
-    <figure ref={figure} className={cn('my-8 scheme-page bg-ui-editor text-ui-text border-y border-line', className)}>
+    <figure ref={figure} className={cn('scheme-page border-y border-line bg-ui-editor text-ui-text', group === 'alone' ? 'my-8' : 'my-0', group === 'tabbed' && 'border-t-0')}>
       <figcaption className="flex items-center justify-between gap-4 ps-4 pe-2 text-meta text-ui-text-muted">
         <span className={quietLabel ? 'sr-only' : undefined}>{name}</span>
         {hydrated && copyable && (
@@ -69,7 +70,7 @@ export function CodeBlockFrame({ code, lang = 'text', label, copyable = true, qu
             type="button"
             onClick={run}
             aria-label={state === 'idle' ? `Copy ${name} code` : undefined}
-            className="touch-target focus-ring ms-auto inline-flex min-h-11 items-center px-3 text-ui-text-muted transition-colors duration-fast hover:text-ui-text-strong"
+            className="touch-target ms-auto inline-flex min-h-11 items-center rounded-control px-3 text-ui-text-muted hover:bg-ui-hover hover:text-ui-text-strong"
           >
             {copyLabel(state)}
           </button>
@@ -90,7 +91,7 @@ const roles =
 /** The labelled source region, with plain code or already-tokenized children. */
 export function CodeSource({ code, label, children }: { code: string; label: string; children?: ReactNode }) {
   return <pre tabIndex={0} role="region" aria-label={`${label} code`}
-    className={cn('focus-ring overflow-x-auto px-4 pb-4 pt-1 font-mono text-[0.8125rem] leading-6 sm:text-sm sm:leading-6', roles)}>
+    className={cn('overflow-x-auto px-4 pb-4 pt-1 font-mono text-sm leading-6', roles)}>
     <code>{children ?? code}</code>
   </pre>;
 }

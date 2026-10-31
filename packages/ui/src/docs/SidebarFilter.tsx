@@ -1,5 +1,5 @@
 import { useId, type KeyboardEvent } from 'react';
-import { cn } from '../lib/utils';
+import { fieldClass } from '../control-recipes.mjs';
 import { useHydrated } from './hooks';
 
 /**
@@ -14,13 +14,11 @@ export function SidebarFilter({
   onChange,
   status,
   label = 'Filter pages',
-  className,
 }: {
   value: string;
   onChange: (value: string) => void;
   status: string;
   label?: string;
-  className?: string;
 }) {
   const hydrated = useHydrated();
   const id = useId();
@@ -31,7 +29,7 @@ export function SidebarFilter({
     }
   };
   return (
-    <div hidden={!hydrated} className={className}>
+    <div hidden={!hydrated} className="mb-6">
       <label htmlFor={id} className="sr-only">
         {label}
       </label>
@@ -44,9 +42,8 @@ export function SidebarFilter({
         spellCheck={false}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
-        className={cn(
-          'focus-ring min-h-11 w-full rounded-control border border-control bg-field px-3 text-[0.9375rem] text-fg placeholder:text-muted',
-        )}
+        // The field recipe of Input. The sidebar scrolls, so the focus outline goes inside the box.
+        className={`${fieldClass} focus-visible:outline-offset-[-2px]`}
       />
       <p role="status" className="mt-2 min-h-5 text-meta text-muted">
         {status}

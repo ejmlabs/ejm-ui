@@ -1,5 +1,6 @@
 import { formatRelativeTime, type StatusLevel } from '@ejm/core';
 import { SkeletonBar, StateBlock } from '../components/StateBlock';
+import { useDensity } from '../lib/density';
 import { cn } from '../lib/utils';
 import { Status } from '../layout/Status';
 import { appWords, type PartState } from './messages';
@@ -29,24 +30,25 @@ export interface ActivityListProps {
   /** Empty and error only: the one action under the sentence. */
   action?: { key?: string; label: string };
   onAction?: () => void;
-  className?: string;
 }
 
-const rowClass = 'hairline grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 gap-y-1 py-4';
+const rowClass = 'hairline grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 gap-y-1';
 const SKELETON_ROWS = 3;
 
 /**
- * A feed of hairline rows: what happened, when (relative, with the exact time in a `time` element) and a status that is a glyph and a word.
+ * A feed of hairline rows (`py-4`, or `py-2` on a compact surface): what happened, when (relative, with the exact time in a `time` element) and a status that is a glyph and a word.
  * Empty, loading and error put one sentence under the top hairline; loading first draws rows of the same shape.
  */
-export function ActivityList({ items, now, label, state, message, action, onAction, className }: ActivityListProps) {
+export function ActivityList({ items, now, label, state, message, action, onAction }: ActivityListProps) {
+  const pad = useDensity() === 'compact' ? 'py-2' : 'py-4';
+  const row = cn(rowClass, pad);
   const shown: PartState = state && state !== 'default' ? state : items.length ? 'default' : 'empty';
   return (
-    <div className={cn('min-w-0', className)} data-state={shown}>
+    <div className="min-w-0" data-state={shown}>
       {shown === 'default' ? (
         <ul aria-label={label} className="hairline-t m-0 list-none p-0">
           {items.map(item => (
-            <li key={item.id} className={rowClass}>
+            <li key={item.id} className={row}>
               <p className="m-0 min-w-0">{item.title}</p>
               <time dateTime={new Date(item.at).toISOString()} className="text-meta tabular-nums whitespace-nowrap text-muted">
                 {formatRelativeTime(item.at, now)}
@@ -62,14 +64,13 @@ export function ActivityList({ items, now, label, state, message, action, onActi
         <div role="group" aria-label={label} aria-busy={shown === 'loading' || undefined} className="hairline-t">
           {shown === 'loading' &&
             Array.from({ length: SKELETON_ROWS }, (_, i) => (
-              <div key={i} aria-hidden className={cn(rowClass, 'py-5')}>
-                <SkeletonBar className={i % 2 ? 'w-2/3' : 'w-4/5'} />
-                <SkeletonBar className="w-12" />
-                <SkeletonBar className="col-span-2 h-3 w-1/3" />
+              <div key={i} aria-hidden className={cn('hairline grid gap-y-2', pad)}>
+                <SkeletonBar width={i % 2 ? '2/3' : '4/5'} />
+                <SkeletonBar width="3/5" />
               </div>
             ))}
           <div className="hairline">
-            <StateBlock kind={shown} message={message ?? appWords.activity[shown]} action={shown === 'loading' ? undefined : action} onAction={onAction} skeleton={false} className="py-6" />
+            <StateBlock kind={shown} message={message ?? appWords.activity[shown]} action={shown === 'loading' ? undefined : action} onAction={onAction} skeleton={false} />
           </div>
         </div>
       )}

@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react';
+import { createContext, useSyncExternalStore } from 'react';
 
 const none = () => () => {};
 
@@ -33,3 +33,10 @@ export const tabPreference = {
     preferred = null;
   },
 };
+
+/**
+ * How a code figure sits in a `CodeTabsFrame`: `stacked` before hydration (each panel under its own label), `tabbed` under the tab list,
+ * `alone` anywhere else. The frame sets it, so the figures inside need no spacing of their own.
+ */
+export type CodeGroup = 'alone' | 'stacked' | 'tabbed';
+export const CodeGroupContext = createContext<CodeGroup>('alone');

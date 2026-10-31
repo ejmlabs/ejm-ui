@@ -1,7 +1,8 @@
 import { createTabsState, tabIndexFor, tabsKeyAction, tabsReducer } from '@ejm/core';
 import { useEffect, useId, useReducer, useRef, useSyncExternalStore, type KeyboardEvent, type ReactNode } from 'react';
+import { useDensity } from '../lib/density';
 import { cn } from '../lib/utils';
-import { tabPreference, useHydrated } from './hooks';
+import { CodeGroupContext, tabPreference, useHydrated } from './hooks';
 
 export interface CodeTabContent {
   /** The tab name: CSS, TypeScript, Rust. Groups follow each other when they share a name. */
@@ -12,13 +13,14 @@ export interface CodeTabContent {
 /**
  * The same task in several languages. The WAI-ARIA tabs pattern with automatic activation: Left and Right move and
  * wrap, Home and End jump, and only the selected tab is in the tab order. Choosing a language also selects it in every
- * other group that has it.
+ * other group that has it. The tab triggers follow the control recipe of the `Tabs` component.
  *
  * Without scripts, and on the server, every panel is shown stacked under its own label. After hydration the labels
  * give way to a tab list and only the selected panel shows.
  */
-export function CodeTabsFrame({ label = 'Language', tabs, className }: { label?: string; tabs: readonly CodeTabContent[]; className?: string }) {
+export function CodeTabsFrame({ label = 'Language', tabs }: { label?: string; tabs: readonly CodeTabContent[] }) {
   const hydrated = useHydrated();
+  const compact = useDensity() === 'compact';
   const uid = useId();
   const [state, dispatch] = useReducer(tabsReducer, tabs.length, (count) => createTabsState({ count }));
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
@@ -55,48 +57,52 @@ export function CodeTabsFrame({ label = 'Language', tabs, className }: { label?:
   };
 
   return (
-    <div className={cn('my-8', className)}>
-      {hydrated && (
-        <div role="tablist" aria-label={label} className="hairline flex gap-6 overflow-x-auto" onKeyDown={onKeyDown}>
-          {tabs.map((t, i) => (
-            <button
-              key={t.label}
-              ref={(el) => {
-                buttons.current[i] = el;
-              }}
-              type="button"
-              role="tab"
-              id={`${uid}-tab-${i}`}
-              aria-selected={i === state.selected}
-              aria-controls={`${uid}-panel-${i}`}
-              tabIndex={tabIndexFor(state, i)}
-              onClick={() => {
-                dispatch({ type: 'select', index: i });
-                remember(i);
-              }}
-              className={cn(
-                'touch-target focus-ring -mb-px inline-flex min-h-11 items-center whitespace-nowrap border-b-2 text-meta transition-colors duration-fast',
-                i === state.selected ? 'border-fg text-fg' : 'border-transparent text-muted hover:text-fg',
-              )}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-      )}
-      {tabs.map((t, i) => (
-        <div
-          key={t.label}
-          id={`${uid}-panel-${i}`}
-          role={hydrated ? 'tabpanel' : undefined}
-          aria-labelledby={hydrated ? `${uid}-tab-${i}` : undefined}
-          hidden={hydrated && i !== state.selected}
-          className={hydrated ? undefined : 'mt-6 first:mt-0'}
-        >
-          {!hydrated && <p className="text-meta text-muted">{t.label}</p>}
-          {t.children}
-        </div>
-      ))}
-    </div>
+    <CodeGroupContext.Provider value={hydrated ? 'tabbed' : 'stacked'}>
+      <div className="my-8">
+        {hydrated && (
+          <div role="tablist" aria-label={label} className="hairline flex gap-x-1 overflow-x-auto" onKeyDown={onKeyDown}>
+            {tabs.map((t, i) => (
+              <button
+                key={t.label}
+                ref={(el) => {
+                  buttons.current[i] = el;
+                }}
+                type="button"
+                role="tab"
+                id={`${uid}-tab-${i}`}
+                aria-selected={i === state.selected}
+                aria-controls={`${uid}-panel-${i}`}
+                tabIndex={tabIndexFor(state, i)}
+                onClick={() => {
+                  dispatch({ type: 'select', index: i });
+                  remember(i);
+                }}
+                // The same recipe as `Tabs`. The tab list scrolls, so the focus outline goes inside the trigger.
+                className={cn(
+                  'shrink-0 whitespace-nowrap rounded-control px-3 text-muted touch-target hover:bg-tone hover:text-fg focus-visible:outline-offset-[-2px]',
+                  'aria-selected:font-semibold aria-selected:text-fg aria-selected:underline aria-selected:decoration-2 aria-selected:underline-offset-[0.5em]',
+                  compact ? 'min-h-8 compact-target text-sm' : 'min-h-11 text-base',
+                )}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        )}
+        {tabs.map((t, i) => (
+          <div
+            key={t.label}
+            id={`${uid}-panel-${i}`}
+            role={hydrated ? 'tabpanel' : undefined}
+            aria-labelledby={hydrated ? `${uid}-tab-${i}` : undefined}
+            hidden={hydrated && i !== state.selected}
+            className={hydrated ? undefined : 'mt-6 first:mt-0'}
+          >
+            {!hydrated && <p className="mb-2 text-meta text-muted">{t.label}</p>}
+            {t.children}
+          </div>
+        ))}
+      </div>
+    </CodeGroupContext.Provider>
   );
 }
