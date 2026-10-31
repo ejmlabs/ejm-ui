@@ -38,6 +38,18 @@ Every part renders complete, usable HTML on the server. Script only adds to it. 
   rows={[{ key: 'contrast', name: <a href="/docs/contrast">Contrast</a>, cells: { command: 'node scripts/contrast.mjs' }, description: 'Text under 4.5:1.' }]} />
 ```
 
+Specimens show a part of the kit under a condition. They carry no color of their own and take no visual props:
+
+```tsx
+<ThemePair><Button>Save</Button></ThemePair>                 // the same children in a light and a dark specimen
+<Compare>
+  <Specimen label="Comfortable, for sites">...</Specimen>     // a labelled group in the page theme
+  <Specimen label="Dark theme" theme="dark">...</Specimen>    // starts that theme on the Paper ground
+</Compare>                                                    // two specimens side by side from 64rem
+<TypeScale />                                                 // the six type sizes, one per hairline row
+<Elevations />                                                // the three shadow levels on window samples
+```
+
 `DocsSidebar` and `Pager` render their links with the site's link component (`LinkProvider`, set by `SiteLayout` from `linkComponent`), so a docs page navigates without a reload on an ssg site; without a provider they are plain anchors.
 
 ## Markup and accessibility

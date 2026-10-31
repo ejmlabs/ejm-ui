@@ -1,9 +1,8 @@
 import { Children, type ReactNode } from 'react';
+import { shadowClass, type Elevation } from '../lib/elevation';
 import { cn } from '../lib/utils';
 
-export type Elevation = 'rest' | 'raised' | 'float';
-
-const shadow: Record<Elevation, string> = { rest: 'shadow-rest', raised: 'shadow-raised', float: 'shadow-float' };
+export type { Elevation } from '../lib/elevation';
 
 export interface ProductWindowProps {
   /** The title in the bar, for example "ejm-cli". */
@@ -32,7 +31,7 @@ export function ProductWindow({ title, meta, elevation = 'raised', live = false,
       aria-hidden={label ? undefined : true}
       className={cn(
         'scheme-page flex h-full min-w-0 flex-col overflow-hidden rounded-window border border-ui-line bg-ui-editor text-[length:var(--ejm-window-text,0.8125rem)] leading-normal text-ui-text',
-        shadow[elevation],
+        shadowClass[elevation],
       )}
     >
       <div className="flex items-center gap-3 border-b border-ui-line bg-ui-panel px-4 py-3">

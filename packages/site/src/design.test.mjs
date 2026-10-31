@@ -2,6 +2,7 @@
 import { mkdtemp, mkdir, readFile, realpath, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, relative, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 import { build, createServer } from 'vite';
 import { ejmSite } from './vite.mjs';
@@ -78,6 +79,8 @@ describe('site design ownership in real Vite builds', () => {
     ['footer object override', 'import { SiteLayout } from "@ejm/ui"; const footer = { brand: "Local" }; export default () => <SiteLayout footer={{ ...footer }} />;'],
     ['dynamic private stylesheet import', 'void import("../custom.css"); export default () => <p>Hello</p>;'],
     ['private stylesheet import', 'import "../custom.css"; export default () => <p>Hello</p>;'],
+    ['private stylesheet url', 'import sheet from "../custom.css?url"; export default () => <p>{sheet}</p>;'],
+    ['inline stylesheet text', 'import sheet from "./styles.css?inline"; export default () => <p>{sheet}</p>;'],
   ])('rejects %s with an actionable source location', async (_name, source) => {
     const root = await fixture(source);
     await expect(build(options(root))).rejects.toThrow(/src\/main\.tsx:1:\d+/);
@@ -181,10 +184,16 @@ describe('site design ownership in real Vite builds', () => {
     await expect(build(config)).rejects.toThrow(/src\/styles\.css:1:1.*Consumer CSS/);
   });
 
-  it('keeps only the owned gallery outside the consumer boundary', async () => {
-    const root = await fixture('export default () => <div className="local" />;');
-    // A consumer cannot escape by copying the gallery package name.
-    await writeFile(join(root, 'package.json'), '{"name":"@ejm/gallery"}');
-    expect(() => siteDesignGuard(root).validate()).toThrow(/Consumer className/);
+  it('accepts the url of a CSS entry inside src, which is still checked as consumer CSS', async () => {
+    const root = await fixture('import sheet from "./styles.css?url"; export default () => <p>{sheet}</p>;');
+    expect(() => siteDesignGuard(root).validate()).not.toThrow();
+    await writeFile(join(root, 'src/styles.css'), '.local { color: red }');
+    expect(() => siteDesignGuard(root).validate()).toThrow(/src\/styles\.css:1:1 Consumer CSS/);
+  });
+
+  it('guards the gallery like any other consumer, and the gallery passes', () => {
+    const gallery = fileURLToPath(new URL('../../../apps/gallery', import.meta.url));
+    const { files } = siteDesignGuard(gallery).validate();
+    expect(files.map(file => relative(gallery, file).split(sep).join('/'))).toEqual(expect.arrayContaining(['src/site.tsx', 'src/styles.css', 'src/routes/app-shell.tsx']));
   });
 });

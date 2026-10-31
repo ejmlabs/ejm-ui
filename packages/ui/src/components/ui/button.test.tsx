@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { expectAccessible, renderIn, themes } from '../test-setup';
+import { Plus } from 'lucide-react';
+import { DensityProvider } from '../../lib/density';
 import { Button, buttonVariants } from './button';
 
 describe('Button', () => {
@@ -34,6 +36,20 @@ describe('Button', () => {
     expect(compact).toEqual(expect.arrayContaining(['min-h-8', 'compact-target', 'touch-target', 'text-sm']));
     expect(buttonVariants({ size: 'icon' }).split(' ')).toContain('size-11');
     expect(buttonVariants({ size: 'icon', density: 'compact' }).split(' ')).toEqual(expect.arrayContaining(['size-8', 'compact-target']));
+  });
+
+  it('sizes the icon of an icon button whatever size the icon asks for: 20px, 16px compact', () => {
+    const { container } = render(
+      <>
+        <Button size="icon" aria-label="Add"><Plus size={13} /></Button>
+        <DensityProvider density="compact"><Button size="icon" aria-label="Add compact"><Plus /></Button></DensityProvider>
+      </>,
+    );
+    expect(screen.getByRole('button', { name: 'Add' })).toHaveClass('[&_svg]:size-5', '[&_svg]:shrink-0');
+    expect(screen.getByRole('button', { name: 'Add compact' })).toHaveClass('[&_svg]:size-4', '[&_svg]:shrink-0');
+    // lucide-react hides an icon with no accessible prop; the button carries the name.
+    for (const svg of container.querySelectorAll('svg')) expect(svg).toHaveAttribute('aria-hidden', 'true');
+    expect(buttonVariants({ size: 'md' })).not.toContain('[&_svg]');
   });
 
   it('never puts two values for one property in a recipe, and carries no color transition, own focus ring or off-scale size', () => {

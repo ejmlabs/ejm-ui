@@ -18,7 +18,6 @@ export function ThemeToggle() {
   const density = useDensity();
   const [announce, setAnnounce] = useState('');
   const next = resolved === 'dark' ? 'light' : 'dark';
-  const icon = density === 'compact' ? 'size-4' : 'size-5';
   return (
     <>
       <button
@@ -54,8 +53,8 @@ export function ThemeToggle() {
         }}
         className={cn(buttonVariants({ variant: 'ghost', size: 'icon', density }), 'shrink-0')}
       >
-        <Moon aria-hidden className={cn(icon, 'dark:hidden')} />
-        <Sun aria-hidden className={cn(icon, 'hidden dark:block')} />
+        <Moon aria-hidden className="dark:hidden" />
+        <Sun aria-hidden className="hidden dark:block" />
       </button>
       <span role="status" className="sr-only">
         {announce}

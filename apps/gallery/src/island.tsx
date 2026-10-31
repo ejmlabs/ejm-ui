@@ -1,5 +1,5 @@
 import { lazy, Suspense, useLayoutEffect, useState, type ComponentType } from 'react';
-import { Hero, Page, Text } from '@ejm/ui';
+import { ControlGroup, Hero, Page, Text } from '@ejm/ui';
 
 type PageModule = { default: ComponentType };
 
@@ -7,11 +7,10 @@ function ReadyPage({ Body }: { Body: ComponentType }) {
   const [ready, setReady] = useState(false);
   // This commits only after the body has loaded and its handlers are attached.
   useLayoutEffect(() => setReady(true), []);
-  return <fieldset disabled={!ready} className="min-w-0">
-    <legend className="sr-only">Page examples</legend>
+  return <ControlGroup label="Page examples" disabled={!ready}>
     {!ready && <Page><Text as="p" variant="muted" role="status">Page controls are loading. The examples remain readable.</Text></Page>}
     <Body />
-  </fieldset>;
+  </ControlGroup>;
 }
 
 /** Keep complete server HTML while page code loads immediately after the small site entry. */

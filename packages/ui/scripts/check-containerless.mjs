@@ -26,6 +26,7 @@ const root = resolve(process.argv[2] ?? join(here, '..', 'src'));
 const ALLOW = [
   ['components/ui/', 'controls and overlays: buttons, inputs, selects, switches, tabs, menus, dialogs, toasts, tooltips and badges keep their control shapes'],
   ['layout/ProductWindow.tsx', 'the product window is an object with its own frame and elevation, the one allowed box'],
+  ['docs/Elevations.tsx', 'each elevation sample is a product window sample, the only object the three shadows belong to'],
   ['shell/NavMenu.tsx', 'the header phone menu is an overlay'],
   ['docs/SidebarFilter.tsx', 'the filter is a search input, a control'],
   ['docs/CodeBlock.tsx', 'a code block is an object with a flat ground, not a group of content'],

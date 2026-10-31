@@ -12,7 +12,7 @@ export const buttonBaseClass = 'group inline-flex items-center justify-center ga
 export const buttonGhostClass = 'rounded-pill whitespace-nowrap text-fg hover:bg-tone';
 export const buttonMediumClass = 'min-h-11 px-6 text-base';
 
-/** The one button. Filled variants darken to their hover token; the others fill with `bg-tone`. Sizes are `md` and `icon`. */
+/** The one button. Filled variants darken to their hover token; the others fill with `bg-tone`. Sizes are `md` and `icon`; `icon` sizes its svg. */
 export const buttonVariants = /* @__PURE__ */ cva(
   buttonBaseClass,
   {
@@ -24,7 +24,8 @@ export const buttonVariants = /* @__PURE__ */ cva(
         link: 'rounded-control text-start text-link underline decoration-1 underline-offset-[0.2em] hover:decoration-2',
         danger: 'rounded-pill whitespace-nowrap bg-danger text-on-danger hover:bg-danger/85',
       },
-      size: { md: '', icon: 'p-0' },
+      // An icon button sizes its icon, whatever size the icon asks for: 20px, 16px compact (the sizes of the theme toggle).
+      size: { md: '', icon: 'p-0 [&_svg]:shrink-0' },
       density: { comfortable: '', compact: '' },
     },
     compoundVariants: [
@@ -33,8 +34,8 @@ export const buttonVariants = /* @__PURE__ */ cva(
       { size: 'md', density: 'comfortable', variant: withLabel, className: 'px-6' },
       { size: 'md', density: 'compact', variant: withLabel, className: 'px-4' },
       { size: 'md', variant: 'link', className: 'px-0' },
-      { size: 'icon', density: 'comfortable', className: 'size-11 text-base' },
-      { size: 'icon', density: 'compact', className: 'size-8 compact-target text-sm' },
+      { size: 'icon', density: 'comfortable', className: 'size-11 text-base [&_svg]:size-5' },
+      { size: 'icon', density: 'compact', className: 'size-8 compact-target text-sm [&_svg]:size-4' },
     ],
     defaultVariants: { variant: 'primary', size: 'md', density: 'comfortable' },
   },

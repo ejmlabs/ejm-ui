@@ -46,7 +46,7 @@ Source: `src/components/ui/`, copied-in shadcn/ui style on React 19 with `class-
 
 | Component | File | Primitive | Why |
 | --- | --- | --- | --- |
-| `Button` | `components/ui/button.tsx` | native `<button>`, Radix Slot for `asChild` | A button needs no library. Slot lets the same look wrap a router link. Variants primary (Sage fill, Ink text), secondary (a hairline outline), ghost, link and danger (red fill); sizes `md` and `icon` (a square that needs an `aria-label`). `arrow` slides 4px on hover. Pills stay on one line; the link variant wraps. Density comes from the surface. |
+| `Button` | `components/ui/button.tsx` | native `<button>`, Radix Slot for `asChild` | A button needs no library. Slot lets the same look wrap a router link. Variants primary (Sage fill, Ink text), secondary (a hairline outline), ghost, link and danger (red fill); sizes `md` and `icon` (a square that needs an `aria-label`; it sizes its `svg` child to 20px, 16px compact, so pass a lucide-react icon with no size). `arrow` slides 4px on hover. Pills stay on one line; the link variant wraps. Density comes from the surface. |
 | `Input` | `components/ui/input.tsx` | native `<input>` | The platform gives labels, autofill, mobile keyboards and validation. `Input` only adds the control look. |
 | `Textarea` | `components/ui/textarea.tsx` | native `<textarea>` | Same as Input. |
 | `Select` | `components/ui/select.tsx` | native `<select>` | The native picker is better on phones, has full keyboard and typeahead support, and costs no JavaScript. Radix Select was rejected: it re-implements the same and adds about 10 KB gzip. |
@@ -120,6 +120,7 @@ Consumers supply content, routes, artwork data and accessible state. These compo
 | VisuallyHidden | layout/SiteContent.tsx | native elements | Accessible names without visual text. |
 | FileDetail | layout/SiteContent.tsx | native elements | Wrapping release metadata. |
 | FocusRegion | layout/SiteContent.tsx | native elements | A programmatic focus target with the global focus rule. |
+| ControlGroup | layout/SiteContent.tsx | native `<fieldset>` with an `sr-only` legend | A named group of controls with no frame or space of its own. `disabled` disables every control inside while text and links stay readable; the gallery holds a deferred page's examples with it until its code is ready. |
 | AssetGrid | layout/SiteContent.tsx | native elements | Uniform responsive artwork grid. |
 | BrandAsset | layout/SiteContent.tsx | native elements | Fixed-height artwork preview and caption. |
 | PaletteSwatch | layout/SiteContent.tsx | native elements | Approved token color sample. |
@@ -132,7 +133,7 @@ Header, Footer, ThemeToggle, ExternalLink, SiteLayout, DocsLayout, AppShell, Ski
 | --- | --- | --- | --- |
 | SiteLayout | shell/SiteLayout.tsx | native landmarks | Skip link, header, `main#main` and footer for every site. |
 | Brand | shell/Brand.tsx | decorative mark and optional name | Supplied light and dark image URLs and intrinsic dimensions; placement owns the display size. The footer uses `darkSrc` (or `src` when there is none) on its permanent Ink ground. |
-| Header | shell/Header.tsx | native `<header>`, `<nav>` and `<details>` | The required `identity` (name and optional mark) at the left, nav, and the theme control last; `themeControl` replaces or suppresses the default. The phone menu is a disclosure. |
+| Header | shell/Header.tsx | native `<header>`, `<nav>` and `<details>`, a CSS container query | The required `identity` (name and optional mark) at the left, nav, and the theme control last; `themeControl` replaces or suppresses the default. Below 48rem of its own width the nav is the phone menu, a disclosure, so a header in a narrow column shows the menu too. |
 | Footer | shell/Footer.tsx | native `<footer>` | Ink band with an `identity`, link columns, the privacy note slot and a legal line. |
 | ThemeToggle | shell/ThemeToggle.tsx | native `<button>` | Far right of the header; its name states the action. It takes no props and is the ghost icon button of the control recipe. |
 | ExternalLink | shell/ExternalLink.tsx | native `<a>` | `rel="external noopener"` with an arrow and a screen reader note. |
@@ -141,7 +142,7 @@ Header, Footer, ThemeToggle, ExternalLink, SiteLayout, DocsLayout, AppShell, Ski
 | NavMenu | shell/NavMenu.tsx | native `<details>` | Private. The header menu below 768px, an overlay under the bar. Escape and an outside press close it. |
 | SkipLink | shell/SkipLink.tsx | native `<a>` | First focusable element; targets `#main`. |
 | DocsLayout | shell/DocsLayout.tsx | native `<details>` collapses | Sidebar, 68ch reading column and contents; both side parts fold on narrow screens. |
-| AppShell | shell/AppShell.tsx | native landmarks | Top bar, side nav and content for applications, with compact density for everything inside. `themeControl` replaces or suppresses the default. |
+| AppShell | shell/AppShell.tsx | native landmarks | Top bar, side nav and content for applications, with compact density for everything inside. `nav` is a list of items (`label`, `href`, `current`, `external`), each a compact control from the recipe with the current page marked by weight and an underline. `themeControl` replaces or suppresses the default. |
 | Collapse | shell/Collapse.tsx | native `<details>` | Shared disclosure behind the docs sidebars. |
 | LinkProvider | shell/link.tsx | React context | Lets a site pass its router link, so the shell stays router-agnostic. |
 | DensityProvider | lib/density.tsx | React context | Sets the density of a surface. AppShell and `Page variant="application"` provide `compact`; controls read it with `useDensity`. Exported from `@ejm/ui`. |
@@ -151,7 +152,7 @@ Header, Footer, ThemeToggle, ExternalLink, SiteLayout, DocsLayout, AppShell, Ski
 
 ## Docs components (docs workstream)
 
-CodeBlock, CodeTabs, Callout, ParamTable, Pager, SidebarFilter, Contents. Add a row per component.
+CodeBlock, CodeTabs, Callout, ParamTable, Pager, SidebarFilter, Contents, and the specimens a docs page shows the kit with. Add a row per component.
 
 | Component | File | Primitive | Why |
 | --- | --- | --- | --- |
@@ -168,6 +169,11 @@ CodeBlock, CodeTabs, Callout, ParamTable, Pager, SidebarFilter, Contents. Add a 
 | Callout | docs/Callout.tsx | native `<aside>` | Note, tip or warning with a text label first and a left rule, no box. |
 | ParamTable | docs/ParamTable.tsx | native `<table>` | Mono names and tabular numerals, scrolling inside its own region. |
 | Pager | docs/Pager.tsx | native `<nav>` and links | Previous and next links that name the adjacent pages. |
+| Specimen | docs/Specimen.tsx | native `role="group"` named by its label | One labelled example. With `theme` it starts that theme on the Paper ground (`data-theme` on any element), so a docs page shows a part in a given theme without a theme prop on the part. |
+| Compare | docs/Specimen.tsx | native grid | Two specimens side by side from 64rem, stacked below: comfortable beside compact, say. |
+| ThemePair | docs/Specimen.tsx | two Specimens in a Compare | The same children in a light and a dark specimen. Each copy has its own state and ids. |
+| TypeScale | docs/Specimen.tsx | native paragraphs in hairline rows | The six type sizes, each in its own size, from the kit's own list. |
+| Elevations | docs/Elevations.tsx | window samples | The three shadow levels on window samples, the only object that carries them. |
 | DocHead | docs/model.tsx | native header | Page title and lead from the content model. |
 | DocsPage | docs/DocsPage.tsx | live docs shell | Sidebar, contents, reading surface, code controls and pager around optional static prose. Code renders as plain source when no server highlighting callback is supplied, including inside a static boundary. |
 | Prose | docs/Prose.tsx | reading surface | Shared body type for docs content. Inline code takes the base style. |

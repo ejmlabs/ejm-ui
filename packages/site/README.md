@@ -74,6 +74,12 @@ The source check accepts:
   namespaces work too.
 - The public `docNavigation()` helper spread from `@ejm/ui/docs`. It returns
   route data rather than visual props. Other JSX spreads are opaque and fail.
+- A local CSS entry inside `src` imported as a module (`import './styles.css'`)
+  or by its URL (`import sheet from './styles.css?url'`, to link one stylesheet
+  per route). The file itself is checked like any consumer CSS.
+
+The gallery in `apps/gallery` passes the same check, with no exemption, so it
+proves that a site builds from the kit alone.
 
 It rejects local CSS rules and imports, theme or utility declarations, inline
 styles, `<style>` elements, stylesheet links, raw markup through

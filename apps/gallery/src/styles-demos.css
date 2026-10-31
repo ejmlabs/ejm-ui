@@ -3,6 +3,3 @@
 @import "@ejm/demos/cli.css";
 @import "@ejm/demos/ide-preview.css";
 @import "@ejm/demos/harness.css";
-@source "./frame.tsx";
-@source "./island.tsx";
-@source "./routes/demos.tsx";

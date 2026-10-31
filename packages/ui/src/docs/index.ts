@@ -7,6 +7,8 @@ export { Heading } from './Heading';
 export { Pager, type PagerLink } from './Pager';
 export { ParamTable, type Param } from './ParamTable';
 export { SidebarFilter } from './SidebarFilter';
+export { Compare, Specimen, ThemePair, TypeScale, type SpecimenProps, type SpecimenTheme } from './Specimen';
+export { Elevations } from './Elevations';
 export { languageName, tokenize, type Role as TokenRole, type Run as TokenRun } from './highlight-all';
 export { DocBody, DocHead, DocBlocks, navGroups, pageContents, pageHref, pagerFor, type Block as DocBlock, type DocPage, type DocSection, type DocSet } from './model';
 

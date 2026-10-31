@@ -25,15 +25,16 @@ const itemClass = 'touch-target inline-flex min-h-11 items-center rounded-contro
 
 /**
  * The site header, sticky on the page ground with no box or rule. The identity is at the left; at the right the nav, then the
- * ThemeToggle, always last. The nav is one landmark. Below 768px its list folds into a native <details> menu (NavMenu), so it works
- * without scripts and takes no space when closed (the open menu is an overlay, so nothing moves). It sets the sticky offset
- * through --ejm-header-h and keeps clear of the notch with safe-area insets.
+ * ThemeToggle, always last. The nav is one landmark. When the header is narrower than 48rem (768px) its list folds into a native
+ * <details> menu (NavMenu), so it works without scripts and takes no space when closed (the open menu is an overlay, so nothing
+ * moves). The switch follows the header's own width, a container query, so a header in a narrow column shows the menu at any
+ * viewport width. It sets the sticky offset through --ejm-header-h and keeps clear of the notch with safe-area insets.
  */
 export function Header({ identity, themeControl, homeLabel = 'Home', homeHref = '/', nav = [], band, linkComponent }: HeaderProps) {
   const ambient = useLinkComponent();
   const Link = linkComponent ?? ambient;
   return (
-    <header data-band={band} className="band sticky top-0 z-40 pt-[env(safe-area-inset-top)]">
+    <header data-band={band} className="band @container sticky top-0 z-40 pt-[env(safe-area-inset-top)]">
       <div className="page-inset flex h-(--ejm-header-h) items-center justify-between gap-4">
         <Link href={homeHref} aria-label={homeLabel} className="-ms-2 inline-flex min-h-11 items-center rounded-control px-2 text-fg hover:bg-tone">
           {identity.artwork ? <Brand {...identity.artwork} name={identity.name} /> : <span className="text-heading tracking-tight">{identity.name}</span>}
@@ -41,10 +42,10 @@ export function Header({ identity, themeControl, homeLabel = 'Home', homeHref = 
 
         <div className="flex items-center gap-1">
           {nav.length > 0 && (
-            // One landmark. Above 768px the list is shown and the disclosure is display:none; below it the other way round, so only one
-            // of them is ever in the accessibility tree.
+            // One landmark. In a header at least 48rem wide the list is shown and the disclosure is display:none; below it the other way
+            // round, so only one of them is ever in the accessibility tree.
             <nav aria-label="Main">
-              <ul className="hidden items-center gap-1 md:flex">
+              <ul className="hidden items-center gap-1 @3xl:flex">
                 {nav.map(item => (
                   <li key={item.href}>
                     <NavLink item={item} link={Link} className={itemClass} />

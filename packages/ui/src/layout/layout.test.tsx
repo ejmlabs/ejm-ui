@@ -8,7 +8,21 @@ import { LinkProvider } from '../shell/link';
 import { expectAccessible, renderIn, themes } from '../components/test-setup';
 import { DensityProvider, useDensity } from '../lib/density';
 import { NextHeadingLevel } from '../lib/heading';
-import { Band, Facts, Fact, Hero, Page, ProductStage, ProductWindow, Row, Rows, Rule, SectionHead, Stat, Status, Text } from './index';
+import { Band, ControlGroup, Facts, Fact, Hero, Page, ProductStage, ProductWindow, Row, Rows, Rule, SectionHead, Stat, Status, Text } from './index';
+
+describe('ControlGroup', () => {
+  it('names a frameless group and disables every control in it while text and links stay', () => {
+    const { rerender } = render(<ControlGroup label="Page examples" disabled><button type="button">Save</button><a href="#x">Read</a></ControlGroup>);
+    const group = screen.getByRole('group', { name: 'Page examples' });
+    expect(group.tagName).toBe('FIELDSET');
+    expect(group).toHaveClass('min-w-0');
+    expect(group.querySelector('legend')).toHaveClass('sr-only');
+    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+    expect(screen.getByRole('link', { name: 'Read' })).toHaveAttribute('href', '#x');
+    rerender(<ControlGroup label="Page examples"><button type="button">Save</button></ControlGroup>);
+    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+  });
+});
 
 describe('application layout', () => {
   it('keeps the default column bare and gives the application variant its rhythm', () => {

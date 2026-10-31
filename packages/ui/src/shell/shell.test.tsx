@@ -197,6 +197,15 @@ describe('Header', () => {
     expect(rows.slice(1).every(row => row.className.includes('hairline-t'))).toBe(true);
   });
 
+  it('switches between the list and the menu by its own width, a container query, not the viewport', () => {
+    const { container } = render(<Header {...header} />);
+    const banner = screen.getByRole('banner');
+    expect(banner).toHaveClass('@container');
+    expect(banner.querySelector('nav > ul')).toHaveClass('hidden', '@3xl:flex');
+    expect(container.querySelector('details')).toHaveClass('@3xl:hidden');
+    expect(banner.innerHTML).not.toMatch(/\bmd:(flex|hidden)\b/);
+  });
+
   it('closes the menu on a press outside it', async () => {
     const user = userEvent.setup();
     const { container } = render(<><Header {...header} /><p>elsewhere</p></>);
@@ -343,9 +352,30 @@ describe('DocsLayout', () => {
 });
 
 describe('AppShell', () => {
+  const appNav = [{ label: 'Files', href: '#files', current: true }, { label: 'Search', href: '#search' }];
+
+  it('renders the nav items as compact controls and marks only the current one', () => {
+    render(<AppShell brand={<span>app</span>} nav={appNav}>x</AppShell>);
+    const links = within(screen.getByRole('navigation', { name: 'Navigation' })).getAllByRole('link');
+    expect(links.map(l => l.textContent)).toEqual(['Files', 'Search']);
+    expect(links[0]).toHaveAttribute('aria-current', 'page');
+    expect(links[1]).not.toHaveAttribute('aria-current');
+    for (const link of links) expect(link).toHaveClass('min-h-8', 'compact-target', 'touch-target', 'rounded-control', 'text-sm', 'hover:bg-tone');
+    expect(links[0]).toHaveClass('aria-[current=page]:font-semibold', 'aria-[current=page]:underline');
+  });
+
+  it('routes internal items through the link component and opens external ones as external', () => {
+    const Router: LinkComponent = ({ href, ...p }) => <a data-router href={href} {...p} />;
+    render(<AppShell brand={<span>app</span>} linkComponent={Router} nav={[{ label: 'Files', href: '/files' }, { label: 'Status', href: 'https://status.example', external: true }]}>x</AppShell>);
+    const nav = screen.getByRole('navigation', { name: 'Navigation' });
+    expect(within(nav).getByRole('link', { name: 'Files' })).toHaveAttribute('data-router');
+    expect(within(nav).getByRole('link', { name: /Status/ })).not.toHaveAttribute('data-router');
+    expect(within(nav).getByRole('link', { name: /Status/ })).toHaveAttribute('rel', 'external noopener');
+  });
+
   it('has a top bar with the toggle last, a labelled side nav and main', async () => {
     const { container } = render(
-      <AppShell brand={<span>ejm-ide</span>} nav={<ul><li><a href="/files">Files</a></li></ul>} actions={<button type="button">Search</button>}>
+      <AppShell brand={<span>ejm-ide</span>} nav={[{ label: 'Files', href: '/files' }]} actions={<button type="button">Search</button>}>
         <h1>Workspace</h1>
       </AppShell>,
     );
@@ -359,7 +389,7 @@ describe('AppShell', () => {
   });
 
   it('keeps the 56px top bar', () => {
-    render(<AppShell brand={<span>app</span>} nav={<p>nav</p>}>x</AppShell>);
+    render(<AppShell brand={<span>app</span>} nav={appNav}>x</AppShell>);
     expect(screen.getByRole('banner').firstElementChild).toHaveClass('h-14');
   });
 
@@ -371,7 +401,7 @@ describe('AppShell', () => {
       <>
         <Button>Outside</Button>
         <Density />
-        <AppShell brand={<span>app</span>} nav={<p>nav</p>}>
+        <AppShell brand={<span>app</span>} nav={appNav}>
           <Button>Inside</Button>
           <Density />
         </AppShell>
@@ -384,12 +414,12 @@ describe('AppShell', () => {
   });
 
   it('makes the theme toggle in the bar a compact icon button', () => {
-    render(<AppShell brand={<span>app</span>} nav={<p>nav</p>}>x</AppShell>);
+    render(<AppShell brand={<span>app</span>} nav={appNav}>x</AppShell>);
     expect(screen.getByRole('button', { name: 'Switch to dark theme' })).toHaveClass('size-8', 'compact-target');
   });
 
   it('gives the home link the control recipe: the control radius and a bg-tone hover', () => {
-    const { container } = render(<AppShell brand={<span>app</span>} nav={<p>nav</p>}>x</AppShell>);
+    const { container } = render(<AppShell brand={<span>app</span>} nav={appNav}>x</AppShell>);
     expect(screen.getByRole('link', { name: 'Home' })).toHaveClass('rounded-control', 'hover:bg-tone');
     expect(container.innerHTML).not.toMatch(/transition-(colors|all)/);
   });

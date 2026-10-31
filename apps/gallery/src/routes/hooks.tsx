@@ -1,7 +1,8 @@
 import {
-  Actions, Button, Fact, Facts, Hero, Input, Reveal, Section, Stagger, Text, useClipboard, useContainerQuery, useDrawOn, useHotkeys, useInView,
+  Actions, Art, Button, Fact, Facts, Hero, Input, Reveal, Section, Stagger, Text, useClipboard, useContainerQuery, useHotkeys, useInView,
   useMediaQuery, useReducedMotion, useTheme,
 } from '@ejm/ui';
+import flow from '@ejm/ui/art/inline/divider-flow.svg?raw';
 import { useState } from 'react';
 
 // Live demos of the hooks and motion primitives. Each demo is a subsection: the hook's name, what it does, its value and the control that changes it.
@@ -43,10 +44,9 @@ function ContainerDemo() {
         <Fact label="width">{width ?? 'unmeasured'}px</Fact>
         <Fact label="at least 420px">{String(matches)}</Fact>
       </Facts>
-      <Text as="p" variant="muted">Drag the corner of the line below.</Text>
-      {/* The one raw element here: a resizable box the hook measures. */}
-      <div ref={ref} className="hairline min-w-48 w-full" style={{ resize: 'horizontal', overflow: 'auto' }}>
-        <Text as="p" variant="muted">{matches ? 'wide layout' : 'narrow layout'}</Text>
+      {/* The one raw element here: the column the hook measures. It takes the width of the section body. */}
+      <div ref={ref}>
+        <Text as="p" variant="muted">Resize the window: this column reads {matches ? 'wide' : 'narrow'}.</Text>
       </div>
     </>
   );
@@ -83,16 +83,6 @@ function HotkeysDemo() {
   );
 }
 
-function DrawDemo() {
-  const ref = useDrawOn<SVGSVGElement>();
-  return (
-    <svg ref={ref} viewBox="0 0 120 60" className="art max-w-64" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2">
-      <path pathLength="1" d="M4 50 C 30 4, 60 4, 116 50" />
-      <path pathLength="1" d="M4 30 H 116" />
-      <path pathLength="1" d="M60 4 V 56" />
-    </svg>
-  );
-}
 
 export default function HooksPage() {
   return (
@@ -145,8 +135,8 @@ export default function HooksPage() {
           </Stagger>
         </Section>
         <Section title={<code>useDrawOn</code>}>
-          <p>Draws the art on once when it is seen. Without scripts or under reduced motion it is fully drawn.</p>
-          <DrawDemo />
+          <p>Draws the art on once when it is seen. <code>Art</code> with <code>drawOn</code> uses it. Without scripts or under reduced motion it is fully drawn.</p>
+          <Art svg={flow} drawOn />
         </Section>
       </Section>
     </>

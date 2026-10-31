@@ -79,7 +79,9 @@ structure.
   `packages/core/contract.json`. `node scripts/parity.mjs --strict` compares the web, Ink and
   Rust catalogs with it.
 - Show it in the gallery (`apps/gallery`): the API at `/docs/components`, examples in both themes
-  at `/components`.
+  at `/components` (`ThemePair`, `Specimen`). The design guard checks the gallery like any
+  consumer, so a gallery page uses kit parts only. When it needs a class, the kit is missing a
+  part: add it here first.
 - Export it as `ejm-ui-packages` says. Anything outside `exports` is private.
 
 ## Recipes

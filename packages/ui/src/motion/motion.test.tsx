@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Reveal } from './Reveal';
 import { Stagger } from './Stagger';
 import { useDrawOn } from './useDrawOn';
+import { Art } from '../layout/Art';
 
 type Entry = { isIntersecting: boolean; boundingClientRect: { top: number } };
 let fire: (e: Partial<Entry>) => void;
@@ -187,5 +188,17 @@ describe('useDrawOn', () => {
     act(() => fire({ isIntersecting: true }));
     expect(box().classList.contains('draw-on')).toBe(true);
     expect(box().classList.contains('art')).toBe(true);
+  });
+
+  it('draws Art on when it scrolls into view, and only with drawOn', () => {
+    setup();
+    const svg = '<svg class="art"><path pathLength="1" d="M0 0H4"/></svg>';
+    const { container } = render(<><Art svg={svg} drawOn /><Art svg={svg} /></>);
+    const [drawn, still] = [...container.querySelectorAll('[aria-hidden="true"]')].map(el => el.classList);
+    expect(drawn!.contains('draw-on')).toBe(false);
+    act(() => fire({ isIntersecting: true }));
+    expect(drawn!.contains('draw-on')).toBe(true);
+    expect(still!.contains('draw-on')).toBe(false);
+    expect(renderToString(<Art svg={svg} drawOn />)).not.toContain('draw-on');
   });
 });

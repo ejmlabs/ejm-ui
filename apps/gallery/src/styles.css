@@ -1,8 +1,1 @@
 @import "@ejm/ui/styles.css";
-/* The gallery's own files that use utility classes (specimen layouts and token samples). The kit's classes come from the import above. */
-@source "./frame.tsx";
-@source "./island.tsx";
-@source "./specimen.tsx";
-@source "./tokens.tsx";
-@source "./windows.tsx";
-@source "./routes";

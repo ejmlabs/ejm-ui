@@ -1,6 +1,5 @@
 import { formatDuration, formatNumber, type StatState } from '@ejm/core';
-import { ActivityList, ChartArea, ChartBar, ChartLine, ContentFlow, Dashboard, Hero, MetricGrid, Rule, Section, Stat, Table, type ActivityItem, type DashboardProps } from '@ejm/ui';
-import { ThemePair } from '../specimen';
+import { ActivityList, ChartArea, ChartBar, ChartLine, ContentFlow, Dashboard, Hero, MetricGrid, Rule, Section, Stat, Table, ThemePair, type ActivityItem, type DashboardProps } from '@ejm/ui';
 
 // The application kit: a dashboard, the three chart types and every empty, loading and error state, in light and dark. Sections
 // alternate their grounds on their own. Every figure here is SAMPLE data, invented for the demo. None of it is a real customer or a real metric.
@@ -59,15 +58,30 @@ const stats: DashboardProps['stats'] = [
   { label: 'median run time', figure: formatDuration(72_000), delta: { text: '-6.0% vs last week', direction: 'down', status: 'ok' } },
 ];
 
-const dashboard: DashboardProps = {
-  title: 'Agent activity',
-  period: 'Oct 5 to Oct 18, 2026',
-  sample: true,
-  stats,
-  chart: { title: 'Sessions per day', description: 'Sessions by how they ended', categories: days, series: sessions, categoryLabel: 'Day', unit: 'sessions' },
-  table: { title: 'Busiest tools', columns: toolColumns, rows: toolRows },
-  activity: { title: 'Recent activity', items: feed, now: NOW },
-};
+const chart: DashboardProps['chart'] = { title: 'Sessions per day', description: 'Sessions by how they ended', categories: days, series: sessions, categoryLabel: 'Day', unit: 'sessions' };
+const table: DashboardProps['table'] = { title: 'Busiest tools', columns: toolColumns, rows: toolRows };
+const activity: DashboardProps['activity'] = { title: 'Recent activity', items: feed, now: NOW };
+
+type SampleProps = Partial<Pick<DashboardProps, 'title' | 'state' | 'action' | 'onAction' | 'stats' | 'chart' | 'table' | 'activity'>>;
+
+/** The sample dashboard, with named props a demo may change. */
+function SampleDashboard({ title = 'Agent activity', state, action, onAction, stats: figures = stats, chart: plot = chart, table: list = table, activity: feedProps = activity }: SampleProps) {
+  return (
+    <Dashboard
+      as="h3"
+      title={title}
+      period="Oct 5 to Oct 18, 2026"
+      sample
+      state={state}
+      action={action}
+      onAction={onAction}
+      stats={figures}
+      chart={plot}
+      table={list}
+      activity={feedProps}
+    />
+  );
+}
 
 const Charts = (
   <>
@@ -118,7 +132,7 @@ export default function App() {
       </Hero>
 
       <Section title="One row of figures, then the detail." kicker="01 / Dashboard">
-        <Dashboard {...dashboard} as="h3" />
+        <SampleDashboard />
       </Section>
 
       <Section
@@ -138,17 +152,15 @@ export default function App() {
       </Section>
 
       <Section title="The whole dashboard, and parts of it." kicker="04 / Dashboard states">
-        <Dashboard {...dashboard} as="h3" title="Loading" state="loading" />
-        <Dashboard {...dashboard} as="h3" title="Error" state="error" action={{ key: 'r', label: 'Try again' }} onAction={none} />
-        <Dashboard {...dashboard} as="h3" title="Empty" state="empty" action={{ label: 'Start a session' }} onAction={none} />
-        <Dashboard
-          {...dashboard}
-          as="h3"
+        <SampleDashboard title="Loading" state="loading" />
+        <SampleDashboard title="Error" state="error" action={{ key: 'r', label: 'Try again' }} onAction={none} />
+        <SampleDashboard title="Empty" state="empty" action={{ label: 'Start a session' }} onAction={none} />
+        <SampleDashboard
           title="Partly failed"
           stats={stats.map((s, i) => (i === 2 ? { ...s, state: 'error' as const } : s))}
-          chart={{ ...dashboard.chart, state: 'error', action: { label: 'Try again' }, onAction: none }}
-          table={{ ...dashboard.table, rows: [], state: 'empty', action: { label: 'Clear the filter' }, onAction: none }}
-          activity={{ ...dashboard.activity, state: 'loading' }}
+          chart={{ ...chart, state: 'error', action: { label: 'Try again' }, onAction: none }}
+          table={{ ...table, rows: [], state: 'empty', action: { label: 'Clear the filter' }, onAction: none }}
+          activity={{ ...activity, state: 'loading' }}
         />
       </Section>
     </>

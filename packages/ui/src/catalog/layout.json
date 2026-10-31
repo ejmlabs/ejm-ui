@@ -119,5 +119,9 @@
   ],
   "PaletteSwatch": [
     "default"
+  ],
+  "ControlGroup": [
+    "default",
+    "disabled"
   ]
 }

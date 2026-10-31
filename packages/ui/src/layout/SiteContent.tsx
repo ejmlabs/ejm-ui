@@ -71,6 +71,14 @@ export function FileDetail({ children }: ContentProps) {
   return <span className="mt-1 block break-all text-meta text-muted tabular-nums">{children}</span>;
 }
 
+/**
+ * A named group of controls with no frame or space of its own: a native fieldset whose legend is for assistive technology only.
+ * `disabled` disables every control inside it, while its text and links stay readable (a page holds its examples until its code is ready).
+ */
+export function ControlGroup({ label, disabled, children }: { label: string; disabled?: boolean; children: ReactNode }) {
+  return <fieldset disabled={disabled} className="min-w-0"><legend className="sr-only">{label}</legend>{children}</fieldset>;
+}
+
 /** A programmatic focus target retains the global visible focus rule. */
 export function FocusRegion({ ref, ...props }: SiteContentProps & { ref?: Ref<HTMLDivElement> }) {
   return <div {...props} ref={ref} />;

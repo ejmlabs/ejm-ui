@@ -4,7 +4,7 @@ import type { LinkComponent, NavItem } from './link';
 import { NavLink } from './NavLink';
 
 /**
- * Private to the shell, not exported from its barrel. The header menu below 768px: a native <details>, so it opens and closes with no
+ * Private to the shell, not exported from its barrel. The header menu in a header narrower than 48rem: a native <details>, so it opens and closes with no
  * script and takes no space when closed. Open, the list is an overlay under the bar (window radius, hairline border, float shadow,
  * inset to the page gutter), so nothing moves. While it is open Escape closes it and returns focus to the button, as does a press
  * outside, and choosing a link closes it.
@@ -33,7 +33,7 @@ export function NavMenu({ nav, link }: { nav: readonly NavItem[]; link: LinkComp
   }, [open]);
 
   return (
-    <details ref={menu} className="group md:hidden" onToggle={e => setOpen(e.currentTarget.open)}>
+    <details ref={menu} className="group @3xl:hidden" onToggle={e => setOpen(e.currentTarget.open)}>
       <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-control px-3 text-fg hover:bg-tone marker:hidden [&::-webkit-details-marker]:hidden">
         <span>Menu</span>
         <Menu aria-hidden className="size-5 group-open:hidden" />

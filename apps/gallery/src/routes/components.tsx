@@ -1,10 +1,10 @@
 import {
-  Actions, AppField, AppForm, Badge, Button, Checkbox, ContentFlow, DensityProvider, Dialog, Disclosure, Fact, Facts, Hero, Input, KeyHints, Menu,
-  MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger, Prompt, RadioGroup, Section, Select, StateBlock, Status, Switch, Table,
-  Tabs, Text, Textarea, ToastProvider, Tooltip, useToast,
+  Actions, AppField, AppForm, Badge, Button, Checkbox, Compare, ContentFlow, DensityProvider, Dialog, Disclosure, Fact, Facts, Hero, Input, KeyHints,
+  Menu, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger, Prompt, RadioGroup, Section, Select, Specimen, StateBlock, Status, Switch,
+  Table, Tabs, Text, Textarea, ThemePair, ToastProvider, Tooltip, useToast,
 } from '@ejm/ui';
+import { Plus } from 'lucide-react';
 import { useId, useState } from 'react';
-import { Compare, Pane, PlusIcon, ThemePair } from '../specimen';
 
 // Every control, drawn from the one control recipe. Each part is a block of the kit, so nothing here chooses a size, radius, color or spacing.
 // Sections alternate Mist and Paper on their own and nested sections take the next heading level. Overlays open on the page theme.
@@ -106,7 +106,7 @@ function Overlays() {
       <Section title="Tooltip">
         <Actions>
           <Tooltip content="Copy the install command"><Button variant="secondary">Copy</Button></Tooltip>
-          <Tooltip content="Add a project"><Button variant="secondary" size="icon" aria-label="Add a project"><PlusIcon /></Button></Tooltip>
+          <Tooltip content="Add a project"><Button variant="secondary" size="icon" aria-label="Add a project"><Plus /></Button></Tooltip>
         </Actions>
       </Section>
       <Section title="Toast">
@@ -140,7 +140,7 @@ export default function ComponentsPage() {
           <Actions>
             <Button arrow>Get started</Button>
             <Button variant="link" arrow>Read the docs</Button>
-            <Button size="icon" variant="secondary" aria-label="Add"><PlusIcon /></Button>
+            <Button size="icon" variant="secondary" aria-label="Add"><Plus /></Button>
             <Button asChild variant="secondary"><a href="/docs/components/">A link as a button</a></Button>
           </Actions>
         </Section>
@@ -254,12 +254,12 @@ export default function ComponentsPage() {
         intro={<p>Density comes from the surface. AppShell and an application Page make controls compact. DensityProvider sets it for any region. Touch keeps 44 px in both.</p>}
       >
         <Compare>
-          <Pane label="Comfortable, for sites">
+          <Specimen label="Comfortable, for sites">
             <DensityProvider density="comfortable"><ControlSet name="comfortable" /></DensityProvider>
-          </Pane>
-          <Pane label="Compact, for applications">
+          </Specimen>
+          <Specimen label="Compact, for applications">
             <DensityProvider density="compact"><ControlSet name="compact" /></DensityProvider>
-          </Pane>
+          </Specimen>
         </Compare>
       </Section>
 

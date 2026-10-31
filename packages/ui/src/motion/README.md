@@ -8,7 +8,7 @@ Transform and opacity only. No animation library: CSS keyframes from `styles.css
 | `useReveal({ watchdogMs })` | The hook behind `Reveal`. Put the returned ref on any element. |
 | `Stagger` | `<Stagger as="ul" effect="enter\|reveal\|fade">`. Gives each child element the effect class and `--ejm-i` by position. CSS only, for what is on screen at load. |
 | `staggerStyle(i, delayMs?)` | The `--ejm-i` and `--ejm-delay` style for one step. The index stops at 8, so a staged entrance is at most 8 x 60 + 640 = 1120ms. |
-| `useDrawOn()` | Ref for an inline `<svg class="art">`. Adds `draw-on` when it is first seen. |
+| `useDrawOn()` | Ref for an inline `<svg class="art">` or an element around it. Adds `draw-on` when it is first seen. `Art` uses it for `drawOn`, which is the way a guarded consumer reaches it. |
 
 ## Closed props
 

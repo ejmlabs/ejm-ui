@@ -8,13 +8,13 @@ Every component here is closed: no `className`, no `style`, no raw HTML. The kit
 | --- | --- |
 | `SiteLayout` | Skip link, `Header`, `<main id="main" tabIndex={-1}>`, `Footer`. The footer sits at the bottom of short pages. |
 | `Brand` | Decorative mark and optional name, intrinsic proportions, optional dark variant, and fixed navigation, project or footer placement. The surrounding link or heading supplies the accessible name. |
-| `Header` | Sticky, on the page ground (an opaque `band`, so text never sits on page content while scrolling; `band` sets a matching ground when the page opens on Mist, Sage or Ink), no box or rule. Structured `identity` (required) at the left. Nav, then `ThemeToggle` last at the far right. Below 768px the nav is one native `<details>` menu. |
+| `Header` | Sticky, on the page ground (an opaque `band`, so text never sits on page content while scrolling; `band` sets a matching ground when the page opens on Mist, Sage or Ink), no box or rule. Structured `identity` (required) at the left. Nav, then `ThemeToggle` last at the far right. When the header is narrower than 48rem (768px) the nav is one native `<details>` menu. The switch is a container query on the header, so a header in a narrow column shows the menu at any viewport width. |
 | `Footer` | Ink band with structured `identity`, link columns, a `privacy` slot, a `legal` line, and a safe-area bottom inset. |
 | `ThemeToggle` | Sun and moon, named for its action. The ghost icon button of the control recipe: 44px, 32px on a compact surface, a pill. Uses `useTheme`. Takes no props. |
 | `ExternalLink` | `rel="external noopener"`, an arrow, and ", opens another site" for screen readers. Always in the `link` style. |
 | `SkipLink` | `<a href="#main" class="skip-link">`. Included by `SiteLayout` and `AppShell`. Its only prop is the label. |
 | `DocsLayout` | Grid for a docs page: `sidebar`, `contents` and the article in a 68ch column. Put it inside `SiteLayout`. |
-| `AppShell` | Top bar (`actions`, then the theme control), side `nav` and content, for applications. A whole page frame with its own skip link and `main`. It makes every control inside compact (see Density). |
+| `AppShell` | Top bar (`actions`, then the theme control), side `nav` and content, for applications. `nav` is a list of `NavItem`s (`label`, `href`, `current`, `external`); each is a compact control from the recipe (32px on a fine pointer, 44px on touch, the control radius, a `bg-tone` hover) and the current one is marked by weight and an underline. A whole page frame with its own skip link and `main`. It makes every control inside compact (see Density). |
 | `Collapse` | The shared disclosure behind the sidebars: one `<details>`, labelled on narrow screens, always visible from a breakpoint. It takes no class: `DocsLayout` and `AppShell` place and stick it through the cell around it. |
 | `LinkProvider`, `useLinkComponent`, `LinkComponent`, `NavItem` | Router-agnostic links. |
 
@@ -62,7 +62,7 @@ One recipe for every control in the shell, and one for every link, both instant 
 
 ## Accessibility notes
 
-- Landmarks: `header` (banner) with one `nav` named "Main" (the list above 768px, the Menu disclosure below, never both in the accessibility tree), `main#main` with `tabindex="-1"`, `footer` (contentinfo) with one `nav` named "Footer" whose column headings name the groups, and the docs navs "Documentation", "On this page" and "Previous and next pages". Every name is unique, which `shell.test.tsx` checks with axe on a whole docs page. A router can move focus to `main` after navigation. Each page has one `h1`.
+- Landmarks: `header` (banner) with one `nav` named "Main" (the list in a header at least 48rem wide, the Menu disclosure below, never both in the accessibility tree), `main#main` with `tabindex="-1"`, `footer` (contentinfo) with one `nav` named "Footer" whose column headings name the groups, and the docs navs "Documentation", "On this page" and "Previous and next pages". Every name is unique, which `shell.test.tsx` checks with axe on a whole docs page. A router can move focus to `main` after navigation. Each page has one `h1`.
 - `aria-current="page"` marks the current link, with a bold underline as well, so it is not color alone.
 - The toggle's name changes with its state ("Switch to dark theme"), and a polite status region says the result. It does not use `aria-pressed`, so name and state never disagree.
 - Targets are 44px: the toggle, nav items, the Menu button and the home link by height, the footer links through `touch-target` on coarse pointers. Rows inside the phone menu clip their focus outline, so they draw it inside the row. Contrast was checked by script in both themes for header, footer, nav and app shell.

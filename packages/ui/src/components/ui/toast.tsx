@@ -66,7 +66,7 @@ export function ToastProvider({ children, duration = 5000 }: { children: ReactNo
             </div>
             <div className="-me-2 -mt-2 shrink-0">
               <ToastPrimitive.Close asChild>
-                <Button variant="ghost" size="icon" aria-label="Dismiss"><X aria-hidden className="size-4" /></Button>
+                <Button variant="ghost" size="icon" aria-label="Dismiss"><X aria-hidden /></Button>
               </ToastPrimitive.Close>
             </div>
           </ToastPrimitive.Root>

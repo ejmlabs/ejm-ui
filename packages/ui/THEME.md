@@ -13,7 +13,7 @@ One stylesheet styles every component in `@ejm/ui`: layouts, shell, controls, do
 
 The stylesheet scans only the kit's own source. `base.css` imports Tailwind with `source(none)`, so automatic source detection is off and no folder of the consumer is scanned. `styles.css` adds an `@source` line for each component folder (`components`, `layout`, `shell`, `hooks`, `motion`, `docs`, `app` and `lib`) and for `control-recipes.mjs`, and leaves out tests. A consumer needs no `source(none)` on its import and no `@source` line of its own, and there is no partial to forget: a class the kit writes is always in the sheet.
 
-Two scripts keep that true. `node packages/ui/scripts/check-sources.mjs` checks that every utility a component folder uses is generated, that the sheet scans nothing outside `src` and no test file, and that `styles-site.css` and `styles-docs.css` generate exactly what `styles.css` does. `node packages/ui/scripts/check-classes.mjs` checks that every class string the kit writes builds CSS at all, because Tailwind drops a class it cannot build without an error, so a typo or a removed token such as `bg-surface` would render unstyled. `check-sources.mjs` prints the size of the sheet: 15.6 KB gzip at this revision.
+Two scripts keep that true. `node packages/ui/scripts/check-sources.mjs` checks that every utility a component folder uses is generated, that the sheet scans nothing outside `src` and no test file, and that `styles-site.css` and `styles-docs.css` generate exactly what `styles.css` does. `node packages/ui/scripts/check-classes.mjs` checks that every class string the kit writes builds CSS at all, because Tailwind drops a class it cannot build without an error, so a typo or a removed token such as `bg-surface` would render unstyled. `check-sources.mjs` prints the size of the sheet: 15.8 KB gzip at this revision.
 
 `@ejm/ui/styles-site.css` forwards to `styles.css`, and `@ejm/ui/styles-docs.css` is empty, because `styles.css` already covers the docs parts. Both stay for consumers pinned before the one-stylesheet change; replace their imports with `styles.css`.
 
@@ -238,10 +238,10 @@ Every control comes from one recipe (`packages/ui/src/control-recipes.mjs` for b
 
 | Property | Value |
 | --- | --- |
-| Height | `min-h-11` (44px). Compact: `min-h-8` with `compact-target` (32px on a fine pointer), and `touch-target` keeps 44px on a coarse pointer. This covers Button, Input, Select, Tabs triggers, menu items, Disclosure summaries, header nav items, the theme toggle, and checkbox, radio and switch rows. Textarea keeps `min-h-28`. |
+| Height | `min-h-11` (44px). Compact: `min-h-8` with `compact-target` (32px on a fine pointer), and `touch-target` keeps 44px on a coarse pointer. This covers Button, Input, Select, Tabs triggers, menu items, Disclosure summaries, header nav items, `AppShell` nav items (always compact), the theme toggle, and checkbox, radio and switch rows. Textarea keeps `min-h-28`. |
 | Radius | Buttons, switches and the theme toggle `rounded-pill`. Fields, checkboxes, menu items, nav items, tabs and the tooltip `rounded-control`. Dialog, menu, toast and the header phone menu `rounded-window`. Radio buttons `rounded-full`. |
 | Type | `text-base` (16px), `text-sm` (14px) when compact. Weight 600 for buttons and the current tab, 400 otherwise. Labels and metadata use `text-meta`. |
-| Button variants | `primary`: Sage fill, Forest on hover. `secondary`: transparent with `border border-control`, `bg-tone` on hover (a hairline outline, never a fill). `ghost`: transparent, `bg-tone` on hover. `link`: underlined text. `danger`: the danger fill. Sizes `md` and `icon` only (`icon` is a 44px square, 32px compact). |
+| Button variants | `primary`: Sage fill, Forest on hover. `secondary`: transparent with `border border-control`, `bg-tone` on hover (a hairline outline, never a fill). `ghost`: transparent, `bg-tone` on hover. `link`: underlined text. `danger`: the danger fill. Sizes `md` and `icon` only (`icon` is a 44px square, 32px compact, and sizes its `svg` child to 20px, 16px compact). |
 | Hover | A filled control changes to its hover token. Every other interactive surface (ghost and secondary buttons, nav items, menu items, rows, tabs) fills with `hover:bg-tone`. Links thicken their underline to 2px. All instant. |
 | Pressed | Buttons sink to `scale-[0.97]` under `motion-safe`. Nothing else scales. |
 | Focus | The global `:focus-visible` outline: 2px `--ejm-focus`, 2px offset. Components add nothing, except `focus-visible:outline-offset-[-2px]` where an ancestor clips the outline (menu items, tabs in a scroller, the phone menu rows). |
@@ -250,6 +250,10 @@ Every control comes from one recipe (`packages/ui/src/control-recipes.mjs` for b
 | Rows | List rows, fact rows, table rows and activity rows: `py-4`, compact `py-2`, separated by `hairline` and `hairline-t` only. Row text starts on the column edge. |
 | Reading width | Text and forms use `max-w-measure` (68ch). |
 | Status words | `Status` (`ok`, `warn`, `error`, `info`, `pending`) is the one vocabulary. `Badge` takes the same names plus `neutral`, and a dashboard delta takes them as `status`. |
+
+### Icons
+
+The kit has no icon set of its own. It draws its icons with `lucide-react`, and a consumer that needs one passes a lucide-react icon as the child of `Button size="icon"` (with an `aria-label` on the button). The button sizes the icon, 20px or 16px compact, whatever `size` the icon asks for, and the icon takes the button's text color. lucide-react 1.x marks an icon `aria-hidden` when it has no accessible prop. Add `lucide-react` at the kit's range (`^1.59.0`) so one copy is installed. The kit does not re-export the set: every lucide icon accepts `className` and `style`, and the design guard already rejects those on an icon in consumer source.
 
 ### Density
 
@@ -277,4 +281,4 @@ Generated art lives in `packages/ui/src/art`. The inline files (`art/inline/*.sv
 
 ## Measured
 
-`node packages/ui/scripts/check-sources.mjs` builds the one stylesheet with every class the kit uses and prints its gzip size: 15.6 KB at this revision (read in this session). It holds Tailwind's reset, the band and theme variables, the window colors, the five `@font-face` rules and the utilities of every component folder. Bytes are not a bar: load time is (see `QUALITY.md`).
+`node packages/ui/scripts/check-sources.mjs` builds the one stylesheet with every class the kit uses and prints its gzip size: 15.8 KB at this revision (read in this session). It holds Tailwind's reset, the band and theme variables, the window colors, the five `@font-face` rules and the utilities of every component folder. Bytes are not a bar: load time is (see `QUALITY.md`).

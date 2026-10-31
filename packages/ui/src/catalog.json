@@ -91,6 +91,9 @@
   "CommandLines": [
     "default"
   ],
+  "Compare": [
+    "default"
+  ],
   "ContentFlow": [
     "default"
   ],
@@ -102,6 +105,10 @@
   ],
   "Contents": [
     "default"
+  ],
+  "ControlGroup": [
+    "default",
+    "disabled"
   ],
   "Dashboard": [
     "default"
@@ -118,6 +125,9 @@
     "default"
   ],
   "DocsSidebar": [
+    "default"
+  ],
+  "Elevations": [
     "default"
   ],
   "ExternalLink": [
@@ -253,6 +263,10 @@
   "SiteLayout": [
     "default"
   ],
+  "Specimen": [
+    "default",
+    "themed"
+  ],
   "Stat": [
     "default",
     "loading",
@@ -337,6 +351,9 @@
     "invalid",
     "disabled"
   ],
+  "ThemePair": [
+    "default"
+  ],
   "ThemeToggle": [
     "default"
   ],
@@ -347,6 +364,9 @@
   "Tooltip": [
     "closed",
     "open"
+  ],
+  "TypeScale": [
+    "default"
   ],
   "VisuallyHidden": [
     "default"

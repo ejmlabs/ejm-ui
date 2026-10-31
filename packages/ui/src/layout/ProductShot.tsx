@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { cn } from '../lib/utils';
 import { IllustrationLabel, illustrationLabel } from './Illustration';
-import type { Elevation } from './ProductWindow';
+import { shadowClass, type Elevation } from '../lib/elevation';
 
 // A real capture of the real product (never a drawn window), as a figure with a hairline caption.
 //
@@ -66,7 +66,6 @@ export interface ProductShotProps {
   sizes?: string;
 }
 
-const shadow: Record<Elevation, string> = { rest: 'shadow-rest', raised: 'shadow-raised', float: 'shadow-float' };
 
 const MIME = { avif: 'image/avif', webp: 'image/webp' } as const;
 const orderOf = (v: ShotVariantData) => v.order ?? (['avif', 'webp'] as const);
@@ -145,7 +144,7 @@ export function ProductShot({ shot, alt, priority = false, frame = false, elevat
 
   return (
     <figure data-shot="" data-product={shot.product} data-kind={shot.kind ?? 'screenshot'} data-surface={shot.surface} className="m-0 min-w-0">
-      <div className={cn('w-fit max-w-full', elevation && shadow[elevation], frame && 'scheme-page overflow-hidden rounded-window border border-ui-line')}>
+      <div className={cn('w-fit max-w-full', elevation && shadowClass[elevation], frame && 'scheme-page overflow-hidden rounded-window border border-ui-line')}>
         {frame && (
           <div aria-hidden="true" data-shot-frame="" className="flex items-center gap-3 border-b border-ui-line bg-ui-panel px-4 py-3">
             <span className="flex shrink-0 gap-1.5">

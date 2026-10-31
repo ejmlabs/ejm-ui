@@ -6,5 +6,10 @@
   "DocsSidebar": ["default"],
   "Pager": ["default"],
   "ParamTable": ["default"],
-  "SidebarFilter": ["default"]
+  "SidebarFilter": ["default"],
+  "Specimen": ["default", "themed"],
+  "Compare": ["default"],
+  "ThemePair": ["default"],
+  "TypeScale": ["default"],
+  "Elevations": ["default"]
 }

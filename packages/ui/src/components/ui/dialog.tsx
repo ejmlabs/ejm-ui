@@ -53,7 +53,7 @@ export function Dialog({ open, onOpenChange, title, description, children }: Dia
           <h2 id={titleId} className="text-heading">{title}</h2>
           <div className="-me-2 -mt-2 shrink-0">
             <Button variant="ghost" size="icon" aria-label="Close" onClick={() => onOpenChange(false)}>
-              <X aria-hidden className="size-5" />
+              <X aria-hidden />
             </Button>
           </div>
         </div>
