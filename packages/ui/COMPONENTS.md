@@ -111,7 +111,7 @@ Consumers supply content, routes, artwork data and accessible state. These compo
 | ContentFlow | layout/SiteContent.tsx | native elements | Readable content and status rhythm. |
 | ContentGroup | layout/SiteContent.tsx | native elements | A heading, copy and related action. |
 | ReadingColumn | layout/SiteContent.tsx | native elements | Bounded source example width. |
-| Actions | layout/SiteContent.tsx | native elements | Wrapping standalone actions. |
+| Actions | layout/SiteContent.tsx | native elements | Wrapping standalone actions. `Hero` and `Section` draw their `actions` with it. A bare link in the row is a control, so it keeps a 44px target on touch. |
 | Note | layout/SiteContent.tsx | native elements | A nearby qualification. |
 | ContentHeading | layout/SiteContent.tsx | native elements | A secondary heading with semantic level. |
 | InlineLink | layout/InlineLink.tsx | native elements | Shared route and external link treatment. |

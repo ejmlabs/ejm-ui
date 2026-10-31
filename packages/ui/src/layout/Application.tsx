@@ -14,7 +14,7 @@ export function AppGroup({ as = 'div', ref, ...props }: AppContentProps) {
 }
 
 export function AppActions({ as = 'div', ref, ...props }: AppContentProps) {
-  return createElement(as, { ...props, ref, className: 'flex min-w-0 flex-wrap items-center gap-3' });
+  return createElement(as, { ...props, ref, className: 'flex min-w-0 flex-wrap items-center gap-3 [&>a]:touch-target [&>a]:content-center' });
 }
 
 export function AppHeading({ as: H = 'h2', ref, ...props }: ContentAttributes<HTMLHeadingElement> & { as?: 'h2' | 'h3' | 'h4'; ref?: Ref<HTMLHeadingElement> }) {

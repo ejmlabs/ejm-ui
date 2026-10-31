@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { Art } from './Art';
+import { Actions } from './SiteContent';
 
 export interface HeroProps {
   /** Mono line above the headline, for example "ejmlabs / open source projects". */
@@ -43,7 +44,7 @@ export function Hero({ eyebrow, title, children, actions, aside, art, drawOn, ti
             {(children || actions || footnote) && (
               <div className="flex flex-col gap-10 @5xl:col-span-4 @5xl:pe-6">
                 {children && <div className="text-lead max-w-measure animate-slide" style={step(2)}>{children}</div>}
-                {actions && <div className="flex flex-wrap items-center gap-x-8 gap-y-4 animate-enter" style={step(3)}>{actions}</div>}
+                {actions && <div className="animate-enter" style={step(3)}><Actions>{actions}</Actions></div>}
                 {footnote && <div className="text-meta text-muted">{footnote}</div>}
               </div>
             )}

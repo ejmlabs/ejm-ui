@@ -23,7 +23,7 @@ export const KEEP = new Set([
   'container', 'container-type', 'container-named', 'isolation', 'appearance', 'overscroll', 'overscroll-x', 'overscroll-y', 'col-start', 'col-end', 'row-start', 'row-end', 'display', 'position', 'visibility', 'z', 'sr', 'overflow', 'overflow-x', 'overflow-y', 'inset', 'inset-x', 'inset-y', 'start', 'end', 'top', 'right', 'bottom', 'left', 'aspect', 'object-fit',
   // flex and grid
   'basis', 'flex-direction', 'flex-wrap', 'flex', 'grow', 'shrink', 'order', 'grid-cols', 'col-start-end', 'grid-rows', 'row-start-end', 'gap', 'gap-x', 'gap-y',
-  'justify-content', 'justify-items', 'justify-self', 'align-items', 'align-self', 'place-items',
+  'justify-content', 'justify-items', 'justify-self', 'align-content', 'align-items', 'align-self', 'place-items',
   // spacing and size
   'p', 'px', 'py', 'ps', 'pe', 'pt', 'pr', 'pb', 'pl', 'm', 'mx', 'my', 'ms', 'me', 'mt', 'mr', 'mb', 'ml', 'space-x', 'space-y',
   'size', 'w', 'min-w', 'max-w', 'h', 'min-h', 'max-h',
