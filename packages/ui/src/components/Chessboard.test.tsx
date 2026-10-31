@@ -93,6 +93,17 @@ it('emits moves without changing the accepted position and bridges promotion cho
   expect(board.setPosition).toHaveBeenCalledWith(accepted, true);
 });
 
+it('keeps a move in progress when the host re-renders with a new getLegalMoves function', () => {
+  const { rerender } = render(<Surface {...props({ showLegalMoves: true, getLegalMoves: () => [{ square: 'e3' }] })} />);
+  const board = current();
+  board.input?.({ type: 'started', squareFrom: 'e2' });
+  const cancels = board.cancelMoveInput.mock.calls.length;
+  rerender(<Surface {...props({ showLegalMoves: true, getLegalMoves: () => [{ square: 'e4' }] })} />);
+  expect(board.cancelMoveInput).toHaveBeenCalledTimes(cancels);
+  expect(board.disableMoveInput).not.toHaveBeenCalled();
+  expect(board.enableMoveInput).toHaveBeenCalledOnce();
+});
+
 it('clears pointer hints on unconsumed Escape, preserves consumed Escape and disposes its listener', () => {
   const getLegalMoves = vi.fn(() => [{ square: 'e3' }, { square: 'd3', capture: true }]);
   const { rerender, unmount } = render(<Surface {...props({ showLegalMoves: true, getLegalMoves })} />);

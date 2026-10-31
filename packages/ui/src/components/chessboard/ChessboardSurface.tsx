@@ -129,7 +129,8 @@ export default function ChessboardSurface(props: ChessboardProps) {
       instance.cancelMoveInput();
       instance.disableMoveInput();
     };
-  }, [props.enabled, props.color, props.readOnly, props.fen, props.showLegalMoves, props.getLegalMoves]);
+    // getLegalMoves is read through `latest`, so a host need not memoize it; a new identity must not cancel a move.
+  }, [props.enabled, props.color, props.readOnly, props.fen, props.showLegalMoves]);
 
   return <div ref={element} className={cn('w-full aspect-square touch-manipulation', props.className)}
     onKeyDownCapture={event => {
