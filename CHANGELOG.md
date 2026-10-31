@@ -37,6 +37,22 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
   **Consumer pin moves.** Each moves its pin in its own repository, and none has been built against this change. studio (`ejmlabs/ejmlabs`, pinned at `a5551a0`): use `ejmlabs({ project: 'ejmlabs' })`, delete `resolve.dedupe`, the `build` options, the tsconfig `paths`, `vite-env.d.ts`, `@tailwindcss/vite`, `@vitejs/plugin-react` and `tailwindcss`, import only `@ejm/ui/styles.css` (and its demo styles) without `source(none)`, and delete the `budget` option that the size-cap removal already dropped. ejm-cli (`site/`, pinned at `f2029e5`): the same with `ejmlabs({ project: 'cli' })` beside its `docsPlugin`, plus the `styles-docs.css` import and the `ejm-ssg budget` script. ejm-chess (no pin): record one, delete `budget` and the `ejm-ssg budget` scripts, use `ejmlabs({ project: 'chess', headers })`, delete the same glue, and pass no `className` to `Chessboard` (now in ejm-ui with `useSearch`, both closed like every other export). ejm-ide and ejm-harness still use the copied design kit and are not affected until they adopt `@ejm/*`.
 
+- Close the kit gaps the gallery found, and guard the gallery like any consumer. The gallery agent worked around four gaps with local markup after the closed-kit change; each now has a closed answer in `@ejm/ui`, and every gallery file passes the design guard with no exemption. This source change does not publish a package or move any consumer's pin.
+
+  **`AppShell` nav items. Breaking.** `nav` takes `readonly NavItem[]` (`label`, `href`, `current`, `external`), the type `Header` uses, and renders each item as a compact control from the recipe with the current page marked by weight and an underline. Replace nav markup with items. No ejmlabs repository uses `AppShell` (ejmlabs, ejm-cli, ejm-ide, ejm-harness, ejm-calm and ejm-chess searched).
+
+  **`Header` follows its own width.** The header is a size container, and its nav switches to the Menu button below 48rem of header width instead of below the `md` viewport width. A full-width header looks as before; a header in a narrow column now shows the menu.
+
+  **Icons.** `Button size="icon"` sizes its `svg` child to 20px, 16px compact, whatever size the icon asks for. The kit does not re-export an icon set: add `lucide-react` at `^1.59.0` and pass an icon as the child. The dismiss icon in `Toast` grows from 16px to 20px to match.
+
+  **New parts.** `Specimen`, `Compare`, `ThemePair`, `TypeScale` and `Elevations` show a part under a theme or a density and draw the type and shadow scales from the kit. `ControlGroup` is a named group of controls with no frame of its own; `disabled` turns off every control inside.
+
+  **Behavior.** `Art` with `drawOn` draws its lines when it scrolls into view, through `useDrawOn`, instead of right after hydration. Art in view at load draws at once, as before. `useDrawOn` accepts any element.
+
+  **Design guard.** A local CSS entry imported by its URL (`import sheet from './styles.css?url'`) is accepted; the file is still checked as consumer CSS. The gallery exemption is removed.
+
+  **Consumer pin moves.** None is required for this change on its own; it rides on the closed-kit pin moves above.
+
 - Add the public `@ejm/ui/components/Chessboard` leaf. It renders a labelled loading square on the server and loads the maintained cm-chessboard renderer after mount. The host supplies FEN, orientation, accepted moves and optional legal destinations; the kit holds no chess rules, and a move is a proposal until the host returns a new FEN. It stays out of the `@ejm/ui` barrel, so its renderer and CSS reach only pages that import it. `@ejm/ui` gains the dependency `cm-chessboard` 8.15.4 (MIT); its piece sprite is CC BY-SA 3.0, recorded in `THIRD_PARTY_NOTICES.md`.
 
 - Add `useSearch` to `@ejm/ssg`. It returns the query string, empty while prerendering and hydrating, and follows back, forward and router pushes but not `replaceState`, so a page can rewrite its own query without remounting.
