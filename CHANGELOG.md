@@ -5,6 +5,16 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Name the Chessboard on the board itself. The accessible name now sits on cm-chessboard's `svg.cm-chessboard`, the focusable board, or the image when `readOnly`, not on the wrapper `div`, where an `aria-label` without a role is prohibited. A host `aria-label` still wins, and the default text is unchanged.
+
+- Add the `ui-board-on-light` and `ui-board-on-dark` roles in both themes, which the Chessboard draws its coordinates with, on the light and the dark square. Coordinates used `ui-board-mark`, which measured 3.15:1 on the dark theme's light square and 3.52:1 on the light theme's dark square. A new `labels` gate in the board contrast check holds each coordinate color at 4.5:1 against the square it sits on. `ui-board-mark` now covers move markers and the keyboard focus frame only, still at 3:1.
+
+- Darken `danger` in the light Paper and Mist bands from `#a63a3a` to `#9b3838` (`mix(light.error,brand.ink,92)`) for every consumer. The danger Button hovers to `bg-danger/85`, the fill at 85 percent over the ground, which left its `on-danger` text at 4.41:1 on Paper (4.50:1 on Mist, exactly at the minimum). It is now 4.71:1 on Paper and 4.80:1 on Mist, and `text-danger` and `on-danger` on `danger` also gain margin there. Text and fills that use `danger` in light Paper and Mist look slightly darker. The dark theme, Sage and Ink bands, `ui-error` and the terminal reds are unchanged. A new gate in the band contrast check measures `on-danger` against that hover fill in every band and theme, which takes the band pairs from 254 to 262.
+
+- Give `GameClock` `role="timer"` by default. A timer is a live region that is off, so a tick is still not announced, and `label` stays the accessible name. A host `role` still wins.
+
+- Show the warn glyph from the `@ejm/core` contract (`glyphs.status.warn`, hidden from assistive technology) beside the time of a `low` `GameClock`, so low time does not rely on the fill color alone. The display is a little wider while low.
+
 - Add the public `@ejm/ui/components/Chessboard` leaf. It renders a labelled loading square on the server and loads the maintained cm-chessboard renderer after mount. The host supplies FEN, orientation, accepted moves and optional legal destinations; the kit holds no chess rules, and a move is a proposal until the host returns a new FEN. It stays out of the `@ejm/ui` barrel, so its renderer and CSS reach only pages that import it. `@ejm/ui` gains the dependency `cm-chessboard` 8.15.4 (MIT); its piece sprite is CC BY-SA 3.0, recorded in `THIRD_PARTY_NOTICES.md`.
 
 - Add `useSearch` to `@ejm/ssg`. It returns the query string, empty while prerendering and hydrating, and follows back, forward and router pushes but not `replaceState`, so a page can rewrite its own query without remounting.
