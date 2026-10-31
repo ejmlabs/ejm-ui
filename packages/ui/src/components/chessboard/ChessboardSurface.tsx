@@ -139,7 +139,8 @@ export default function ChessboardSurface(props: ChessboardProps) {
       if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') hints.current?.clear();
       if (event.key === 'Escape') board.current?.cancelMoveInput();
     }}
-    onBlur={() => hints.current?.clear()}
+    // onBlur bubbles from squares and the promotion dialog; clear only when focus leaves the board.
+    onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) hints.current?.clear(); }}
     aria-label={props['aria-label'] ?? (props.readOnly
     ? `Read-only chessboard. ${props.color === 'w' ? 'White' : 'Black'} is at the bottom. Use the replay controls to change position.`
     : `Chessboard. You play ${props.color === 'w' ? 'White' : 'Black'}. Use arrow keys and Enter to move.`)} />;
