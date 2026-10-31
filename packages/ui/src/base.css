@@ -4,7 +4,7 @@
    styles. Every name it defines is listed in packages/ui/THEME.md, which is the contract for components, layouts and views.
    Colors are never written here: they come from packages/tokens/theme.json through generated/tailwind.css and window.css. */
 
-@import "tailwindcss";
+@import "tailwindcss" source(none);
 @import "@ejm/tokens/tailwind.css";
 @import "@ejm/tokens/window.css";
 /* ---------- Variants ---------- */

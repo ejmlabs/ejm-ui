@@ -37,13 +37,6 @@
     "focus",
     "disabled"
   ],
-  "NativeCheckbox": [
-    "unchecked",
-    "checked",
-    "focus",
-    "invalid",
-    "disabled"
-  ],
   "Badge": [
     "default",
     "strong",
@@ -96,10 +89,6 @@
     "empty",
     "loading",
     "error"
-  ],
-  "TerminalWorkspace": [
-    "pairing",
-    "session"
   ],
   "TerminalHeader": [
     "default"
