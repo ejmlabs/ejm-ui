@@ -4,9 +4,6 @@
   "private": true,
   "type": "module",
   "description": "Real product shots: runs the real ejm-cli and ejm-harness in a pseudo-terminal and renders the screen as a PNG with the product's own colors and IBM Plex Mono.",
-  "bin": {
-    "ejm-capture-terminal": "./src/capture.mjs"
-  },
   "scripts": {
     "capture": "node ../../scripts/capture-terminal.mjs",
     "optimize": "node scripts/optimize.mjs"

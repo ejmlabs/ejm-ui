@@ -19,6 +19,8 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 - Show `Chessboard` and `GameClock` in the gallery: their API under Game parts at `/docs/components`, and a read-only board, a playable board that shows the proposed move without applying it, and running, idle and low clocks in both themes at `/components`. The board still loads only on that route, after mount. The two code samples on `/docs/components` that were both named "TSX code" now have their own labels.
 
+- Remove the `ejm-capture-terminal` bin from `@ejm/shots`. It pointed at `src/capture.mjs`, a library module with no command-line entry, so it could not run, and every install marked that file executable, which left a mode change in `git status`. Capture with `node scripts/capture-terminal.mjs`, as before.
+
 - Fix `scripts/pack-proof.mjs` and `scripts/pack-proof-publish.mjs` under npm 12 (bundled with Node 24.22.1), whose `npm pack --json` prints an object keyed by package name instead of an array. Both proofs now read either shape.
 
 - Add the public `@ejm/ui/components/Chessboard` leaf. It renders a labelled loading square on the server and loads the maintained cm-chessboard renderer after mount. The host supplies FEN, orientation, accepted moves and optional legal destinations; the kit holds no chess rules, and a move is a proposal until the host returns a new FEN. It stays out of the `@ejm/ui` barrel, so its renderer and CSS reach only pages that import it. `@ejm/ui` gains the dependency `cm-chessboard` 8.15.4 (MIT); its piece sprite is CC BY-SA 3.0, recorded in `THIRD_PARTY_NOTICES.md`.
