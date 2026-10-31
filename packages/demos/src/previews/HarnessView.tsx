@@ -1,4 +1,3 @@
-import { cx } from './cx';
 import { harnessFrame } from './frames/harness';
 import type { HarnessFrame } from './frames';
 import { HarnessOutput, harnessTerminalClass } from './harness-parts';
@@ -20,9 +19,9 @@ export function HarnessScreen({ frame }: { frame: HarnessFrame; layout?: 'stack'
 }
 
 /** Formatted terminal excerpt from the retained offline SDK recording. Page copy discloses its source and limits. */
-export function HarnessView({ frame = harnessFrame, label, className }: HarnessViewProps) {
+export function HarnessView({ frame = harnessFrame, label }: HarnessViewProps) {
   return (
-    <div data-band="paper" role={label ? 'group' : undefined} aria-label={label} className={cx(harnessTerminalClass, className)}>
+    <div data-band="paper" role={label ? 'group' : undefined} aria-label={label} className={harnessTerminalClass}>
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden"><HarnessScreen frame={frame} /></div>
     </div>
   );

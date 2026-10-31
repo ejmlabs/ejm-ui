@@ -2,9 +2,6 @@
   "ActionRow": [
     "default"
   ],
-  "ActionRows": [
-    "default"
-  ],
   "Actions": [
     "default"
   ],
@@ -123,9 +120,6 @@
   "DocsSidebar": [
     "default"
   ],
-  "DocumentContent": [
-    "default"
-  ],
   "ExternalLink": [
     "default"
   ],
@@ -184,13 +178,6 @@
   ],
   "MetricGrid": [
     "default"
-  ],
-  "NativeCheckbox": [
-    "unchecked",
-    "checked",
-    "focus",
-    "invalid",
-    "disabled"
   ],
   "Note": [
     "default"
@@ -340,10 +327,6 @@
     "focus",
     "invalid",
     "disabled"
-  ],
-  "TerminalWorkspace": [
-    "pairing",
-    "session"
   ],
   "Text": [
     "default"

@@ -19,13 +19,10 @@ export const theming: DocPage = {
             { name: '?theme=dark|light', description: 'A test override. The boot script applies it and never saves it.' },
           ],
         },
+        { type: 'code', lang: 'html', code: '<section data-theme="dark" data-band="paper" class="band">\n  A dark preview inside a light page.\n</section>' },
         {
-          type: 'tabs',
-          label: 'Language',
-          tabs: [
-            { label: 'HTML', lang: 'html', code: '<section data-theme="dark" data-band="paper" class="band">\n  A dark preview inside a light page.\n</section>' },
-            { label: 'TypeScript', lang: 'tsx', code: '<section data-theme="dark" data-band="paper" className="band">\n  A dark preview inside a light page.\n</section>' },
-          ],
+          type: 'p',
+          children: <>No kit component takes a theme prop. The gallery writes these attributes in one file, <code>src/specimen.tsx</code>, to show light beside dark on the components, app and shell pages.</>,
         },
       ],
     },
@@ -71,7 +68,7 @@ export const theming: DocPage = {
           type: 'p',
           children: (
             <>
-              <code>useTheme()</code> returns the visitor's <code>choice</code> (light, dark or system), what is on screen as <code>resolved</code>, <code>setChoice</code> and <code>toggle</code>. <code>ThemeToggle</code> is the ready-made control, and it is always the last item in the header.
+              <code>useTheme()</code> returns the visitor's <code>choice</code> (light, dark or system), what is on screen as <code>resolved</code>, <code>setChoice</code> and <code>toggle</code>. <code>ThemeToggle</code> is the ready-made control. It takes no props, it is always the last item in the header, and the header and app shell include it for you.
             </>
           ),
         },

@@ -11,7 +11,6 @@ import 'cm-chessboard/assets/chessboard.css';
 import 'cm-chessboard/assets/extensions/promotion-dialog/promotion-dialog.css';
 import 'cm-chessboard/assets/extensions/markers/markers.css';
 import type { ChessboardProps } from '../Chessboard';
-import { cn } from '../../lib/utils';
 import './chessboard.css';
 import { createOrientationUpdater } from './orientation';
 import { createBoardHints } from './hints';
@@ -145,7 +144,7 @@ export default function ChessboardSurface(props: ChessboardProps) {
     // getLegalMoves is read through `latest`, so a host need not memoize it; a new identity must not cancel a move.
   }, [props.enabled, props.color, props.readOnly, props.fen, props.showLegalMoves]);
 
-  return <div ref={element} className={cn('w-full aspect-square touch-manipulation', props.className)}
+  return <div ref={element} className="w-full aspect-square touch-manipulation"
     onKeyDownCapture={event => {
       // Keyboard deselection emits no cancel event. Clear before the package
       // handles the key; a new selection redraws through moveInputStarted.

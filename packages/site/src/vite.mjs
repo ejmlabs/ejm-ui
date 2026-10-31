@@ -1,13 +1,18 @@
-// The Vite plugin every ejmlabs site uses: `plugins: [react(), ejmSite({ project: 'ejmlabs' }), ejmSsg({ site: 'src/site.tsx' })]`.
-// It adds the shared head tags to index.html and writes the shared files into the build: theme-boot.js, the favicon set,
-// the manifest, the social card, the font notices and `_headers`. In dev it serves the same shared files.
+// The Vite plugins every ejmlabs site uses. A site's whole plugin list is `[ejmlabs({ project: 'ejmlabs' })]`: the @ejm/ui preset
+// (Tailwind, React, one React, the design guard), `ejmSite`, the `ejm-ssg` prerenderer and the shared build options.
+// `ejmSite` adds the shared head tags to index.html and writes the shared files into the build: theme-boot.js, the favicon set,
+// the manifest, the social card, the font notices and `_headers`. In dev it serves the same shared files. After `ejm-ssg` writes the
+// pages it checks each one (see pages.mjs).
 import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
+import { ejmUi } from '@ejm/ui/vite';
+import { ejmSsg } from '@ejm/ssg/vite';
 import { headersFile } from './headers.mjs';
 import { FAVICONS, versionedFavicons } from './favicon.mjs';
 import { PROJECTS, assetPaths } from './projects.mjs';
-import { siteDesignGuard } from './design.mjs';
+import { designGuardPlugin } from './design.mjs';
+import { checkPages } from './pages.mjs';
 
 const require = createRequire(import.meta.url);
 const tokensAssets = join(dirname(require.resolve('@ejm/tokens/theme.json')), 'assets');
@@ -44,8 +49,10 @@ export function headTags(base = '/', version) {
 }
 
 /**
- * @param {{ project: import('./projects.d.mts').ProjectId | import('./projects.d.mts').Project, headers?: import('./headers.d.mts').HeadersOptions | false }} options
+ * Adds the shared assets and head, checks the finished pages, and runs the design guard (once, even when `ejmUi()` also runs it).
+ * @param {import('./vite.d.mts').EjmSiteOptions} options
  *   `headers: false` skips `_headers` (a site that writes its own); an object is passed to `headersFile`.
+ * @returns {import('vite').Plugin}
  */
 export function ejmSite({ project, headers = {} }) {
   const p = typeof project === 'string' ? PROJECTS[project] : project;
@@ -53,62 +60,29 @@ export function ejmSite({ project, headers = {} }) {
   const files = sharedFiles(p);
   const icons = versionedFavicons(Object.fromEntries(FAVICONS.map(name => [name, readFileSync(files[name])])));
   const source = name => icons.sources[name] ?? readFileSync(files[name]);
+  const guard = designGuardPlugin();
   let ssr = false;
   let base = '/';
-  let design;
-  let designError;
   return {
     name: 'ejm-site',
     enforce: 'pre',
     configResolved(c) {
       ssr = !!c.build.ssr;
       base = c.base;
-      design = siteDesignGuard(c.root ?? process.cwd());
+      guard.configResolved(c);
     },
     buildStart() {
-      for (const file of design?.validate().files ?? []) this.addWatchFile(file);
+      guard.buildStart.call(this);
     },
-    hotUpdate({ file }) {
-      if (design?.owns(file)) {
-        design.invalidate(file);
-        design.validate();
-      }
+    hotUpdate(update) {
+      guard.hotUpdate(update);
     },
     transformIndexHtml: {
       order: 'post',
       handler: html => (html.includes(MARKER) ? html.replace(MARKER, () => `${headTags(base, icons.version).join('\n    ')}\n    ${MARKER}`) : html),
     },
     configureServer(server) {
-      if (design) {
-        design.validate();
-        const validateDesign = () => {
-          try {
-            design.validate();
-            designError = undefined;
-          } catch (error) {
-            designError = error;
-            server.ws?.send({ type: 'error', err: { message: error.message, stack: '' } });
-          }
-        };
-        const checkDesign = (_event, file) => {
-          if (!design.owns(file)) return;
-          design.invalidate(file);
-          validateDesign();
-        };
-        server.watcher?.on('all', checkDesign);
-        server.watcher?.once('ready', validateDesign);
-        server.httpServer?.once('close', () => {
-          server.watcher?.off('all', checkDesign);
-          server.watcher?.off('ready', validateDesign);
-        });
-        server.middlewares.use((req, res, next) => {
-          if ((req.method === 'GET' || req.method === 'HEAD') && req.headers.accept?.includes('text/html')) validateDesign();
-          if (!designError) return next();
-          res.statusCode = 500;
-          res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-          res.end(designError.message);
-        });
-      }
+      guard.configureServer(server);
       server.middlewares.use((req, res, next) => {
         const name = (req.url ?? '').split('?')[0].replace(/^\/+/, '');
         const file = files[name];
@@ -122,5 +96,27 @@ export function ejmSite({ project, headers = {} }) {
       for (const fileName of Object.keys(files)) this.emitFile({ type: 'asset', fileName, source: source(fileName) });
       if (headers !== false) this.emitFile({ type: 'asset', fileName: '_headers', source: headersFile(headers) });
     },
+    // ejm-ssg calls this once every page is written (see @ejm/ssg's `PagesApi`).
+    api: { onPages: pages => checkPages(pages, { origin: p.url }) },
   };
+}
+
+/** The build options every site shares, unless the site sets them itself. */
+const buildDefaults = {
+  name: 'ejm-site:build',
+  config: user => ({
+    build: {
+      ...(user.build?.target === undefined && { target: 'es2022' }),
+      ...(user.build?.cssMinify === undefined && { cssMinify: 'lightningcss' }),
+    },
+  }),
+};
+
+/**
+ * The whole Vite setup of an ejmlabs site: `plugins: [ejmlabs({ project: 'ejmlabs' })]`.
+ * @param {import('./vite.d.mts').EjmlabsOptions} options
+ * @returns {import('vite').PluginOption[]}
+ */
+export function ejmlabs({ project, site = 'src/site.tsx', headers }) {
+  return [...ejmUi(), ejmSite({ project, headers }), ejmSsg({ site }), buildDefaults];
 }

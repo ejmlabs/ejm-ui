@@ -1,19 +1,24 @@
 import { Moon, Sun } from 'lucide-react';
-import { useState, type ComponentPropsWithoutRef } from 'react';
+import { useState } from 'react';
+import { buttonVariants } from '../control-recipes.mjs';
 import { useTheme } from '../hooks/useTheme';
 import { cn } from '../lib/utils';
+import { useDensity } from '../lib/density';
 
 /**
  * Switches between light and dark and remembers the choice (see useTheme). The button is named for what it does
  * ("Switch to dark theme"), shows the icon of the theme it will switch to, and announces the result politely.
+ * It is the ghost icon button of the control recipe: 44px, 32px on a compact surface such as AppShell, `rounded-pill`, `bg-tone` on hover.
  * The icons are chosen with the `dark:` variant, so the right one shows before hydration with no flash.
  * An explicit switch crossfades with the native View Transitions API when available and motion is allowed.
  * Without scripts it does nothing; the page still follows the system theme.
  */
-export function ThemeToggle({ className, ...rest }: Omit<ComponentPropsWithoutRef<'button'>, 'onClick' | 'type'>) {
+export function ThemeToggle() {
   const { resolved, toggle } = useTheme();
+  const density = useDensity();
   const [announce, setAnnounce] = useState('');
   const next = resolved === 'dark' ? 'light' : 'dark';
+  const icon = density === 'compact' ? 'size-4' : 'size-5';
   return (
     <>
       <button
@@ -47,14 +52,10 @@ export function ThemeToggle({ className, ...rest }: Omit<ComponentPropsWithoutRe
             apply();
           }
         }}
-        className={cn(
-          'inline-flex size-11 shrink-0 items-center justify-center rounded-pill text-fg transition-colors duration-base ease-standard hover:bg-tone active:bg-line',
-          className,
-        )}
-        {...rest}
+        className={cn(buttonVariants({ variant: 'ghost', size: 'icon', density }), 'shrink-0')}
       >
-        <Moon aria-hidden className="size-5 dark:hidden" />
-        <Sun aria-hidden className="hidden size-5 dark:block" />
+        <Moon aria-hidden className={cn(icon, 'dark:hidden')} />
+        <Sun aria-hidden className={cn(icon, 'hidden dark:block')} />
       </button>
       <span role="status" className="sr-only">
         {announce}

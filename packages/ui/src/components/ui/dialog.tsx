@@ -1,6 +1,5 @@
 import { X } from 'lucide-react';
 import { useEffect, useId, useRef, type ReactNode } from 'react';
-import { cn } from '../../lib/utils';
 import { Button } from './button';
 
 export interface DialogProps {
@@ -10,7 +9,6 @@ export interface DialogProps {
   title: string;
   description?: string;
   children?: ReactNode;
-  className?: string;
 }
 
 /**
@@ -18,7 +16,7 @@ export interface DialogProps {
  * and focus goes back to the element that opened it. No portal, no focus-trap library.
  * Page scroll is not locked; a long page behind a dialog can still scroll on some browsers.
  */
-export function Dialog({ open, onOpenChange, title, description, children, className }: DialogProps) {
+export function Dialog({ open, onOpenChange, title, description, children }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const returnTo = useRef<HTMLElement | null>(null);
   const titleId = useId();
@@ -48,17 +46,16 @@ export function Dialog({ open, onOpenChange, title, description, children, class
       onClick={e => { if (e.target === ref.current) onOpenChange(false); }}
       // Closed by a form method="dialog" or by the browser: tell the owner.
       onClose={() => { if (open) onOpenChange(false); }}
-      className={cn(
-        'm-auto w-[calc(100%-2rem)] max-w-lg rounded-window border border-line bg-popover p-0 text-popover-foreground shadow-float backdrop:bg-ink/50 open:animate-fade',
-        className,
-      )}
+      className="m-auto w-[calc(100%-2rem)] max-w-lg rounded-window border border-line bg-ground p-0 text-fg shadow-float backdrop:bg-ink/50 open:animate-fade"
     >
       <div className="flex flex-col gap-4 p-6 sm:p-8">
         <div className="flex items-start justify-between gap-4">
           <h2 id={titleId} className="text-heading">{title}</h2>
-          <Button variant="ghost" size="sm" aria-label="Close" className="-me-3 -mt-1 px-3" onClick={() => onOpenChange(false)}>
-            <X aria-hidden className="size-5" />
-          </Button>
+          <div className="-me-2 -mt-2 shrink-0">
+            <Button variant="ghost" size="icon" aria-label="Close" onClick={() => onOpenChange(false)}>
+              <X aria-hidden className="size-5" />
+            </Button>
+          </div>
         </div>
         {description && <p id={descId} className="text-muted">{description}</p>}
         {children}

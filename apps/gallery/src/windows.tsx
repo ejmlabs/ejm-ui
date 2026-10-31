@@ -1,4 +1,5 @@
 import { getShot } from '@ejm/shots';
+import { Fact, Facts } from '@ejm/ui';
 import { ProductShot } from '@ejm/ui/layout/ProductShot';
 
 // Real captures for the layout showcase. The interactive demos keep their own simulated views.
@@ -12,7 +13,7 @@ export const Ide = () => <ProductShot shot={ide} alt="The native ejm-ide project
 export const Harness = () => <ProductShot shot={harness} alt="ejm-harness runs an offline replay session and prints the durable journal events." frame caption={false} />;
 
 export const StageCaptions = () => (
-  <ul className="text-meta m-0 mt-6 max-w-prose list-none border-t border-line p-0 pt-2 text-muted">
-    {[cli, ide, harness].map(s => <li key={s.caption} className="mt-1">{s.caption}</li>)}
-  </ul>
+  <Facts>
+    {[cli, ide, harness].map(s => <Fact key={s.caption} label={s.product}>{s.caption}</Fact>)}
+  </Facts>
 );

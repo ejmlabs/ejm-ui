@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { expectAccessible, renderIn, themes } from '../test-setup';
 import { Checkbox } from './checkbox';
 import { Input } from './input';
+import { fieldVariants } from '../../control-recipes.mjs';
 import { Select } from './select';
 import { Switch } from './switch';
 import { Textarea } from './textarea';
@@ -25,6 +26,29 @@ describe('text fields', () => {
     expect(screen.getByLabelText('Name')).toHaveValue('Ada');
     expect(screen.getByLabelText('Name')).toHaveAccessibleDescription('Enter a name.');
     expect(screen.getByLabelText('Message')).toHaveValue('Hello');
+  });
+});
+
+describe('field recipe', () => {
+  it('Input, Select and Textarea take the one field look: rounded-control, control border, field fill, 44px rows at 16px type', () => {
+    render(<><Input aria-label="Name" /><Select aria-label="Plan"><option>Free</option></Select><Textarea aria-label="Notes" /></>);
+    for (const el of [screen.getByRole('textbox', { name: 'Name' }), screen.getByRole('combobox', { name: 'Plan' }), screen.getByRole('textbox', { name: 'Notes' })]) {
+      expect(el.className.split(' ')).toEqual(expect.arrayContaining(['rounded-control', 'border', 'border-control', 'bg-field', 'text-base', 'touch-target', 'disabled:opacity-50', 'disabled:pointer-events-none']));
+    }
+    expect(screen.getByRole('textbox', { name: 'Name' }).className).toContain('min-h-11');
+    expect(screen.getByRole('textbox', { name: 'Notes' }).className).toContain('min-h-28');
+    expect(screen.getByRole('textbox', { name: 'Notes' }).className).not.toContain('min-h-11');
+  });
+
+  it('emits one height and one type size per density, and no color transition or own focus ring', () => {
+    for (const kind of ['line', 'area'] as const) {
+      for (const density of ['comfortable', 'compact'] as const) {
+        const tokens = fieldVariants({ kind, density }).split(' ');
+        expect(tokens.filter(t => t.startsWith('min-h-')), `${kind} ${density}`).toHaveLength(1);
+        expect(tokens.filter(t => /^text-(sm|base)$/.test(t)), `${kind} ${density}`).toHaveLength(1);
+        expect(tokens.filter(t => /^(transition-colors|transition-all|transition|focus-ring|rounded-compact)$/.test(t))).toEqual([]);
+      }
+    }
   });
 });
 

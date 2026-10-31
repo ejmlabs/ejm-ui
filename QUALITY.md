@@ -34,7 +34,7 @@ The references are Anthropic, Stripe and OpenAI. ejmlabs learns from how they de
 ## Depth
 
 - Elevation uses the three tokens (rest, raised, float). Only product windows, menus and overlays use them.
-- Cards and panels have no shadow. Tone separates them from the page.
+- There are no cards or panels. Groups are separated by type, space, hairline rows and full-bleed bands.
 - Sage covers about 30 percent of a page, Paper or Mist about 60, and Forest under 10. Forest never sets a large ground.
 
 ## Imagery
@@ -89,6 +89,10 @@ Load time is the only performance bar. Bytes are not capped: use the maintained 
 | Gate | Command | Fails on |
 | --- | --- | --- |
 | Text, stale files, types, tests | `npm run check` | Em dashes, stale generated files (tokens, art), changed brand assets, type errors, failing tests |
+| Closed props | `npm run typecheck` (`packages/ui/src/closed-api.test.ts`) | A public `@ejm/ui` component that accepts `className`, `style` or `dangerouslySetInnerHTML` |
+| Class names and one stylesheet | `node packages/ui/scripts/check-classes.mjs` and `check-sources.mjs` (both in `npm run check -w @ejm/ui`) | A class the kit writes that builds no CSS, a class a component uses that `styles.css` does not generate, a sheet that scans a consumer folder or a test |
+| Design guard | Every build and dev server of a consumer on `ejmUi()` or `ejmlabs()` | A consumer `className`, `style`, raw markup, opaque props, local CSS or `<style>` (`[ejm-site:design]`) |
+| Page invariants | Every site build on `ejmSite()` or `ejmlabs()` | A prerendered page without exactly one `h1`, with a skipped heading level, without the skip link first, without `main#main`, or with a link to another host that lacks `rel="external"` (`[ejm-site:pages]`) |
 | Contrast | `node packages/tokens/scripts/contrast.mjs --verbose` (also in `npm run check`) | Text under 4.5:1, control border or focus under 3:1, for both themes and every band |
 | Viewport matrix | `node scripts/shoot.mjs <url> [--theme dark]` | Horizontal overflow from 320px to 5120px, small touch targets |
 | Load time | `npm run perf` | A route whose first contentful paint is a second or more above its baseline |

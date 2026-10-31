@@ -1,4 +1,3 @@
-import { cn } from '../lib/utils';
 import { dashes, hues, Marker, shapes, maxSeries } from './marks';
 
 export interface LegendProps {
@@ -7,13 +6,12 @@ export interface LegendProps {
   kind: 'line' | 'area' | 'bar';
   /** The id the chart gave its bar patterns, so the swatches match the bars. */
   patternId?: string;
-  className?: string;
 }
 
 /** A text legend. Every series is named in words, next to a swatch that shows its marker and dash, or its bar pattern. */
-export function Legend({ items, kind, patternId, className }: LegendProps) {
+export function Legend({ items, kind, patternId }: LegendProps) {
   return (
-    <ul aria-label="Legend" className={cn('m-0 flex list-none flex-wrap gap-x-6 gap-y-2 p-0', className)}>
+    <ul aria-label="Legend" className="m-0 flex list-none flex-wrap gap-x-6 gap-y-2 p-0">
       {items.map((item, i) => {
         const n = i % maxSeries;
         return (

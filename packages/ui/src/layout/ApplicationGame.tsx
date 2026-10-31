@@ -17,7 +17,7 @@ export interface GameWorkspaceProps extends Omit<HTMLAttributes<HTMLElement>, 'c
  */
 export function GameWorkspace({ board, children, after, label, detailsLabel, ref, ...props }: GameWorkspaceProps) {
   return <section {...props} ref={ref} aria-label={label ?? props['aria-label']} className={[
-    'focus-ring grid min-w-0 grid-cols-1 items-start justify-items-center gap-8 [--ejm-board:42rem]',
+    'grid min-w-0 grid-cols-1 items-start justify-items-center gap-8 [--ejm-board:42rem]',
     '[--ejm-room:calc(100svh_-_var(--ejm-header-h)_-_env(safe-area-inset-top,0px))]',
     'sm:[--ejm-board:clamp(20rem,calc(var(--ejm-room)_-_26rem),42rem)]',
     'lg:[--ejm-board:clamp(20rem,calc(var(--ejm-room)_-_13rem),42rem)]',
@@ -83,8 +83,8 @@ export function MoveHistory({ items, selectedId, onSelect, label = 'Moves' }: Mo
     else if (bottom > list.scrollTop + list.clientHeight) list.scrollTop = bottom - list.clientHeight;
   }, [selectedId, items.length]);
   return <ol ref={listRef} role="list" aria-label={label} className="relative grid max-h-80 min-w-0 gap-1 overflow-y-auto overscroll-contain font-mono text-meta tabular-nums">
-    {items.map(item => <li key={item.id}>
-      <Button variant={item.id === selectedId ? 'secondary' : 'ghost'} density="compact" aria-current={item.id === selectedId ? 'step' : undefined} onClick={() => onSelect(item.id)} className="w-full justify-start">
+    {items.map(item => <li key={item.id} className="[&>button]:w-full [&>button]:justify-start">
+      <Button variant={item.id === selectedId ? 'secondary' : 'ghost'} density="compact" aria-current={item.id === selectedId ? 'step' : undefined} onClick={() => onSelect(item.id)}>
         {item.number}{item.color === 'w' ? '.' : '…'} {item.san}
       </Button>
     </li>)}

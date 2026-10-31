@@ -1,10 +1,11 @@
 import type { AnchorHTMLAttributes } from 'react';
+import type { Closed } from '../lib/closed';
 import { ExternalLink } from '../shell/ExternalLink';
 import { useLinkComponent } from '../shell/link';
 
 /** Inline links use the site's public routing adapter and one underline treatment. */
-export function InlineLink({ external = false, ...props }: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'className' | 'style' | 'dangerouslySetInnerHTML'> & { href: string; external?: boolean }) {
+export function InlineLink({ external = false, ...props }: Closed<AnchorHTMLAttributes<HTMLAnchorElement>> & { href: string; external?: boolean }) {
   const InternalLink = useLinkComponent();
-  const Link = external ? ExternalLink : InternalLink;
-  return <Link {...props} className="link" />;
+  // ExternalLink already takes the `link` style when it gets no class.
+  return external ? <ExternalLink {...props} /> : <InternalLink {...props} className="link" />;
 }

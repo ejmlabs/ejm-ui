@@ -1,7 +1,2 @@
-/* Opt-in utilities for the docs components (DocsLayout, DocsSidebar, CodeBlock, ParamTable, Callout, Pager, Contents). Import it after styles.css:
-     @import "@ejm/ui/styles.css";
-     @import "@ejm/ui/styles-docs.css"; */
-@source "./docs";
-@source not "./docs/**/*.test.{ts,tsx}";
-@source "./shell/DocsLayout.tsx";
-@source "./components/Table.tsx";
+/* Kept for consumers pinned before the one-stylesheet change. @ejm/ui/styles.css already styles the docs components, so this
+   entry adds nothing. Remove its import. */

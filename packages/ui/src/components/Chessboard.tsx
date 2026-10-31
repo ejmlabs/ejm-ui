@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { cn } from '../lib/utils';
 
 export type ChessboardColor = 'w' | 'b';
 export interface ChessboardMove { from: string; to: string; promotion?: 'q' | 'r' | 'b' | 'n' }
@@ -16,7 +15,6 @@ export interface ChessboardProps {
   lastMove?: { from: string; to: string };
   premove?: ChessboardMove | null;
   onMove(move: ChessboardMove): void;
-  className?: string;
   'aria-label'?: string;
 }
 
@@ -26,7 +24,7 @@ const Surface = lazy(() => import('./chessboard/ChessboardSurface'));
 export function Chessboard(props: ChessboardProps) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
-  const loading = <div role="status" aria-label="Loading chessboard" className={cn('w-full aspect-square bg-tone', props.className)} />;
+  const loading = <div role="status" aria-label="Loading chessboard" className="w-full aspect-square bg-tone" />;
   return <Suspense fallback={loading}>
     {mounted ? <Surface {...props} /> : loading}
   </Suspense>;

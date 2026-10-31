@@ -142,6 +142,24 @@ The build finds a route's chunk from its `import('...')` call in the server bund
 - The route change runs in `document.startViewTransition` when it exists and the visitor has not asked for reduced motion; only the page area crossfades for 320 ms with the shared easing, and the header stays still. Skipped transitions are swallowed, and a transition that cannot start within 300 ms is skipped so the page never freezes. Without the API, a CSS fade-in runs after the first navigation. Under `prefers-reduced-motion: reduce` nothing is animated and the API is not called. The first load never animates.
 - `ssg.css` is imported by the package itself.
 
+## Checking the finished pages
+
+After every page is written, `ejmSsg` calls `api.onPages(pages)` on each Vite plugin that has one, in plugin order, and waits for it. `pages` is `{ file, html }[]`: `file` is the path in the build folder (`index.html`, `about/index.html`, `404.html`) and `html` is the page as written. Throwing fails the build, so a plugin can reject a page without knowing where `ejm-ssg` sits in the plugin list. `@ejm/site` uses it for its page rules.
+
+```js
+const checkTitles = {
+  name: 'check-titles',
+  api: {
+    onPages(pages) {
+      const bad = pages.filter(p => !/<title>[^<]+<\/title>/.test(p.html));
+      if (bad.length) throw new Error(`no title: ${bad.map(p => p.file).join(', ')}`);
+    },
+  },
+};
+```
+
+The types are `PrerenderedPage` and `PagesApi` in `@ejm/ssg/vite`.
+
 ## Load time
 
 There is no size budget. `ejm-ssg budget`, the `budget` option of `defineSite` and `@ejm/ssg/budget` were removed. Load time is checked from the ejm-ui repository with `node scripts/perf.mjs <dist>`, which reports first contentful paint per route in Lighthouse and fails when a route is a second or more slower than its recorded baseline. It reads `ignore` from `.ejm-ssg/build.json`. See `scripts/PERF.md`.

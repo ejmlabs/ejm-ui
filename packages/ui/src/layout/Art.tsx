@@ -6,12 +6,11 @@ export interface ArtProps {
   svg: string;
   /** Draw the lines on once after hydration. Without scripts, or under reduced motion, the art is fully drawn. */
   drawOn?: boolean;
-  className?: string;
 }
 
 /** Decorative symbol line art. Always aria-hidden; the lines take their color from the band (see THEME.md). */
-export function Art({ svg, drawOn = false, className }: ArtProps) {
+export function Art({ svg, drawOn = false }: ArtProps) {
   const [armed, setArmed] = useState(false);
   useEffect(() => { if (drawOn) setArmed(true); }, [drawOn]);
-  return <div aria-hidden="true" className={cn('pointer-events-none select-none [&>svg]:block [&>svg]:h-auto [&>svg]:w-full', armed && 'draw-on', className)} dangerouslySetInnerHTML={{ __html: svg }} />;
+  return <div aria-hidden="true" className={cn('pointer-events-none select-none [&>svg]:block [&>svg]:h-auto [&>svg]:w-full', armed && 'draw-on')} dangerouslySetInnerHTML={{ __html: svg }} />;
 }

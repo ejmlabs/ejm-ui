@@ -1,4 +1,4 @@
-export { cn } from './lib/utils';
+export { DensityProvider, useDensity, type Density } from './lib/density';
 export { fontPreloads } from './font-preloads';
 export * from './components/ui/button';
 export * from './components/ui/input';
@@ -17,7 +17,6 @@ export * from './components/Table';
 export * from './components/KeyHints';
 export * from './components/Prompt';
 export * from './components/StateBlock';
-export * from './terminal/TerminalWorkspace';
 export * from './hooks';
 export * from './motion';
 export * from './shell';
@@ -26,10 +25,7 @@ export * from './docs';
 export * from './app';
 export * from './components/ui/radio-group';
 export * from './components/GameClock';
-export * from './static/NativeCheckbox';
-export * from './static/Disclosure';
-export * from './static/ActionRows';
-export * from './static/DocumentContent';
+export * from './components/ui/disclosure';
 
 // Preserve the root docs export; application prose has its own layout leaf.
 export { Prose } from './docs/Prose';

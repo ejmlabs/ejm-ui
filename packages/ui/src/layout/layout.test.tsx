@@ -6,23 +6,31 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { LinkProvider } from '../shell/link';
 import { expectAccessible, renderIn, themes } from '../components/test-setup';
+import { DensityProvider, useDensity } from '../lib/density';
+import { NextHeadingLevel } from '../lib/heading';
 import { Band, Facts, Fact, Hero, Page, ProductStage, ProductWindow, Row, Rows, Rule, SectionHead, Stat, Status, Text } from './index';
 
 describe('application layout', () => {
-  it('keeps the default column bare and lets application callers override spacing', () => {
+  it('keeps the default column bare and gives the application variant its rhythm', () => {
     const { container, rerender } = render(<Page aria-label="Games"><p>History</p></Page>);
-    const page = container.firstElementChild!;
-    expect(page).toHaveAttribute('aria-label', 'Games');
-    expect(page).toHaveClass('page');
-    for (const token of ['grid', 'gap-content', 'py-8']) expect(page).not.toHaveClass(token);
+    expect(container.firstElementChild).toHaveAttribute('aria-label', 'Games');
+    expect(container.firstElementChild).toHaveClass('page');
+    for (const token of ['grid', 'gap-content', 'py-8']) expect(container.firstElementChild).not.toHaveClass(token);
 
     rerender(<Page variant="application"><p>History</p></Page>);
+    const page = container.firstElementChild!;
     expect(page).toHaveClass('page', 'grid', 'gap-content', 'py-8', 'sm:py-12');
     expect(page).not.toHaveAttribute('variant');
+  });
 
-    rerender(<Page variant="application" className="gap-4 py-4 sm:py-6"><p>History</p></Page>);
-    expect(page).toHaveClass('gap-4', 'py-4', 'sm:py-6');
-    for (const token of ['gap-content', 'py-8', 'sm:py-12']) expect(page).not.toHaveClass(token);
+  it('provides compact density to an application page and leaves the default page alone', () => {
+    const Probe = () => <p data-testid="density">{useDensity()}</p>;
+    const { rerender } = render(<Page><Probe /></Page>);
+    expect(screen.getByTestId('density')).toHaveTextContent('comfortable');
+    rerender(<Page variant="application"><Probe /></Page>);
+    expect(screen.getByTestId('density')).toHaveTextContent('compact');
+    rerender(<DensityProvider density="compact"><Page><Probe /></Page></DensityProvider>);
+    expect(screen.getByTestId('density')).toHaveTextContent('compact');
   });
 
   it('selects a complete recipe by purpose while keeping heading semantics and copy links', () => {
@@ -42,6 +50,15 @@ describe('application layout', () => {
 
     rerender(<SectionHead as="h2" title="Recovery" />);
     expect(screen.getByRole('heading', { level: 2, name: 'Recovery' })).toHaveClass('text-title');
+  });
+
+  it('takes the heading level of its context when `as` is omitted, and allows h1 to h6', () => {
+    const { rerender } = render(<SectionHead title="Default" />);
+    expect(screen.getByRole('heading', { name: 'Default' }).tagName).toBe('H2');
+    rerender(<NextHeadingLevel><NextHeadingLevel><SectionHead title="Deep" /></NextHeadingLevel></NextHeadingLevel>);
+    expect(screen.getByRole('heading', { name: 'Deep' }).tagName).toBe('H4');
+    rerender(<SectionHead as="h6" title="Smallest" />);
+    expect(screen.getByRole('heading', { name: 'Smallest' }).tagName).toBe('H6');
   });
 });
 
@@ -135,6 +152,54 @@ describe('Stat', () => {
       expect(screen.getByText('sessions')).toBeInTheDocument();
     }
   });
+
+  it('sets the figure in display type by default and in title type for the title size', () => {
+    const { rerender } = render(<Stat figure="42" label="sessions" />);
+    expect(screen.getByText('42')).toHaveClass('text-display');
+    expect(screen.getByText('42')).not.toHaveClass('text-stat');
+    rerender(<Stat figure="42" label="sessions" size="title" />);
+    expect(screen.getByText('42')).toHaveClass('text-title');
+  });
+
+  it('shows the error glyph and word together', () => {
+    render(<Stat label="sessions" state="error" />);
+    expect(screen.getByRole('status')).toHaveTextContent(contract.glyphs.status.error.unicode + ' ' + contract.text.stat.error);
+  });
+});
+
+describe('Rows density and edge', () => {
+  it('uses py-4 rows, py-2 in a compact surface, and no row spacing from props', () => {
+    const { rerender } = render(<Rows aria-label="x"><Row title="One" href="#one" /></Rows>);
+    expect(screen.getByRole('listitem')).toHaveClass('py-4', 'px-4');
+    rerender(<DensityProvider density="compact"><Rows aria-label="x"><Row title="One" href="#one" /></Rows></DensityProvider>);
+    expect(screen.getByRole('listitem')).toHaveClass('py-2');
+    expect(screen.getByRole('listitem')).not.toHaveClass('py-4');
+  });
+
+  it('keeps the text on the column edge: the list reaches 1rem past it and each row pads by the same 1rem', () => {
+    render(<Rows aria-label="x"><Row title="One" href="#one" /></Rows>);
+    expect(screen.getByRole('list')).toHaveClass('-mx-4');
+    expect(screen.getByRole('listitem')).toHaveClass('px-4');
+  });
+});
+
+describe('Facts', () => {
+  it('separates fact rows with hairlines at py-4, and py-2 in a compact surface', () => {
+    const { container, rerender } = render(<Facts><Fact label="license">MIT</Fact></Facts>);
+    expect(container.querySelector('dl')).toHaveClass('hairline-t');
+    expect(screen.getByText('license').parentElement).toHaveClass('hairline', 'py-4');
+    rerender(<DensityProvider density="compact"><Facts><Fact label="license">MIT</Fact></Facts></DensityProvider>);
+    expect(screen.getByText('license').parentElement).toHaveClass('py-2');
+  });
+});
+
+describe('Text', () => {
+  it('renders the code variant as a code element with the base inline code style, no chip', () => {
+    render(<Text variant="code">ejm init</Text>);
+    const code = screen.getByText('ejm init');
+    expect(code.tagName).toBe('CODE');
+    expect(code.className).toBe('');
+  });
 });
 
 describe('ProductWindow', () => {
@@ -166,6 +231,15 @@ describe('Hero', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveAttribute('id', 'product-title');
     expect(screen.getByText('Availability')).toBeInTheDocument();
     expect(container.querySelector('.animate-slide')).not.toBeNull();
+  });
+
+  it('renders its own Paper band with the page column, and always the display headline', () => {
+    const { container } = render(<Hero title="Product" titleId="p">Copy</Hero>);
+    const band = container.firstElementChild!;
+    expect(band.tagName).toBe('SECTION');
+    expect(band).toHaveAttribute('data-band', 'paper');
+    expect(band.firstElementChild).toHaveClass('page');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveClass('text-display');
   });
 
   it('has one h1, puts the copy before the aside, and hides the decorative art', () => {

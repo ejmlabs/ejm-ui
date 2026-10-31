@@ -2,6 +2,8 @@
 
 Everything a documentation page needs, exported from `@ejm/ui/docs`. They sit inside `DocsLayout` (sidebar, 68ch reading column, contents), which comes from `packages/ui/src/shell`. All of them are containerless: hairlines, tone and type, no boxes. Code is the one object with a flat ground (`bg-ui-editor`), because the `syn-*` colors are gated at 4.5:1 on that ground.
 
+No part accepts `className` or `style`: the kit owns every class, and `closed-api.test.ts` fails when an export does. The parts follow the one control system. Color changes are instant, focus is the global outline (inside the row where a scroller clips it), type is `text-base`, `text-sm` or `text-meta`, and inline `code` keeps the base style (mono, a step smaller, no fill).
+
 Every part renders complete, usable HTML on the server. Script only adds to it. A shared `useHydrated()` is false on the server and during hydration, so the server HTML and the first client render match, and controls that need script appear after.
 
 | Part | Without script | With script |
@@ -10,7 +12,7 @@ Every part renders complete, usable HTML on the server. Script only adds to it. 
 | `Contents` | Links to heading ids. They jump natively. | The heading being read gets `aria-current="true"`. Activating an entry first folds a phone disclosure, then focuses and scrolls to the heading (smoothly unless reduced motion) and updates the address. |
 | `Heading` | An `h2` or `h3` with an `id` and a plain `#` link to itself. | Same. It takes focus from `Contents`. |
 | `CodeBlock` | Highlighted code in a labelled, focusable scroll region. No copy button. | A Copy button. The label reads "Copied" and a `role="status"` region says "Copied to clipboard". If the clipboard is blocked the code is selected and the label reads "Copy failed". |
-| `CodeTabs` | Every panel stacked, each under its own label. | The WAI-ARIA tabs pattern. Only the selected panel shows. A language chosen in one group selects it in every group that has it. |
+| `CodeTabs` | Every panel stacked, each under its own label. | The WAI-ARIA tabs pattern, drawn like `Tabs`: 44px triggers (32px on a compact surface), tone on hover, the current tab 600 weight and underlined. Only the selected panel shows. A language chosen in one group selects it in every group that has it. |
 | `Callout` | Same. | Same. |
 | `ParamTable` | Same. A labelled, focusable region that scrolls inside itself. | Same. |
 | `Pager` | Same. | Same. |
@@ -40,12 +42,13 @@ Every part renders complete, usable HTML on the server. Script only adds to it. 
 
 ## Markup and accessibility
 
-- `DocsSidebar`: `nav` named "Documentation", a labelled `ul` per group, links with `aria-current="page"`. Entries are at least 44px high on touch screens. The filter input has a visually hidden label and a `role="status"` count that is empty until you type.
+- `DocsSidebar`: `nav` named "Documentation", a labelled `ul` per group, links with `aria-current="page"`. Entries are 32px tall with a mouse and 44px on touch screens. The filter is an `Input` (44px) with a visually hidden label and a `role="status"` count that is empty until you type.
 - `Contents`: `nav` named "On this page". A visible label shows from `xl`, where the layout stops folding it into a disclosure. The current entry is marked with `aria-current="true"` and a stronger rule and tone, never color alone.
+- `DocsSidebar` and `Contents` share one link look (`nav-link.ts`): a hairline down the left edge, `hover:bg-tone`, and for the current entry the strong rule, the tone and the strong text.
 - `CodeTabs`: `role="tablist"` with an `aria-label`, `role="tab"` buttons with `aria-selected` and `aria-controls`, `role="tabpanel"` with `aria-labelledby`. Roving tabindex: only the selected tab is in the tab order. Left and Right move and wrap, Home and End jump, and selection follows focus. The model is `createTabsState` and `tabsReducer` from `@ejm/core`.
-- `CodeBlock`: a `figure` with a label row. The `pre` is `role="region"`, `tabindex="0"` and `aria-label="TypeScript code"`, so a keyboard user can scroll it on a narrow screen. Copy uses `createCopy` from `@ejm/core`. The text copied is `pre.textContent`, so spans never leak into the clipboard.
-- `Callout`: `role="note"`, the word (Note, Tip, Warning, from the contract) first, a left rule colored by kind. On a Sage band every status color is Ink, and the word still reads.
-- `ParamTable`: a native `table` with a `caption`, `th scope="col"` and `th scope="row"` (the mono name). Figures use `tabular-nums`.
+- `CodeBlock`: a `figure` with a label row. Inside `CodeTabs` or `CodeTabsFrame` it drops its own margins (and, under the tab list, its top hairline): the frame sets `CodeGroupContext`, so no figure needs spacing of its own. The `pre` is `role="region"`, `tabindex="0"` and `aria-label="TypeScript code"`, so a keyboard user can scroll it on a narrow screen. Copy uses `createCopy` from `@ejm/core`. The text copied is `pre.textContent`, so spans never leak into the clipboard.
+- `Callout`: `role="note"`, the word (Note, Tip, Warning, from the contract) first in the meta face, a left rule colored by kind. On a Sage band every status color is Ink, and the word still reads.
+- `ParamTable` and `DocTable`: a native `table` with a `caption`, `th scope="col"` and `th scope="row"` (the mono name in `ParamTable`). Rows are hairlines with `py-4` cells, or `py-2` when the surface is compact (`AppShell`, `Page variant="application"`). Figures use `tabular-nums`.
 - `Pager`: `nav` named "Previous and next pages", links with `rel="prev"` and `rel="next"` that show the title of the page they go to.
 
 ## Syntax colors
@@ -58,7 +61,7 @@ A documentation set is plain data (`DocSet`, `DocPage`, `DocSection`, `DocBlock`
 
 ## Tests
 
-`npx vitest run packages/ui/src/docs apps/gallery/src/content` covers: tokenizer round trip; copy text, announcement and failure; tabs roles, arrows, Home, End, wrapping, roving tabindex, no-script stacking and cross-group sync; filter results, announcement and Escape; contents scroll marking and focus on activation; callout words; table region; pager rel and names; and a server-render check of every docs page (links resolve, one h1, no skipped levels, every tab panel and the filter input in the HTML).
+`npx vitest run packages/ui/src/docs apps/gallery/src/content` covers: tokenizer round trip; copy text, announcement and failure; tabs roles, arrows, Home, End, wrapping, roving tabindex, no-script stacking and cross-group sync; filter results, announcement and Escape; contents scroll marking and focus on activation; callout words; table region; pager rel and names; the one-system checks in `system.test.tsx` (no retired utilities, a stray `className` ignored, one link look for the sidebar and contents, row padding by density); and a server-render check of every docs page (links resolve, one h1, no skipped levels, every tab panel and the filter input in the HTML).
 
 ## Compiled guides
 

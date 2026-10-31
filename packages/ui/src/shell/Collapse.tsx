@@ -23,7 +23,6 @@ export interface CollapseProps {
   label: string;
   /** The breakpoint where the content stops collapsing and is just shown. */
   from: CollapseFrom;
-  className?: string;
   children: ReactNode;
 }
 
@@ -33,7 +32,7 @@ export interface CollapseProps {
  * so opening and closing move nothing before hydration. A browser without ::details-content gets the same result from a
  * small effect that opens the details when the screen is wide.
  */
-export function Collapse({ label, from, className, children }: CollapseProps) {
+export function Collapse({ label, from, children }: CollapseProps) {
   const ref = useRef<HTMLDetailsElement>(null);
   useEffect(() => {
     const d = ref.current;
@@ -47,15 +46,15 @@ export function Collapse({ label, from, className, children }: CollapseProps) {
     return () => mq.removeEventListener('change', sync);
   }, [from]);
   return (
-    <details ref={ref} className={cn('group', alwaysShown[from], className)}>
+    <details ref={ref} className={`group ${alwaysShown[from]}`}>
       <summary
         className={cn(
-          'touch-target hairline-t hairline flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 py-2 text-fg marker:hidden hover:text-link [&::-webkit-details-marker]:hidden',
+          'hairline-t hairline flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 py-2 text-fg marker:hidden hover:text-link [&::-webkit-details-marker]:hidden',
           hideButton[from],
         )}
       >
         <span className="font-semibold">{label}</span>
-        <ChevronDown aria-hidden className="size-5 transition-transform duration-base ease-standard group-open:rotate-180" />
+        <ChevronDown aria-hidden className="size-5 transition-transform duration-fast ease-standard group-open:rotate-180" />
       </summary>
       {children}
     </details>

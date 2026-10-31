@@ -34,8 +34,10 @@ export function tailwindCss({ theme, brand, resolved, bands, banner }) {
   out.push(`/* ${banner}
    Tailwind v4 theme for ejmlabs sites and apps. packages/ui/src/styles.css imports it. Names and behavior: packages/ui/THEME.md.
    Brand colors are fixed. The semantic colors (ground, fg, muted, line, tone, ...) point at --ejm-* variables, and a
-   [data-band="paper|mist|sage|ink"] element sets all of them for its subtree. Light is the default, [data-theme="dark"] or the
-   system preference (when the root has no data-theme) switches Paper and Mist; Sage and Ink look the same in both themes. */`);
+   [data-band="paper|mist|sage|ink"] element sets all of them for its subtree. [data-band="auto"] alternates by position: Mist on
+   odd and Paper on even among its [data-band="auto"] siblings (a page section, see Section in packages/ui/src/layout). Light is the
+   default, [data-theme="dark"] or the system preference (when the root has no data-theme) switches Paper and Mist; Sage and Ink
+   look the same in both themes. */`);
 
   // Brand colors, always emitted, and the reset that keeps every other palette color out of the build.
   out.push(`@theme static {\n  --color-*: initial;\n  --shadow-*: initial;\n  --drop-shadow-*: initial;\n  --inset-shadow-*: initial;\n  --text-shadow-*: initial;\n${Object.entries(brand).map(([k, v]) => `  --color-${k}: ${hex(v)};`).join('\n')}\n}`);
@@ -45,12 +47,6 @@ export function tailwindCss({ theme, brand, resolved, bands, banner }) {
   const colors = [
     ...sem.map(k => `  --color-${k}: var(--ejm-${k});`),
     ...[1, 2, 3, 4, 5, 6].map(i => `  --color-hue-${i}: var(--ejm-hue-${i});`),
-    '  /* shadcn/ui names, so copied-in component source keeps working. There is no card or popover surface: popover is the ground. */',
-    ...Object.entries({
-      background: 'ground', foreground: 'fg', 'muted-foreground': 'muted', popover: 'ground', 'popover-foreground': 'fg',
-      'primary-foreground': 'on-primary', secondary: 'tone', 'secondary-foreground': 'fg', accent: 'tone', 'accent-foreground': 'fg',
-      destructive: 'danger', 'destructive-foreground': 'on-danger', border: 'line', input: 'control', ring: 'focus',
-    }).map(([a, b]) => `  --color-${a}: var(--ejm-${b});`),
   ];
   out.push(`@theme inline {\n${colors.join('\n')}\n  --shadow-rest: var(--ejm-shadow-rest);\n  --shadow-raised: var(--ejm-shadow-raised);\n  --shadow-float: var(--ejm-shadow-float);\n}`);
 
@@ -73,11 +69,17 @@ export function tailwindCss({ theme, brand, resolved, bands, banner }) {
   const mapDecl = band => flat.map(k => `    ${varName(band, k)}: ${source(band, k)};`).join('\n');
   const staticDecl = band => flat.map(k => `    ${varName(band, k)}: ${val(band, 'light', k)};`).join('\n');
 
+  // Automatic grounds: a section marked data-band="auto" takes Mist on odd and Paper on even positions among its
+  // [data-band="auto"] siblings, so a page of sections alternates with no ground chosen by hand. Both bands are themed, so the
+  // dark theme follows through the same variables. A browser without :nth-child(of S) leaves the section on the page ground.
+  const AUTO = '[data-band="auto"]';
+  const auto = { mist: `${AUTO}:nth-child(odd of ${AUTO})`, paper: `${AUTO}:nth-child(even of ${AUTO})` };
+
   const rules = [themeBlocks(themeDecls)];
-  rules.push(`  /* The page is the Paper band. Any [data-theme] element starts a new page scheme for its subtree. */\n  :root, [data-theme], [data-band="paper"] {\n${mapDecl('paper')}\n  }`);
+  rules.push(`  /* The page is the Paper band. Any [data-theme] element starts a new page scheme for its subtree. */\n  :root, [data-theme], [data-band="paper"], ${auto.paper} {\n${mapDecl('paper')}\n  }`);
   for (const b of names.filter(n => n !== 'paper')) {
     rules.push(themed.includes(b)
-      ? `  [data-band="${b}"] {\n${mapDecl(b)}\n  }`
+      ? `  [data-band="${b}"]${auto[b] ? `, ${auto[b]}` : ''} {\n${mapDecl(b)}\n  }`
       : `  /* ${b[0].toUpperCase()}${b.slice(1)} is the same in both themes. */\n  [data-band="${b}"] {\n${staticDecl(b)}\n  }`);
   }
   rules.push('  :root, [data-theme], [data-band] {\n    color-scheme: var(--ejm-scheme);\n  }');
