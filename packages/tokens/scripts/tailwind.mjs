@@ -47,12 +47,6 @@ export function tailwindCss({ theme, brand, resolved, bands, banner }) {
   const colors = [
     ...sem.map(k => `  --color-${k}: var(--ejm-${k});`),
     ...[1, 2, 3, 4, 5, 6].map(i => `  --color-hue-${i}: var(--ejm-hue-${i});`),
-    '  /* shadcn/ui names, so copied-in component source keeps working. There is no card or popover surface: popover is the ground. */',
-    ...Object.entries({
-      background: 'ground', foreground: 'fg', 'muted-foreground': 'muted', popover: 'ground', 'popover-foreground': 'fg',
-      'primary-foreground': 'on-primary', secondary: 'tone', 'secondary-foreground': 'fg', accent: 'tone', 'accent-foreground': 'fg',
-      destructive: 'danger', 'destructive-foreground': 'on-danger', border: 'line', input: 'control', ring: 'focus',
-    }).map(([a, b]) => `  --color-${a}: var(--ejm-${b});`),
   ];
   out.push(`@theme inline {\n${colors.join('\n')}\n  --shadow-rest: var(--ejm-shadow-rest);\n  --shadow-raised: var(--ejm-shadow-raised);\n  --shadow-float: var(--ejm-shadow-float);\n}`);
 

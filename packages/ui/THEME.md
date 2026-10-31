@@ -121,7 +121,7 @@ Full values for every band and theme are in `packages/tokens/generated/tailwind.
 
 - Brand, fixed, always emitted as variables: `sage` `forest` `ink` `paper` `mist` `white` (`bg-sage`, `text-forest`, `border-ink`, and opacity such as `bg-sage/40`). Use brand colors for art and one-off marks; use the semantic names for anything that changes with theme or band.
 - Semantic: the table above.
-- shadcn names, so copied-in shadcn source works: `background` (ground), `foreground` (fg), `muted-foreground` (muted), `popover` (ground), `popover-foreground` (fg), `primary-foreground` (on-primary), `secondary` and `accent` (tone), `secondary-foreground` and `accent-foreground` (fg), `destructive` (danger), `destructive-foreground` (on-danger), `border` (line), `input` (control), `ring` (focus). `primary` is shared. **Not aliased on purpose:** `card`, `card-foreground` (there are no cards), and `bg-muted` (our `muted` is a text color: use `bg-tone`).
+- No shadcn color aliases. Components use the semantic names above; there is no `card`, `popover` or `background` color, and `bg-muted` does not exist (`muted` is a text color: use `bg-tone`).
 - Product windows and editors on the web, from the ui theme, following the page theme and never the band: `ui-ground` `ui-panel` `ui-editor` `ui-raised` `ui-overlay` `ui-hover` `ui-line` `ui-line-strong` `ui-text` `ui-text-strong` `ui-text-muted` `ui-text-subtle` `ui-primary` `ui-on-primary` `ui-focus` `ui-accent` `ui-accent-strong` `ui-tint-1` to `ui-tint-3` `ui-error` `ui-warning` `ui-success` `ui-special` `ui-info` `ui-control-border` `ui-diff-add` `ui-diff-del` `ui-diff-add-bg` `ui-diff-del-bg` `ui-selection` `ui-dim`, `ui-hue-1` to `ui-hue-6`, and syntax `syn-comment` `syn-keyword` `syn-string` `syn-number` `syn-type` `syn-type-parameter` `syn-function` `syn-macro` `syn-parameter` `syn-property` `syn-constant` `syn-namespace` `syn-identifier` `syn-delimiter`. Plain variables are `--ejm-ui-*` and `--ejm-ui-syn-*`.
 - Native product styles can load the complete `--ejm-ui-n0` to `--ejm-ui-n15` scale through `@ejm/tokens/neutral.css`. It follows the page theme. The public `@ejm/demos/ide-preview.css` profile includes it.
 
@@ -221,7 +221,7 @@ Under reduced motion, with scripts off, and in print, `pending` hides nothing. T
 
 ## Focus, touch and rules
 
-- `:focus-visible` gets a 2px `--ejm-focus` outline with 2px offset, globally. `focus-ring` does the same for a custom control that removes it. Shadcn's `ring-*` classes work with `ring-focus` / `ring-ring`.
+- `:focus-visible` gets a 2px `--ejm-focus` outline with 2px offset, globally. `focus-ring` does the same for a custom control that removes it. `ring-focus` is the focus color for a `ring-*` utility.
 - `touch-target`: at least 44 by 44px on coarse pointers. Use it on block, flex or inline-flex controls; inline links in running text are exempt.
 - `compact-target`: at least 32 by 32px on fine pointers, for the compact density. Use it with `touch-target` (the two media queries never apply together).
 - `sr-inline`: screen reader text that stays in the flow (inside links and table cells), where `sr-only` could sit outside a scroll region.

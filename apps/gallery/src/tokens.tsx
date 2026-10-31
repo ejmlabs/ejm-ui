@@ -69,7 +69,7 @@ export function Tokens() {
       <Section title="Elevation." kicker="Depth" intro={<p>Only product windows, menus and overlays have a shadow. These are the three levels.</p>}>
         <div className="flex flex-wrap gap-10">
           {(['rest', 'raised', 'float'] as const).map(level => (
-            <div key={level} className={`scheme-page w-full max-w-64 rounded-window bg-popover p-6 text-ui-text ${shadowClass[level]}`}>
+            <div key={level} className={`scheme-page w-full max-w-64 rounded-window bg-ground p-6 text-ui-text ${shadowClass[level]}`}>
               <p className="text-meta">shadow-{level}</p>
             </div>
           ))}

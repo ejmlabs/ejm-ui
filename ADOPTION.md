@@ -195,7 +195,7 @@ export default function Home() {
 }
 ```
 
-`Hero` renders the page's one `h1`. A control placed in an application surface (`AppShell`, `Page variant="application"`) is compact without a prop. `packages/ui/src/layout/README.md` has the full API. `examples/starter` shows the configuration and the shell; its pages still use the lower-level `Band`, `SectionHead` and `SectionBody` path, which remains supported. New pages use `Section`.
+`Hero` renders the page's one `h1`. A control placed in an application surface (`AppShell`, `Page variant="application"`) is compact without a prop. `packages/ui/src/layout/README.md` has the full API. `examples/starter` shows the configuration, the shell and pages built from `Hero` and `Section`. The lower-level `Band`, `SectionHead` and `SectionBody` path remains supported for existing pages.
 
 ## 6. Upgrading an older pin
 
