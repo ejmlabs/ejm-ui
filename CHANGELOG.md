@@ -5,6 +5,8 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- A bare link in an action row (`Actions`, `AppActions` and the `actions` of `Hero` and `Section`) is a control there, not running text, so it now keeps a 44px target on touch, centered in the row. An `InlineLink` passed as hero actions (as on the starter's 404 page) was 26px tall on a phone. Nothing changes on a mouse.
+
 - Make the kit systemic, so building blocks produce one cohesive design however they are combined and the library enforces it. Public components are closed, a new `Section` derives the structure of a page, every control comes from one recipe, one stylesheet covers every component, and a consumer's build setup shrinks to `ejmUi()` or `ejmlabs()`, a base tsconfig and one import. This source change does not publish a package, deploy a consumer or move any consumer's pin. Several removals are **Breaking**; the upgrade steps follow, then the consumer pin moves.
 
   **Closed components. Breaking.** No public `@ejm/ui` component accepts `className`, `style` or `dangerouslySetInnerHTML`; `packages/ui/src/closed-api.test.ts` fails type checking, naming the component, when one does. The design guard already rejected them in consumers. If a look is missing, add a component or a recipe to ejm-ui. Variants are closed too:

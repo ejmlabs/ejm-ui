@@ -127,6 +127,11 @@ describe('Section content and rhythm', () => {
     expect(head.compareDocumentPosition(body) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
+  it('gives a bare link in hero or section actions a 44px target on touch, since it is a control there and not running text', () => {
+    render(<main><Hero title="Product" actions={<a href="/start/">Start</a>} /><Section title="A" actions={<a href="#all">See all</a>} /></main>);
+    for (const name of ['Start', 'See all']) expect(screen.getByRole('link', { name }).parentElement).toHaveClass('[&>a]:touch-target', '[&>a]:content-center');
+  });
+
   it('renders no empty copy column or body without intro, actions or children', () => {
     render(<Section title="Only a title" />);
     const section = screen.getByRole('region', { name: 'Only a title' });

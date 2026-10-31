@@ -224,7 +224,7 @@ Under reduced motion, with scripts off, and in print, `pending` hides nothing. T
 ## Focus, touch and rules
 
 - `:focus-visible` gets a 2px `--ejm-focus` outline with 2px offset, globally. `focus-ring` does the same for a custom control that removes it. `ring-focus` is the focus color for a `ring-*` utility.
-- `touch-target`: at least 44 by 44px on coarse pointers. Use it on block, flex or inline-flex controls; inline links in running text are exempt.
+- `touch-target`: at least 44 by 44px on coarse pointers. Use it on block, flex or inline-flex controls; inline links in running text are exempt. An action row (`Actions`, `AppActions` and the `actions` of `Hero` and `Section`) gives a bare link in it this target too.
 - `compact-target`: at least 32 by 32px on fine pointers, for the compact density. Use it with `touch-target` (the two media queries never apply together).
 - `sr-inline`: screen reader text that stays in the flow (inside links and table cells), where `sr-only` could sit outside a scroll region.
 - `animate-slide`: the `animate-enter` rise without the fade, for text that can be the LCP.
