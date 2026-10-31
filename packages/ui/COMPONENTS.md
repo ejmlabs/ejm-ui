@@ -46,7 +46,7 @@ Source: `src/components/ui/`, copied-in shadcn/ui style on React 19 with `class-
 
 | Component | File | Primitive | Why |
 | --- | --- | --- | --- |
-| `Button` | `components/ui/button.tsx` | native `<button>`, Radix Slot for `asChild` | A button needs no library. Slot lets the same look wrap a router link. Variants primary (Sage fill, Ink text), secondary (a hairline outline), ghost, link and danger (red fill); sizes `md` and `icon` (a square that needs an `aria-label`). `arrow` slides 4px on hover. Pills stay on one line; the link variant wraps. Density comes from the surface. |
+| `Button` | `components/ui/button.tsx` | native `<button>`, Radix Slot for `asChild` | A button needs no library. Slot lets the same look wrap a router link. Variants primary (Sage fill, Ink text), secondary (a hairline outline), ghost, link and danger (red fill); sizes `md` and `icon` (a square that needs an `aria-label` and a `lucide-react` icon, see "Icons in icon buttons" below). `arrow` slides 4px on hover. Pills stay on one line; the link variant wraps. Density comes from the surface. |
 | `Input` | `components/ui/input.tsx` | native `<input>` | The platform gives labels, autofill, mobile keyboards and validation. `Input` only adds the control look. |
 | `Textarea` | `components/ui/textarea.tsx` | native `<textarea>` | Same as Input. |
 | `Select` | `components/ui/select.tsx` | native `<select>` | The native picker is better on phones, has full keyboard and typeahead support, and costs no JavaScript. Radix Select was rejected: it re-implements the same and adds about 10 KB gzip. |
@@ -132,16 +132,16 @@ Header, Footer, ThemeToggle, ExternalLink, SiteLayout, DocsLayout, AppShell, Ski
 | --- | --- | --- | --- |
 | SiteLayout | shell/SiteLayout.tsx | native landmarks | Skip link, header, `main#main` and footer for every site. |
 | Brand | shell/Brand.tsx | decorative mark and optional name | Supplied light and dark image URLs and intrinsic dimensions; placement owns the display size. The footer uses `darkSrc` (or `src` when there is none) on its permanent Ink ground. |
-| Header | shell/Header.tsx | native `<header>`, `<nav>` and `<details>` | The required `identity` (name and optional mark) at the left, nav, and the theme control last; `themeControl` replaces or suppresses the default. The phone menu is a disclosure. |
+| Header | shell/Header.tsx | native `<header>`, `<nav>` and `<details>` | The required `identity` (name and optional mark) at the left, nav, and the theme control last; `themeControl` replaces or suppresses the default. The nav list becomes the menu disclosure below 48rem of the header's own width (the header is a Tailwind `@container`), so a header in a narrow preview folds like one on a phone. |
 | Footer | shell/Footer.tsx | native `<footer>` | Ink band with an `identity`, link columns, the privacy note slot and a legal line. |
 | ThemeToggle | shell/ThemeToggle.tsx | native `<button>` | Far right of the header; its name states the action. It takes no props and is the ghost icon button of the control recipe. |
-| ExternalLink | shell/ExternalLink.tsx | native `<a>` | `rel="external noopener"` with an arrow and a screen reader note. |
-| ExternalAnchor | shell/ExternalAnchor.tsx | native `<a>` | Private. The external anchor that ExternalLink and NavLink share: the `rel`, the arrow and the screen reader note. |
-| NavLink | shell/NavLink.tsx | native `<a>` or the site's link component | Private. One nav item, external or routed, with `aria-current` and the current-page mark (weight 600 and a 2px underline). |
-| NavMenu | shell/NavMenu.tsx | native `<details>` | Private. The header menu below 768px, an overlay under the bar. Escape and an outside press close it. |
+| ExternalLink | shell/ExternalLink.tsx | native `<a>` | `rel="external noopener"` with an arrow and a screen reader note. The arrow stays on the line of the last word. |
+| ExternalAnchor | shell/ExternalAnchor.tsx | native `<a>` | Private. The external anchor that ExternalLink and NavLink share: the `rel`, the arrow and the screen reader note. The last word of a text label, the arrow and the note sit in one nowrap span (any other children get a word joiner before the arrow), so the arrow never wraps onto a line of its own. |
+| NavLink | shell/NavLink.tsx | native `<a>` or the site's link component | Private. One nav item, external or routed, with `aria-current` and the current-page mark (weight 600 and a 2px underline). Header, NavMenu and AppShell all render their items through it. |
+| NavMenu | shell/NavMenu.tsx | native `<details>` | Private. The header menu below 48rem of the header's own width, an overlay under the bar. Escape and an outside press close it. |
 | SkipLink | shell/SkipLink.tsx | native `<a>` | First focusable element; targets `#main`. |
 | DocsLayout | shell/DocsLayout.tsx | native `<details>` collapses | Sidebar, 68ch reading column and contents; both side parts fold on narrow screens. |
-| AppShell | shell/AppShell.tsx | native landmarks | Top bar, side nav and content for applications, with compact density for everything inside. `themeControl` replaces or suppresses the default. |
+| AppShell | shell/AppShell.tsx | native landmarks | Top bar, side nav and content for applications, with compact density for everything inside. `nav` is a list of `NavItem` (`label`, `href`, `current?`, `external?`), rendered as compact control-recipe links through the site's link component, with the current page in weight 600 and `aria-current`; it takes no markup. `themeControl` replaces or suppresses the default. |
 | Collapse | shell/Collapse.tsx | native `<details>` | Shared disclosure behind the docs sidebars. |
 | LinkProvider | shell/link.tsx | React context | Lets a site pass its router link, so the shell stays router-agnostic. |
 | DensityProvider | lib/density.tsx | React context | Sets the density of a surface. AppShell and `Page variant="application"` provide `compact`; controls read it with `useDensity`. Exported from `@ejm/ui`. |
@@ -177,6 +177,14 @@ CodeBlock, CodeTabs, Callout, ParamTable, Pager, SidebarFilter, Contents. Add a 
 | DocDataBlock | docs/DocDataBlock.tsx | compiled block | Renders serialized blocks, including nested code. |
 | DocBlocks | docs/model.tsx | content blocks | Renders blocks from the React content model. |
 | DocBody | docs/model.tsx | native article content | Renders a page's blocks from the content model. |
+| ThemePair | docs/Specimens.tsx | native `<div>` panes with `data-theme` | Its children rendered once under the light theme and once under the dark theme, each on the Paper ground, side by side from 56rem of the pair's own width. For documentation pages of any ejmlabs design. |
+| DensityPair | docs/Specimens.tsx | native `<div>` panes, `DensityProvider` | Its children once on a comfortable surface and once on a compact one, side by side. |
+| ColorSwatches | docs/Specimens.tsx | native `<ul>` | A row of color samples fed from token names (`SwatchColor`: the `HUES` roles, brand and status colors), each named in mono. |
+| TypeScaleSample | docs/Specimens.tsx | native `<ul>` | The six type sizes and tabular figures, one hairline row each with its token name. |
+| ElevationSample | docs/Specimens.tsx | native `<ul>` | The three shadow levels on window-shaped outlines (unfilled), the only kind of object that carries a shadow. |
+| RadiusSample | docs/Specimens.tsx | native `<ul>` | The three radii as outlines, never fills. |
+| ResizableSample | docs/Specimens.tsx | native `<div>` | A region the reader can drag wider or narrower, with a `ref` for a hook that measures it, for a demo of what adapts to the space it has. |
+| DrawOnSample | docs/Specimens.tsx | inline `<svg>` | A three-path line drawing with a `ref` for `useDrawOn`, for a draw-on demo. |
 
 ## App (app workstream)
 
@@ -223,6 +231,17 @@ const Chessboard = lazy(() => import('@ejm/ui/components/Chessboard').then(modul
 
 `GameClock` defaults to `role="timer"`; a `role` prop from the host wins, and `label` stays the accessible name. A timer is a live region that is off, so a tick is not announced. When `low`, it shows the warn glyph from the `@ejm/core` contract (`glyphs.status.warn`, hidden from assistive technology) beside the time, so low time does not rely on the danger fill alone.
 
+## Icons in icon buttons
+
+The kit ships no icon set. `Button size="icon"` is a square (44px, 32px compact) that takes one icon as its child, and it needs an `aria-label` because the icon is decorative (`aria-hidden`). Use a [`lucide-react`](https://lucide.dev) icon: `lucide-react` is already a dependency of `@ejm/ui`, which draws its own icons with it, and a consumer that imports an icon adds `lucide-react` to its own dependencies (`"lucide-react": "^1.59.0"` at this revision) so the import resolves from its own `package.json`. The button sizes the icon (20px, 16px compact) with its stroke weight left at the default, so the icon takes no `size`, `strokeWidth` or class.
+
+```tsx
+import { Plus } from 'lucide-react';
+import { Button } from '@ejm/ui';
+
+<Button size="icon" variant="secondary" aria-label="Add a project"><Plus aria-hidden /></Button>
+```
+
 ## Application pages and composition
 
 Application page layout is opt-in and independent of the density of its surface. Use `Page variant="application"` with `SectionHead purpose="application"`. Native forms and content groups use the fixed public recipes below from `@ejm/ui/layout/Application` (also exported from `@ejm/ui`). The consumer keeps semantics, values, validation and events. The shared owner fixes spacing, widths and responsive geometry. `GameWorkspace`, `PlayerStrip`, `MovePairs` and `MoveHistory` apply the same boundary to board composition and move selection. See `src/layout/README.md` for the complete pattern.
@@ -247,4 +266,5 @@ Notes that apply across the shell and the forms:
 
 - `Header` and `AppShell` take `themeControl?: ReactNode`. Omitted or `undefined` keeps `ThemeToggle`; `null` suppresses it. A replacement can be a shared `Button` whose behavior an external consumer script attaches. The default `ThemeToggle` still needs hydration to change the theme.
 - `Disclosure` takes a `summary` and standard details props such as `open`, `name` and `onToggle`. Keep links and buttons in its content, outside the summary. It has ordinary disclosure keyboard behavior. Use `Menu` when you need arrow keys, typeahead, Escape, focus return or collision handling. `Collapse` remains the breakpoint-based sidebar component.
+- The specimen blocks of `docs/Specimens.tsx` take no `className` or `style` either: they take children, token names (`ColorSwatches colors`), a `label` and a `ref`. A documentation page shows a theme, a density or a token with them and writes no class of its own, so the gallery passes the same design guard as every consumer.
 - Terminal components are not in this package. They live in `crates/ejm-tui` and `@ejm/ink`, on `packages/core/contract.json`.

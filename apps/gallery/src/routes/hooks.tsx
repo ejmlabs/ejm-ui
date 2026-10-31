@@ -1,6 +1,6 @@
 import {
-  Actions, Button, Fact, Facts, Hero, Input, Reveal, Section, Stagger, Text, useClipboard, useContainerQuery, useDrawOn, useHotkeys, useInView,
-  useMediaQuery, useReducedMotion, useTheme,
+  Actions, Button, DrawOnSample, Fact, Facts, Hero, Input, Reveal, ResizableSample, Section, Stagger, Text, useClipboard, useContainerQuery,
+  useDrawOn, useHotkeys, useInView, useMediaQuery, useReducedMotion, useTheme,
 } from '@ejm/ui';
 import { useState } from 'react';
 
@@ -44,10 +44,9 @@ function ContainerDemo() {
         <Fact label="at least 420px">{String(matches)}</Fact>
       </Facts>
       <Text as="p" variant="muted">Drag the corner of the line below.</Text>
-      {/* The one raw element here: a resizable box the hook measures. */}
-      <div ref={ref} className="hairline min-w-48 w-full" style={{ resize: 'horizontal', overflow: 'auto' }}>
+      <ResizableSample ref={ref}>
         <Text as="p" variant="muted">{matches ? 'wide layout' : 'narrow layout'}</Text>
-      </div>
+      </ResizableSample>
     </>
   );
 }
@@ -85,13 +84,7 @@ function HotkeysDemo() {
 
 function DrawDemo() {
   const ref = useDrawOn<SVGSVGElement>();
-  return (
-    <svg ref={ref} viewBox="0 0 120 60" className="art max-w-64" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2">
-      <path pathLength="1" d="M4 50 C 30 4, 60 4, 116 50" />
-      <path pathLength="1" d="M4 30 H 116" />
-      <path pathLength="1" d="M60 4 V 56" />
-    </svg>
-  );
+  return <DrawOnSample ref={ref} />;
 }
 
 export default function HooksPage() {

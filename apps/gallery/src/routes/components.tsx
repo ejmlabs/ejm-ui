@@ -1,10 +1,10 @@
 import {
-  Actions, AppField, AppForm, Badge, Button, Checkbox, Columns, ContentFlow, DensityProvider, Dialog, Disclosure, Fact, Facts, Hero, Input, KeyHints, Menu,
-  GameClock, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger, Prompt, RadioGroup, Section, Select, StateBlock, Status, Switch, Table,
-  Tabs, Text, Textarea, ToastProvider, Tooltip, useToast,
+  Actions, AppField, AppForm, Badge, Button, Checkbox, Columns, ContentFlow, DensityPair, Dialog, Disclosure, Fact, Facts, GameClock, Hero, Input,
+  KeyHints, Menu, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger, Prompt, RadioGroup, Section, Select, StateBlock, Status, Switch,
+  Table, Tabs, Text, Textarea, ThemePair, ToastProvider, Tooltip, useDensity, useToast,
 } from '@ejm/ui';
+import { Plus } from 'lucide-react';
 import { lazy, Suspense, useId, useState } from 'react';
-import { Compare, Pane, PlusIcon, ThemePair } from '../specimen';
 
 // The barrel does not export Chessboard, so cm-chessboard loads only on this route, after mount. The server renders the leaf directly, which
 // draws its loading square, so hydration finds the same HTML.
@@ -31,8 +31,9 @@ const columns = [
 ];
 
 /** One of each control. Rendered under both densities and both themes, so each shows what the surface decides. */
-function ControlSet({ name }: { name: string }) {
+function ControlSet() {
   const id = useId();
+  const density = useDensity();
   const [plan, setPlan] = useState('pro');
   return (
     <>
@@ -55,7 +56,7 @@ function ControlSet({ name }: { name: string }) {
         <Switch label="On" defaultChecked />
       </Actions>
       <RadioGroup label="Plan" name={`${id}-radio`} value={plan} onValueChange={setPlan} options={[{ value: 'free', label: 'Free' }, { value: 'pro', label: 'Pro' }]} />
-      <Tabs label={`Products, ${name}`} tabs={[
+      <Tabs label={`Products, ${density}`} tabs={[
         { id: 'cli', label: 'ejm-cli', panel: <Text as="p">A terminal agent that works in your repository.</Text> },
         { id: 'ide', label: 'ejm-ide', panel: <Text as="p">An editor and engine for the same work.</Text> },
       ]} />
@@ -114,7 +115,7 @@ function Overlays() {
       <Section title="Tooltip">
         <Actions>
           <Tooltip content="Copy the install command"><Button variant="secondary">Copy</Button></Tooltip>
-          <Tooltip content="Add a project"><Button variant="secondary" size="icon" aria-label="Add a project"><PlusIcon /></Button></Tooltip>
+          <Tooltip content="Add a project"><Button variant="secondary" size="icon" aria-label="Add a project"><Plus aria-hidden /></Button></Tooltip>
         </Actions>
       </Section>
       <Section title="Toast">
@@ -149,7 +150,7 @@ export default function ComponentsPage() {
           <Actions>
             <Button arrow>Get started</Button>
             <Button variant="link" arrow>Read the docs</Button>
-            <Button size="icon" variant="secondary" aria-label="Add"><PlusIcon /></Button>
+            <Button size="icon" variant="secondary" aria-label="Add"><Plus aria-hidden /></Button>
             <Button asChild variant="secondary"><a href="/docs/components/">A link as a button</a></Button>
           </Actions>
         </Section>
@@ -287,18 +288,11 @@ export default function ComponentsPage() {
         emphasis
         intro={<p>Density comes from the surface. AppShell and an application Page make controls compact. DensityProvider sets it for any region. Touch keeps 44 px in both.</p>}
       >
-        <Compare>
-          <Pane label="Comfortable, for sites">
-            <DensityProvider density="comfortable"><ControlSet name="comfortable" /></DensityProvider>
-          </Pane>
-          <Pane label="Compact, for applications">
-            <DensityProvider density="compact"><ControlSet name="compact" /></DensityProvider>
-          </Pane>
-        </Compare>
+        <DensityPair><ControlSet /></DensityPair>
       </Section>
 
       <Section title="Light and dark" intro={<p>The same controls under both themes. A data-theme attribute starts a theme for its subtree.</p>}>
-        <ThemePair><ControlSet name="theme" /></ThemePair>
+        <ThemePair><ControlSet /></ThemePair>
       </Section>
     </ToastProvider>
   );

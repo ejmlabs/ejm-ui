@@ -7,8 +7,8 @@ function ReadyPage({ Body }: { Body: ComponentType }) {
   const [ready, setReady] = useState(false);
   // This commits only after the body has loaded and its handlers are attached.
   useLayoutEffect(() => setReady(true), []);
-  return <fieldset disabled={!ready} className="min-w-0">
-    <legend className="sr-only">Page examples</legend>
+  // The base styles let a fieldset shrink to its column, so it needs no class. It is named by aria-label rather than a hidden legend.
+  return <fieldset disabled={!ready} aria-label="Page examples">
     {!ready && <Page><Text as="p" variant="muted" role="status">Page controls are loading. The examples remain readable.</Text></Page>}
     <Body />
   </fieldset>;

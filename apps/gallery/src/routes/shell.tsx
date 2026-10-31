@@ -1,10 +1,10 @@
 import markInk from '@ejm/tokens/assets/projects/ui/mark-ink.svg?url';
 import markPaper from '@ejm/tokens/assets/projects/ui/mark-paper.svg?url';
-import { ExternalLink, Header, Hero, InlineCode, InlineLink, Row, Rows, Section, type HeaderProps } from '@ejm/ui';
-import { Pane, type Theme } from '../specimen';
+import { ExternalLink, Header, Hero, InlineCode, InlineLink, Row, Rows, Section, ThemePair, type HeaderProps } from '@ejm/ui';
 
 // Header, footer and layouts, shown the way a site uses them. The gallery's SiteLayout (src/frame.tsx) wraps this whole page, so the
-// header and footer you see are the real ones. The previews use a data-theme on a pane to show both themes side by side.
+// header and footer you see are the real ones. ThemePair shows a Header under both themes side by side. A Header follows its own width,
+// so in a half-width pane it is the narrow form with the Menu button, and the real header above the page is the wide form.
 
 const nav: HeaderProps['nav'] = [
   { label: 'Docs', href: '/docs/' },
@@ -15,32 +15,24 @@ const nav: HeaderProps['nav'] = [
 ];
 const identity = { name: 'ejm-ui', artwork: { src: markInk, darkSrc: markPaper, width: 256, height: 256 } };
 
-/** A Header in a themed pane, full width: its nav is laid out by the viewport, so it needs more than half a column. */
-function HeaderPreview({ theme }: { theme: Theme }) {
-  return (
-    <Pane label={`${theme} theme`} theme={theme}>
-      <Header identity={identity} homeLabel="ejm-ui home" nav={nav} />
-    </Pane>
-  );
-}
-
 export default function ShellPage() {
   return (
     <>
       <Hero eyebrow="ejm-ui / shell" title="Header, footer and layouts.">
         <p>
           Every page of this gallery sits in a SiteLayout: skip link, sticky header with the theme toggle last, <InlineCode>main#main</InlineCode> and the footer below.
-          Narrow the window to fold the nav into the menu.
+          The header folds its nav into the menu below 48rem of its own width.
         </p>
       </Hero>
 
       <Section
         title="Header in both themes."
         kicker="01 / Header"
-        intro={<p>The toggle is always the last item. On a phone the nav is one Menu button that opens an overlay, with no layout shift.</p>}
+        intro={<p>The toggle is always the last item. Below 48rem of its own width the nav is one Menu button that opens an overlay. These two are narrower, so both show it.</p>}
       >
-        <HeaderPreview theme="light" />
-        <HeaderPreview theme="dark" />
+        <ThemePair>
+          <Header identity={identity} homeLabel="ejm-ui home" nav={nav} />
+        </ThemePair>
       </Section>
 
       <Section

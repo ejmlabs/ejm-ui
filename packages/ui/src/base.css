@@ -349,6 +349,8 @@
     text-underline-offset: 0.2em;
   }
   a:not([class]):hover { text-decoration-thickness: 2px; }
+  /* A fieldset sizes to its content by default, so a wide child would widen the page. Let it shrink to its column like any block. */
+  fieldset { min-inline-size: 0; }
   /* Inline code reads as part of the sentence: the mono face a step smaller, no fill. Components never restyle it. */
   :where(code):not(pre code) { font-family: var(--font-mono); font-size: 0.9em; }
   :focus-visible { outline: 2px solid var(--ejm-focus); outline-offset: 2px; }

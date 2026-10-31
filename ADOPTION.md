@@ -162,15 +162,26 @@ export default defineConfig({ plugins: [ejmUi()] });
 
 `ejmUi()` is Tailwind, React, one copy of React and the design guard. The `tsconfig.json` and `src/styles.css` are the two files in section 2. An app has no shared head, so it does two things a site gets from `ejmSite()`: copy `@ejm/ui/theme-boot.js` to `public/` and load it synchronously in `index.html` before the stylesheet, so the first frame has `data-theme`, and keep `script-src 'self'` in its own policy for the same reason (the boot script is a file). Use `AppShell`, `ThemeToggle`, the `components/ui` primitives and the hooks directly. Colors come only from the semantic names in `packages/ui/THEME.md`.
 
+`AppShell` takes its side navigation as items, `nav={[{ label, href, current?, external? }]}`, and draws them as compact control-recipe links through its `linkComponent`. It takes no nav markup. See `packages/ui/src/shell/README.md`.
+
+An icon-only control is `<Button size="icon" aria-label="Add">` with one icon child. The kit ships no icon set: use a `lucide-react` icon, which `@ejm/ui` already depends on, and add `lucide-react` (`^1.59.0` at this revision) to your own `dependencies` so the import resolves from your `package.json`. The button sizes the icon, so pass no `size` or class.
+
+```tsx
+import { Plus } from 'lucide-react';
+import { Button } from '@ejm/ui';
+
+<Button size="icon" variant="secondary" aria-label="Add a project"><Plus aria-hidden /></Button>
+```
+
 ## 4. What the build enforces
 
 Three checks stop a consumer that drifts from the kit. None is optional.
 
 - **Types.** No public `@ejm/ui` component accepts `className`, `style` or `dangerouslySetInnerHTML`, so `tsc` fails on one. `packages/ui/src/closed-api.test.ts` keeps it that way inside the kit. Variants are closed too: a `Button` is `md` or `icon`, a `Badge` takes a `Status` word or `neutral`.
-- **The design guard** (`@ejm/ui/design-guard`, run by `ejmUi()` and so by `ejmlabs()`; a config with both checks once). It reads every file under the consumer's `src` before bundling, and again in dev on file events and on HTML document requests. It rejects `className`, `class`, `style` and `dangerouslySetInnerHTML` on any element, opaque JSX spreads, `<style>` elements, stylesheet links, local CSS rules and private style imports, and the removed props of `Hero`, `SectionHead`, `Header` and `Footer`. A stylesheet may only import public `@ejm/ui`, `@ejm/tokens` and `@ejm/demos` CSS. The one exception is `<Static className="contents">` from `@ejm/ssg`. Errors read `[ejm-site:design] src/file.tsx:line:column message`. It checks the consumer's own `src`, not the packages, and is an ownership check, not a security sandbox. Details: `packages/site/README.md`, "Design ownership".
+- **The design guard** (`@ejm/ui/design-guard`, run by `ejmUi()` and so by `ejmlabs()`; a config with both checks once). It reads every file under the consumer's `src` before bundling, and again in dev on file events and on HTML document requests. It rejects `className`, `class`, `style` and `dangerouslySetInnerHTML` on any element, opaque JSX spreads, `<style>` elements, stylesheet links, local CSS rules and private style imports, and the removed props of `Hero`, `SectionHead`, `Header` and `Footer`. A stylesheet may only import public `@ejm/ui`, `@ejm/tokens` and `@ejm/demos` CSS. The one exception is `<Static className="contents">` from `@ejm/ssg`. Errors read `[ejm-site:design] src/file.tsx:line:column message`. It checks the consumer's own `src`, not the packages, and is an ownership check, not a security sandbox. Every root is checked alike: this repository's own gallery (`apps/gallery`) passes it too, with no exemption. Details: `packages/site/README.md`, "Design ownership".
 - **Page invariants** (`ejmSite()`, so sites). After `ejm-ssg` writes the HTML, every page must have exactly one `h1`, no skipped heading level going down (starting at `h1`), the skip link to `#main` as its first focusable element, `main#main`, and `rel` containing `external` on every link to another host. Errors read `[ejm-site:pages] about/index.html: exactly one h1 is required, found 2` and fail the build. The 404 page is checked too. An app on `ejmUi()` alone has no prerendered pages and no page check.
 
-A consumer that needs a layout, a size or a look the kit lacks does not add a class. It adds a component or a recipe to ejm-ui, with a semantic name, and takes it at its next pin move.
+A consumer that needs a layout, a size or a look the kit lacks does not add a class. It adds a component or a recipe to ejm-ui, with a semantic name, and takes it at its next pin move. A documentation page that shows a theme, a density or a token uses the specimen blocks of `@ejm/ui` (`ThemePair`, `DensityPair`, `ColorSwatches`, `TypeScaleSample`, `ElevationSample`, `RadiusSample`; `packages/ui/src/docs/README.md`) rather than a layout of its own.
 
 ## 5. Build pages with `Section`
 

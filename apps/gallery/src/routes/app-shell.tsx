@@ -5,12 +5,12 @@ import { AppActions, AppFlow, AppHeading, AppShell, Brand, Button, SectionHead, 
 
 // AppShell is a whole page frame (top bar, side nav, content), so it has its own route. It makes every control inside compact.
 
-const items = [
-  ['Files', '#files'],
-  ['Search', '#search'],
-  ['Agent', '#agent'],
-  ['Settings', '#settings'],
-] as const;
+const nav = [
+  { label: 'Files', href: '#files', current: true },
+  { label: 'Search', href: '#search' },
+  { label: 'Agent', href: '#agent' },
+  { label: 'Settings', href: '#settings' },
+];
 
 const columns = [{ key: 'file', label: 'File' }, { key: 'size', label: 'Size (KB)' }];
 const rows = Array.from({ length: 12 }, (_, i) => ({ file: `src/module-${i + 1}.rs`, size: (i + 1) * 3 }));
@@ -21,17 +21,7 @@ export default function AppShellPage() {
       linkComponent={Link}
       brand={<Brand src={logoInk} darkSrc={logoPaper} width={605} height={256} />}
       homeLabel="ejm-ide home"
-      nav={
-        <ul>
-          {items.map(([label, href], i) => (
-            <li key={label}>
-              <a href={href} aria-current={i === 0 ? 'page' : undefined} className="touch-target compact-target flex min-h-8 items-center rounded-control px-3 text-sm text-fg no-underline hover:bg-tone aria-[current=page]:font-semibold aria-[current=page]:underline aria-[current=page]:decoration-2">
-                {label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      }
+      nav={nav}
       actions={<Button asChild variant="ghost"><Link href="/shell/">Shell</Link></Button>}
     >
       <AppFlow>
