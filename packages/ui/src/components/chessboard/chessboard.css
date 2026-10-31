@@ -1,14 +1,16 @@
 .cm-chessboard { display: block; }
-.cm-chessboard.ejm-board .board .square.white { fill: var(--color-mist); }
-.cm-chessboard.ejm-board .board .square.black { fill: var(--color-sage); }
+.cm-chessboard.ejm-board .board .square.white { fill: var(--ejm-ui-board-light); }
+.cm-chessboard.ejm-board .board .square.black { fill: var(--ejm-ui-board-dark); }
 .cm-chessboard.ejm-board .coordinates { font-family: var(--font-mono); font-size: 7px; pointer-events: none; user-select: none; }
-.cm-chessboard.ejm-board .coordinates .coordinate { fill: var(--color-forest); }
+.cm-chessboard.ejm-board .coordinates .coordinate { fill: var(--ejm-ui-board-mark); }
 .cm-chessboard.ejm-board .board .border { stroke-width: 0; }
-.cm-chessboard.ejm-board .marker-square { fill: var(--color-forest); opacity: .18; }
-.cm-chessboard.ejm-board .marker-frame { stroke: var(--color-forest); fill: none; stroke-width: 2px; opacity: .65; }
-.cm-chessboard.ejm-board .marker-circle-primary { stroke: var(--color-forest); opacity: .9; }
-.cm-chessboard.ejm-board .markers .marker.marker-dot { fill: var(--color-forest); opacity: .55; }
-.cm-chessboard.ejm-board .markers .marker.marker-circle { stroke: var(--color-forest); stroke-width: 2.5px; fill: none; opacity: .85; }
+.cm-chessboard.ejm-board .markers .marker.marker-square { fill: var(--ejm-ui-board-mark); opacity: .18; }
+.cm-chessboard.ejm-board .markers .marker.marker-frame { stroke: var(--ejm-ui-board-mark); fill: none; stroke-width: 2px; opacity: .65; }
+.cm-chessboard.ejm-board .markers .marker.marker-circle-primary { stroke: var(--ejm-ui-board-mark); opacity: .9; }
+.cm-chessboard.ejm-board .markers .marker.marker-dot { fill: var(--ejm-ui-board-mark); opacity: .55; }
+.cm-chessboard.ejm-board .markers .marker.marker-circle { stroke: var(--ejm-ui-board-mark); stroke-width: 2.5px; fill: none; opacity: .85; }
+.cm-chessboard.ejm-board .keyboard-focus-indicator .keyboard-focus { stroke: var(--ejm-ui-board-mark); }
+.cm-chessboard.ejm-board .keyboard-focus-indicator .keyboard-from-square { fill: var(--ejm-ui-board-mark); fill-opacity: .3; stroke: var(--ejm-ui-board-mark); }
 .cm-chessboard.ejm-board .promotion-dialog { fill: var(--color-paper); stroke: var(--color-forest); }
 .cm-chessboard.ejm-board .promotion-dialog-button { fill: var(--color-mist); }
 .cm-chessboard.ejm-board .promotion-dialog-button-group:focus { outline: 2px solid var(--color-forest); }

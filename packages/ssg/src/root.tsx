@@ -7,6 +7,7 @@ import {
   useEffect,
   useLayoutEffect,
   useRef,
+  useSyncExternalStore,
   type AnchorHTMLAttributes,
   type MouseEvent,
   type ReactNode,
@@ -26,6 +27,24 @@ const useSite = () => {
 
 /** The current path without the site base and without a trailing slash, e.g. `/about`. The prerender and the browser agree on it, so an `App` can render from it without a hydration mismatch. */
 export const usePath = () => normalizePath(useLocation()[0]);
+
+// wouter patches history.pushState and replaceState to dispatch an event of the same name; pushState is the router's own navigation signal.
+// replaceState is left out on purpose, so a page can rewrite its own URL without re-rendering what reads the query.
+const searchEvents = ['popstate', 'pushState'];
+const subscribeSearch = (notify: () => void) => {
+  for (const event of searchEvents) addEventListener(event, notify);
+  return () => searchEvents.forEach(event => removeEventListener(event, notify));
+};
+const liveSearch = () => location.search;
+const prerenderSearch = () => '';
+
+/**
+ * The query string with its leading `?`, as `location.search` holds it (`?game=abc`, or an empty string). The prerender and the hydration pass
+ * see an empty string, so markup that depends on it never mismatches, and the live value follows in the next render. It changes on back and
+ * forward and on a `Link` or `useNavigate` push, not on `replaceState` (direct, or from `replace`). Wouter's own `useSearch` is not used:
+ * it follows replaceState and decodes the string.
+ */
+export const useSearch = () => useSyncExternalStore(subscribeSearch, liveSearch, prerenderSearch);
 
 const noop = () => {};
 

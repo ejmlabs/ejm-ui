@@ -94,9 +94,9 @@ semantic attributes, refs and handlers. Their props exclude `className`,
 | `AppHeading`, `AppPre` | Heading levels h2 to h4 with shared heading type, and wrapped monospace records. |
 | `AppField`, `AppFieldset`, `AppForm` | Native fields at 8px gaps, fieldsets at 16px gaps and forms at 24px gaps with a fixed reading width. Labels, legends, validation, disabled state and submission remain native. |
 | `AppSection` | A section with a fixed reading width and 32px content gaps. |
-| `GameWorkspace` | A `board` slot followed by details children, with optional `after` content. It uses one column on phones and board/details columns from 64rem. The host owns keyboard game navigation. |
-| `PlayerStrip`, `BoardPlaceholder` | Player and clock alignment, and a square loading region. |
-| `MovePairs`, `MoveHistory` | Accepted move pairs or selectable SAN moves within a bounded scroll region. `MoveHistory` takes `items`, `selectedId` and `onSelect`; it scrolls only its own list. |
+| `GameWorkspace` | A centred `board` column followed by details children, with optional `after` content. From 40rem the board column fits the viewport with a player strip above and below it, plus about two lines of details below 64rem; from 64rem the details sit to its right. Phones keep a full-width board. Compose the board slot as `PlayerStrip`, board and `PlayerStrip` in an `AppGroup`. The host owns keyboard game navigation. |
+| `PlayerStrip`, `BoardPlaceholder` | Player and clock alignment, and a square loading region in the `tone` fill, the same as the Chessboard loading state. |
+| `MovePairs`, `MoveHistory` | Accepted move pairs or selectable SAN moves within a bounded scroll region. `MovePairs` follows the latest move unless the reader scrolled up. `MoveHistory` takes `items`, `selectedId` and `onSelect`. Both scroll only their own list. |
 
 Use `SectionHead purpose="application"` for the complete application opening.
 It selects title type and stacked body copy. `purpose="page"` selects display

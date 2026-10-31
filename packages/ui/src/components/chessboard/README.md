@@ -32,6 +32,8 @@ lifetimes, serialized orientation changes, reduced-motion behavior and disposal.
 Unconsumed document Escape cancels pointer selection without moving focus.
 Promotion keeps the maintained package's capture-phase Escape handler.
 Position, orientation, input state and hint preference changes clear selection.
+Squares, coordinates, markers and the keyboard focus frame follow the page theme
+through `ui-board-light`, `ui-board-dark` and `ui-board-mark` (see THEME.md).
 The marker SVG uses Vite's `?url&no-inline` public asset query because the board
 package does not recognize a data URI as an absolute sprite URL.
 

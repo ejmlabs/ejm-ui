@@ -5,6 +5,9 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Add `useSearch` to `@ejm/ssg`. It returns the query string, empty while prerendering and hydrating, and follows back, forward and router pushes but not `replaceState`, so a page can rewrite its own query without remounting.
+- Centre the `GameWorkspace` board column and size it to the viewport so both player strips fit. `MovePairs` follows the latest move unless the reader scrolled up, and its move numbers no longer wrap from move 10. `BoardPlaceholder` used `bg-surface`, which is not a theme color, so it painted nothing. It now uses `tone`, like the Chessboard loading state.
+- Add the `ui-board-light`, `ui-board-dark` and `ui-board-mark` roles, so the Chessboard has dark squares in the dark theme. The light squares are unchanged. The last-move and premove markers and the keyboard focus frame now use the board mark. A new gate holds black pieces, marks and squares apart in both themes.
 - Add fixed application form, content, action and game-workspace recipes plus an additive SectionHead purpose option. Add opt-in `ejmSite({ enforceDesignKit: true })` source checks while preserving existing consumer builds by default.
 - Add shared application Page and stacked SectionHead options, field/content gap aliases, and matching loading-table padding. Existing layout defaults stay unchanged.
 - Add rich web table cells, captions, row headers and stable row keys, plus native RadioGroup, a form Disclosure leaf and lightweight Prose.
