@@ -59,6 +59,19 @@ export default function ChessboardSurface(props: ChessboardProps) {
     };
   }, [props.readOnly]);
 
+  // The package's svg is the focusable board, or an image when read only. Name that element: a label on its wrapper is prohibited.
+  // The package names it only "Chessboard" with input, and not at all without. It draws the svg synchronously and never replaces it,
+  // but a readOnly change rebuilds the board, so the label is set again even when its text did not change.
+  const side = props.color === 'w' ? 'White' : 'Black';
+  const label = props['aria-label'] ?? (props.readOnly
+    ? `Read-only chessboard. ${side} is at the bottom. Use the replay controls to change position.`
+    : props.enabled
+      ? `Chessboard. You play ${side}. Use arrow keys and Enter to move.`
+      : `Chessboard. You play ${side}. You cannot move right now.`);
+  useEffect(() => {
+    element.current?.querySelector('svg.cm-chessboard')?.setAttribute('aria-label', label);
+  }, [label, props.readOnly]);
+
   useEffect(() => {
     const instance = board.current;
     if (!instance) return;
@@ -140,8 +153,5 @@ export default function ChessboardSurface(props: ChessboardProps) {
       if (event.key === 'Escape') board.current?.cancelMoveInput();
     }}
     // onBlur bubbles from squares and the promotion dialog; clear only when focus leaves the board.
-    onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) hints.current?.clear(); }}
-    aria-label={props['aria-label'] ?? (props.readOnly
-    ? `Read-only chessboard. ${props.color === 'w' ? 'White' : 'Black'} is at the bottom. Use the replay controls to change position.`
-    : `Chessboard. You play ${props.color === 'w' ? 'White' : 'Black'}. Use arrow keys and Enter to move.`)} />;
+    onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) hints.current?.clear(); }} />;
 }

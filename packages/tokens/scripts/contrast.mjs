@@ -1,7 +1,7 @@
 // Contrast gates for theme.json. Pure functions: they read the theme object and return problems, so the generator
 // runs them and tests can feed them a bad color. Run `node scripts/contrast.mjs --verbose` for every pair measured.
 import { fileURLToPath } from 'node:url';
-import { loadTheme, ratio, resolveBands, resolveThemes } from './theme.mjs';
+import { loadTheme, mix, ratio, resolveBands, resolveThemes } from './theme.mjs';
 
 // The ui theme: text, focus, control border, on-primary, syntax, terminal colors and hues, for both themes.
 export function checkUi(theme, resolved = resolveThemes(theme)) {
@@ -43,11 +43,13 @@ export function checkBoard(theme, resolved = resolveThemes(theme)) {
   const problems = [];
   for (const [name, t] of Object.entries(resolved)) {
     const { 'board-light': light, 'board-dark': dark, 'board-mark': mark } = t.roles;
-    for (const [square, color] of [['light', light], ['dark', dark]]) {
+    for (const [square, color, label] of [['light', light, t.roles['board-on-light']], ['dark', dark, t.roles['board-on-dark']]]) {
+      const labels = ratio(label, color);
+      if (labels < g.labels) problems.push(`${name}: board-on-${square} on the ${square} square is ${labels.toFixed(2)}:1, needs ${g.labels}:1`);
       const pieces = ratio('000000', color);
       if (pieces < g.pieces) problems.push(`${name}: black pieces on the ${square} square are ${pieces.toFixed(2)}:1, need ${g.pieces}:1`);
-      const labels = ratio(mark, color);
-      if (labels < g.mark) problems.push(`${name}: board-mark on the ${square} square is ${labels.toFixed(2)}:1, needs ${g.mark}:1`);
+      const marks = ratio(mark, color);
+      if (marks < g.mark) problems.push(`${name}: board-mark on the ${square} square is ${marks.toFixed(2)}:1, needs ${g.mark}:1`);
     }
     const squares = ratio(light, dark);
     if (squares < g.squares) problems.push(`${name}: the board squares are ${squares.toFixed(2)}:1 apart, need ${g.squares}:1`);
@@ -86,6 +88,8 @@ export function checkBands(theme, brand, resolved = resolveThemes(theme)) {
       need(`${at} on-primary on primary`, s.onPrimary, s.primary, g.text);
       need(`${at} on-primary-hover on primary-hover`, s.onPrimaryHover, s.primaryHover, g.text);
       need(`${at} on-danger on danger`, s.onDanger, s.danger, g.text);
+      // The danger Button hovers to bg-danger/85, the fill at 85 percent over the ground.
+      need(`${at} on-danger on danger hover`, s.onDanger, mix(s.danger, s.ground, 0.85), g.text);
       need(`${at} on-code on code`, s.onCode, s.code, g.text);
       if (!(theme.contrast.web.noHues || []).includes(band)) {
         for (let i = 1; i <= 6; i++) need(`${at} hue-${i} on ground`, s[`hue${i}`], s.ground, g.graphic);

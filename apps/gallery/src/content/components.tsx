@@ -1,4 +1,4 @@
-import type { DocPage } from '@ejm/ui';
+import { ExternalLink, type DocPage } from '@ejm/ui';
 import { docMeta } from './meta';
 
 export const components: DocPage = {
@@ -41,7 +41,7 @@ export const components: DocPage = {
             { name: 'Tabs', description: 'Arrows wrap, Home and End jump, and only the current tab is in the tab order.' },
             { name: 'Dialog', description: 'A modal on the native dialog element, with a float shadow.' },
             { name: 'Menu', description: 'A dropdown with typeahead, Escape, and focus back to the trigger.' },
-            { name: 'ToastProvider, useToast', description: 'Toasts in a polite live region. F8 moves focus to the stack.' },
+            { name: 'ToastProvider, useToast', description: 'Toasts in a polite live region. F8 moves focus to the stack. Give each provider on one page its own label.' },
           ],
         },
         { type: 'h3', id: 'button', title: 'Button' },
@@ -59,6 +59,7 @@ export const components: DocPage = {
         {
           type: 'code',
           lang: 'tsx',
+          label: 'Button',
           code: `import { Button } from '@ejm/ui';
 
 <Button asChild arrow>
@@ -108,6 +109,64 @@ export const components: DocPage = {
           ],
         },
         { type: 'callout', kind: 'note', children: <p>Callout has three states, note, tip and warning, each named by a word first. The docs parts below are web only.</p> },
+      ],
+    },
+    {
+      id: 'game-parts',
+      title: 'Game parts',
+      blocks: [
+        {
+          type: 'p',
+          children: <><code>Chessboard</code> is a leaf. The <code>@ejm/ui</code> barrel does not export it, so its renderer and styles reach a page only through a lazy import. <code>GameClock</code> is a small display and is in the barrel.</>,
+        },
+        {
+          type: 'code',
+          lang: 'tsx',
+          label: 'Chessboard and GameClock',
+          code: `import { lazy, Suspense } from 'react';
+import { GameClock } from '@ejm/ui';
+
+const Chessboard = lazy(() => import('@ejm/ui/components/Chessboard').then(module => ({ default: module.Chessboard })));
+
+<Suspense fallback={null}>
+  <Chessboard fen={fen} color="w" enabled={false} readOnly onMove={() => {}} />
+</Suspense>
+<GameClock value="5:03" label="White has 5 minutes and 3 seconds" running />`,
+        },
+        { type: 'h3', id: 'chessboard', title: 'Chessboard' },
+        {
+          type: 'p',
+          children: <>The host supplies the position, the legal destinations and the accepted moves. The kit holds no chess rules. Server rendering draws a labelled loading square, and the board loads after the page mounts.</>,
+        },
+        {
+          type: 'params',
+          caption: 'Chessboard props',
+          rows: [
+            { name: 'fen', type: 'string', default: 'required', description: 'The full position. The board shows exactly this.' },
+            { name: 'color', type: "'w' | 'b'", default: 'required', description: 'The side at the bottom.' },
+            { name: 'enabled', type: 'boolean', default: 'required', description: 'Whether the board takes moves.' },
+            { name: 'readOnly', type: 'boolean', default: 'false', description: 'A recorded game. The board is an image, not a control. Pass enabled={false} with it.' },
+            { name: 'showLegalMoves', type: 'boolean', default: 'false', description: 'Marks the destinations from getLegalMoves when a piece is selected.' },
+            { name: 'getLegalMoves', type: '(square: string) => readonly ChessboardDestination[]', description: 'Destinations the host computes from its own position, each { square, capture? }.' },
+            { name: 'lastMove', type: '{ from: string; to: string }', description: 'Marks both squares of the last accepted move.' },
+            { name: 'premove', type: 'ChessboardMove | null', description: 'Marks a queued move.' },
+            { name: 'onMove', type: '(move: ChessboardMove) => void', default: 'required', description: 'A proposal. The board changes only when the host passes a new fen.' },
+            { name: 'aria-label', type: 'string', description: "Replaces the default name of the board's svg." },
+          ],
+        },
+        { type: 'callout', kind: 'note', children: <p>The board is built on <ExternalLink href="https://github.com/shaack/cm-chessboard">cm-chessboard</ExternalLink> (MIT). Its pieces are <ExternalLink href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</ExternalLink> artwork by Cburnett and Rfc1394. Keep their notices in your credits.</p> },
+        { type: 'h3', id: 'gameclock', title: 'GameClock' },
+        {
+          type: 'params',
+          caption: 'GameClock props',
+          rows: [
+            { name: 'value', type: 'string', default: 'required', description: 'The time as text, such as 5:03. The host owns the ticking.' },
+            { name: 'label', type: 'string', default: 'required', description: 'The accessible name, with the time in words.' },
+            { name: 'running', type: 'boolean', default: 'false', description: 'The clock is running. It takes the primary fill.' },
+            { name: 'low', type: 'boolean', default: 'false', description: 'Low on time. It takes the danger fill and a warning glyph, so color is not the only signal.' },
+            { name: 'role', type: 'string', default: "'timer'", description: 'A timer is a live region that is off, so a tick is not announced. A role you pass wins.' },
+          ],
+        },
       ],
     },
     {
