@@ -21,9 +21,10 @@ npm run build -w @ejm/gallery
 A local Wrangler dry run against `apps/gallery/wrangler.jsonc` is fine for each
 environment in that file. A local build or source PR does not publish the site.
 
-A push to main deploys staging, then production. How that pipeline runs, what it
-refuses, how to follow a run, what to do when one fails and how to roll back are
-in [CI deploys](../../.agents/skills/ejmlabs-cloudflare/references/ci-deploys.md).
+A push to main deploys staging, then production once a maintainer approves it. How
+that pipeline runs, what it refuses, how to follow a run, what to do when one fails
+and how to roll back are in
+[CI deploys](../../.agents/skills/ejmlabs-cloudflare/references/ci-deploys.md).
 
 Run these checks on staging after each merge, and on the canonical host once
 production has deployed: the host, shared headers, fonts and original OFL notices, 404

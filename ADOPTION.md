@@ -258,7 +258,7 @@ At its next pin move each linked consumer does the following, then builds, type 
 }
 ```
 
-`not_found_handling: "404-page"` serves the nearest `404.html`, which `ejm-ssg` writes at `dist/404.html` with `noindex`. `_headers` in `dist` is read by the asset server. A push to main deploys staging, then production, through the site's `.github/workflows/deploy.yml`; see [CI deploys](.agents/skills/ejmlabs-cloudflare/references/ci-deploys.md). Do not run `wrangler deploy` by hand.
+`not_found_handling: "404-page"` serves the nearest `404.html`, which `ejm-ssg` writes at `dist/404.html` with `noindex`. `_headers` in `dist` is read by the asset server. A push to main deploys staging, then production once a maintainer approves it, through the site's `.github/workflows/deploy.yml`; see [CI deploys](.agents/skills/ejmlabs-cloudflare/references/ci-deploys.md). Do not run `wrangler deploy` by hand.
 
 ## 9. Per-site checklist
 
