@@ -1,0 +1,6 @@
+{
+  "extends": ["@tsconfig/strictest/tsconfig.json", "./tsconfig.base.json"],
+  "compilerOptions": { "types": ["node", "vite/client"] },
+  "include": ["packages/core/src", "packages/ssg/src", "packages/site/src", "packages/ui/src", "packages/tokens/src"],
+  "exclude": ["**/*.test.*", "packages/ui/src/components/test-setup.tsx", "packages/ssg/src/perf"]
+}

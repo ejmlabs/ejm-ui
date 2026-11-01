@@ -6,12 +6,12 @@ import { useHydrated } from './hooks';
 export interface CodeTab {
   label: string;
   code?: string;
-  lang?: string;
+  lang?: string | undefined;
   children?: ReactNode;
 }
 
 /** Language tabs with highlighted code, or caller-supplied content. */
-export function CodeTabs({ label, tabs }: { label?: string; tabs: readonly CodeTab[] }) {
+export function CodeTabs({ label, tabs }: { label?: string | undefined; tabs: readonly CodeTab[] }) {
   const hydrated = useHydrated();
   return <CodeTabsFrame label={label} tabs={tabs.map((tab) => ({
     label: tab.label,

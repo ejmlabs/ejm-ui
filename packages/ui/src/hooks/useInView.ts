@@ -3,8 +3,8 @@ import { useEffect, useRef, useState, type RefObject } from 'react';
 export interface InViewOptions {
   /** Stop observing after the first time it is seen, and stay true. */
   once?: boolean;
-  rootMargin?: string;
-  threshold?: number;
+  rootMargin?: string | undefined;
+  threshold?: number | undefined;
 }
 
 /**
@@ -28,7 +28,7 @@ export function useInView<T extends Element = HTMLElement>({ once = false, rootM
         setInView(entry.isIntersecting);
         if (once && entry.isIntersecting) io.disconnect();
       },
-      { rootMargin, threshold },
+      { ...(rootMargin === undefined ? {} : { rootMargin }), ...(threshold === undefined ? {} : { threshold }) },
     );
     io.observe(el);
     return () => io.disconnect();

@@ -10,10 +10,10 @@ export const ANALYTICS_SITES: Readonly<Record<string, string>> = Object.fromEntr
 
 /** What the gate reads. Defaults come from the browser; tests pass their own. */
 export interface Env {
-  location?: { hostname: string };
-  navigator?: { doNotTrack?: string | null; globalPrivacyControl?: boolean };
+  location?: { hostname: string } | undefined;
+  navigator?: { doNotTrack?: string | null; globalPrivacyControl?: boolean } | undefined;
   /** Old Internet Explorer and Edge put Do Not Track on window. */
-  window?: { doNotTrack?: string | null };
+  window?: { doNotTrack?: string | null } | undefined;
 }
 
 const browser = (): Env => (typeof window === 'undefined' ? {} : { location: window.location, navigator: window.navigator as Env['navigator'], window: window as Env['window'] });

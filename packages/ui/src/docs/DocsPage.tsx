@@ -31,18 +31,18 @@ export interface DocsPageProps {
   current: string;
   prev?: PagerLink | null;
   next?: PagerLink | null;
-  filter?: boolean;
-  sidebarLabel?: string;
+  filter?: boolean | undefined;
+  sidebarLabel?: string | undefined;
   /** Supply @ejm/ssg Static to retain prose in prerendered HTML. Without it, renderProse renders normally. */
-  staticBoundary?: ComponentType<{ render?: () => ReactNode }>;
+  staticBoundary?: ComponentType<{ render?: (() => ReactNode) | undefined }>;
   /** Set only in SSR or dev. Its source data can then be removed from a production browser build. */
-  renderProse?: (section: number, item: number) => ReactNode;
+  renderProse?: ((section: number, item: number) => ReactNode) | undefined;
   /** Server/dev-only highlighted source. Omit it for plain code. Its copy figure remains live. */
-  renderCode?: (block: DocCode) => ReactNode;
+  renderCode?: ((block: DocCode) => ReactNode) | undefined;
   /** Required when splitDoc reports requiresRich, for code nested in lists or callouts. */
-  renderBlock?: (block: DocDataBlock, renderCode: (code: DocCode) => ReactNode) => ReactNode;
+  renderBlock?: ((block: DocDataBlock, renderCode: (code: DocCode) => ReactNode) => ReactNode) | undefined;
 }
-const Live = ({ render }: { render?: () => ReactNode }) => <>{render?.()}</>;
+const Live = ({ render }: { render?: (() => ReactNode) | undefined }) => <>{render?.()}</>;
 
 /** A live docs shell around static prose and live code, tabs, contents, and navigation. */
 export function DocsPage({ page, groups, current, prev = null, next = null, filter, sidebarLabel, staticBoundary: Boundary = Live, renderProse, renderCode, renderBlock }: DocsPageProps) {

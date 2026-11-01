@@ -9,7 +9,7 @@ const CodeTabsFrame = server
   : lazy(() => import('./CodeTabsFrame').then(({ CodeTabsFrame }) => ({ default: CodeTabsFrame })));
 
 /** Live code controls without the prose renderer or syntax tokenizer. */
-export function DocCodeBlock({ block, renderCode }: { block: DocCode | DocCodeTabs; renderCode?: (code: DocCode) => ReactNode }): ReactNode {
+export function DocCodeBlock({ block, renderCode }: { block: DocCode | DocCodeTabs; renderCode?: ((code: DocCode) => ReactNode) | undefined }): ReactNode {
   if (block.type === 'code') return renderCode ? renderCode(block) : <CodeBlockFrame code={block.code} lang={block.lang} label={block.label} />;
   return <Suspense fallback={null}>
     <CodeTabsFrame label={block.label} tabs={block.tabs.map((tab) => ({ label: tab.label, children: <DocCodeBlock block={{ type: 'code', code: tab.code, lang: tab.lang, label: tab.codeLabel }} renderCode={renderCode} /> }))} />

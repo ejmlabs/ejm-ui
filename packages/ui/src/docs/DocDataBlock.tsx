@@ -25,7 +25,7 @@ function Inline({ nodes }: { nodes: readonly DocInline[] }) {
 }
 
 /** Render serialized blocks through the shared docs parts, including nested code. */
-export function DocDataBlock({ block, compact = false, renderCode }: { block: DataBlock; compact?: boolean; renderCode?: (code: DocCode) => ReactNode }): ReactNode {
+export function DocDataBlock({ block, compact = false, renderCode }: { block: DataBlock; compact?: boolean; renderCode?: ((code: DocCode) => ReactNode) | undefined }): ReactNode {
   switch (block.type) {
     case 'p': return compact ? <span><Inline nodes={block.children} /></span> : <p><Inline nodes={block.children} /></p>;
     case 'list': {

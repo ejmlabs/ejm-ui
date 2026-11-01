@@ -24,12 +24,12 @@ export interface ActivityListProps {
   now: number;
   /** Names the list for screen readers. */
   label: string;
-  state?: PartState;
+  state?: PartState | undefined;
   /** Replaces the sentence for empty, loading and error. */
-  message?: string;
+  message?: string | undefined;
   /** Empty and error only: the one action under the sentence. */
-  action?: { key?: string; label: string };
-  onAction?: () => void;
+  action?: { key?: string; label: string } | undefined;
+  onAction?: (() => void) | undefined;
 }
 
 const rowClass = 'hairline grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 gap-y-1';

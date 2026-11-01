@@ -5,7 +5,7 @@ export interface ArtProps {
   /** Inline symbol art as markup, for example `import flow from '@ejm/ui/art/inline/divider-flow.svg?raw'`. */
   svg: string;
   /** Draw the lines on once after hydration. Without scripts, or under reduced motion, the art is fully drawn. */
-  drawOn?: boolean;
+  drawOn?: boolean | undefined;
 }
 
 /** Decorative symbol line art. Always aria-hidden; the lines take their color from the band (see THEME.md). */

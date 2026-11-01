@@ -7,13 +7,13 @@ import { languageName } from './language';
 export interface CodeBlockFrameProps {
   code: string;
   /** Grammar and label: ts, tsx, js, css, html, json, rust, sh. Anything else shows as plain text under its own name. */
-  lang?: string;
+  lang?: string | undefined;
   /** Text for the label when it should differ from the language name, for example a file name. */
-  label?: string;
+  label?: string | undefined;
   /** Turn the copy control off for output that is not meant to be run. */
-  copyable?: boolean;
+  copyable?: boolean | undefined;
   /** Hide the language label from sight (it stays for assistive technology), for a block under a tab that already names it. */
-  quietLabel?: boolean;
+  quietLabel?: boolean | undefined;
   children?: ReactNode;
 }
 

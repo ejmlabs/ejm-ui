@@ -34,12 +34,12 @@ export interface SiteConfig {
   /** Rendered for any other URL and written to `dist/404.html`. Has a plain default. */
   notFound?: { head?: RouteHead } & Page;
   /** Header, footer, theme: wraps the current page. Rendered inside the router, so it can use `Link`. */
-  App?: ComponentType<{ children: ReactNode }>;
+  App?: ComponentType<{ children: ReactNode }> | undefined;
   head?: SiteHead;
   /** Where the site is served from, e.g. `/docs`. Defaults to Vite's `base`. */
   base?: string;
   /** `https://ejmlabs.com`, for canonical and `og:url`. */
-  origin?: string;
+  origin?: string | undefined;
   /** URLs of fonts to preload on every route (`rel=preload as=font crossorigin`). Use `import url from './x.woff2?url'`. */
   fonts?: string[];
   /** Globs of built pages the load-time check skips: static pages that are not routes (copied brand assets). Matched against the file path under dist or the route, for example `brand/kit/**`. */
@@ -57,17 +57,17 @@ export interface Route {
   /** Loads the chunk of a lazy route. Resolves at once for eager routes. */
   preload(): Promise<void>;
   /** The original `load`, kept so the build can find the route's chunk. */
-  load?: () => Promise<PageModule>;
+  load?: (() => Promise<PageModule>) | undefined;
 }
 
 export interface Site {
   routes: Route[];
   notFound: Route;
-  App?: ComponentType<{ children: ReactNode }>;
+  App?: ComponentType<{ children: ReactNode }> | undefined;
   head: SiteHead;
   /** `''` or `/docs`: no trailing slash. */
   base: string;
-  origin?: string;
+  origin?: string | undefined;
   fonts: string[];
   ignore: string[];
 }

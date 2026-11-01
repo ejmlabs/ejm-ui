@@ -21,10 +21,10 @@ type ParamLabels = NonNullable<Parameters<typeof ParamTable>[0]['labels']>;
 export type Block =
   | { type: 'p'; children: ReactNode }
   | { type: 'list'; items: readonly ReactNode[]; ordered?: boolean; start?: number }
-  | { type: 'code'; code: string; lang?: string; label?: string }
-  | { type: 'tabs'; label?: string; tabs: readonly CodeTab[] }
+  | { type: 'code'; code: string; lang?: string | undefined; label?: string | undefined }
+  | { type: 'tabs'; label?: string | undefined; tabs: readonly CodeTab[] }
   | { type: 'callout'; kind: CalloutKind; children: ReactNode }
-  | { type: 'params'; caption: string; rows: readonly Param[]; labels?: ParamLabels }
+  | { type: 'params'; caption: string; rows: readonly Param[]; labels?: ParamLabels | undefined }
   | { type: 'h3'; id: string; title: string }
   | { type: 'table'; caption: string; heads: readonly ReactNode[]; rows: readonly (readonly ReactNode[])[] }
   | { type: 'node'; children: ReactNode };

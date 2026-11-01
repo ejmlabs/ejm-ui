@@ -3,8 +3,8 @@ import type { ContentsItem } from './Contents';
 
 /** The build-time Markdown compiler emits only this JSON-compatible data. */
 export type DocInline = string | ['code', string] | ['strong' | 'em' | 'del', DocInline[]] | ['br'] | ['a', string, boolean, DocInline[]];
-export interface DocCode { type: 'code'; code: string; lang?: string; label?: string }
-export interface DocCodeTabs { type: 'tabs'; label?: string; tabs: { label: string; code: string; lang?: string; codeLabel?: string }[] }
+export interface DocCode { type: 'code'; code: string; lang?: string | undefined; label?: string | undefined }
+export interface DocCodeTabs { type: 'tabs'; label?: string | undefined; tabs: { label: string; code: string; lang?: string | undefined; codeLabel?: string | undefined }[] }
 export type DocDataBlock =
   | { type: 'p'; children: DocInline[] }
   | { type: 'list'; ordered: boolean; start?: number; items: DocDataBlock[][] }

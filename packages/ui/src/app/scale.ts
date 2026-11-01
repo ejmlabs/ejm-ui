@@ -46,7 +46,7 @@ export function clip(text: string, max: number): string {
 
 /** Move labels apart so each is at least `gap` below the last, inside [lo, hi]. Returns positions in the input order. */
 export function spread(ys: readonly number[], gap: number, lo: number, hi: number): number[] {
-  const order = ys.map((y, i) => i).sort((a, b) => ys[a]! - ys[b]!);
+  const order = ys.map((_, i) => i).sort((a, b) => ys[a]! - ys[b]!);
   const out = new Array<number>(ys.length);
   let prev = lo - gap;
   for (const i of order) {

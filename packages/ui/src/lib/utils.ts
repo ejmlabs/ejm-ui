@@ -8,8 +8,8 @@ import { slimConfig } from './merge-config';
 const twMerge = createTailwindMerge(() => {
   const config = slimConfig();
   // The radius names of THEME.md, so `rounded-pill`, `rounded-control` and `rounded-window` replace each other like any other radius.
-  (config.theme.radius as unknown[]).push('control', 'pill', 'window');
-  (config.theme.spacing as unknown[]).push('field', 'content');
+  (config.theme["radius"] as unknown[]).push('control', 'pill', 'window');
+  (config.theme["spacing"] as unknown[]).push('field', 'content');
   (config.classGroups['font-size'] as unknown[]).push({ text: ['display', 'title', 'heading', 'lead', 'body', 'meta'] });
   return config;
 });

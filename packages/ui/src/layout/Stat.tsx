@@ -6,11 +6,11 @@ export interface StatProps {
   figure?: ReactNode;
   /** The mono label under the figure. */
   label: string;
-  state?: StatState;
+  state?: StatState | undefined;
   /** Figure scale. `stat` (default) is the display size; use `title` for dense examples or narrow compositions. */
   size?: 'stat' | 'title';
   /** Replaces the default word for loading, error or empty. */
-  message?: string;
+  message?: string | undefined;
 }
 
 /** A large figure with a mono label and a hairline above. No box. Loading, error and empty replace the figure with a word. */
