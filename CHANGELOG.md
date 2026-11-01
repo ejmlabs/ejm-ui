@@ -5,6 +5,8 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- Move the shared ejmlabs/.github pins to 90287bb and resync the Cloudflare skill and CI deploy reference. Production deploys now wait for a maintainer to approve them, and deploy only main's newest commit; the deploy docs say so.
+
 - Stop `Header` and the `AppShell` top bar from scrolling the page sideways at large text. At about 200 percent text the site header, one fixed 4.5rem line, pushed the Menu button and theme toggle 185 to 255 px past the right edge at 320 to 390 px wide (a five-link nav), so the nav was out of reach; the `AppShell` bar overflowed by 3 px at 320 px. Narrower than 20rem of its own width (larger text or a narrow pane; a 320 px phone at normal text is exactly 20rem) each bar now wraps: the brand first, its mark over its name when they do not fit side by side, then the controls at the end of the next line. `Header` is at least `--ejm-header-h` tall instead of exactly that, and its open Menu is capped by the room under the header as it is, so every link stays reachable from the keyboard on a short screen. Nothing changes at normal text size. Known limit: a wrapped header is taller than `--ejm-header-h`, so the scroll padding under it falls short by the difference (32 to 84 px at 390 and 320 px). Found by the ejm-chess launch check.
 
 - `GameClock` is now `inline-block`. As an inline span its padded fill took no layout height, so in a row shorter than the clock (a `PlayerStrip` with only a name) it spilled about 9 px above and 5 px below the row. The row now grows to hold it. Found by the ejm-chess launch check.
