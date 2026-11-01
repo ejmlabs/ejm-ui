@@ -7,8 +7,10 @@ import { NavLink } from './NavLink';
 /**
  * Private to the shell, not exported from its barrel. The header menu below the width the Header's nav needs (`fold`, a container
  * query on the Header): a native <details>, so it opens and closes with no script and takes no space when closed. Open, the list is an overlay
- * under the bar (window radius, hairline border, float shadow, inset to the page gutter), so nothing moves. While it is open Escape
- * closes it and returns focus to the button, as does a press outside, and choosing a link closes it.
+ * under the bar (window radius, hairline border, float shadow, inset to the page gutter), so nothing moves. Its height stops at the
+ * bottom of the viewport measured from the header as it is (100% of the header, which is taller than --ejm-header-h when the bar
+ * wraps), so every link stays reachable. While it is open Escape closes it and returns focus to the button, as does a press
+ * outside, and choosing a link closes it.
  */
 export function NavMenu({ nav, link, fold }: { nav: readonly NavItem[]; link: LinkComponent; fold: NavFold }) {
   const menu = useRef<HTMLDetailsElement>(null);
@@ -44,7 +46,7 @@ export function NavMenu({ nav, link, fold }: { nav: readonly NavItem[]; link: Li
         onClick={e => {
           if ((e.target as Element).closest('a') && menu.current) menu.current.open = false;
         }}
-        className="absolute inset-x-(--ejm-page-gutter) top-full mt-2 max-h-[calc(100svh-var(--ejm-header-h)-env(safe-area-inset-top)-2rem)] overflow-y-auto overscroll-contain rounded-window border border-line bg-ground text-fg shadow-float group-open:animate-fade"
+        className="absolute inset-x-(--ejm-page-gutter) top-full mt-2 max-h-[calc(100svh-100%-2rem)] overflow-y-auto overscroll-contain rounded-window border border-line bg-ground text-fg shadow-float group-open:animate-fade"
       >
         <ul>
           {nav.map(item => (

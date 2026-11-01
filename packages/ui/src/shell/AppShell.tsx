@@ -31,7 +31,8 @@ const navItemClass = 'touch-target compact-target flex min-h-8 items-center roun
  * from 768px, one beside the nav). The page scrolls as a whole (the bar and nav stay put), which keeps find, zoom and print working.
  * Collapses to a single column below 768px.
  * It provides `compact` density, so every Button, field, tab and the theme toggle inside is compact with no prop: 32px on a fine
- * pointer, 44px on touch. The top bar keeps its 56px height.
+ * pointer, 44px on touch. The top bar is at least 56px tall; narrower than 20rem of its own width (larger text or a narrow pane) it
+ * wraps, brand first and the actions at the end of the next line, instead of scrolling the page sideways, like Header.
  */
 export function AppShell({ brand, homeHref = '/', homeLabel = 'Home', actions, themeControl, nav, navLabel = 'Navigation', linkComponent, children }: AppShellProps) {
   const ambient = useLinkComponent();
@@ -41,12 +42,12 @@ export function AppShell({ brand, homeHref = '/', homeLabel = 'Home', actions, t
       <DensityProvider density="compact">
         <div className="flex min-h-svh flex-col">
           <SkipLink />
-          <header className="band sticky top-0 z-40 pt-[env(safe-area-inset-top)] md:hairline">
-            <div className="flex h-14 items-center justify-between gap-4 px-(--ejm-page-gutter)">
+          <header className="@container band sticky top-0 z-40 pt-[env(safe-area-inset-top)] md:hairline">
+            <div className="flex min-h-14 items-center gap-x-4 gap-y-2 px-(--ejm-page-gutter) @max-xs:flex-wrap @max-xs:py-2">
               <Link href={homeHref} aria-label={homeLabel} className="touch-target compact-target -ms-2 inline-flex items-center rounded-control px-2 py-1 text-fg hover:bg-tone">
                 {brand}
               </Link>
-              <div className="flex items-center gap-2">
+              <div className="ms-auto flex items-center gap-2">
                 {actions}
                 {themeControl === undefined ? <ThemeToggle /> : themeControl}
               </div>

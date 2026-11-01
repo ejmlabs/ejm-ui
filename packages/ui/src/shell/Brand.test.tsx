@@ -24,3 +24,10 @@ it('uses the light artwork on the permanently dark footer in either page theme',
   expect(container.querySelector('img')).toHaveAttribute('src', '/paper.svg');
   expect(screen.getByText('Project')).toBeInTheDocument();
 });
+
+it('wraps the name under the mark in a narrow container for navigation, and leaves a project name to its heading', () => {
+  const { container, rerender } = render(<Brand src="/ink.svg" width={32} height={32} name="Project" />);
+  expect(container.firstElementChild).toHaveClass('@max-xs:flex-wrap');
+  rerender(<Brand src="/ink.svg" width={32} height={32} name="Project" placement="project" />);
+  expect(container.firstElementChild).not.toHaveClass('@max-xs:flex-wrap');
+});
