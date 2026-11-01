@@ -174,9 +174,9 @@ The gutter is never smaller than `env(safe-area-inset-left/right)`. Pages need `
 | `px-gutter`, `p-gutter`, ... | The current gutter. |
 | `max-w-page`, `max-w-measure` | Column width and 68ch reading width. |
 | Breakpoints | Tailwind defaults, plus `xs` 420px, `3xl` 1920px, `4xl` 2560px, `5xl` 3200px, `6xl` 4400px (the same steps as the table). |
-| Container queries | Tailwind's own `@container` and `@xs` to `@7xl` (the `--container-*` sizes), for a part that must follow the room it has rather than the window: `Header` (nav list from `@3xl`, 48rem, otherwise the menu), `Dashboard`, the charts, `ProductStage` and the specimen pairs. A part inside a narrow preview then behaves as it does on a phone. |
+| Container queries | Tailwind's own `@container` and `@xs` to `@7xl` (the `--container-*` sizes), for a part that must follow the room it has rather than the window: `Header` (nav list from `@3xl`, 48rem, otherwise the menu; the bar wraps below `@xs`, 20rem), the `AppShell` top bar (wraps below `@xs`), `Dashboard`, the charts, `ProductStage` and the specimen pairs. A part inside a narrow preview then behaves as it does on a phone. |
 
-`--ejm-header-h` (default 4.5rem) feeds the page `scroll-padding-top`, so anchors and focused headings land below a sticky header. A sticky header component sets it.
+`--ejm-header-h` (default 4.5rem) feeds the page `scroll-padding-top`, so anchors and focused headings land below a sticky header. A sticky header component sets it. `Header` uses it as a minimum height: below 20rem of its own width the bar wraps and is taller, so there the scroll padding falls short by the difference.
 
 `Page variant="application"` combines the column with the shared application rhythm and makes every control inside it compact (see Density below). `SectionHead purpose="application"` stacks a title heading and body-sized copy. Page openings use `purpose="page"`; ordinary sections use the default `purpose="section"`. A consumer cannot pick a different heading size or alter the recipe with classes.
 

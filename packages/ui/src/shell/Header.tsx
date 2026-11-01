@@ -29,8 +29,9 @@ const itemClass = 'touch-target inline-flex min-h-11 items-center rounded-contro
  * ThemeToggle, always last. The nav is one landmark. Below the width its links need (48rem for a few short ones, wider for more; a
  * container query on the header's own width, so a header in a narrow preview folds like one on a phone) its list folds into a native
  * <details> menu (NavMenu), so a long nav never overflows the bar. The menu works without scripts and takes no space when closed
- * (the open menu is an overlay, so nothing moves). It sets the sticky offset through --ejm-header-h and
- * keeps clear of the notch with safe-area insets.
+ * (the open menu is an overlay, so nothing moves). The bar is at least --ejm-header-h tall and keeps clear of the notch with
+ * safe-area insets. Narrower than 20rem of its own width (a 320px phone at normal text is exactly 20rem, so this is larger text or a
+ * narrow pane) the bar wraps, brand first and the controls at the end of the next line, instead of scrolling the page sideways.
  */
 export function Header({ identity, themeControl, homeLabel = 'Home', homeHref = '/', nav = [], band, linkComponent }: HeaderProps) {
   const ambient = useLinkComponent();
@@ -38,12 +39,12 @@ export function Header({ identity, themeControl, homeLabel = 'Home', homeHref = 
   const fold = navFold(nav, identity);
   return (
     <header data-band={band} className="@container band sticky top-0 z-40 pt-[env(safe-area-inset-top)]">
-      <div className="page-inset flex h-(--ejm-header-h) items-center justify-between gap-4">
+      <div className="page-inset flex min-h-(--ejm-header-h) items-center gap-x-4 gap-y-2 py-2 @max-xs:flex-wrap">
         <Link href={homeHref} aria-label={homeLabel} className="-ms-2 inline-flex min-h-11 items-center rounded-control px-2 text-fg hover:bg-tone">
           {identity.artwork ? <Brand {...identity.artwork} name={identity.name} /> : <span className="text-heading tracking-tight">{identity.name}</span>}
         </Link>
 
-        <div className="flex items-center gap-1">
+        <div className="ms-auto flex items-center gap-1">
           {nav.length > 0 && (
             // One landmark. From the fold width the list is shown and the disclosure is display:none; below it the other way round, so
             // only one of them is ever in the accessibility tree.

@@ -18,12 +18,12 @@ export interface BrandProps extends BrandArtwork {
   placement?: 'navigation' | 'project' | 'footer';
 }
 
-/** Placement owns mark size. Project names inherit the surrounding heading type. */
+/** Placement owns mark size. Project names inherit the surrounding heading type. In a container narrower than 20rem (the Header at large text) the name wraps under the mark instead of overflowing. */
 export function Brand({ src, darkSrc, width, height, name, placement = 'navigation' }: BrandProps) {
   const image = placement === 'project' ? 'h-10 w-auto shrink-0' : 'h-9 w-auto shrink-0';
   const paired = placement !== 'footer' && darkSrc && darkSrc !== src;
   const source = placement === 'footer' ? darkSrc ?? src : src;
-  return <span className={placement === 'project' ? 'inline-flex max-w-full items-center gap-2.5 tracking-tight' : 'inline-flex max-w-full items-center gap-2.5 tracking-tight text-heading'}>
+  return <span className={placement === 'project' ? 'inline-flex max-w-full items-center gap-2.5 tracking-tight' : 'inline-flex max-w-full items-center gap-2.5 tracking-tight text-heading @max-xs:flex-wrap'}>
     <img src={source} width={width} height={height} alt="" aria-hidden="true" loading="lazy" decoding="async" className={paired ? `${image} dark:hidden` : image} />
     {paired && <img src={darkSrc} width={width} height={height} alt="" aria-hidden="true" loading="lazy" decoding="async" className={`${image} hidden dark:block`} />}
     {name && <span className="whitespace-nowrap">{name}</span>}

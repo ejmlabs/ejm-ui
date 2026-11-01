@@ -266,6 +266,24 @@ describe('Header', () => {
     expect(container.querySelector('details')!.className).not.toMatch(/:hidden/);
   });
 
+  it('wraps the bar and stacks the brand below 20rem of its own width, so large text never scrolls the page sideways', () => {
+    // 20rem is a 320px phone at normal text, so only larger text or a narrow pane gets below it. There the brand, the menu and the
+    // toggle need more than the line: a fixed-height single line (h-, not min-h-) would push the controls off the right edge.
+    const { container } = render(<Header identity={{ name: 'ejm-chess', artwork: { src: '/m.svg', width: 31, height: 28 } }} nav={nav} />);
+    const bar = container.querySelector('header > div')!;
+    expect(bar).toHaveClass('min-h-(--ejm-header-h)', '@max-xs:flex-wrap');
+    expect(bar).not.toHaveClass('h-(--ejm-header-h)');
+    expect(bar.lastElementChild).toHaveClass('ms-auto');
+    expect(container.querySelector('header a > span')).toHaveClass('@max-xs:flex-wrap');
+  });
+
+  it('keeps the open menu inside the viewport under a header that is taller than --ejm-header-h', () => {
+    const { container } = render(<Header {...header} />);
+    const panel = container.querySelector('details > div')!;
+    expect(panel).toHaveClass('max-h-[calc(100svh-100%-2rem)]');
+    expect(panel.className).not.toContain('--ejm-header-h');
+  });
+
   it('shows the current page with weight 600 and an underline, not color alone', () => {
     render(<Header {...header} />);
     const docs = within(screen.getByRole('banner')).getAllByRole('link', { name: 'Docs' })[0]!;
@@ -470,9 +488,14 @@ describe('AppShell', () => {
     expect(within(nav).getByRole('link', { name: /Docs/ })).not.toHaveAttribute('data-router');
   });
 
-  it('keeps the 56px top bar', () => {
-    render(<AppShell brand={<span>app</span>} nav={appNav}>x</AppShell>);
-    expect(screen.getByRole('banner').firstElementChild).toHaveClass('h-14');
+  it('keeps the top bar at least 56px and wraps it below 20rem of its own width instead of overflowing', () => {
+    render(<AppShell brand={<span>app</span>} nav={appNav} actions={<button type="button">Search</button>}>x</AppShell>);
+    const header = screen.getByRole('banner');
+    const bar = header.firstElementChild;
+    expect(header).toHaveClass('@container');
+    expect(bar).toHaveClass('min-h-14', '@max-xs:flex-wrap');
+    expect(bar).not.toHaveClass('h-14');
+    expect(within(header).getByRole('button', { name: 'Search' }).parentElement).toHaveClass('ms-auto');
   });
 
   it('makes every control inside compact without a prop, and leaves controls outside it comfortable', () => {
