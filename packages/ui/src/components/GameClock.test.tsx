@@ -27,6 +27,11 @@ it('marks low time with a glyph beside the time, not by fill color alone, and le
   expect(screen.getByRole('status')).toBeInTheDocument();
 });
 
+it('is inline-block, so a row that holds it reserves the padded fill', () => {
+  render(<GameClock value="0:19" label="White has 19 seconds. Low time." low />);
+  expect(screen.getByRole('timer')).toHaveClass('inline-block');
+});
+
 it.each(themes)('keeps clock displays accessible in %s', async theme => {
   const { container } = renderIn(theme, <>
     <GameClock value="5:03" label="White has 5 minutes and 3 seconds" />

@@ -5,6 +5,8 @@ entry does not establish a published release; see [RELEASING.md](RELEASING.md).
 
 ## [Unreleased]
 
+- `GameClock` is now `inline-block`. As an inline span its padded fill took no layout height, so in a row shorter than the clock (a `PlayerStrip` with only a name) it spilled about 9 px above and 5 px below the row. The row now grows to hold it. Found by the ejm-chess launch check.
+
 - Fix six combinations that broke a page, all found moving ejm-ide's site onto the kit. The prerender (`ejmSsg`) now bundles every dependency, so a site inside a repository whose own `node_modules` sits above it (an app beside the site) no longer loads a second React and fails to build. `Header` works out from its identity and nav labels the width its links need and folds them into the menu below it (48rem for a few short links, up to 80rem for many), so a long nav no longer overflows the bar. `ExternalLink` and `InlineLink` take the button recipe inside `Button asChild` instead of the link style. A labelled `Rule` right before `Facts` or `Rows` replaces the list's top hairline instead of doubling it. `kbd` gets one base style, a mono hairline cap. An interactive demo island inside a `ShowcaseFrame` leaves out its own note, so the frame's note is the one disclosure instead of two.
 
 - A bare link in an action row (`Actions`, `AppActions` and the `actions` of `Hero` and `Section`) is a control there, not running text, so it now keeps a 44px target on touch, centered in the row. An `InlineLink` passed as hero actions (as on the starter's 404 page) was 26px tall on a phone. Nothing changes on a mouse.
