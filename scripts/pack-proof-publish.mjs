@@ -19,6 +19,7 @@ import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSyn
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { packWorkspace } from './pack-workspace.mjs';
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -29,19 +30,12 @@ if (dir === repo || dir.startsWith(repo + sep)) throw new Error(`pack-proof-publ
 const PACKAGES = ['tokens', 'core', 'ui', 'ssg'];
 const step = title => console.log(`\n== ${title}`);
 const run = (cmd, cmdArgs, cwd) => execFileSync(cmd, cmdArgs, { cwd, stdio: 'inherit' });
-const read = (cmd, cmdArgs, cwd) => execFileSync(cmd, cmdArgs, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'] });
 
 step('npm pack');
 const tarballs = join(dir, 'tarballs');
 rmSync(tarballs, { recursive: true, force: true });
 mkdirSync(tarballs, { recursive: true });
-const packed = PACKAGES.map(p => {
-  // npm 11 prints an array, npm 12 an object keyed by package name; `-w <one package>` yields one entry either way.
-  const out = JSON.parse(read('npm', ['pack', '-w', `packages/${p}`, '--pack-destination', tarballs, '--json'], repo));
-  const [info] = Array.isArray(out) ? out : Object.values(out);
-  console.log(`${info.name.padEnd(14)} ${String(info.size).padStart(9)} bytes gzip, ${String(info.unpackedSize).padStart(9)} unpacked, ${String(info.entryCount).padStart(4)} files`);
-  return info;
-});
+const packed = PACKAGES.map(p => packWorkspace(p, tarballs, repo));
 
 step('tokens tarball contents');
 const tokens = packed.find(i => i.name === '@ejm/tokens');
