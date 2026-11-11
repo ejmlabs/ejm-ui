@@ -14,7 +14,7 @@ strum = { version = "0.28", features = ["derive"] }
 textwrap = { version = "0.16", default-features = false, features = ["unicode-width"] }
 unicode-segmentation = "1"
 # The series ratatui 0.30 uses, so consumers build one copy.
-unicode-truncate = "2"
+unicode-truncate = "3"
 unicode-width = "0.2"
 
 [dev-dependencies]
